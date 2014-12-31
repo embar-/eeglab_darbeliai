@@ -123,7 +123,8 @@ if length(varargin) > 2 ;
    nauja_versija=varargin{3};   
 else   
    %url='https://www.dropbox.com/s/q57pntndm704isv/Darbeliai.versija?dl=1';
-   url='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
+   %url='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
+   url='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
    status=0;
    disp(lokaliz('Checking for updates...'));
    try
