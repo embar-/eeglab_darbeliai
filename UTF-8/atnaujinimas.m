@@ -71,7 +71,8 @@ function atnaujinimas(varargin)
 if nargin > 0;     url=varargin{1};
 else     
   % url='https://www.dropbox.com/sh/mpt7uwlrhsu55n4/AAB-XzFkhDjXlCIKxDF6H1VPa/Darbeliai.zip?dl=1';
-  url='https://github.com/embar-/eeglab_darbeliai/archive/master.zip' ;
+  % url='https://github.com/embar-/eeglab_darbeliai/archive/master.zip' ;
+  url='https://github.com/embar-/eeglab_darbeliai/archive/stable.zip' ;
 end;
 
 if nargin > 1;     name=varargin{2};
