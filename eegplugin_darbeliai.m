@@ -282,7 +282,8 @@ end;
 if exist('atnaujinimas','file') == 2 ;
    nauja_versija='';
    %url='https://www.dropbox.com/s/q57pntndm704isv/Darbeliai.versija?dl=1';
-   url='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
+   %url='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
+   url='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
    status=0;
    apie_vers='';
    
