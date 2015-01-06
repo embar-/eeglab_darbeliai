@@ -3204,7 +3204,7 @@ try
     ERP_savyb=struct('plotas',{},'vid_ampl',{},'pusplocio_x',{},'pusplocio_y',{},...
         'min_x',{},'min_y',{},'max_x',{},'max_y',{});
     legendoje={};
-    datacursormode on;
+    %datacursormode on;
     
     [~,ALLEEG_,~]=pop_newset([],[],[]);
     ALLEEG_=setfield(ALLEEG_,'datfile',[]);
@@ -3733,3 +3733,20 @@ else
 end;
 drawnow;
 
+
+% --- Executes on mouse press over axes background.
+function axes1_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to axes1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h2 = figure; 
+fnc=get(handles.axes1,'ButtonDownFcn');
+poz=get(handles.axes1,'Position');
+uni=get(handles.axes1,'units');
+set(handles.axes1,'ButtonDownFcn','');
+set(handles.axes1,'units','normalized','Position',[0.1 0.1 0.8 0.8]);
+copyobj(handles.axes1, h2);
+datacursormode on;
+set(handles.axes1,'ButtonDownFcn',fnc);
+set(handles.axes1,'units',uni);
+set(handles.axes1,'Position',poz);

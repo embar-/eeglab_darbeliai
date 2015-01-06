@@ -68,7 +68,7 @@ function varargout = pop_eeg_spektrine_galia(varargin)
 
 % Edit the above text to modify the response to help pop_eeg_spektrine_galia
 
-% Last Modified by GUIDE v2.5 28-Dec-2014 12:11:35
+% Last Modified by GUIDE v2.5 06-Jan-2015 14:37:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -136,13 +136,12 @@ end;
 
 set(handles.pushbutton_v1,'UserData',{});
 set(handles.pushbutton_v2,'UserData',{});
+set(handles.checkbox_perziura,'Value',0);
+
 atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
-
 KELIAS=pwd;
-
 % Sugrįžk į kelią prieš šios funkcijos atvėrimą
 cd(Kelias_dabar);
-
 % Patikrink kelią duomenų išsaugojimui
 set(handles.edit2,'String','');
 edit2_Callback(hObject, eventdata, handles);
@@ -342,8 +341,8 @@ set(handles.checkbox_perziura,'Enable','off');
 checkbox_perziura_Callback(hObject, eventdata, handles);
 set(handles.checkbox_perziura,'Enable','on');
 set(handles.checkbox_interpol,'Enable','on');
-set(handles.radiobutton_galia_absol,'Enable','on');
-set(handles.radiobutton_galia_santyk,'Enable','on');
+%set(handles.radiobutton_galia_absol,'Enable','on');
+%set(handles.radiobutton_galia_santyk,'Enable','on');
 
 popupmenu_doc_Callback(hObject, eventdata, handles);
 uipanel15_SelectionChangeFcn(hObject, eventdata, handles);
@@ -1381,6 +1380,7 @@ set(handles.uipanel5,'Title',lokaliz('Files for work'));
 set(handles.uipanel15,'Title',lokaliz('File loading options'));
 set(handles.uipanel16,'Title',lokaliz('File saving options'));
 set(handles.uipanel17,'Title',lokaliz('Task'));
+set(handles.uipanel23,'Title',lokaliz('Preview'));
 set(handles.text24,'String', [lokaliz('Time interval') ' '  lokaliz('(miliseconds_short)') ]);
 set(handles.text54,'String', lokaliz('Document:'));
 set(handles.text_failu_filtras1,'String',lokaliz('Show_filenames_filter:'));
@@ -1389,6 +1389,20 @@ set(handles.checkbox_uzverti_pabaigus,'String',lokaliz('Close when complete'));
 set(handles.checkbox_baigti_anksciau,'String',lokaliz('Break work'));
 set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'String',lokaliz('Go to saved files directory when completed'));
 set(handles.checkbox_pabaigus_atverti,'String',lokaliz('Load saved files in EEGLAB when completed'));
+set(handles.checkbox_interpol,'String',lokaliz('Allow interpolate channels'));
+set(handles.checkbox75,'String',lokaliz('Spectrum'));
+set(handles.radiobutton_galia_absol,'String',lokaliz('Absolute power'));
+set(handles.checkbox76,'String',lokaliz('Absolute power'));
+set(handles.radiobutton_galia_santyk,'String',lokaliz('Relative power'));
+set(handles.checkbox77,'String',lokaliz('Relative power'));
+set(handles.checkbox_legenda,'String',lokaliz('Legend'));
+set(handles.togglebutton2,'String',lokaliz('Cancel'));
+set(handles.text53,'String', [ lokaliz('FFT window length') ' '  lokaliz('(seconds_short)') ]);
+set(handles.text52,'String', lokaliz('Spectrum steps in 1 Hz:'));
+stlp1=lokaliz('Spectrum band');
+stlp2=lokaliz('From (time)');
+stlp3=lokaliz('To (time)');
+set(handles.uitable1,'ColumnName', {stlp1 stlp2 stlp3});
 
 
 % --- Executes on button press in pushbutton14.
@@ -1641,7 +1655,11 @@ if ~isempty(Pasirinkti_kanalai);
     Reikalingi_kanalai_sukaupti=Reikalingi_kanalai;
 else
     disp('Nepasirinkote kanalų! Bus įkelti visi kanalai!');
-    [~,~,Pasirinkti_kanalai]=eeg_kanalu_sarasas(KELIAS, Pasirinkti_failu_pavadinimai);
+    if leisti_interpoliuoti == 0
+       [~,~,Pasirinkti_kanalai]=eeg_kanalu_sarasas(KELIAS, Pasirinkti_failu_pavadinimai);
+    else
+       [~,Pasirinkti_kanalai,~]=eeg_kanalu_sarasas(KELIAS, Pasirinkti_failu_pavadinimai);
+    end;
     if isempty(Pasirinkti_kanalai);
         warndlg(lokaliz('No common names of channels found.'),lokaliz('Selection of channels'));
         susildyk(hObject, eventdata, handles);
@@ -1655,6 +1673,8 @@ else
 end;
 
 try
+    
+    legendoje={};
     
     naudotojo_lentele=[[{'visa'} ...
         num2cell(str2num(get(handles.edit51,'String')))];...
@@ -1701,7 +1721,15 @@ try
         set(handles.axes1,'XTickLabel',DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(2:end));
         for i=2:DUOMENYS.VISU.Dazniu_sriciu_N;
             for j=1:DUOMENYS.VISU.Tiriamuju_N;
-                plot(i,DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,1}(j,:),'o');
+                %plot(i,DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,1}(j,:),'o');
+            end;
+            plot(i,DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,1}(:),'o');
+        end;
+        for k=1:DUOMENYS.VISU.KANALU_N;
+            for i=1:DUOMENYS.VISU.Tiriamuju_N;
+                l=size(legendoje,1);
+                legendoje{l+1,1}=DUOMENYS.VISU.failai{i};
+                legendoje{l+1,2}=DUOMENYS.VISU.KANALAI{k};
             end;
         end;
     end;    
@@ -1715,10 +1743,44 @@ try
         set(handles.axes1,'XTickLabel',DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(2:end));
         for i=2:DUOMENYS.VISU.Dazniu_sriciu_N;
             for j=1:DUOMENYS.VISU.Tiriamuju_N;
-                plot(i,DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{i,1}(j,:),'o');
+                %plot(i,DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{i,1}(j,:),'o');
+            end;
+            plot(i,DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{i,1}(:),'o');
+        end;
+        for k=1:DUOMENYS.VISU.KANALU_N;
+            for i=1:DUOMENYS.VISU.Tiriamuju_N;
+                l=size(legendoje,1);
+                legendoje{l+1,1}=DUOMENYS.VISU.failai{i};
+                legendoje{l+1,2}=DUOMENYS.VISU.KANALAI{k};
             end;
         end;
     end;    
+    
+    set(handles.axes1, 'UserData', size(legendoje,1)); 
+    if size(legendoje,1) > 1;
+        %disp(legendoje);
+        skirtingu_failu=length(unique(legendoje(:,1)'));
+        skirtingu_kanalu=length(unique(legendoje(:,2)'));
+        if skirtingu_kanalu==1;
+            %disp(2);
+            legend(legendoje(:,1),'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
+            legend('show');
+        end;
+        if skirtingu_failu==1;
+            %disp(1);
+            legend(legendoje(:,2),'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
+            legend('show');
+        end;
+        if and(skirtingu_failu > 1, skirtingu_kanalu > 1);
+            %disp(3);
+            tmp=cellfun(@(z) sprintf('%s %s', legendoje{z,1},legendoje{z,2}), num2cell(1:size(legendoje,1)),'UniformOutput',false);
+            legend(tmp,'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
+            legend('show');
+        end;
+    end;
+    if or(size(legendoje,1)==0,~get(handles.checkbox_legenda, 'Value'));
+        legend('off');
+    end;
     
 catch err;
     Pranesk_apie_klaida(err, lokaliz('EEG spektras ir galia'), '?');
@@ -1939,3 +2001,21 @@ function checkbox_interpol_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_interpol
+
+
+% --- Executes on mouse press over axes background.
+function axes1_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to axes1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+h2 = figure;
+fnc=get(handles.axes1,'ButtonDownFcn');
+poz=get(handles.axes1,'Position');
+uni=get(handles.axes1,'units');
+set(handles.axes1,'ButtonDownFcn','');
+set(handles.axes1,'units','normalized','Position',[0.1 0.1 0.8 0.8]);
+copyobj(handles.axes1, h2);
+datacursormode on;
+set(handles.axes1,'ButtonDownFcn',fnc);
+set(handles.axes1,'units',uni);
+set(handles.axes1,'Position',poz);
