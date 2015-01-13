@@ -80,7 +80,7 @@ function konfig_OpeningFcn(hObject, eventdata, handles, varargin)
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 Darbeliai_nuostatos_senos.lokale={ '' ; '' ; '' ; } ;
 Darbeliai_nuostatos_senos.tikrinti_versija=1;
-Darbeliai_nuostatos_senos.diegti_auto=1;
+Darbeliai_nuostatos_senos.diegti_auto=0;
 try
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));    
     Darbeliai_nuostatos_senos.lokale=Darbeliai.nuostatos.lokale;

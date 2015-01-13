@@ -181,7 +181,7 @@ curdir=[curdir filesep];
 
 Darbeliai_nuostatos.lokale={ '' ; '' ; '' ; } ;
 Darbeliai_nuostatos.tikrinti_versija=1;
-Darbeliai_nuostatos.diegti_auto=1;
+Darbeliai_nuostatos.diegti_auto=0;
 Darbeliai_konfig_vers='?';
 
 try
