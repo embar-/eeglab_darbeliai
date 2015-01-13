@@ -2544,7 +2544,11 @@ if ~isempty(str2num(pasirinkti_ivykiai_str));
     edit59_Callback(hObject, eventdata, handles);
 else
     set(handles.edit59,'BackgroundColor',[1 1 1]);
-    if ~isempty(find(1- strcmp(senas,pasirinkti_ivykiai)));
+    try skiriasi=(~isempty(find(1- strcmp(senas,pasirinkti_ivykiai)))) ;
+    catch err;
+        skiriasi=true;
+    end;
+    if skiriasi;
         set(handles.listbox1,'UserData',{});
         ERP_perziura(hObject, eventdata, handles);
     end;

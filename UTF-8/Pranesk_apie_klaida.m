@@ -77,6 +77,13 @@ warning(msg);
 
 if strcmp('MATLAB:binder:loadFailure',err.identifier);
    warning('<a href="matlab:web http://stackoverflow.com/questions/19268293/matlab-error-cannot-open-with-static-tls -browser">http://stackoverflow.com/questions/19268293/matlab-error-cannot-open-with-static-tls</a>');
+   
+   restart_dlg=errordlg([ lokaliz('You must restart MATLAB because of internal error.') ...
+       ' http://stackoverflow.com/questions/19268293/matlab-error-cannot-open-with-static-tls' ], ...
+       'MATLAB','replace') ;
+   set(restart_dlg,'DeleteFcn', 'exit');
+   %set(allchild(restart_dlg),'Callback', 'exit');   
+   
    error(lokaliz('You must restart MATLAB because of internal error.'));
 end;
 
