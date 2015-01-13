@@ -120,6 +120,7 @@ try
 catch err;
    %disp(err.message);
 end;
+handles.url_atnaujinimui=Darbeliai_nuostatos.url_atnaujinimui;
 
 if length(varargin) > 1 ;
     sena_versija=varargin{2};
@@ -234,7 +235,7 @@ drawnow;
 koduote=feature('DefaultCharacterSet');
 %feature('DefaultCharacterSet','UTF-8');
 try
-    atnaujinimas();
+    atnaujinimas(handles.url_atnaujinimui);
     %pause(5);
 catch err;
    disp(err.message);
