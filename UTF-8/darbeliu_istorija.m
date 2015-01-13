@@ -7,7 +7,7 @@
 % 
 % v2014.12.31.1
 % + EEG speaktrinės galios skaičiavimuose galima pasirinkti, ar leisti kanalų interpoliavimą.
-% + EEG speaktrinės galios skaičiavimų grafiniame lange tikrinti paprametrų reikšmes.
+% + EEG speaktrinės galios skaičiavimų grafiniame lange tikrinti parametrų reikšmes.
 % 
 % v2014.12.08.1
 % + Pradinė grafinė sąsaja EEG spektrinės galios skaičiavimui.
