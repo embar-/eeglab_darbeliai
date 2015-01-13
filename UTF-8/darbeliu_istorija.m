@@ -1,6 +1,10 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.01.13.1
+% ~ Kanalų pasirinkimas galėjo neveikti, jei nebuvo įdiegtas SIFT priedas, 
+%   nes buvo naudojama šio priedo statusbar funkcija; dabar ši funkcija pasiskolinta.
+% 
 % v2014.12.31.1
 % + EEG speaktrinės galios skaičiavimuose galima pasirinkti, ar leisti kanalų interpoliavimą.
 % + EEG speaktrinės galios skaičiavimų grafiniame lange tikrinti paprametrų reikšmes.

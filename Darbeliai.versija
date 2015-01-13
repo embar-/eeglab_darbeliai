@@ -1,2 +1,3 @@
-Darbeliai v2015.01.06.2
-„EEG spektras ir galia“ ir „ERP savybės“ spustelėjus ant paveikslo jis atveriamas naujame lange.
+Darbeliai v2015.01.13.1
+Kanalų pasirinkimas galėjo neveikti, jei nebuvo įdiegtas SIFT priedas, 
+nes buvo naudojama šio priedo statusbar funkcija; dabar ši funkcija pasiskolinta.
