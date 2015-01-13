@@ -80,7 +80,7 @@ function konfig_OpeningFcn(hObject, eventdata, handles, varargin)
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 Darbeliai_nuostatos_senos.lokale={ '' ; '' ; '' ; } ;
 Darbeliai_nuostatos_senos.tikrinti_versija=1;
-Darbeliai_nuostatos_senos.diegti_auto=1;
+Darbeliai_nuostatos_senos.diegti_auto=0;
 Darbeliai_nuostatos_senos.stabili_versija=0;
 Darbeliai_nuostatos_senos.savita_versija=0;
 Darbeliai_nuostatos_senos.url_atnaujinimui='';
