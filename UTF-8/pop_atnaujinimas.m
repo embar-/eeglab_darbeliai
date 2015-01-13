@@ -87,6 +87,15 @@ sena_versija='';
 nauja_versija='';
 apie_vers='';
 curdir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+if strcmp(curdir(end),filesep); 
+   curdir=curdir(1:end-1);
+end ;
+curdir_sep=find(ismember(curdir,filesep));
+curdir_parrent=curdir(1:curdir_sep(end));
+curdir=[curdir filesep];
+config_file='Darbeliai_config.mat';
+Darbeliai_nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/master.zip';
+Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
 
 % Unix - UTF-8
 V= version('-release') ;
@@ -101,6 +110,15 @@ elseif str2num(V(1:end-1)) >= 2008 ;
     encoding = r(2:end);
 else
     encoding = '';
+end;
+
+
+try
+   load(fullfile(curdir_parrent,config_file));
+   Darbeliai_nuostatos.url_atnaujinimui=Darbeliai.nuostatos.url_atnaujinimui;
+   Darbeliai_nuostatos.url_versijai=Darbeliai.nuostatos.url_versijai;
+catch err;
+   %disp(err.message);
 end;
 
 if length(varargin) > 1 ;
@@ -124,11 +142,11 @@ if length(varargin) > 2 ;
 else   
    %url='https://www.dropbox.com/s/q57pntndm704isv/Darbeliai.versija?dl=1';
    %url='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
-   url='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
+   %url='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
    status=0;
    disp(lokaliz('Checking for updates...'));
    try
-   [filestr,status] = urlwrite(url,fullfile(tempdir,'Darbeliai_versija.txt'));
+   [filestr,status] = urlwrite(Darbeliai_nuostatos.url_versijai,fullfile(tempdir,'Darbeliai_versija.txt'));
    catch err;
    end;
    if status

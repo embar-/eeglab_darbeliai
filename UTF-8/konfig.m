@@ -47,7 +47,7 @@ function varargout = konfig(varargin)
 
 % Edit the above text to modify the response to help konfig
 
-% Last Modified by GUIDE v2.5 23-Sep-2014 14:50:46
+% Last Modified by GUIDE v2.5 13-Jan-2015 16:04:43
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -81,15 +81,33 @@ function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 Darbeliai_nuostatos_senos.lokale={ '' ; '' ; '' ; } ;
 Darbeliai_nuostatos_senos.tikrinti_versija=1;
 Darbeliai_nuostatos_senos.diegti_auto=1;
+Darbeliai_nuostatos_senos.stabili_versija=0;
+Darbeliai_nuostatos_senos.savita_versija=0;
+Darbeliai_nuostatos_senos.url_atnaujinimui='';
+Darbeliai_nuostatos_senos.url_versijai='';
+
 try
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));    
     Darbeliai_nuostatos_senos.lokale=Darbeliai.nuostatos.lokale;
     Darbeliai_nuostatos_senos.tikrinti_versija=Darbeliai.nuostatos.tikrinti_versija;
     Darbeliai_nuostatos_senos.diegti_auto=Darbeliai.nuostatos.diegti_auto;
+    Darbeliai_nuostatos_senos.stabili_versija=Darbeliai.nuostatos.stabili_versija;
+    Darbeliai_nuostatos_senos.savita_versija=Darbeliai.nuostatos.savita_versija;
+    Darbeliai_nuostatos_senos.url_atnaujinimui=Darbeliai.nuostatos.url_atnaujinimui;
+    Darbeliai_nuostatos_senos.url_atnaujinimui=Darbeliai.nuostatos.url_versijai;
 catch err;    
     %warning(err.message);
 end;
 
+set(handles.popupmenu2,'String',{lokaliz('Stable version') ; lokaliz('Trunk version')});
+switch Darbeliai_nuostatos_senos.stabili_versija 
+    case 1
+        set(handles.popupmenu2,'Value',1);
+    case 0
+        set(handles.popupmenu2,'Value',2);
+    otherwise
+        set(handles.popupmenu2,'Value',3);
+end;
 set(handles.checkbox1,'Value',Darbeliai_nuostatos_senos.tikrinti_versija);
 set(handles.checkbox2,'Value',Darbeliai_nuostatos_senos.diegti_auto);
 checkbox1_Callback(hObject, eventdata, handles);
@@ -181,6 +199,20 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+switch get(handles.popupmenu2,'Value') 
+    case 1
+        Darbeliai.nuostatos.stabili_versija=1;
+        Darbeliai.nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/stable.zip' ; 
+        Darbeliai.nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
+    case 2
+        Darbeliai.nuostatos.stabili_versija=0;
+        Darbeliai.nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/master.zip' ;
+        Darbeliai.nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
+    otherwise
+        Darbeliai.nuostatos.stabili_versija=-1;
+        Darbeliai.nuostatos.url_atnaujinimui='';
+        Darbeliai.nuostatos.url_versijai='';
+end;
 Darbeliai.nuostatos.tikrinti_versija=get(handles.checkbox1,'Value');
 Darbeliai.nuostatos.diegti_auto=get(handles.checkbox2,'Value');
 locale_idx=get(handles.popupmenu1,'Value');
@@ -290,3 +322,26 @@ function checkbox2_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox2
+
+
+% --- Executes on selection change in popupmenu2.
+function popupmenu2_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu2 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu2
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
