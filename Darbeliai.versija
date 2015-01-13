@@ -1,3 +1,4 @@
-Darbeliai v2015.01.13.1
+Darbeliai v2015.01.13.2
 Kanalų pasirinkimas galėjo neveikti, jei nebuvo įdiegtas SIFT priedas, 
 nes buvo naudojama šio priedo statusbar funkcija; dabar ši funkcija pasiskolinta.
+Kosmetinės smulkmenos.
