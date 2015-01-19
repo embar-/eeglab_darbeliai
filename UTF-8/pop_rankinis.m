@@ -829,6 +829,9 @@ try
     if or(EEG.nbchan==0,isempty(EEG.data));
         return ;
     end;
+    if EEG.pnts<=1;
+        return ;
+    end;
     NaujasKelias=fullfile(KELIAS_SAUGOJIMUI,POAPLANKIS);
     if ~isdir(NaujasKelias)
         mkdir(NaujasKelias);
