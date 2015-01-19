@@ -825,19 +825,23 @@ function [RinkmenaSaugojimuiSuKeliu]=Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,POAP
 if isempty(EEG) ;
     return ;
 end;
-if or(EEG.nbchan==0,isempty(EEG.data));
-    return ;
+try
+    if or(EEG.nbchan==0,isempty(EEG.data));
+        return ;
+    end;
+    NaujasKelias=fullfile(KELIAS_SAUGOJIMUI,POAPLANKIS);
+    if ~isdir(NaujasKelias)
+        mkdir(NaujasKelias);
+    end;
+    NaujasKelias=Tikras_Kelias(NaujasKelias);
+    RinkmenaSaugojimuiSuKeliu=fullfile(NaujasKelias, RinkmenaSaugojimui);
+    disp(RinkmenaSaugojimuiSuKeliu);
+    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
+        'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
+        'savenew',RinkmenaSaugojimuiSuKeliu);
+catch err;
+    Pranesk_apie_klaida(err,lokaliz('Save file'),RinkmenaSaugojimui);
 end;
-NaujasKelias=fullfile(KELIAS_SAUGOJIMUI,POAPLANKIS);
-if ~isdir(NaujasKelias)
-    mkdir(NaujasKelias);
-end;
-NaujasKelias=Tikras_Kelias(NaujasKelias);
-RinkmenaSaugojimuiSuKeliu=fullfile(NaujasKelias, RinkmenaSaugojimui);
-disp(RinkmenaSaugojimuiSuKeliu);
-[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
-    'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
-    'savenew',RinkmenaSaugojimuiSuKeliu);
 
 
 % --- Executes on button press in pushbutton2.

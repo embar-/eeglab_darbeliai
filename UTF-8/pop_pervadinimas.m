@@ -1329,26 +1329,30 @@ for i=1:Pasirinktu_failu_N;
     end;
     
     % Išsaugoti
-    RinkmenaSaugojimuiSuKeliu=fullfile(KELIAS_SAUGOJIMUI, RinkmenaSaugojimui);
-    [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
-        'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
-        'savenew',RinkmenaSaugojimuiSuKeliu);
-    
-    % ištrinti seną
-    if and(~get(handles.checkbox2,'Value'),~strcmp(RinkmenaAtverimuiSuKeliu,RinkmenaSaugojimuiSuKeliu));
-        try
-            delete(RinkmenaAtverimuiSuKeliu);
-            fdt=regexprep(RinkmenaAtverimuiSuKeliu,'.set$','.fdt');
-            if exist(fdt,'file') == 2;
-                delete(fdt);
+    try
+        RinkmenaSaugojimuiSuKeliu=fullfile(KELIAS_SAUGOJIMUI, RinkmenaSaugojimui);
+        [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
+            'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
+            'savenew',RinkmenaSaugojimuiSuKeliu);
+        
+        % ištrinti seną
+        if and(~get(handles.checkbox2,'Value'),~strcmp(RinkmenaAtverimuiSuKeliu,RinkmenaSaugojimuiSuKeliu));
+            try
+                delete(RinkmenaAtverimuiSuKeliu);
+                fdt=regexprep(RinkmenaAtverimuiSuKeliu,'.set$','.fdt');
+                if exist(fdt,'file') == 2;
+                    delete(fdt);
+                end;
+                ica=regexprep(RinkmenaAtverimuiSuKeliu,'.set$','.ica');
+                if exist(ica,'file') == 2;
+                    delete(ica);
+                end;
+            catch err;
+                Pranesk_apie_klaida(err,lokaliz('Remove old files'),RinkmenaAtverimuiSuKeliu);
             end;
-            ica=regexprep(RinkmenaAtverimuiSuKeliu,'.set$','.ica');
-            if exist(ica,'file') == 2;
-                delete(ica);
-            end;
-        catch err;
-            disp(err.message); 
         end;
+    catch err;
+        Pranesk_apie_klaida(err,lokaliz('Save file'),RinkmenaSaugojimuiSuKeliu);
     end;
 end;
 
