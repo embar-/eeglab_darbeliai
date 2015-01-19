@@ -1385,7 +1385,6 @@ set(handles.text24,'String', [lokaliz('Time interval') ' '  lokaliz('(milisecond
 set(handles.text54,'String', lokaliz('Document:'));
 set(handles.text_failu_filtras1,'String',lokaliz('Show_filenames_filter:'));
 set(handles.text_failu_filtras2,'String',lokaliz('Select_filenames_filter:'));
-set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
 set(handles.checkbox_uzverti_pabaigus,'String',lokaliz('Close when complete'));
 set(handles.checkbox_baigti_anksciau,'String',lokaliz('Break work'));
 set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'String',lokaliz('Go to saved files directory when completed'));
