@@ -1381,7 +1381,7 @@ set(handles.uipanel15,'Title',lokaliz('File loading options'));
 set(handles.uipanel16,'Title',lokaliz('File saving options'));
 set(handles.uipanel17,'Title',lokaliz('Task'));
 set(handles.uipanel23,'Title',lokaliz('Preview'));
-set(handles.text24,'String', [lokaliz('Time interval') ' '  lokaliz('(miliseconds_short)') ]);
+set(handles.text24,'String', lokaliz('Frequency interval (Hz)'));
 set(handles.text54,'String', lokaliz('Document:'));
 set(handles.text_failu_filtras1,'String',lokaliz('Show_filenames_filter:'));
 set(handles.text_failu_filtras2,'String',lokaliz('Select_filenames_filter:'));
