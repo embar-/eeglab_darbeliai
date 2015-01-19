@@ -2263,7 +2263,7 @@ end;
 %
 if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr <  DarboNr ),...
         and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
-        set(handles.uipanel6,'Title', ['Duomenų apdorojimo funkcijos']);
+        set(handles.uipanel6,'Title', lokaliz('Data processing functions'));
     
     if Apdoroti_visi_tiriamieji == 1;
         
@@ -2367,26 +2367,23 @@ function [RinkmenaSaugojimuiSuKeliu]=Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,POAP
 if isempty(EEG) ;
     return ;
 end;
-try
-    if or(EEG.nbchan==0,isempty(EEG.data));
-        return ;
-    end;
-    if EEG.pnts<=1;
-        return ;
-    end;
-    NaujasKelias=fullfile(KELIAS_SAUGOJIMUI,POAPLANKIS);
-    if ~isdir(NaujasKelias)
-        mkdir(NaujasKelias);
-    end;
-    NaujasKelias=Tikras_Kelias(NaujasKelias);
-    RinkmenaSaugojimuiSuKeliu=fullfile(NaujasKelias, RinkmenaSaugojimui);
-    disp(RinkmenaSaugojimuiSuKeliu);
-    [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
-        'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
-        'savenew',RinkmenaSaugojimuiSuKeliu);
-catch err;
-    Pranesk_apie_klaida(err,lokaliz('Save file'),RinkmenaSaugojimui);
+if or(EEG.nbchan==0,isempty(EEG.data));
+    return ;
 end;
+if EEG.pnts<=1;
+    return ;    
+end;
+NaujasKelias=fullfile(KELIAS_SAUGOJIMUI,POAPLANKIS);
+if ~isdir(NaujasKelias)
+    mkdir(NaujasKelias);
+end;
+NaujasKelias=Tikras_Kelias(NaujasKelias);
+RinkmenaSaugojimuiSuKeliu=fullfile(NaujasKelias, RinkmenaSaugojimui);
+disp(RinkmenaSaugojimuiSuKeliu);
+[ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
+    'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
+    'savenew',RinkmenaSaugojimuiSuKeliu);
+
 
 
 % --- Executes on button press in pushbutton2.

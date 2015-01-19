@@ -68,7 +68,7 @@ function varargout = pop_eeg_spektrine_galia(varargin)
 
 % Edit the above text to modify the response to help pop_eeg_spektrine_galia
 
-% Last Modified by GUIDE v2.5 06-Jan-2015 14:37:41
+% Last Modified by GUIDE v2.5 19-Jan-2015 18:53:56
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -725,7 +725,7 @@ else
     end;
     set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
     set(handles.edit_failu_filtras2,'Style','pushbutton');
-    set(handles.edit_failu_filtras2,'String','Filtruoti');
+    set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
     atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
     atnaujink_rodomus_failus(hObject, eventdata, handles);
     
@@ -843,7 +843,7 @@ function listbox1_Callback(hObject, eventdata, handles)
 %set(handles.axes1, 'Visible', 'off');
 if ~strcmp(get(handles.edit_failu_filtras2,'Style'),'pushbutton') ;
     set(handles.edit_failu_filtras2,'Style','pushbutton');
-    set(handles.edit_failu_filtras2,'String','Filtruoti');
+    set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
     set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
 end;
 Ar_galima_vykdyti(hObject, eventdata, handles);
@@ -1055,7 +1055,7 @@ if strcmp(get(handles.edit_failu_filtras2,'Style'),'pushbutton') ;
     set(handles.edit_failu_filtras2,'BackgroundColor',[1 1 1]);
 else
     set(handles.edit_failu_filtras2,'Style','pushbutton');
-    set(handles.edit_failu_filtras2,'String','Filtruoti');
+    set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
     set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
 end;
 
@@ -1077,7 +1077,7 @@ else
     set(handles.edit_failu_filtras2,'BackgroundColor',[1 1 0]);
     Ar_galima_vykdyti(hObject, eventdata, handles);
     %set(handles.edit_failu_filtras2,'Style','pushbutton');
-    %set(handles.edit_failu_filtras2,'String','Filtruoti');
+    %set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
     %set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
 end;
 
@@ -1385,6 +1385,7 @@ set(handles.text24,'String', [lokaliz('Time interval') ' '  lokaliz('(milisecond
 set(handles.text54,'String', lokaliz('Document:'));
 set(handles.text_failu_filtras1,'String',lokaliz('Show_filenames_filter:'));
 set(handles.text_failu_filtras2,'String',lokaliz('Select_filenames_filter:'));
+set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
 set(handles.checkbox_uzverti_pabaigus,'String',lokaliz('Close when complete'));
 set(handles.checkbox_baigti_anksciau,'String',lokaliz('Break work'));
 set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'String',lokaliz('Go to saved files directory when completed'));
