@@ -1,91 +1,91 @@
 % eegplugin_darbeliai() 
-% EEGLAB papildinys duomenÅ³ rinkiniÅ³ apdorojimui patogioje grafinÄ—je aplinkoje.
+% EEGLAB papildinys duomenø rinkiniø apdorojimui patogioje grafinëje aplinkoje.
 %
 %
-% PagrindinÄ—s grafinÄ—s sÄ…sajos programos:
+% Pagrindinës grafinës sàsajos programos:
 % --
-% <a href="matlab:helpwin pop_pervadinimas">pop_pervadinimas</a> - failÅ³ pervadinimui;
+% <a href="matlab:helpwin pop_pervadinimas">pop_pervadinimas</a> - failø pervadinimui;
 % <a href="matlab:helpwin pop_nuoseklus_apdorojimas">pop_nuoseklus_apdorojimas</a> - EEG apdorojimo darbai;
-% <a href="matlab:helpwin pop_RRI_perziura">pop_RRI_perziura</a> - QRS laikÅ³, RRI kreiviÅ³, EKG perÅ¾iÅ«rÄ—jimas ir koregavimas;
-% <a href="matlab:helpwin pop_Epochavimas_ir_atrinkimas">Epochavimas_ir_atrinkimas</a> - epochavimas su sÄ…lyga, kad yra kito tipo Ä¯vykis;
-% <a href="matlab:helpwin pop_ERP_savybes">pop_ERP_savybes</a> - su Ä¯vykiÅ³ susijusiÅ³ potencialÅ³ (SÄ®SP) tyrinÄ—jimas;
+% <a href="matlab:helpwin pop_RRI_perziura">pop_RRI_perziura</a> - QRS laikø, RRI kreiviø, EKG perşiûrëjimas ir koregavimas;
+% <a href="matlab:helpwin pop_Epochavimas_ir_atrinkimas">Epochavimas_ir_atrinkimas</a> - epochavimas su sàlyga, kad yra kito tipo ávykis;
+% <a href="matlab:helpwin pop_ERP_savybes">pop_ERP_savybes</a> - su ávykiø susijusiø potencialø (SÁSP) tyrinëjimas;
 %
 %
-% Kitos grafinÄ—s sÄ…sajos programÄ—lÄ—s:
+% Kitos grafinës sàsajos programëlës:
 % --
-% <a href="matlab:helpwin konfig">konfig</a> - â€DarbeliÅ³â€œ atnaujinimo ir kalbos nuostatos; saugomos <a href="matlab:load Darbeliai_config.mat">Darbeliai_config.mat</a>;
+% <a href="matlab:helpwin konfig">konfig</a> - „Darbeliø“ atnaujinimo ir kalbos nuostatos; saugomos <a href="matlab:load Darbeliai_config.mat">Darbeliai_config.mat</a>;
 % <a href="matlab:helpwin pop_atnaujinimas">pop_atnaujinimas</a> - atnaujinimo dialogas;
 % <a href="matlab:helpwin pop_QRS_i_EEG">pop_QRS_i_EEG</a> - kardiograma elektroencefalogramoje;
 %
 %
-% PagalbinÄ—s funkcijos, taÄiau paleistos be argumentÅ³, papraÅ¡ys pasirinkti apdorotinus Ä¯raÅ¡us:
+% Pagalbinës funkcijos, taèiau paleistos be argumentø, paprağys pasirinkti apdorotinus árağus:
 % --
-% <a href="matlab:helpwin atmest_pg_amplit">atmest_pg_amplit</a> - artefaktÅ³ (pavyzdÅ¾iÅ³, mirksÄ—jimo akimis) atmetimui;
-% <a href="matlab:helpwin Epochavimas_ir_atrinkimas7">Epochavimas_ir_atrinkimas7</a> - Ä¯ jÄ… kreipiasi <a href="matlab:helpwin pop_Epochavimas_ir_atrinkimas">pop_Epochavimas_ir_atrinkimas</a>;
-% <a href="matlab:helpwin eksportuoti_ragu_programai">eksportuoti_ragu_programai</a> - eksportuojant Ä¯ Ragu naudojama <a href="matlab:load RaguMontage62.mat">RaguMontage62.mat</a> kanalÅ³ schema;
+% <a href="matlab:helpwin atmest_pg_amplit">atmest_pg_amplit</a> - artefaktø (pavyzdşiø, mirksëjimo akimis) atmetimui;
+% <a href="matlab:helpwin Epochavimas_ir_atrinkimas7">Epochavimas_ir_atrinkimas7</a> - á jà kreipiasi <a href="matlab:helpwin pop_Epochavimas_ir_atrinkimas">pop_Epochavimas_ir_atrinkimas</a>;
+% <a href="matlab:helpwin eksportuoti_ragu_programai">eksportuoti_ragu_programai</a> - eksportuojant á Ragu naudojama <a href="matlab:load RaguMontage62.mat">RaguMontage62.mat</a> kanalø schema;
 %
 %
 % Kitos naudingos funkcijos:
 % --
-% <a href="matlab:helpwin lokaliz">lokaliz</a> - programÄ—lÄ—se matomo teksto vertimas; saugomas <a href="matlab:load lokaliz.mat">lokaliz.mat</a>;
-% <a href="matlab:helpwin atnaujinimas">atnaujinimas</a> - EEGLAB papildiniÅ³ (numatytuoju atveju - â€DarbeliÅ³â€œ) diegimas/atnaujinimas;
-% <a href="matlab:helpwin ragu_diegimas">ragu_diegimas</a> - EEGLAB skirto â€Raguâ€œ papildinio parsiuntimas Ä¯ Ä¯diegimas;
-% <a href="matlab:helpwin EEG_spektr_galia">EEG_spektr_galia</a> - spektras, absoliuÄios ir santykinÄ—s galios daÅ¾niÅ³ srityse;
+% <a href="matlab:helpwin lokaliz">lokaliz</a> - programëlëse matomo teksto vertimas; saugomas <a href="matlab:load lokaliz.mat">lokaliz.mat</a>;
+% <a href="matlab:helpwin atnaujinimas">atnaujinimas</a> - EEGLAB papildiniø (numatytuoju atveju - „Darbeliø“) diegimas/atnaujinimas;
+% <a href="matlab:helpwin ragu_diegimas">ragu_diegimas</a> - EEGLAB skirto „Ragu“ papildinio parsiuntimas á ádiegimas;
+% <a href="matlab:helpwin EEG_spektr_galia">EEG_spektr_galia</a> - spektras, absoliuèios ir santykinës galios daşniø srityse;
 % <a href="matlab:helpwin eeg_ivykiu_sarasas">eeg_ivykiu_sarasas</a> - ;
 % <a href="matlab:helpwin eeg_kanalu_sarasas">eeg_kanalu_sarasas</a> - ;
-% <a href="matlab:helpwin filter_filenames">filter_filenames</a> - rinkmenÅ³ paieÅ¡ka; Ä¯galina dirbti poaplankiuose;
-% <a href="matlab:helpwin merge_cells">merge_cells</a> - lenteliÅ³, turinÄiÅ³ bendrÅ³ antraÅ¡ÄiÅ³, apjungimui;
-% <a href="matlab:helpwin Pranesk_apie_klaida">Pranesk_apie_klaida</a> - iÅ¡samus Ä¯spÄ—jimas po klaidos;
-% <a href="matlab:helpwin Tikras_Kelias">Tikras_Kelias</a> - jei nurodytas kelias neegzistuoja - grÄ…Å¾ina veikiamÄ…jÄ¯;
+% <a href="matlab:helpwin filter_filenames">filter_filenames</a> - rinkmenø paieğka; ágalina dirbti poaplankiuose;
+% <a href="matlab:helpwin merge_cells">merge_cells</a> - lenteliø, turinèiø bendrø antrağèiø, apjungimui;
+% <a href="matlab:helpwin Pranesk_apie_klaida">Pranesk_apie_klaida</a> - iğsamus áspëjimas po klaidos;
+% <a href="matlab:helpwin Tikras_Kelias">Tikras_Kelias</a> - jei nurodytas kelias neegzistuoja - gràşina veikiamàjá;
 % <a href="matlab:helpwin atrinkti_teksta">atrinkti_teksta</a> - ;
 % <a href="matlab:helpwin anotac_surinkti">anotac_surinkti</a> - ;
-% <a href="matlab:helpwin ERP_savybes">ERP_savybes</a> - atlieka dalÄ¯ <a href="matlab:helpwin pop_ERP_savybes">pop_ERP_savybes</a> darbo;
-% <a href="matlab:helpwin labchartEKGevent2eeglab">labchartEKGevent2eeglab</a> - LabChart EKG Ä¯vykiÅ³ eksportavimas;
-% <a href="matlab:helpwin QRS_is_EEG">QRS_is_EEG</a> - QRS aptikimas, kai EKG yra tarp EEG kanalÅ³;
+% <a href="matlab:helpwin ERP_savybes">ERP_savybes</a> - atlieka dalá <a href="matlab:helpwin pop_ERP_savybes">pop_ERP_savybes</a> darbo;
+% <a href="matlab:helpwin labchartEKGevent2eeglab">labchartEKGevent2eeglab</a> - LabChart EKG ávykiø eksportavimas;
+% <a href="matlab:helpwin QRS_is_EEG">QRS_is_EEG</a> - QRS aptikimas, kai EKG yra tarp EEG kanalø;
 % <a href="matlab:helpwin QRS_detekt">QRS_detekt</a> - QRS aptikimas signale (matlab kintamajame);
 % <a href="matlab:helpwin QRS_detekt_DPI">QRS_detekt_DPI</a> - ;
 % <a href="matlab:helpwin QRS_detekt_fMRIb">QRS_detekt_fMRIb</a> - ;
 % <a href="matlab:helpwin QRS_detekt_mobd">QRS_detekt_mobd</a> - ;
 % <a href="matlab:helpwin QRS_detekt_Pan_Tompkin">QRS_detekt_Pan_Tompkin</a> - ;
 % <a href="matlab:helpwin convert_file_encoding">convert_file_encoding</a> - ;
-% <a href="matlab:helpwin scrollplot2">scrollplot2</a> - truputÄ¯ modifikuota Yair M. Altman programa slinktukui;
+% <a href="matlab:helpwin scrollplot2">scrollplot2</a> - truputá modifikuota Yair M. Altman programa slinktukui;
 %
 %
 % Pasenusios funkcijos:
 % --
 % <a href="matlab:helpwin pop_erp_area">pop_erp_area</a> - ERP plotas, pusplotis, minimumas, maksimumas; naudokite <a href="matlab:helpwin pop_ERP_savybes">pop_ERP_savybes</a>; 
-% <a href="matlab:helpwin erp_area">erp_area</a> - atlieka dalÄ¯ <a href="matlab:helpwin pop_erp_area">pop_erp_area</a> darbo; naudokite <a href="matlab:helpwin ERP_savybes">ERP_savybes</a>;
-% <a href="matlab:helpwin pop_naujas">pop_naujas</a> - Å¡ablonas naujoms grafinÄ—ms funkcijoms;
+% <a href="matlab:helpwin erp_area">erp_area</a> - atlieka dalá <a href="matlab:helpwin pop_erp_area">pop_erp_area</a> darbo; naudokite <a href="matlab:helpwin ERP_savybes">ERP_savybes</a>;
+% <a href="matlab:helpwin pop_naujas">pop_naujas</a> - ğablonas naujoms grafinëms funkcijoms;
 % <a href="matlab:helpwin pop_atnaujinimas_">pop_atnaujinimas_</a> - supaprastesnis atnaujinimo dialogas nei <a href="matlab:helpwin pop_atnaujinimas">pop_atnaujinimas</a>;
 %
 %
 % Kita:
 % --
-% *.fig - grafinÄ—s sÄ…sajos objektai;
+% *.fig - grafinës sàsajos objektai;
 % <a href="matlab:helpwin _eegplugin_darbeliai">_eegplugin_darbeliai</a> - <a href="matlab:helpwin eegplugin_darbeliai">eegplugin_darbeliai</a> UTF-8 kopija;
-% <a href="matlab:edit Darbeliai.versija">Darbeliai.versija</a> - â€DarbeliÅ³â€œ versijos numeris;
-% <a href="matlab:edit LICENSE_GPL-3.0.txt">LICENSE_GPL-3.0.txt</a> - GNU vieÅ¡oji licencija (treÄioji versija, anglÅ³ kalba);
-% <a href="matlab:helpwin darbeliu_istorija">darbeliu_istorija</a> - Programos pakeitimai. Kas nauja Å¡ioje versijoje?
+% <a href="matlab:edit Darbeliai.versija">Darbeliai.versija</a> - „Darbeliø“ versijos numeris;
+% <a href="matlab:edit LICENSE_GPL-3.0.txt">LICENSE_GPL-3.0.txt</a> - GNU vieğoji licencija (treèioji versija, anglø kalba);
+% <a href="matlab:helpwin darbeliu_istorija">darbeliu_istorija</a> - Programos pakeitimai. Kas nauja ğioje versijoje?
 %
 %
-% Galima pasirinkti lietuviÅ³ arba anglÅ³ kalbÄ…. 
-% Prisiderinama prie naudojamos koduotÄ—s: 
-% UTF-8 aplanko *.m rinkmenos konvertuojamos Ä¯ sistemos koduotÄ™.
+% Galima pasirinkti lietuviø arba anglø kalbà. 
+% Prisiderinama prie naudojamos koduotës: 
+% UTF-8 aplanko *.m rinkmenos konvertuojamos á sistemos koduotæ.
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   
-% Å i programa yra laisva. JÅ«s galite jÄ… platinti ir/arba modifikuoti
+% Ği programa yra laisva. Jûs galite jà platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
-% VieÅ¡osios licencijos sÄ…lygomis: 2 licencijos versija, arba (savo
-% nuoÅ¾iÅ«ra) bet kuria vÄ—lesne versija.
+% Vieğosios licencijos sàlygomis: 2 licencijos versija, arba (savo
+% nuoşiûra) bet kuria vëlesne versija.
 %
-% Å i programa platinama su viltimi, kad ji bus naudinga, bet BE JOKIOS
+% Ği programa platinama su viltimi, kad ji bus naudinga, bet BE JOKIOS
 % GARANTIJOS; be jokios numanomos PERKAMUMO ar TINKAMUMO KONKRETIEMS
-% TIKSLAMS garantijos. Å½iÅ«rÄ—kite GNU BendrÄ…jÄ… VieÅ¡Ä…jÄ… licencijÄ… norÄ—dami
-% suÅ¾inoti smulkmenas.
+% TIKSLAMS garantijos. Şiûrëkite GNU Bendràjà Vieğàjà licencijà norëdami
+% suşinoti smulkmenas.
 %
-% JÅ«s turÄ—jote kartu su Å¡ia programa gauti ir GNU Bendrosios VieÅ¡osios
-% licencijos kopija; jei ne - raÅ¡ykite Free Software Foundation, Inc., 59
+% Jûs turëjote kartu su ğia programa gauti ir GNU Bendrosios Vieğosios
+% licencijos kopija; jei ne - rağykite Free Software Foundation, Inc., 59
 % Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -130,7 +130,7 @@ end;
 
 clear('lokaliz');
 
-% Pabandyti perkelti kitas Å¡ios programÄ—lÄ—s versijas kitur
+% Pabandyti perkelti kitas ğios programëlës versijas kitur
 rmpath(curdir);
 if strcmp(curdir(1:(end-1)),pwd); cd('..') ; end;
 rehash;
@@ -211,7 +211,7 @@ try
 catch err;
 end;
 
-% Pagrindiniame kataloge neturi bÅ«ti rinkmenÅ³, dubliuojanÄiÅ³ utfdir kataloge esanÄias
+% Pagrindiniame kataloge neturi bûti rinkmenø, dubliuojanèiø utfdir kataloge esanèias
 % Files in utfdir should not dublicate main dir files (if any) 
 if exist(utfdir,'dir') == 7;
     utf_f=dir([ utfdir '*.m' ]);
@@ -228,7 +228,7 @@ if exist(utfdir,'dir') == 7;
     end;
 end;
 
-% Jei naudojama ne unikodo (UTF-8) koduotÄ—, konvertuoti unikodo failus
+% Jei naudojama ne unikodo (UTF-8) koduotë, konvertuoti unikodo failus
 if strcmp(encoding,'UTF-8');
     if exist(utfdir,'dir') == 7;
         addpath(utfdir);
@@ -333,7 +333,7 @@ if exist('atnaujinimas','file') == 2 ;
    
 end;
 
-% IeÅ¡koti Ragu
+% Ieğkoti Ragu
 if ~(exist('Ragu','file') == 2 ) ;
     eeglab_plugin_dir=([ fileparts(which('eeglab')) filesep 'plugins' filesep ]);
     
@@ -352,7 +352,7 @@ on='startup:on;study:on';
 W_MAIN = findobj('tag','EEGLAB');
 darbeliai_m = uimenu( W_MAIN, 'label', main_menu_name, 'tag', 'darbeliai', 'userdata', on);
 
-% PamÄ—ginti perkelti Ä¯ prieÅ¡paskutinÄ™ pozicijÄ…
+% Pamëginti perkelti á prieğpaskutinæ pozicijà
 try
     nitems = get(darbeliai_m,'position');
     set(darbeliai_m,'position',nitems-1);
@@ -466,13 +466,13 @@ end;
 
 return;
 
-% Svarbi informacija apie naujÄ… versijÄ…
+% Svarbi informacija apie naujà versijà
 if ~strcmp(Darbeliai_konfig_vers,vers);
    Darbeliai.konfig_vers=vers;
    save(fullfile(curdir,'Darbeliai_config.mat'),'Darbeliai');
    h=gcf;
-   msgbox(['SugrÄ¯Å¾o meniu punktas duomenÅ³ eksportavimui Ä¯ RAGU; ' ...
-   'bet geriau naudokite SÄ®SP savybiÅ³ ir eksportavimo programÄ—lÄ™. ' ], ...
+   msgbox(['Sugráşo meniu punktas duomenø eksportavimui á RAGU; ' ...
+   'bet geriau naudokite SÁSP savybiø ir eksportavimo programëlæ. ' ], ...
    vers);
    figure(h);
 end;
