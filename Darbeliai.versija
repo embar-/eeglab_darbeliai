@@ -1,2 +1,3 @@
-Darbeliai v2015.01.13.2
-Pasirinkimas tarp stabilios ir nestabilios versijos.
+Darbeliai v2015.01.19.1
+Nenulūžti, jei įrašant failą neturime tam leidimų.
+Don't crash if don't have writing permisions.
