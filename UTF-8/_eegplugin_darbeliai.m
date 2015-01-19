@@ -183,6 +183,10 @@ Darbeliai_nuostatos.lokale={ '' ; '' ; '' ; } ;
 Darbeliai_nuostatos.tikrinti_versija=1;
 Darbeliai_nuostatos.diegti_auto=0;
 Darbeliai_konfig_vers='?';
+Darbeliai_nuostatos.stabili_versija=0;
+Darbeliai_nuostatos.savita_versija=0;
+Darbeliai_nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/stable.zip';
+Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
 
 try
    load(fullfile(curdir,config_file));
@@ -190,6 +194,10 @@ try
    Darbeliai_nuostatos.tikrinti_versija=Darbeliai.nuostatos.tikrinti_versija;
    Darbeliai_nuostatos.diegti_auto=Darbeliai.nuostatos.diegti_auto;
    Darbeliai_konfig_vers=Darbeliai.konfig_vers;
+   Darbeliai_nuostatos.stabili_versija=Darbeliai.nuostatos.stabili_versija;
+   Darbeliai_nuostatos.savita_versija=Darbeliai.nuostatos.savita_versija;
+   Darbeliai_nuostatos.url_atnaujinimui=Darbeliai.nuostatos.url_atnaujinimui;
+   Darbeliai_nuostatos.url_versijai=Darbeliai.nuostatos.url_versijai;
 catch err;
    %disp(err.message);
 end;
@@ -279,17 +287,17 @@ else
     end;
 end;
 
-if exist('atnaujinimas','file') == 2 ;
+if and((exist('atnaujinimas','file') == 2),...
+   and(~isempty(Darbeliai_nuostatos.url_versijai),...
+       ~isempty(Darbeliai_nuostatos.url_atnaujinimui))) ;
+       
    nauja_versija='';
-   %url='https://www.dropbox.com/s/q57pntndm704isv/Darbeliai.versija?dl=1';
-   %url='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
-   url='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
    status=0;
    apie_vers='';
    
    if Darbeliai_nuostatos.tikrinti_versija ;
       disp([main_menu_name ': ' lokaliz('Checking for updates...')]);
-      [filestr,status] = urlwrite(url,fullfile(tempdir,'Darbeliai_versija.txt'));
+      [filestr,status] = urlwrite(Darbeliai_nuostatos.url_versijai,fullfile(tempdir,'Darbeliai_versija.txt'));
    end;
    if status
        convert_file_encoding(filestr, [filestr '~'], 'UTF-8', encoding );
@@ -315,7 +323,7 @@ if exist('atnaujinimas','file') == 2 ;
               findobj('-regexp','name','EEGLAB*')
               findobj('-regexp','name','konfig')]);
           clear functions;
-          atnaujinimas ;
+          atnaujinimas(Darbeliai_nuostatos.url_atnaujinimui) ;
           disp(' ');
           warning(lokaliz('Please ignore error afer EEGLAB error plugin update.'));
           figure;
@@ -421,7 +429,10 @@ uimenu( darbeliai_m, 'Label', [lokaliz('Nuostatos') ' (kalba/language)'], ...
         'separator','on', 'userdata', on, 'callback', ...
          'konfig ;'  );
 
-if exist('atnaujinimas','file') == 2 ;
+
+if and(exist('atnaujinimas','file') == 2,...
+   and(~isempty(Darbeliai_nuostatos.url_versijai),...
+       ~isempty(Darbeliai_nuostatos.url_atnaujinimui))) ;      
    if and(~isempty(nauja_versija),~strcmp(nauja_versija,vers));
       Atnaujinimo_meniu_pavadinimas=[lokaliz('Atnaujinti iki') ' ' strrep(nauja_versija,'Darbeliai ','')];
       Tekstas=[ lokaliz('Naudojate') ; vers '.' ; {' '} ];
@@ -452,9 +463,9 @@ uimenu( darbeliai_m, 'Label', [ lokaliz('Apie') ], ...
 
 % RAGU meniu
 if (exist('Ragu','file') == 2 ) ;
-    uimenu( ragu_m, 'Label', lokaliz('Eksp Ragu'), ...
-    'Separator','on', 'userdata', on, 'Callback', ...
-         'eksportuoti_ragu_programai(ALLEEG, EEG, CURRENTSET) ;'  );
+%    uimenu( ragu_m, 'Label', lokaliz('Eksp Ragu'), ...
+%    'Separator','on', 'userdata', on, 'Callback', ...
+%         'eksportuoti_ragu_programai(ALLEEG, EEG, CURRENTSET) ;'  );
     uimenu( ragu_m, 'Label', lokaliz('Atverti Ragu'), ...
     'Separator','off', 'userdata', on, 'Callback', ...
              'Ragu ;'  );

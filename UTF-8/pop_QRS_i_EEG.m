@@ -1232,7 +1232,7 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
         end;
         set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
         set(handles.edit_failu_filtras2,'Style','pushbutton');
-        set(handles.edit_failu_filtras2,'String','Filtruoti');
+        set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
         %if ~strcmp(char(mfilename),'pop_QRS_i_EEG');
         atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
         atnaujink_rodomus_failus(hObject, eventdata, handles);
@@ -1254,7 +1254,7 @@ else
     end;
     set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
     set(handles.edit_failu_filtras2,'Style','pushbutton');
-    set(handles.edit_failu_filtras2,'String','Filtruoti');
+    set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
     atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
     atnaujink_rodomus_failus(hObject, eventdata, handles);
     
@@ -1284,23 +1284,19 @@ function [RinkmenaSaugojimuiSuKeliu]=Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,POAP
 if isempty(EEG) ;
     return ;
 end;
-try
-    if or(EEG.nbchan==0,isempty(EEG.data));
-        return ;
-    end;
-    NaujasKelias=fullfile(KELIAS_SAUGOJIMUI,POAPLANKIS);
-    if ~isdir(NaujasKelias)
-        mkdir(NaujasKelias);
-    end;
-    NaujasKelias=Tikras_Kelias(NaujasKelias);
-    RinkmenaSaugojimuiSuKeliu=fullfile(NaujasKelias, RinkmenaSaugojimui);
-    disp(RinkmenaSaugojimuiSuKeliu);
-    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
-        'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
-        'savenew',RinkmenaSaugojimuiSuKeliu);
-catch err;
-    Pranesk_apie_klaida(err,lokaliz('Save file'),RinkmenaSaugojimui);
+if or(EEG.nbchan==0,isempty(EEG.data));
+    return ;
 end;
+NaujasKelias=fullfile(KELIAS_SAUGOJIMUI,POAPLANKIS);
+if ~isdir(NaujasKelias)
+    mkdir(NaujasKelias);
+end;
+NaujasKelias=Tikras_Kelias(NaujasKelias);
+RinkmenaSaugojimuiSuKeliu=fullfile(NaujasKelias, RinkmenaSaugojimui);
+disp(RinkmenaSaugojimuiSuKeliu);
+[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
+    'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
+    'savenew',RinkmenaSaugojimuiSuKeliu);
 
 
 % --- Executes on button press in pushbutton2.
@@ -1376,7 +1372,7 @@ function listbox1_Callback(hObject, eventdata, handles)
 %set(handles.axes1, 'Visible', 'off');
 if ~strcmp(get(handles.edit_failu_filtras2,'Style'),'pushbutton') ;
     set(handles.edit_failu_filtras2,'Style','pushbutton');
-    set(handles.edit_failu_filtras2,'String','Filtruoti');
+    set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
     set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
 end;
 QRS_saltino_galunes(hObject, eventdata, handles);
@@ -1588,7 +1584,7 @@ if strcmp(get(handles.edit_failu_filtras2,'Style'),'pushbutton') ;
     set(handles.edit_failu_filtras2,'BackgroundColor',[1 1 1]);
 else
     set(handles.edit_failu_filtras2,'Style','pushbutton');
-    set(handles.edit_failu_filtras2,'String','Filtruoti');
+    set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
     set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
 end;
 
@@ -1610,7 +1606,7 @@ else
     set(handles.edit_failu_filtras2,'BackgroundColor',[1 1 0]);
     Ar_galima_vykdyti(hObject, eventdata, handles);
     %set(handles.edit_failu_filtras2,'Style','pushbutton');
-    %set(handles.edit_failu_filtras2,'String','Filtruoti');
+    %set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
     %set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
 end;
 
