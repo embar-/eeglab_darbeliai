@@ -150,10 +150,34 @@ max_x(i,1:ChN)=EEGTMP.times(idx1 - 1 + cell2mat([ ...
     'UniformOutput',false)]));
 
 if ~isempty(nauja_kanalu_tvarka);
-    nauja_kanalu_tvarka=changem(nauja_kanalu_tvarka,ChN+1,0);
+    nauja_kanalu_tvarka=pakeisk_reiksmes(nauja_kanalu_tvarka,ChN+1,0);
     min_x=min_x(nauja_kanalu_tvarka);
     min_y=min_y(nauja_kanalu_tvarka);
     max_x=max_x(nauja_kanalu_tvarka);
     max_y=max_y(nauja_kanalu_tvarka);
 end;
 
+function B = pakeisk_reiksmes(A, newval, oldval)
+
+%   B = CHANGEM(A,NEWVAL), for scalar NEWVAL, replaces all zero-valued
+%   entries in A with NEWVAL.
+%
+%   B = CHANGEM(A,NEWVAL,OLDVAL) replaces all occurrences of NEWVAL(k) in A
+%   with OLDVAL(k).  NEWVAL and OLDVAL must match in size.
+
+error(nargchk(2, 3, nargin, 'struct'))
+
+if nargin == 2
+    oldval = zeros(size(newval));  % Probably should throw a warning here.
+end
+
+%  Test that old and new value arrays have the same number of elements.
+if numel(newval) ~= numel(oldval)
+    error(['map:' mfilename ':mapError'], ...
+        'Inconsistent sizes for old and new code inputs')
+end
+
+B = A;
+for k = 1:numel(newval)
+    B(A == oldval(k)) = newval(k);
+end
