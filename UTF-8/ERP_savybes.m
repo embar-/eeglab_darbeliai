@@ -159,10 +159,10 @@ end;
 
 function B = pakeisk_reiksmes(A, newval, oldval)
 
-%   B = CHANGEM(A,NEWVAL), for scalar NEWVAL, replaces all zero-valued
+%   B = pakeisk_reiksmes(A,NEWVAL), for scalar NEWVAL, replaces all zero-valued
 %   entries in A with NEWVAL.
 %
-%   B = CHANGEM(A,NEWVAL,OLDVAL) replaces all occurrences of NEWVAL(k) in A
+%   B = pakeisk_reiksmes(A,NEWVAL,OLDVAL) replaces all occurrences of NEWVAL(k) in A
 %   with OLDVAL(k).  NEWVAL and OLDVAL must match in size.
 
 error(nargchk(2, 3, nargin, 'struct'))
