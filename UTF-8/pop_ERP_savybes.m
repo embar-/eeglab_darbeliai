@@ -887,8 +887,8 @@ for i=1:Pasirinktu_failu_N;
         
     catch err;
          
-         %Pranesk_apie_klaida(err, lokaliz('ERP properties'), NaujaRinkmena) ;
-         warning(err.message);
+         Pranesk_apie_klaida(err, lokaliz('ERP properties'), NaujaRinkmena,0) ;
+         %warning(err.message);
          %sukauptos_klaidos{end+1}=err;
          DarboPorcijaAtlikta=1;
          PaskRinkmIssaugKelias='';
