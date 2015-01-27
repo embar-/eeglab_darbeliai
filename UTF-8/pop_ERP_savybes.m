@@ -3328,7 +3328,7 @@ try
             ALLEEG_(pask_eeg_i).chans={''};
             ALLEEG_(pask_eeg_i).chanlocs(1).labels=lokaliz('mean');
             lngdi=1+size(legendoje,1);
-            legendoje{lngdi,1}=Rinkmena;
+            legendoje{lngdi,1}=regexprep(Rinkmena,'.set$','');
             legendoje{lngdi,2}='';            
         else
             % Jei nerodyti kanalų vidurkio
@@ -3336,7 +3336,7 @@ try
             ALLEEG_(pask_eeg_i).chans={EEGTMP.chanlocs.labels};
             lngdi=1+size(legendoje,1) ;
             lngdi=lngdi:(lngdi+size(EEGTMP.erp_data,1) - 1);
-            legendoje(lngdi,1)={Rinkmena};
+            legendoje(lngdi,1)={regexprep(Rinkmena,'.set$','')};
             legendoje(lngdi,2)=ALLEEG_(pask_eeg_i).chans;           
         end;
         
@@ -3504,7 +3504,7 @@ try
             end;
             if and(skirtingu_failu > 1, skirtingu_kanalu > 1);
                 %disp(3);
-                tmp=cellfun(@(z) sprintf('%s %s', legendoje{z,1},legendoje{z,2}), num2cell(1:size(legendoje,1)),'UniformOutput',false);
+                tmp=cellfun(@(z) sprintf('%s: %s', legendoje{z,1},legendoje{z,2}), num2cell(1:size(legendoje,1)),'UniformOutput',false);
                 legend(tmp,'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
                 legend('show');
             end;
@@ -3581,19 +3581,24 @@ function checkbox60_Callback(hObject, eventdata, handles)
 % Legendos įjungimas/išjungimas
 
 axes(handles.axes1);
+legenda(hObject, eventdata, handles);
+
+function legenda(hObject, eventdata, handles)
 if get(handles.checkbox60, 'Value');
     l=legend('show');
     lstr=get(l, 'String');
     %ribos=str2num(get(handles.edit51,'String'));
     %atmest_ir=length(ribos)+2;
     %legend('boxoff');
-    lk=get(handles.axes1, 'UserData');
+    lk=get(handles.axes1, 'UserData');    
     if lk > 0;
-        legend(lstr(1:lk), 'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
+        legend(lstr(1:lk), 'FontSize', 6, 'Location', 'EastOutside', 'Interpreter', 'none');
     end;
+    set(handles.axes1,'units','normalized','Position',[0.1 0.15 0.65 0.8]);
 else
     %legend('hide');
     legend('off');
+    set(handles.axes1,'units','normalized','Position',[0.1 0.15 0.85 0.8]);
 end;
 drawnow;
 
@@ -3748,9 +3753,11 @@ fnc=get(handles.axes1,'ButtonDownFcn');
 poz=get(handles.axes1,'Position');
 uni=get(handles.axes1,'units');
 set(handles.axes1,'ButtonDownFcn','');
-set(handles.axes1,'units','normalized','Position',[0.1 0.1 0.8 0.8]);
-copyobj(handles.axes1, h2);
+set(handles.axes1,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
+nauj=copyobj(handles.axes1, h2);
 datacursormode on;
 set(handles.axes1,'ButtonDownFcn',fnc);
 set(handles.axes1,'units',uni);
 set(handles.axes1,'Position',poz);
+axes(nauj);
+legenda(hObject, eventdata, handles);
