@@ -79,8 +79,13 @@ function konfig_OpeningFcn(hObject, eventdata, handles, varargin)
 
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 Darbeliai_nuostatos_senos.lokale={ '' ; '' ; '' ; } ;
-Darbeliai_nuostatos_senos.tikrinti_versija=1;
-Darbeliai_nuostatos_senos.diegti_auto=0;
+if (exist('atnaujinimas','file') == 2) ;
+    Darbeliai_nuostatos_senos.tikrinti_versija=1;
+    Darbeliai_nuostatos_senos.diegti_auto=0;
+else    
+    Darbeliai_nuostatos_senos.tikrinti_versija=0;
+    Darbeliai_nuostatos_senos.diegti_auto=0;  
+end;
 try
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));    
     Darbeliai_nuostatos_senos.lokale=Darbeliai.nuostatos.lokale;
@@ -260,6 +265,14 @@ function checkbox1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox1
+
+if (exist('atnaujinimas','file') ~= 2) ;     
+    %set(handles.uipanel1,'Visible','off')
+    set(handles.checkbox1,'Enable','off');
+    set(handles.checkbox2,'Enable','off');
+    return; 
+end;
+
 if get(handles.checkbox1,'Value')
     set(handles.checkbox2,'Enable','on');
 else
