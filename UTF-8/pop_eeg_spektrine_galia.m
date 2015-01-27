@@ -613,7 +613,7 @@ legendoje={};
                     Pranesk_apie_klaida(err, lokaliz('EEG spektras ir galia'), '?');
                     DarboPorcijaAtlikta=1;
                     PaskRinkmIssaugKelias='';
-                    EEG.nbchan=0;
+                    %EEG.nbchan=0;
                 end;
                 
                 
@@ -1595,7 +1595,7 @@ if get(handles.checkbox_legenda, 'Value');
     %legend('boxoff');
     lk=get(handles.axes1, 'UserData');
     if lk > 0;
-        legend(lstr(1:lk), 'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
+        legend(lstr(1:(min(lk,size(lstr,2)))), 'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
     end;
 else
     %legend('hide');

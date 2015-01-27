@@ -286,6 +286,9 @@ for i=1:NumberOfFiles ;
     
     EEG = eeg_checkset( EEG );
     
+    if (EEG.xmax - EEG.xmin) < DUOMENYS.VISU.lango_ilgis_sekundemis ;
+       error(['Epocha trumpesnė už FFT lango ilgį! EEG.xmax-EEG.xmin=' num2str(EEG.xmax - EEG.xmin) 's, bet FFT langas' num2str(DUOMENYS.VISU.lango_ilgis_sekundemis) ' s.']);
+    end;
     
     %if EEG.nbchan > 0;
     
@@ -426,7 +429,7 @@ DUOMENYS.VISU.Dazniu_sriciu_N=length(DUOMENYS.VISU.Dazniu_sritys);
 try
 DUOMENYS.VISU.Salygu_N=size(DUOMENYS.VISU.tmp.failai,2);
 catch err;
-    error('Duomenys tušti!');
+    error('Duomenys tušti! Patikrinkite, FFT lango ilgį nurodėte didesnį negu yra duomenų epochos ilgis?');
 end
 %DUOMENYS.VISU.Tiriamieji=[];
 %for i=1:DUOMENYS.VISU.Salygu_N;
