@@ -4807,6 +4807,8 @@ function popupmenu7_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu7 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu7
+strl=get(handles.popupmenu7,'String');
+set(handles.popupmenu7,'Tooltip',strl{get(handles.popupmenu7,'Value')});
 
 
 % --- Executes during object creation, after setting all properties.
@@ -4839,6 +4841,8 @@ function popupmenu8_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu8 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu8
+strl=get(handles.popupmenu8,'String');
+set(handles.popupmenu8,'Tooltip',strl{get(handles.popupmenu8,'Value')});
 
 
 % --- Executes during object creation, after setting all properties.
@@ -5001,7 +5005,7 @@ else
 end;
 checkbox_epoch__Callback(hObject, eventdata, handles);
 checkbox_epoch_b_Callback(hObject, eventdata, handles);
-
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 
@@ -6035,3 +6039,39 @@ atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 
 
+
+
+% --- Executes on button press in pushbutton18.
+function pushbutton18_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton18 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function edit59_Callback(hObject, eventdata, handles)
+% hObject    handle to edit59 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit59 as text
+%        str2double(get(hObject,'String')) returns contents of edit59 as a double
+x=str2num(get(handles.edit59,'String'));
+if length(x) == 1 ;
+    set(handles.edit59,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+end;
+set(handles.edit59,'String',num2str(get(handles.edit59,'UserData')));
+set(handles.edit59,'BackgroundColor',[1 1 1]);
+
+
+% --- Executes during object creation, after setting all properties.
+function edit59_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit59 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

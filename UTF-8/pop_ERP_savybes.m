@@ -68,7 +68,7 @@ function varargout = pop_ERP_savybes(varargin)
 
 % Edit the above text to modify the response to help pop_ERP_savybes
 
-% Last Modified by GUIDE v2.5 21-Nov-2014 22:08:58
+% Last Modified by GUIDE v2.5 28-Jan-2015 19:46:34
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -384,6 +384,7 @@ set(handles.edit68, 'Visible', 'off'); % max
 set(handles.slider3,'Visible','off');
 set(handles.edit70,'Enable','off'); % Exp atkarpa
 set(handles.popupmenu9,'Enable','off'); % Dokumento tipas
+popupmenu11_Callback(hObject, eventdata, handles)
 
 % Vel leisk ka nors daryti
 function susildyk(hObject, eventdata, handles)
@@ -412,6 +413,7 @@ set(handles.radiobutton7,'Enable','on');
 
 set(handles.checkbox59,'Enable','on'); %Kanalų vid
 set(handles.checkbox58,'Enable','on'); %Failų vid
+popupmenu11_Callback(hObject, eventdata, handles)
 if get(handles.checkbox57, 'Value');
     set(handles.checkbox60,'Enable','on'); %Legenda
     set(handles.checkbox72,'Enable','on'); %Y ašis
@@ -2451,7 +2453,13 @@ set(handles.checkbox_baigti_anksciau,'String',lokaliz('Break work'));
 set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'String',lokaliz('Go to saved files directory when completed'));
 set(handles.checkbox_pabaigus_atverti,'String',lokaliz('Load saved files in EEGLAB when completed'));
 set(handles.togglebutton1,'String', lokaliz('Cancel'));
-
+set(handles.popupmenu11,'String', ...
+    {lokaliz('of all files'), ...
+     lokaliz('by subjects as in EEG.subject variable'), ...
+     lokaliz('by groups as in EEG.group variable'), ...
+     lokaliz('by conditions as in EEG.condition variable'), ...
+     lokaliz('by sessions as in EEG.session variable'), ...
+     lokaliz('by filters, separated by semicolons')});
 
 % --- Executes on button press in pushbutton11.
 function pushbutton11_Callback(hObject, eventdata, handles)
@@ -2648,7 +2656,7 @@ function checkbox58_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox58
-
+popupmenu11_Callback(hObject, eventdata, handles);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 ERP_perziura(hObject, eventdata, handles);
 
@@ -3761,3 +3769,34 @@ set(handles.axes1,'units',uni);
 set(handles.axes1,'Position',poz);
 axes(nauj);
 legenda(hObject, eventdata, handles);
+
+
+% --- Executes on selection change in popupmenu11.
+function popupmenu11_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu11 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu11 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu11
+if and(get(handles.checkbox58,'Value'),...
+        strcmp('on',get(handles.checkbox58,'Enable')))
+    set(handles.popupmenu11,'Enable','on');
+else
+    set(handles.popupmenu11,'Enable','off');
+end;
+strl=get(handles.popupmenu11,'String');
+set(handles.popupmenu11,'Tooltip', [ lokaliz('mean of files') ': ' strl{get(handles.popupmenu11,'Value')}] );
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu11_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu11 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
