@@ -1,6 +1,9 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.01.28.1
+% + ERP savybių peržiūroje failų grupavimas.
+%
 % v2015.01.13.1
 % ~ Kanalų pasirinkimas galėjo neveikti, jei nebuvo įdiegtas SIFT priedas, 
 %   nes buvo naudojama šio priedo statusbar funkcija; dabar ši funkcija pasiskolinta.

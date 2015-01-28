@@ -68,7 +68,7 @@ function varargout = pop_ERP_savybes(varargin)
 
 % Edit the above text to modify the response to help pop_ERP_savybes
 
-% Last Modified by GUIDE v2.5 21-Nov-2014 22:08:58
+% Last Modified by GUIDE v2.5 28-Jan-2015 19:46:34
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -384,6 +384,7 @@ set(handles.edit68, 'Visible', 'off'); % max
 set(handles.slider3,'Visible','off');
 set(handles.edit70,'Enable','off'); % Exp atkarpa
 set(handles.popupmenu9,'Enable','off'); % Dokumento tipas
+popupmenu11_Callback(hObject, eventdata, handles)
 
 % Vel leisk ka nors daryti
 function susildyk(hObject, eventdata, handles)
@@ -412,6 +413,7 @@ set(handles.radiobutton7,'Enable','on');
 
 set(handles.checkbox59,'Enable','on'); %Kanalų vid
 set(handles.checkbox58,'Enable','on'); %Failų vid
+popupmenu11_Callback(hObject, eventdata, handles)
 if get(handles.checkbox57, 'Value');
     set(handles.checkbox60,'Enable','on'); %Legenda
     set(handles.checkbox72,'Enable','on'); %Y ašis
@@ -943,6 +945,7 @@ end;
 %% ERP savybių surinkimas, kai prašoma vidurkinti
 
 if 1==0;
+%if get(handles.checkbox58, 'Value');
   if and(Ar_eksportuoti_savybes,get(handles.checkbox58, 'Value'));
             
             DarboNr=1;
@@ -950,31 +953,89 @@ if 1==0;
             
     if length(ALLEEG_)>1;
         if get(handles.checkbox58, 'Value');
+            
             if isequal(ALLEEG_.times);
                 uniq_kan=unique({legendoje{:,2}});
                 [~,ALLEEG__,~]=pop_newset([],[],[]);
-                ALLEEG__(1).times=ALLEEG_(1).times;
-                ALLEEG__(1).srate=ALLEEG_(1).srate;
-                ALLEEG__(1).file=lokaliz('mean');
-                for k=1:length(uniq_kan);
-                    tmp=[];
-                    for d=1:length(ALLEEG_);
-                        idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
-                        tmp(d,1:length(ALLEEG__(1).times))=ALLEEG_(d).erp_data(idx,:);
+                uniq_kan_N=length(uniq_kan);
+                legendoje={};
+                
+                switch get(handles.popupmenu11,'Value')
+                    case 1
+                        grpsar={lokaliz('mean')} ;
+                        grpN=length(grpsar);
+                        grpnar{1}=1:length(ALLEEG_);
+                    case 2
+                        grpsar=unique({ALLEEG_.subject});
+                        grpN=length(grpsar);
+                        for grpid=1:grpN;
+                            grpnar{grpid}=find(ismember({ALLEEG_.subject},grpsar{grpid}));
+                        end;
+                    case 3
+                        grpsar=unique({ALLEEG_.group});
+                        grpN=length(grpsar);
+                        for grpid=1:grpN;
+                            grpnar{grpid}=find(ismember({ALLEEG_.group},grpsar{grpid}));
+                        end;
+                    case 4
+                        grpsar=unique({ALLEEG_.condition});
+                        grpN=length(grpsar);
+                        for grpid=1:grpN;
+                            grpnar{grpid}=find(ismember({ALLEEG_.condition},grpsar{grpid}));
+                        end;
+                    case 5
+                        grpsar=unique({ALLEEG_.session});
+                        grpN=length(grpsar);
+                        for grpid=1:grpN;
+                            grpnar{grpid}=find(ismember({ALLEEG_.session},grpsar{grpid}));
+                        end;
+                    case 6                        
+                        if strcmp(get(handles.edit_failu_filtras2,'Style'),'edit') ;
+                            grpsar=regexp(get(handles.edit_failu_filtras2,'String'),';', 'split');
+                            grpN=length(grpsar);
+                            for grpid=1:grpN;
+                                FAILAI_filtruoti_=atrinkti_teksta(Fs(Fsi2),grpsar{grpid});
+                                grpnar_=find(ismember(Fs(Fsi2),FAILAI_filtruoti_));
+                                grpnar{grpid}=grpnar_';
+                            end;                            
+                        else
+                            grpsar=unique({lokaliz('mean')});
+                            grpN=length(grpsar);
+                            grpnar{1}=1:length(ALLEEG_);
+                        end;
+                    otherwise 
+                        warning(lokaliz('Internal error'));
+                        grpsar={lokaliz('mean')} ;
+                        grpN=length(grpsar);
+                        grpnar=1:length(ALLEEG_);
+                end;
+                                
+                for grpid=1:grpN;
+                    
+                    ALLEEG__(grpid).times=ALLEEG_(grpid).times;
+                    ALLEEG__(grpid).srate=ALLEEG_(grpid).srate;
+                    ALLEEG__(grpid).file=grpsar{grpid};
+                    for k=1:uniq_kan_N;
+                        tmp=[];
+                        for d=grpnar{grpid};
+                            idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
+                            tmp(d,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                        end;
+                        ALLEEG__(grpid).erp_data(k,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
                     end;
-                    ALLEEG__(1).erp_data(k,1:length(ALLEEG__(1).times))=mean(tmp,1);
+                    legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),1)={grpsar{grpid}};
+                    legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),2)=uniq_kan';
+                    
+                    [ERP_savyb(grpid).plotas,        ERP_savyb(grpid).vid_ampl,...
+                        ERP_savyb(grpid).pusplocio_x,ERP_savyb(grpid).pusplocio_y,...
+                        ERP_savyb(grpid).min_x,      ERP_savyb(grpid).min_y,...
+                        ERP_savyb(grpid).max_x,      ERP_savyb(grpid).max_y...
+                        ]=ERP_savybes(ALLEEG_(grpid),ribos);
                     
                 end;
-                ALLEEG_=ALLEEG__;
-                legendoje={};
-                legendoje(1:length(uniq_kan),2)=uniq_kan';
-                legendoje(:,1)={''};
                 
-                [ERP_savyb(1).plotas,        ERP_savyb(1).vid_ampl,...
-                    ERP_savyb(1).pusplocio_x,ERP_savyb(1).pusplocio_y,...
-                    ERP_savyb(1).min_x,      ERP_savyb(1).min_y,...
-                    ERP_savyb(1).max_x,      ERP_savyb(1).max_y...
-                    ]=ERP_savybes(ALLEEG_(1),ribos);
+                ALLEEG_=ALLEEG__;
+            
             else
                 for d=1:length(ALLEEG_);
                    [ERP_savyb(d).plotas,        ERP_savyb(d).vid_ampl,...
@@ -1010,7 +1071,27 @@ if and(Ar_eksportuoti_savybes,~isempty(ALLEEG_(1).file));
     lenteles_dydis_x=length(Reikalingi_kanalai_sukaupti)+2;
     lenteles_dydis_y=length(ALLEEG_)+1;
     
-    lentele{1,1}(1,1)={lokaliz('File')};
+    if 1==0;
+    %if get(handles.checkbox58, 'Value');
+        switch get(handles.popupmenu11,'Value')
+            case 1
+                lentele{1,1}(1,1)={lokaliz('mean of files')};
+            case 2
+                lentele{1,1}(1,1)={lokaliz('Experiment_participant')};
+            case 3
+                lentele{1,1}(1,1)={lokaliz('Group')};
+            case 4
+                lentele{1,1}(1,1)={lokaliz('Condition')};
+            case 5
+                lentele{1,1}(1,1)={lokaliz('Session')};
+            case 6
+                lentele{1,1}(1,1)={lokaliz('Filter')};
+            otherwise
+                lentele{1,1}(1,1)={lokaliz('mean of files')};
+        end;
+    else
+        lentele{1,1}(1,1)={lokaliz('File')};
+    end;
     lentele{1,1}(1,2)={lokaliz('Parameter')};
     lentele{1,1}(1,3:lenteles_dydis_x)=Reikalingi_kanalai_sukaupti;
     lentele{1,1}(2:lenteles_dydis_y,1) = {ALLEEG_.file};
@@ -2451,7 +2532,13 @@ set(handles.checkbox_baigti_anksciau,'String',lokaliz('Break work'));
 set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'String',lokaliz('Go to saved files directory when completed'));
 set(handles.checkbox_pabaigus_atverti,'String',lokaliz('Load saved files in EEGLAB when completed'));
 set(handles.togglebutton1,'String', lokaliz('Cancel'));
-
+set(handles.popupmenu11,'String', ...
+    {lokaliz('of all files'), ...
+     lokaliz('by subjects as in EEG.subject variable'), ...
+     lokaliz('by groups as in EEG.group variable'), ...
+     lokaliz('by conditions as in EEG.condition variable'), ...
+     lokaliz('by sessions as in EEG.session variable'), ...
+     lokaliz('by filters, separated by semicolons')});
 
 % --- Executes on button press in pushbutton11.
 function pushbutton11_Callback(hObject, eventdata, handles)
@@ -2648,9 +2735,9 @@ function checkbox58_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox58
-
-Ar_galima_vykdyti(hObject, eventdata, handles);
-ERP_perziura(hObject, eventdata, handles);
+popupmenu11_Callback(hObject, eventdata, handles);
+%Ar_galima_vykdyti(hObject, eventdata, handles);
+%ERP_perziura(hObject, eventdata, handles);
 
 % --- Executes on button press in checkbox59.
 function checkbox59_Callback(hObject, eventdata, handles)
@@ -3251,7 +3338,7 @@ try
 			    listbox1_val=setdiff(get(handles.listbox1,'Value'),i);
                 if and(isempty(listbox1_val),length(Fs)==1); listbox1_val=1; end;
                 set(handles.listbox1,'Value',listbox1_val);
-                error(lokaliz('Not epoched data!'));
+                error([lokaliz('Not epoched data!') ' ' lokaliz('File') ': ' Rinkmena]);
             end;
             [ALLEEGTMP, EEGTMP, ~] = eeg_store(ALLEEGTMP, EEGTMP,i);
             [~, EEGTMP, ~] = pop_newset(EEGTMP, EEGTMP, 1,'retrieve',1,'study',0);
@@ -3363,33 +3450,92 @@ try
         
     end;
     
+    Fsi2=get(handles.listbox1,'Value');
+    
     if length(ALLEEG_)>1;
         if get(handles.checkbox58, 'Value');
             if isequal(ALLEEG_.times);
                 uniq_kan=unique({legendoje{:,2}});
                 [~,ALLEEG__,~]=pop_newset([],[],[]);
-                ALLEEG__(1).times=ALLEEG_(1).times;
-                ALLEEG__(1).srate=ALLEEG_(1).srate;
-                ALLEEG__(1).file=lokaliz('mean');
-                for k=1:length(uniq_kan);
-                    tmp=[];
-                    for d=1:length(ALLEEG_);
-                        idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
-                        tmp(d,1:length(ALLEEG__(1).times))=ALLEEG_(d).erp_data(idx,:);
+                uniq_kan_N=length(uniq_kan);
+                legendoje={};
+                
+                switch get(handles.popupmenu11,'Value')
+                    case 1
+                        grpsar={lokaliz('mean')} ;
+                        grpN=length(grpsar);
+                        grpnar{1}=1:length(ALLEEG_);
+                    case 2
+                        grpsar=unique({ALLEEG_.subject});
+                        grpN=length(grpsar);
+                        for grpid=1:grpN;
+                            grpnar{grpid}=find(ismember({ALLEEG_.subject},grpsar{grpid}));
+                        end;
+                    case 3
+                        grpsar=unique({ALLEEG_.group});
+                        grpN=length(grpsar);
+                        for grpid=1:grpN;
+                            grpnar{grpid}=find(ismember({ALLEEG_.group},grpsar{grpid}));
+                        end;
+                    case 4
+                        grpsar=unique({ALLEEG_.condition});
+                        grpN=length(grpsar);
+                        for grpid=1:grpN;
+                            grpnar{grpid}=find(ismember({ALLEEG_.condition},grpsar{grpid}));
+                        end;
+                    case 5
+                        grpsar=unique({ALLEEG_.session});
+                        grpN=length(grpsar);
+                        for grpid=1:grpN;
+                            grpnar{grpid}=find(ismember({ALLEEG_.session},grpsar{grpid}));
+                        end;
+                    case 6                        
+                        if strcmp(get(handles.edit_failu_filtras2,'Style'),'edit') ;
+                            grpsar=regexp(get(handles.edit_failu_filtras2,'String'),';', 'split');
+                            grpN=length(grpsar);
+                            for grpid=1:grpN;
+                                FAILAI_filtruoti_=atrinkti_teksta(Fs(Fsi2),grpsar{grpid});
+                                grpnar_=find(ismember(Fs(Fsi2),FAILAI_filtruoti_));
+                                grpnar{grpid}=grpnar_';
+                            end;                            
+                        else
+                            grpsar=unique({lokaliz('mean')});
+                            grpN=length(grpsar);
+                            grpnar{1}=1:length(ALLEEG_);
+                        end;
+                    otherwise 
+                        warning(lokaliz('Internal error'));
+                        grpsar={lokaliz('mean')} ;
+                        grpN=length(grpsar);
+                        grpnar=1:length(ALLEEG_);
+                end;
+                                
+                for grpid=1:grpN;
+                    
+                    ALLEEG__(grpid).times=ALLEEG_(grpid).times;
+                    ALLEEG__(grpid).srate=ALLEEG_(grpid).srate;
+                    ALLEEG__(grpid).file=grpsar{grpid};
+                    for k=1:uniq_kan_N;
+                        tmp=[];
+                        for d=grpnar{grpid};
+                            idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
+                            tmp(d,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                        end;
+                        ALLEEG__(grpid).erp_data(k,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
                     end;
-                    ALLEEG__(1).erp_data(k,1:length(ALLEEG__(1).times))=mean(tmp,1);
+                    legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),1)={grpsar{grpid}};
+                    legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),2)=uniq_kan';
+                    
+                    [ERP_savyb(grpid).plotas,        ERP_savyb(grpid).vid_ampl,...
+                        ERP_savyb(grpid).pusplocio_x,ERP_savyb(grpid).pusplocio_y,...
+                        ERP_savyb(grpid).min_x,      ERP_savyb(grpid).min_y,...
+                        ERP_savyb(grpid).max_x,      ERP_savyb(grpid).max_y...
+                        ]=ERP_savybes(ALLEEG_(grpid),ribos);
                     
                 end;
-                ALLEEG_=ALLEEG__;
-                legendoje={};
-                legendoje(1:length(uniq_kan),2)=uniq_kan';
-                legendoje(:,1)={''};
                 
-                [ERP_savyb(1).plotas,        ERP_savyb(1).vid_ampl,...
-                    ERP_savyb(1).pusplocio_x,ERP_savyb(1).pusplocio_y,...
-                    ERP_savyb(1).min_x,      ERP_savyb(1).min_y,...
-                    ERP_savyb(1).max_x,      ERP_savyb(1).max_y...
-                    ]=ERP_savybes(ALLEEG_(1),ribos);
+                ALLEEG_=ALLEEG__;
+                
             else
                 for d=1:length(ALLEEG_);
                    [ERP_savyb(d).plotas,        ERP_savyb(d).vid_ampl,...
@@ -3761,3 +3907,37 @@ set(handles.axes1,'units',uni);
 set(handles.axes1,'Position',poz);
 axes(nauj);
 legenda(hObject, eventdata, handles);
+
+
+% --- Executes on selection change in popupmenu11.
+function popupmenu11_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu11 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu11 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu11
+if and(get(handles.checkbox58,'Value'),...
+        strcmp('on',get(handles.checkbox58,'Enable')))
+    set(handles.popupmenu11,'Enable','on');
+else
+    set(handles.popupmenu11,'Enable','off');
+end;
+strl=get(handles.popupmenu11,'String');
+set(handles.popupmenu11,'Tooltip', [ lokaliz('mean of files') ': ' strl{get(handles.popupmenu11,'Value')}] );
+
+
+Ar_galima_vykdyti(hObject, eventdata, handles);
+ERP_perziura(hObject, eventdata, handles);
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu11_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu11 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
