@@ -514,6 +514,22 @@ end;
 %     return;
 % end;
 
+if and(get(handles.checkbox58,'Value'),...
+    get(handles.checkbox69,'Value'));
+    use_mean=lokaliz('Use mean of files');
+    use_eksp=lokaliz('Export ERP');
+    button = questdlg(lokaliz('This version does not support ERP export, then mean of files is selected.') , ...
+        lokaliz('Question'), ...
+        use_mean, use_eksp, use_eksp);
+    if strcmp(button,use_mean);
+        set(handles.checkbox69,'Value',0);
+        checkbox69_Callback(hObject, eventdata, handles);
+    elseif strcmp(button,use_eksp);
+        set(handles.checkbox58,'Value',0);
+        checkbox58_Callback(hObject, eventdata, handles);
+    end;
+end;
+
 if and(get(handles.checkbox59,'Value'), and(...
     get(handles.checkbox69,'Value'),...
     (get(handles.popupmenu10,'Value')==1)));
@@ -528,8 +544,10 @@ if and(get(handles.checkbox59,'Value'), and(...
         checkbox69_Callback(hObject, eventdata, handles);
     elseif strcmp(button,use_ragu);
         set(handles.checkbox59,'Value',0);
+        checkbox59_Callback(hObject, eventdata, handles);
     end;
 end;
+
 
 set(handles.pushbutton1,'Enable','on');
 drawnow;
@@ -577,9 +595,9 @@ global STUDY CURRENTSTUDY ALLEEG EEG CURRENTSET Rinkmena NaujaRinkmena KELIAS KE
 
 susaldyk(hObject, eventdata, handles);
 set(handles.pushbutton1,'Enable','off');
-if get(handles.checkbox58, 'Value');
-    warndlg(lokaliz('This version does not support yet exporting mean values of files.'),lokaliz('Warning'));
-end;
+% if get(handles.checkbox58, 'Value');
+%     warndlg(lokaliz('This version does not support yet exporting mean values of files.'),lokaliz('Warning'));
+% end;
 drawnow;
 %guidata(hObject, handles);
 
@@ -866,8 +884,8 @@ for i=1:Pasirinktu_failu_N;
 %             legendoje(li,2)=ALLEEG_(end).chans;           
         end;
         
-        if Ar_eksportuoti_savybes;
-        %if and(Ar_eksportuoti_savybes,~get(handles.checkbox58, 'Value'));
+        %if Ar_eksportuoti_savybes;
+        if and(Ar_eksportuoti_savybes,~get(handles.checkbox58, 'Value'));
             
             DarboNr=1;
             Darbo_eigos_busena(handles, 'ERP savybės...', DarboNr, i, Pasirinktu_failu_N);
@@ -944,8 +962,8 @@ end;
 
 %% ERP savybių surinkimas, kai prašoma vidurkinti
 
-if 1==0;
-%if get(handles.checkbox58, 'Value');
+%if 1==0;
+if get(handles.checkbox58, 'Value');
   if and(Ar_eksportuoti_savybes,get(handles.checkbox58, 'Value'));
             
             DarboNr=1;
@@ -955,10 +973,15 @@ if 1==0;
         if get(handles.checkbox58, 'Value');
             
             if isequal(ALLEEG_.times);
-                uniq_kan=unique({legendoje{:,2}});
+                if get(handles.checkbox59, 'Value');
+                    %Jei vidurkis kanalų
+                    uniq_kan={''} ; % {lokaliz('Mean on channels')};
+                else                    
+                    uniq_kan=Reikalingi_kanalai_sukaupti;
+                end;
                 [~,ALLEEG__,~]=pop_newset([],[],[]);
                 uniq_kan_N=length(uniq_kan);
-                legendoje={};
+                %legendoje={};
                 
                 switch get(handles.popupmenu11,'Value')
                     case 1
@@ -1017,20 +1040,25 @@ if 1==0;
                     ALLEEG__(grpid).file=grpsar{grpid};
                     for k=1:uniq_kan_N;
                         tmp=[];
+                        di=1;
                         for d=grpnar{grpid};
+                            %if get(handles.checkbox59, 'Value');
+                            %else
                             idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
-                            tmp(d,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                            tmp(di,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                            di=di+1;
+                            %end;
                         end;
                         ALLEEG__(grpid).erp_data(k,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
                     end;
-                    legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),1)={grpsar{grpid}};
-                    legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),2)=uniq_kan';
+                    %legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),1)={grpsar{grpid}};
+                    %legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),2)=uniq_kan';
                     
                     [ERP_savyb(grpid).plotas,        ERP_savyb(grpid).vid_ampl,...
                         ERP_savyb(grpid).pusplocio_x,ERP_savyb(grpid).pusplocio_y,...
                         ERP_savyb(grpid).min_x,      ERP_savyb(grpid).min_y,...
                         ERP_savyb(grpid).max_x,      ERP_savyb(grpid).max_y...
-                        ]=ERP_savybes(ALLEEG_(grpid),ribos);
+                        ]=ERP_savybes(ALLEEG__(grpid),ribos);
                     
                 end;
                 
@@ -1071,8 +1099,8 @@ if and(Ar_eksportuoti_savybes,~isempty(ALLEEG_(1).file));
     lenteles_dydis_x=length(Reikalingi_kanalai_sukaupti)+2;
     lenteles_dydis_y=length(ALLEEG_)+1;
     
-    if 1==0;
-    %if get(handles.checkbox58, 'Value');
+    %if 1==0;
+    if get(handles.checkbox58, 'Value');
         switch get(handles.popupmenu11,'Value')
             case 1
                 lentele{1,1}(1,1)={lokaliz('mean of files')};
@@ -1209,7 +1237,7 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
                 pop_export(EEGTMP, Rinkmena_txt_exp, 'transpose','on','elec','on','time','on','erp','on','precision',7);
                 disp(Rinkmena_txt_exp);
             catch err;
-                warning(err.message);
+                Pranesk_apie_klaida(err,'','',0);
             end;
         end;
     end;
@@ -3048,7 +3076,11 @@ else
     set(handles.edit70,'Enable','off');
     set(handles.popupmenu10,'Enable','off');
 end;
-%Ar_galima_vykdyti(hObject, eventdata, handles);
+
+if and(get(handles.checkbox58,'Value'),...
+    get(handles.checkbox69,'Value'));
+    Ar_galima_vykdyti(hObject, eventdata, handles);
+end;
 
 % --- Executes on button press in checkbox70.
 function checkbox70_Callback(hObject, eventdata, handles)
@@ -3517,10 +3549,13 @@ try
                     ALLEEG__(grpid).file=grpsar{grpid};
                     for k=1:uniq_kan_N;
                         tmp=[];
+                        di=1;
                         for d=grpnar{grpid};
                             idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
-                            tmp(d,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                            tmp(di,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                            di=di+1;
                         end;
+                        assignin('base','tmp',tmp)
                         ALLEEG__(grpid).erp_data(k,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
                     end;
                     legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),1)={grpsar{grpid}};
@@ -3530,7 +3565,7 @@ try
                         ERP_savyb(grpid).pusplocio_x,ERP_savyb(grpid).pusplocio_y,...
                         ERP_savyb(grpid).min_x,      ERP_savyb(grpid).min_y,...
                         ERP_savyb(grpid).max_x,      ERP_savyb(grpid).max_y...
-                        ]=ERP_savybes(ALLEEG_(grpid),ribos);
+                        ]=ERP_savybes(ALLEEG__(grpid),ribos);
                     
                 end;
                 
@@ -3538,7 +3573,7 @@ try
                 
             else
                 for d=1:length(ALLEEG_);
-                   [ERP_savyb(d).plotas,        ERP_savyb(d).vid_ampl,...
+                   [ERP_savyb(d).plotas,     ERP_savyb(d).vid_ampl,...
                     ERP_savyb(d).pusplocio_x,ERP_savyb(d).pusplocio_y,...
                     ERP_savyb(d).min_x,      ERP_savyb(d).min_y,...
                     ERP_savyb(d).max_x,      ERP_savyb(d).max_y...
@@ -3547,19 +3582,19 @@ try
             end;
         end;
     elseif ~isempty(ALLEEG_(1).file);
-        [ERP_savyb(1).plotas,        ERP_savyb(1).vid_ampl,...
+                   [ERP_savyb(1).plotas,     ERP_savyb(1).vid_ampl,...
                     ERP_savyb(1).pusplocio_x,ERP_savyb(1).pusplocio_y,...
                     ERP_savyb(1).min_x,      ERP_savyb(1).min_y,...
                     ERP_savyb(1).max_x,      ERP_savyb(1).max_y...
                     ]=ERP_savybes(ALLEEG_(1),ribos);
     end;
-    
-    set(handles.edit64, 'String', mean(mean([ERP_savyb.vid_ampl]))  ); % vid ampl
-    set(handles.edit65, 'String', mast*mean(mean([ERP_savyb.plotas]))  ); % plotas
-    set(handles.edit66, 'String', mast*mean(mean([ERP_savyb.pusplocio_x]))  ); % laikas pusei ploto
-    set(handles.edit69, 'String', mean(mean([ERP_savyb.pusplocio_y]))  ); % ampl puei ploto
-    set(handles.edit67, 'String', mean(mean([ERP_savyb.min_y]))  ); % min
-    set(handles.edit68, 'String', mean(mean([ERP_savyb.max_y]))  ); % max
+        
+    set(handles.edit64, 'String', mean(mean([ERP_savyb.vid_ampl]))); % vid ampl
+    set(handles.edit65, 'String', mast*mean(mean([ERP_savyb.plotas]))); % plotas
+    set(handles.edit66, 'String', mast*mean(mean([ERP_savyb.pusplocio_x]))); % laikas pusei ploto
+    set(handles.edit69, 'String', mean(mean([ERP_savyb.pusplocio_y]))); % ampl puei ploto
+    set(handles.edit67, 'String', mean(mean([ERP_savyb.min_y]))); % min
+    set(handles.edit68, 'String', mean(mean([ERP_savyb.max_y]))); % max
 
     
     %ERP_savyb.min_x
@@ -3740,11 +3775,11 @@ if get(handles.checkbox60, 'Value');
     if lk > 0;
         legend(lstr(1:lk), 'FontSize', 6, 'Location', 'EastOutside', 'Interpreter', 'none');
     end;
-    set(handles.axes1,'units','normalized','Position',[0.1 0.15 0.65 0.8]);
+    set(handles.axes1,'units','normalized','Position',[0.12 0.15 0.65 0.8]);
 else
     %legend('hide');
     legend('off');
-    set(handles.axes1,'units','normalized','Position',[0.1 0.15 0.85 0.8]);
+    set(handles.axes1,'units','normalized','Position',[0.12 0.15 0.85 0.8]);
 end;
 drawnow;
 
