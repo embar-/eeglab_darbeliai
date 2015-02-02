@@ -1,6 +1,9 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.02.01.1
+% + Veikia failų vidurkinimas ERP savybių peržiūroje ir eksportavime.
+%
 % v2015.01.28.1
 % + ERP savybių peržiūroje failų grupavimas.
 %

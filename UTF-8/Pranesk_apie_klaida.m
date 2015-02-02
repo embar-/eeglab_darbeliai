@@ -13,7 +13,7 @@ function Pranesk_apie_klaida(err, varargin)
 % sužinoti smulkmenas.
 %
 % Jūs turėjote kartu su šia programa gauti ir GNU Bendrosios Viešosios
-% licencijos kopija; jei ne - rašykite Free Software Foundation, Inc., 59
+% licencijos kopiją; jei ne - rašykite Free Software Foundation, Inc., 59
 % Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

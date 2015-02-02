@@ -97,10 +97,19 @@ end;
 lango_trukme=EEGTMP.times(idx2) - EEGTMP.times(idx1) ;
 
 try 
+    %disp('size(EEGTMP.erp_data)='); disp(size(EEGTMP.erp_data));
     EEGTMP.data=EEGTMP.erp_data;
     lango_erp=[EEGTMP.erp_data(:,idx1:idx2,:)];
 catch err;
+    %Pranesk_apie_klaida(err,'','',0);
+    try
     lango_erp=mean([EEGTMP.data(:,idx1:idx2,:)],3);
+    catch err;
+        %disp('size(EEGTMP.data)='); disp(size(EEGTMP.data));
+        %disp(['idx1=' num2str(idx1)]); disp(['idx2=' num2str(idx2)]);
+        %Pranesk_apie_klaida(err,'','',0);
+        rethrow(err) ;
+    end;
 end;
 
 i=1;
