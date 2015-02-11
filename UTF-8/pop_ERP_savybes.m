@@ -68,7 +68,7 @@ function varargout = pop_ERP_savybes(varargin)
 
 % Edit the above text to modify the response to help pop_ERP_savybes
 
-% Last Modified by GUIDE v2.5 28-Jan-2015 19:46:34
+% Last Modified by GUIDE v2.5 11-Feb-2015 11:31:20
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -2544,7 +2544,8 @@ set(handles.text_failu_filtras1,'String',lokaliz('Show_filenames_filter:'));
 set(handles.text_failu_filtras2,'String',lokaliz('Select_filenames_filter:'));
 %set(handles.radiobutton_cnt_set,'String',lokaliz('  *.cnt or *.set'));
 set(handles.checkbox58,'String', lokaliz('mean of files') );
-set(handles.checkbox59,'String', lokaliz('mean') );
+set(handles.checkbox59,'String', lokaliz('mean on channels') );
+set(handles.checkbox73,'String', lokaliz('merge events') );
 set(handles.checkbox61,'String', lokaliz('mean_amplitude') );
 set(handles.checkbox67,'String', lokaliz('amplitude') );
 set(handles.checkbox63,'String', lokaliz('minimum') );
@@ -3976,3 +3977,12 @@ function popupmenu11_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in checkbox73.
+function checkbox73_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox73 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox73
