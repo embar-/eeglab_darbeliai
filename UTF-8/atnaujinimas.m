@@ -87,11 +87,11 @@ if nargin > 3;     files_to_preserve=varargin{4};
 else     files_to_preserve={'Darbeliai_config.mat'};
 end;
 
-
 rehash;
 path_new=fullfile(regexprep(which('eeglab.m'),'eeglab.m$','plugins') );
 
 if (exist(file_to_identify) == 2) ;
+    st=warning('off','MATLAB:rmpath:DirNotFound');
     path_old=fullfile(regexprep(which(file_to_identify),[ file_to_identify '$' ],'')) ;
     if strcmp(fullfile(pwd,'.'),fullfile(path_old,'.')) ;
        try 
@@ -129,6 +129,7 @@ if (exist(file_to_identify) == 2) ;
         end;
     catch err;
     end;    
+    warning(st.state,'MATLAB:rmpath:DirNotFound');
 end;
 
 status = 0;
