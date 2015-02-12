@@ -186,7 +186,7 @@ if ismember('*',dirstr);
                 else
                     filesepar=filesep;
                 end;
-                
+                dir3=regexprep(dir3,[filesepar '$'],'');
                 dirstr_= sprintf([dir1 '%s' filesepar dir3 pathsep], files_and_dirs{dir_idx});
                 dirstr=[dirstr filter_dir(dirstr_)];
             else
