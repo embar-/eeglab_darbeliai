@@ -1,6 +1,10 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.02.14.1
+% + Galima rinktis savus kanalus atskaitos sistemai.
+% + Galima nurodyti fiksuotą ICA komponenčių kiekį.
+%
 % v2015.01.28.1
 % + ERP savybių peržiūroje failų grupavimas.
 %
