@@ -753,6 +753,12 @@ for i=1:Pasirinktu_failu_N;
                            error(lokaliz('Reference channels not found.'));
                         end;
                         EEG = pop_reref( EEG, reref_chans);
+                    else
+                        reref_chans=[find(ismember({EEG.chanlocs.labels},get(handles.pushbutton18,'UserData'))) ];
+                        if isempty(reref_chans);
+                           error(lokaliz('Reference channels not found.'));
+                        end;
+                        EEG = pop_reref( EEG, reref_chans);
                     end;
                     EEG = eeg_checkset( EEG );
                 catch err;
@@ -1322,12 +1328,16 @@ for i=1:Pasirinktu_failu_N;
                         KanaluNr=find(ismember({EEG.chanlocs.labels},Kanalai));
                     end;                    
                     
-                    % N-1
+                    % komponenčių kiekis
                     switch get(handles.popupmenu4,'Value')
                         case 1
                             ICA_N=length(KanaluNr) ; % (EEG.nbchan);
-                        otherwise
+                        case 2
                             ICA_N=length(KanaluNr) - 1 ;
+                        case 3
+                            ICA_N=str2num(get(handles.edit59,'String')) ;
+                        otherwise
+                            error(lokaliz('Internal error'));
                     end;
                     
                     EEG = pop_runica(EEG, 'chanind', KanaluNr, 'extended',1, 'pca', ICA_N,  'interupt','on');
@@ -2596,10 +2606,12 @@ if and(get(handles.checkbox_rf, 'Value') == 1, ...
     set(handles.popupmenu3,'Enable','on');
     set(handles.checkbox_rf_,'Enable','on');
     set(handles.edit_rf,'Enable','on');
+    set(handles.pushbutton18,'Enable','on');
 else
     set(handles.popupmenu3,'Enable','off');
     set(handles.checkbox_rf_,'Enable','off');
     set(handles.edit_rf,'Enable','off');
+    set(handles.pushbutton18,'Enable','off');
 end;
 checkbox_rf__Callback(hObject, eventdata, handles);
 
@@ -2757,6 +2769,9 @@ function popupmenu3_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu3 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu3
+txts=get(handles.popupmenu3,'String');
+set(handles.popupmenu3,'TooltipString',txts{get(handles.popupmenu3,'Value')});
+
 priesaga='_rf';
 if get(handles.popupmenu3,'Value') == 1 ;
     priesaga='_rfA';
@@ -2825,6 +2840,9 @@ if and(get(handles.checkbox_atrink_kanalus1, 'Value') == 1, ...
     set(handles.edit_atrink_kanalus1,'Enable','on');
     set(handles.pushbutton9,'Enable','on');
     %set(handles.text8,'Visible','on');
+    if ~strcmp('1',get(handles.checkbox_atrink_kanalus1,'UserData'));
+        pushbutton9_Callback(hObject, eventdata, handles);
+    end;
     %disp(get(handles.pushbutton9,'Value'));
     %disp(get(handles.pushbutton9,'UserData'));
     %set(handles.pushbutton9,'UserData',get(handles.pushbutton9,'Value'));
@@ -2833,6 +2851,7 @@ if and(get(handles.checkbox_atrink_kanalus1, 'Value') == 1, ...
         %Pasirinkti_kanalai=textscan(get(handles.text8,'TooltipString'),'%s','delimiter',' ');
         %Pasirinkti_kanalai=Pasirinkti_kanalai{1};
         Pasirinkti_kanalai=get(handles.pushbutton9,'UserData');
+        senas_kan_kiekis=get(handles.text8,'String');
         set(handles.text8,'String',length(Pasirinkti_kanalai));
         Kanal_sar=regexprep(sprintf('%s ', Pasirinkti_kanalai{:}),' $','');
         set(handles.text8,'TooltipString',Kanal_sar);
@@ -2935,11 +2954,12 @@ if and(get(handles.checkbox_ICA, 'Value') == 1, ...
     set(handles.checkbox_ICA_,'Enable','on');
     set(handles.edit_ICA,'Enable','on');
     set(handles.popupmenu4,'Enable','on');
-    
+    set(handles.edit59,'Enable','on');
 else
     set(handles.checkbox_ICA_,'Enable','off');
     set(handles.edit_ICA,'Enable','off');
     set(handles.popupmenu4,'Enable','off');
+    set(handles.edit59,'Enable','off');
     %set(handles.checkbox_MARA, 'Value',0);
     %checkbox_MARA_Callback(hObject, eventdata, handles);
 end;
@@ -2998,6 +3018,11 @@ if and(get(handles.checkbox_atrink_kanalus2, 'Value') == 1, ...
     set(handles.checkbox_atrink_kanalus2_,'Enable','on');
     set(handles.edit_atrink_kanalus2,'Enable','on');
     set(handles.pushbutton7,'Enable','on');
+    
+    
+    if ~strcmp('1',get(handles.checkbox_atrink_kanalus2,'UserData'));
+        pushbutton7_Callback(hObject, eventdata, handles);
+    end;
     
     %disp(get(handles.pushbutton7,'UserData'));
     
@@ -4373,7 +4398,7 @@ else
     set(handles.pushbutton7,'BackgroundColor',[1 1 0]);
     set(handles.pushbutton7,'UserData',{});
 end;
-
+set(handles.checkbox_atrink_kanalus2,'UserData','1');
 
 
 % --- Executes on button press in pushbutton9.
@@ -4509,7 +4534,7 @@ else
     set(handles.pushbutton9,'BackgroundColor',[1 1 0]);
     set(handles.pushbutton9,'UserData',{});
 end;
-
+set(handles.checkbox_atrink_kanalus1,'UserData','1');
 
 
 
@@ -4644,7 +4669,18 @@ function popupmenu4_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu4 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu4
-
+if get(handles.popupmenu4,'Value') > 2;
+    dabar=str2num(get(handles.edit59,'String'));
+    maxim=str2num(get(handles.text_apdorotini_kanalai,'String'));
+    if ~isempty(maxim);
+        if dabar > maxim ;
+            set(handles.edit59,'String',num2str(maxim));            
+        end;
+    end;
+    set(handles.edit59,'Visible','on');
+else    
+    set(handles.edit59,'Visible','off');
+end;
 
 % --- Executes during object creation, after setting all properties.
 function popupmenu4_CreateFcn(hObject, eventdata, handles)
@@ -5509,7 +5545,9 @@ set(handles.popupmenu10,'String', { ...
    lokaliz('(filter) low-pass' ) ...
    lokaliz('(filter) band-pass') ...
    lokaliz('(filter) notch'    ) });
-      
+
+set(handles.popupmenu4,'String', {'N' 'N-1' '...'});
+
 set(handles.edit_kanalu_padetis,       'String', lokaliz('_Nuosekl_apdor_default_file_suffix_chan_position'         ));
 set(handles.edit_rf,                   'String', lokaliz('_Nuosekl_apdor_default_file_suffix_rereference'           ));
 set(handles.edit_atrink_kanalus1,      'String', lokaliz('_Nuosekl_apdor_default_file_suffix_select_chan1'          ));
@@ -5548,8 +5586,7 @@ set(handles.edit_atrink_kanalus2_,      'String', lokaliz('_Nuosekl_apdor_defaul
 set(handles.edit_filtr2_,               'String', lokaliz('_Nuosekl_apdor_default_dir_filter2'               ));
 set(handles.edit_epoch_,                'String', lokaliz('_Nuosekl_apdor_default_dir_epoch'                 ));
 
-
-    
+set(handles.edit59,'TooltipString', lokaliz('Number of independent components'));    
 
 
 
@@ -5975,6 +6012,7 @@ else
     set(handles.pushbutton_apdorotini_kanalai,'BackgroundColor',[1 1 0]);
     set(handles.pushbutton_apdorotini_kanalai,'UserData',{});
 end;
+popupmenu4_Callback(hObject, eventdata, handles);
 
 % --- Executes on button press in pushbutton_v2.
 function pushbutton_v2_Callback(hObject, eventdata, handles)
@@ -6048,6 +6086,126 @@ function pushbutton18_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
+VISI_KANALAI_66={'Fp1' 'Fpz' 'Fp2' 'F7' 'F3' 'Fz' 'F4' 'F8' 'FC5' 'FC1' 'FC2' 'FC6' 'M1' 'T7' 'C3' 'Cz' 'C4' 'T8' 'M2' 'CP5' 'CP1' 'CP2' 'CP6' 'P7' 'P3' 'Pz' 'P4' 'P8' 'POz' 'O1' 'Oz' 'O2' 'AF7' 'AF3' 'AF4' 'AF8' 'F5' 'F1' 'F2' 'F6' 'FC3' 'FCz' 'FC4' 'C5' 'C1' 'C2' 'C6' 'CP3' 'CPz' 'CP4' 'P5' 'P1' 'P2' 'P6' 'PO5' 'PO3' 'PO4' 'PO6' 'FT7' 'FT8' 'TP7' 'TP8' 'PO7' 'PO8' 'EOG' 'EOGh';};
+
+RINKMENOS=get(handles.listbox1,'String');
+if isempty(RINKMENOS);
+    set(handles.edit1,'BackgroundColor',[1 1 0]);
+    drawnow;
+    return; 
+end;
+RINKMENOS=RINKMENOS(get(handles.listbox1,'Value'));
+if isempty(RINKMENOS);
+    set(handles.listbox1,'BackgroundColor',[1 1 0]);    pause(1);
+    set(handles.listbox1,'BackgroundColor',[1 1 1]);    drawnow;
+    return; 
+end;
+set(handles.pushbutton18,'Enable','off'); drawnow;
+[~,visi_galimi_kanalai,bendri_kanalai]=eeg_kanalu_sarasas (get(handles.edit1,'String'), RINKMENOS);
+set(handles.pushbutton18,'Enable','on');
+if isempty(visi_galimi_kanalai);
+    wf=warndlg(lokaliz('No names of channels found.'),lokaliz('Selection of channels'));
+    uiwait(wf);
+    %return;
+end;
+pateikiami_kanalai={};
+pradinis_pasirinkimas=[];
+pateikiami_bendri_v=0;
+if ~isempty(bendri_kanalai); 
+    if length(RINKMENOS) == 1;
+        pateikiami_kanalai={bendri_kanalai{:}};
+        pateikiami_bendri_v=0;
+        pradinis_pasirinkimas=[1:length(bendri_kanalai)];
+    else
+        pateikiami_kanalai={lokaliz('(all common:)') bendri_kanalai{:} };
+        pateikiami_bendri_v=1;
+        pradinis_pasirinkimas=[2:(length(bendri_kanalai)+1)];
+    end;
+end;
+if isempty(visi_galimi_kanalai);
+    nebendri_idx=[];
+    dar_kiti_kanalai=sort(VISI_KANALAI_66);
+else
+    nebendri_idx=find(ismember(visi_galimi_kanalai,bendri_kanalai) == 0);
+    dar_kiti_kanalai=[];
+    %dar_kiti_kanalai=sort(VISI_KANALAI_66(find(ismember(VISI_KANALAI_66,visi_galimi_kanalai)==0)));
+end;
+pateikiami_nebendri_v=0;
+if ~isempty(nebendri_idx); 
+   pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(not common:)') visi_galimi_kanalai{nebendri_idx} };
+   pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_kanalai);
+   if ~pateikiami_bendri_v;
+       pradinis_pasirinkimas=[(pateikiami_nebendri_v +1) : (length(visi_galimi_kanalai) + pateikiami_bendri_v + 1 ) ];
+   end;
+end;
+pateikiami_kiti_v=0;
+if ~isempty(dar_kiti_kanalai); 
+   pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(other:)') dar_kiti_kanalai{:} };
+   pateikiami_kiti_v=1+pateikiami_bendri_v + (pateikiami_nebendri_v ~= 0) + length(visi_galimi_kanalai);
+   disp(pateikiami_kiti_v);
+end;
+%vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
+%Ankstesni_kanalai=get(handles.text8,'TooltipString');
+Ankstesni_kanalai=get(handles.pushbutton18,'UserData');
+if ~isempty(Ankstesni_kanalai);  
+  %Ankstesni_kanalai=textscan(Ankstesni_kanalai,'%s','delimiter',' ');
+  %senas=Ankstesni_kanalai{1};
+  %if ~isempty(senas);
+  %  pradinis_pasirinkimas=find(ismember(pateikiami_kanalai,senas)==1);
+  %end;  
+  pradinis_pasirinkimas=find(ismember(pateikiami_kanalai,Ankstesni_kanalai)==1);
+end;  
+if ~iscellstr(pateikiami_kanalai);
+    warning(lokaliz('unexpected channels types.'),lokaliz('Selection of channels'));
+    disp(pateikiami_kanalai);
+    return;
+end;
+pasirinkti_kanalai_idx=listdlg('ListString', pateikiami_kanalai,...
+    'SelectionMode','multiple',...
+    'PromptString', lokaliz('Select channels:'),...
+    'InitialValue',pradinis_pasirinkimas ,...
+    'OKString',lokaliz('OK'),...
+    'CancelString',lokaliz('Cancel'));
+if isempty(pasirinkti_kanalai_idx); 
+    set(handles.text_apdorotini_kanalai,'String',lokaliz('all'));
+    set(handles.text_apdorotini_kanalai,'TooltipString','');
+    set(handles.pushbutton18,'BackgroundColor','remove');
+    set(handles.pushbutton18,'UserData',{});
+    return ; 
+end;
+pasirinkti_kanalai={};
+if ismember(pateikiami_bendri_v,pasirinkti_kanalai_idx);
+    pasirinkti_kanalai={pasirinkti_kanalai{:} bendri_kanalai{:} };
+end;
+if ismember(pateikiami_nebendri_v,pasirinkti_kanalai_idx);
+    pasirinkti_kanalai={pasirinkti_kanalai{:} visi_galimi_kanalai{nebendri_idx} };
+end;
+if ismember(pateikiami_kiti_v,pasirinkti_kanalai_idx);
+    pasirinkti_kanalai={pasirinkti_kanalai{:} dar_kiti_kanalai{:} };
+end;
+pasirinkti_kanalai_idx_=pasirinkti_kanalai_idx(find(ismember(pasirinkti_kanalai_idx, [pateikiami_bendri_v pateikiami_nebendri_v pateikiami_kiti_v])==0));
+pasirinkti_kanalai=unique({pasirinkti_kanalai{:} pateikiami_kanalai{pasirinkti_kanalai_idx_}});
+pasirinkti_kanalai_str=[pasirinkti_kanalai{1}];
+for i=2:length(pasirinkti_kanalai);
+    pasirinkti_kanalai_str=[pasirinkti_kanalai_str ' ' pasirinkti_kanalai{i}];
+end;
+disp([ '''' regexprep(pasirinkti_kanalai_str, ' ', ''' ''') '''' ]);
+if ~isempty(pasirinkti_kanalai_str) ;
+    %set(handles.text_apdorotini_kanalai,'String',length(pasirinkti_kanalai));
+    %set(handles.text_apdorotini_kanalai,'TooltipString',pasirinkti_kanalai_str);
+    popupmenu3_senas=get(handles.popupmenu3,'String');
+    set(handles.popupmenu3,'String',[popupmenu3_senas(1:3) ; pasirinkti_kanalai_str ]);
+    set(handles.popupmenu3,'Value',length(get(handles.popupmenu3,'String')));
+    
+    set(handles.pushbutton18,'BackgroundColor','remove');
+    set(handles.pushbutton18,'UserData',pasirinkti_kanalai);        
+else
+    %set(handles.text_apdorotini_kanalai,'String','?');
+    %set(handles.text_apdorotini_kanalai,'TooltipString','');
+    set(handles.pushbutton18,'BackgroundColor',[1 1 0]);
+    set(handles.pushbutton18,'UserData',{});
+end;
+popupmenu3_Callback(hObject, eventdata, handles);
 
 function edit59_Callback(hObject, eventdata, handles)
 % hObject    handle to edit59 (see GCBO)
@@ -6062,6 +6220,7 @@ if length(x) == 1 ;
 end;
 set(handles.edit59,'String',num2str(get(handles.edit59,'UserData')));
 set(handles.edit59,'BackgroundColor',[1 1 1]);
+
 
 
 % --- Executes during object creation, after setting all properties.
