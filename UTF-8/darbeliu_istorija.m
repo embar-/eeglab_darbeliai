@@ -1,6 +1,10 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.02.24.1
+% + Eksportuojant į Ragu, EEGLAB duomenų rinkinio kanalai gali būti ne iš eilės 
+%   (tvarka suvienodinama eksportuojant pagal pirmąjį).
+%
 % v2015.02.14.1
 % + Galima rinktis savus kanalus atskaitos sistemai.
 % + Galima nurodyti fiksuotą ICA komponenčių kiekį.

@@ -847,6 +847,7 @@ for i=1:Pasirinktu_failu_N;
             EEGTMP.erp_data=EEGTMP.erp_data(Reikalingi_kanalai_idx,:);
             %disp(length(EEGTMP.chanlocs));
             EEGTMP.chanlocs=EEGTMP.chanlocs(Reikalingi_kanalai_idx);
+            %disp({EEGTMP.chanlocs.labels});
             EEGTMP.nbchan=length(Reikalingi_kanalai_idx);
         else
             [Reikalingi_kanalai_sukaupti,rksi]=unique([ Reikalingi_kanalai_sukaupti {EEGTMP.chanlocs.labels} ]);

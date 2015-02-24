@@ -83,7 +83,8 @@ disp(' === EEG eksportavimas į tekstinį failą RAGU programai ===');
  
 VISI_KANALAI_62={'Fp1' 'Fpz' 'Fp2' 'F7' 'F3' 'Fz' 'F4' 'F8' 'FC5' 'FC1' 'FC2' 'FC6' 'T7' 'C3' 'Cz' 'C4' 'T8' 'CP5' 'CP1' 'CP2' 'CP6' 'P7' 'P3' 'Pz' 'P4' 'P8' 'POz' 'O1' 'Oz' 'O2' 'AF7' 'AF3' 'AF4' 'AF8' 'F5' 'F1' 'F2' 'F6' 'FC3' 'FCz' 'FC4' 'C5' 'C1' 'C2' 'C6' 'CP3' 'CPz' 'CP4' 'P5' 'P1' 'P2' 'P6' 'PO5' 'PO3' 'PO4' 'PO6' 'FT7' 'FT8' 'TP7' 'TP8' 'PO7' 'PO8' ;};
 EEG_filenames={};
- 
+precision=7;
+
 % Duomenų įkėlimas
 button='Atverti naujus';
 if ~isempty(EEG);
@@ -138,21 +139,21 @@ disp('Tikrinami duomenys...');
 if length(ALLEEG) > 1 ;
     if ~isequal(EEG.srate) ;
         msg='Skiriasi duomenų kvantavimo dažnis! Duomenų suvienodinimui galite pasinaudoti tam skirta funkcija per meniu Tools > Change sampling rate';
-        disp(msg);
+        warning(msg);
         warndlg(msg, 'Duomenys nesuderinami!' );
         % feature('DefaultCharacterSet',koduote);
         return ;
     end;
     if ~isequal(EEG.pnts) ;
         msg=['Skiriasi EEG įrašų trukmės! Trukmių suvienodinimui galite pasinaudoti tam skirta funkcija per meniu Darbeliai > Nuoseklus apdorojimas' ];
-        disp(msg);
+        warning(msg);
         warndlg(msg, 'Duomenys nesuderinami!' );
         % feature('DefaultCharacterSet',koduote);
         return ;
     end;   
     if ~isequal(EEG.nbchan) ;
         msg='EEG įrašuose skirtingas kanalų kiekis! Kanalų atrinkimui galite pasinaudoti tam skirta funkcija per meniu Darbeliai > Nuoseklus apdorojimas';
-        disp(msg);
+        warning(msg);
         warndlg(msg, 'Duomenys nesuderinami!' );
         % feature('DefaultCharacterSet',koduote);
         return ;
@@ -161,16 +162,17 @@ if length(ALLEEG) > 1 ;
     for i=1:length(ALLEEG);  
         ChanLocs(i,1:length({EEG(1).chanlocs.labels}))={EEG(i).chanlocs.labels};
     end;
-    for i=1:size(ChanLocs,2);  
-        if ~isequal(ChanLocs{:,i});
-            msg='EEG įrašuose nesutampa kanalai arba jų eiliškumas! Kanalų suvienodinimui galite pasinaudoti kanalų atrinkimo funkcija per meniu Darbeliai > Nuoseklus apdorojimas';
-            disp(msg);
+    ChanLocsUniq=unique(ChanLocs)';
+    for i=1:size(ChanLocs,1);  
+        if ~isequal(ChanLocsUniq,unique(ChanLocs(i,:)));
+            msg='EEG įrašuose nesutampa kanalai! Kanalų suvienodinimui galite pasinaudoti kanalų atrinkimo funkcija per meniu Darbeliai > Nuoseklus apdorojimas';
+            warning(msg);
             warndlg(msg, 'Duomenys nesuderinami!' );
             % feature('DefaultCharacterSet',koduote);
             return ;
         end;
     end;
-    Svetimi_kanalai=setdiff(upper(ChanLocs(1,:)),intersect(upper(VISI_KANALAI_62),upper(ChanLocs(1,:))));
+    Svetimi_kanalai=setdiff(upper(ChanLocsUniq),intersect(upper(VISI_KANALAI_62),upper(ChanLocsUniq)));
     if ~isempty(Svetimi_kanalai) ;
         %msg=['Kanalai, kurie neturi atitikmens Ragu schemoje: ' [ Svetimi_kanalai ] 'Kanalų atrinkimui galite pasinaudoti tam skirta funkcija ' 'per meniu Darbeliai > Nuoseklus apdorojimas' ] ;
         msg=['Kai kurie kanalai neturi atitikmens Ragu schemoje: ' [ Svetimi_kanalai ] 'Jie nebus eksportuojami.' ] ;
@@ -209,7 +211,8 @@ elseif length(ALLEEG) == 1 ;
     for i=1:length(ALLEEG);  
         ChanLocs(i,1:length({EEG(1).chanlocs.labels}))={EEG(i).chanlocs.labels};
     end;
-    Svetimi_kanalai=setdiff(upper(ChanLocs(1,:)),intersect(upper(VISI_KANALAI_62),upper(ChanLocs(1,:))));
+    ChanLocsUniq=unique(ChanLocs)';
+    Svetimi_kanalai=setdiff(upper(ChanLocsUniq),intersect(upper(VISI_KANALAI_62),upper(ChanLocsUniq)));
     if ~isempty(Svetimi_kanalai) ;
         %msg=['Kanalai, kurie neturi atitikmens Ragu schemoje: ' [ Svetimi_kanalai ] 'Kanalų atrinkimui galite pasinaudoti tam skirta funkcija ' 'per meniu Darbeliai > Nuoseklus apdorojimas' ] ;
         msg=['Kai kurie kanalai neturi atitikmens Ragu schemoje: ' [ Svetimi_kanalai ] 'Jie nebus eksportuojami.' ] ;
@@ -219,16 +222,20 @@ elseif length(ALLEEG) == 1 ;
         %return ;
     end;
 end;
- 
+EEGLAB_ChanLocs=EEG(1).chanlocs;
+
 % Paklausti, kur saugoti duomenis
 try
     if isempty(folder_name);
     folder_name = uigetdir(pwd, 'Pasirinkite aplanką, į kurį eksportuoti EEG duomenis tekstiniu pavidalu') ;
     end;
-    try
-        mkdir(fullfile (folder_name, 'info'));
-    catch err;
-    end
+    new_folder=fullfile(folder_name, 'info');
+    if ~isequal(exist(new_folder,'dir'),7);
+        try
+            mkdir(new_folder);
+        catch err;
+        end;
+    end;
     %cd(folder_name) ;
     disp(' ');
     disp('Duomenys bus rašomi į:');
@@ -274,21 +281,39 @@ for i=1:length(ALLEEG) ;
             %lango_erp=mean([EEGTMP.data(:,idx1:idx2,:)],3);
         end;
        
-        TMPEEG = pop_select( EEG,'channel',intersect(upper(VISI_KANALAI_62),upper(ChanLocs(1,:))));
-       
         if isempty(EEG.data);
             error(lokaliz('Empty dataset'));
         end;
+        
+        TMPEEG = pop_select( EEG,'channel',intersect(upper(VISI_KANALAI_62),upper(ChanLocsUniq)));
        
         %end;
         %     if min_trials > 0 ;
         %        EEG = pop_selectevent( EEG, 'epoch',[1:min_trials] ,'deleteevents','off', 'deleteepochs','on', 'invertepochs','off');
         %     end;
+        
+%         if ~isempty(TMPEEG.epoch); % TMPEEG.trials > 0 ; % size(TMPEEG.data,3) >1 %
+%             pop_export(TMPEEG, Rinkmena, 'transpose','on','elec','on','time','off','erp','on','precision',7);
+%         else
+%             pop_export(TMPEEG, Rinkmena, 'transpose','on','elec','on','time','off','erp','off','precision',7);
+%         end;        
+        
+        x = TMPEEG.data;
         if ~isempty(TMPEEG.epoch); % TMPEEG.trials > 0 ; % size(TMPEEG.data,3) >1 %
-            pop_export(TMPEEG, Rinkmena, 'transpose','on','elec','off','time','off','erp','on','precision',7);
+            x = mean(x, 3);
         else
-            pop_export(TMPEEG, Rinkmena, 'transpose','on','elec','off','time','off','erp','off','precision',7);
+            x = reshape(x, size(x,1), size(x,2)*size(x,3));
         end;
+        xx=nan(size(x));
+        strprintf = '';
+        for index = 1:size(x,1);
+            xx(index,:)=x(find(ismember(ChanLocs(1,:),TMPEEG.chanlocs(index).labels)),:);
+            strprintf = [ strprintf '%.' num2str(precision) 'f\t' ];
+        end;
+        strprintf(end) = 'n';
+        fid = fopen(Rinkmena, 'w');
+        fprintf(fid, strprintf, xx);
+        fclose(fid);
        
     catch err;
         warning(err.message);
@@ -311,24 +336,23 @@ disp(' ');
 % Eksportavimas kanalų padėčių sąrašo
 disp(' ');
 disp('Eksportuojama kanalų schema...');
-ChN=length(EEG(1).chanlocs);
+ChN=length(EEGLAB_ChanLocs);
 %fid = fopen(['_patikimos_' num2str(ChN) '_kanalu_padetys_' datestr(now, 'yyyy-mm-dd_HHMMSS') '.sxyz'], 'w');
 %fprintf(fid, [ num2str(ChN) '\r\n' ]);
 for i=1:ChN;
-    %fprintf(fid, [ num2str(EEG(1).chanlocs(i).Y) ' '  num2str(EEG(1).chanlocs(i).X) ' '  num2str(EEG(1).chanlocs(i).Z) ' ' EEG(1).chanlocs(i).labels '\r\n']);
+    %fprintf(fid, [ num2str(EEGLAB_ChanLocs(i).Y) ' '  num2str(EEGLAB_ChanLocs(i).X) ' '  num2str(EEGLAB_ChanLocs(i).Z) ' ' EEGLAB_ChanLocs(i).labels '\r\n']);
     Channel(i).DataUnit = 1;
-    Channel(i).Name = EEG(1).chanlocs(i).labels ;
-    Channel(i).RefName = EEG(1).chanlocs(i).ref ;
-    Channel(i).CoordsPhi = EEG(1).chanlocs(i).sph_phi ;
-    Channel(i).CoordsRadius = EEG(1).chanlocs(i).radius ;
-    Channel(i).CoordsTheta = EEG(1).chanlocs(i).sph_theta  ;
+    Channel(i).Name = EEGLAB_ChanLocs(i).labels ;
+    Channel(i).RefName = EEGLAB_ChanLocs(i).ref ;
+    Channel(i).CoordsPhi = EEGLAB_ChanLocs(i).sph_phi ;
+    Channel(i).CoordsRadius = EEGLAB_ChanLocs(i).radius ;
+    Channel(i).CoordsTheta = EEGLAB_ChanLocs(i).sph_theta  ;
     Channel(i).UnitString = '?V' ;
     Channel(i).ChannelColor = 'ARGBColor:255:0:0:0' ;
-% Channel_sxyz{i,1}=[EEG(1).chanlocs(i).X; EEG(1).chanlocs(i).Y ; EEG(1).chanlocs(i).Z; EEG(1).chanlocs(i).labels] ;
+% Channel_sxyz{i,1}=[EEGLAB_ChanLocs(i).X; EEGLAB_ChanLocs(i).Y ; EEGLAB_ChanLocs(i).Z; EEGLAB_ChanLocs(i).labels] ;
 end;
 %fclose(fid);
  
-EEGLAB_ChanLocs=EEG(1).chanlocs;
 %save( [ '_nepatikimos_' num2str(ChN) '_kanalu_padetys_' datestr(now, 'yyyy-mm-dd_HHMMSS') '.mat' ],'Channel', 'EEGLAB_ChanLocs');
  
 Channel={};
@@ -337,9 +361,9 @@ Channel62=Channel;
 Channel=struct('DataUnit', {}, 'Name', {}, 'RefName', {}, 'CoordsPhi', {}, 'CoordsRadius', {}, 'CoordsTheta', {}, 'UnitString', {}, 'ChannelColor', {});
 for i=1:ChN;
    try
-      Channel(1+length(Channel))=Channel62(find(ismember(upper([{Channel62.Name}]),upper(EEG(1).chanlocs(i).labels))));
+      Channel(1+length(Channel))=Channel62(find(ismember(upper([{Channel62.Name}]),upper(EEGLAB_ChanLocs(i).labels))));
    catch err ;
-      msg=['Bus praleistas kanalas: ' EEG(1).chanlocs(i).labels ] ;
+      msg=['Bus praleistas kanalas: ' EEGLAB_ChanLocs(i).labels ] ;
       disp(msg);
       %warndlg(msg,'Nepilna schema');
    end;
