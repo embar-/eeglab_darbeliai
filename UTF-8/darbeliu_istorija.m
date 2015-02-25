@@ -2,7 +2,7 @@
 % Pakeitimai:
 % ------------------------
 % v2015.02.25.1
-% + „Nuoseklus apdorojimas“ nenulūš užvėrus kanalų pasirinkimas interpoliavimui dialogą.
+% + „Nuoseklus apdorojimas“ nenulūš užvėrus kanalų pasirinkimo interpoliavimui dialogą.
 %
 % v2015.02.24.1
 % + Eksportuojant į Ragu, EEGLAB duomenų rinkinio kanalai gali būti ne iš eilės 
