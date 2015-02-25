@@ -4324,6 +4324,7 @@ if ~isempty(nebendri_idx);
        disp(pradinis_pasirinkimas);
    end;
 end;
+pateikiami_kiti_v=0;
 if ~isempty(dar_kiti_kanalai); 
    pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(other:)') dar_kiti_kanalai{:} };
    pateikiami_kiti_v=1+pateikiami_bendri_v + (pateikiami_nebendri_v ~= 0) + length(visi_galimi_kanalai);

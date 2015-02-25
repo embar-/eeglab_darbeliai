@@ -870,7 +870,11 @@ end ;
 disp([ Rezultatu_TXT_failas ' (galite atverti su MS Excel ar LibreOffice Calc)' ] );
 fid=fopen(Rezultatu_TXT_failas, 'w');
 % Antraštė
-fprintf(fid, sprintf('Rinkmena\tSalygos\tDazniu_sritys\tDazniu_sriciu_int'));
+if exist('lokaliz','file') == 2;
+fprintf(fid, sprintf([ lokaliz('Rinkmena') '\t' lokaliz('Salyga') '\t' lokaliz('Freq_int_name') '\t' lokaliz('Freq_interval') ] ));
+else
+fprintf(fid, sprintf('Rinkmena\tSalyga\tDazniu_int_pav\tDazniu_interv'));
+end;
 fprintf(fid, '\t%s', DUOMENYS.VISU.NORIMI_KANALAI{:});
 fprintf(fid, sprintf('\n'));
 for tir=1:DUOMENYS.VISU.Tiriamuju_N ;
