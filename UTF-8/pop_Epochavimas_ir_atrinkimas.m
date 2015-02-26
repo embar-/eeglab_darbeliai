@@ -364,9 +364,9 @@ set(handles.edit51,'Enable','on');
 set(handles.edit59,'Enable','on');
 set(handles.edit54,'Enable','on');
 set(handles.edit55,'Enable','on');
-set(handles.edit56,'Enable','on');
+%set(handles.edit56,'Enable','on');
 set(handles.edit57,'Enable','on');
-set(handles.edit58,'Enable','on');
+%set(handles.edit58,'Enable','on');
 set(handles.edit60,'Enable','on');
 set(handles.edit62,'Enable','on');
 
@@ -375,6 +375,9 @@ set(handles.checkbox57,'Enable','on');
 
 checkbox55_Callback(hObject, eventdata, handles);
 checkbox57_Callback(hObject, eventdata, handles);
+
+edit55_Callback(hObject, eventdata, handles);
+edit57_Callback(hObject, eventdata, handles);
 
 uipanel15_SelectionChangeFcn(hObject, eventdata, handles);
 
