@@ -1,6 +1,9 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.03.14.1
+% + Automatinis dažnių srities intervalo nustatymas skaičiuojant visą spektrinę galią.
+%
 % v2015.02.25.1
 % + „Nuoseklus apdorojimas“ nenulūš užvėrus kanalų pasirinkimo interpoliavimui dialogą.
 %

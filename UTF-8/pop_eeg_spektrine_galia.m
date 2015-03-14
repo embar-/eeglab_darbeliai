@@ -68,7 +68,7 @@ function varargout = pop_eeg_spektrine_galia(varargin)
 
 % Edit the above text to modify the response to help pop_eeg_spektrine_galia
 
-% Last Modified by GUIDE v2.5 19-Jan-2015 18:53:56
+% Last Modified by GUIDE v2.5 14-Mar-2015 11:32:39
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -287,7 +287,8 @@ set(handles.radiobutton6,'Enable','off');
 set(handles.radiobutton7,'Enable','off');
 
 set(handles.uitable1,'Enable','off');
-set(handles.edit51,'Enable','off');
+set(handles.checkbox79,'Enable','off');
+checkbox79_Callback(hObject, eventdata, handles);
 set(handles.edit_tikslumas,'Enable','off');
 set(handles.edit_fft_langas,'Enable','off');
 set(handles.edit_doc,'Enable','off');
@@ -332,7 +333,8 @@ set(handles.radiobutton6,'Enable','on');
 set(handles.radiobutton7,'Enable','on');
 
 set(handles.uitable1,'Enable','on');
-set(handles.edit51,'Enable','on');
+set(handles.checkbox79,'Enable','on');
+checkbox79_Callback(hObject, eventdata, handles);
 set(handles.edit_tikslumas,'Enable','on');
 set(handles.edit_fft_langas,'Enable','on');
 set(handles.edit_doc,'Enable','on');
@@ -1833,10 +1835,18 @@ function uitable1_CellEditCallback(hObject, eventdata, handles)
 %	Error: error string when failed to convert EditData to appropriate value for Data
 % handles    structure with handles and user data (see GUIDATA)
 try
-    set(handles.uitable1,'Data',sortrows(get(handles.uitable1,'Data'),[2 3 1]));
+    lentele=get(handles.uitable1,'Data');
+    set(handles.uitable1,'Data',sortrows(lentele,[2 3 1]));
+    if get(handles.checkbox79,'Value');
+        interv=[min([lentele{:,2}]) max([lentele{:,3}])];
+        disp(interv);
+        set(handles.edit51,'String',num2str(interv));
+        edit51_Callback(hObject, eventdata, handles);
+    end;
 catch err;
     set(handles.uitable1,'BackgroundColor', [1 1 0]);
 end;
+  
 Ar_galima_vykdyti(hObject, eventdata, handles);
 checkbox_perziura_Callback(hObject, eventdata, handles);
 
@@ -2027,3 +2037,20 @@ set(handles.axes1,'units',uni);
 set(handles.axes1,'Position',poz);
 axes(nauj);
 legenda(hObject, eventdata, handles);
+
+
+% --- Executes on button press in checkbox79.
+function checkbox79_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox79 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox79
+if and(~get(handles.checkbox79,'Value'),...
+    strcmp(get(handles.checkbox79,'Enable'),'on'));
+    set(handles.edit51,'Enable','on');
+else
+    set(handles.edit51,'Enable','off');
+end;
+   
+

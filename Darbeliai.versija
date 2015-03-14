@@ -1,2 +1,3 @@
-Darbeliai v2015.02.25.1
-„Nuoseklus apdorojimas“ nenulūš užvėrus kanalų pasirinkimo interpoliavimui dialogą.
+Darbeliai v2015.03.14.1
+Automatinis dažnių srities intervalo nustatymas skaičiuojant visą spektrinę galią.
+Automatic frequency interval guessing for all spectral power. 
