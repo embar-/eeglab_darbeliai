@@ -830,7 +830,7 @@ for i=1:Pasirinktu_failu_N;
                     if isempty(EKG_kanalas);
                         laikai=num2cell(pop_RRI_perziura(R_laikai,1));
                     else
-                        laikai=num2cell(pop_RRI_perziura(R_laikai,1,[EEG.data(EKG_kanalas,:)]',EEG.times'));
+                        laikai=num2cell(pop_RRI_perziura(R_laikai,1,[EEG.data(EKG_kanalas,:)]',EEG.times' * 0.001));
                     end;
                     
                     if isempty(laikai);
