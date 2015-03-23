@@ -568,8 +568,13 @@ for i=1:Pasirinktu_failu_N;
                     
                     skaiciai=str2num(get(handles.edit51,'String'));
                     
+                    try
                     Pasirinkti_kanalai_yra_Nr=find(ismember({EEG.chanlocs.labels},Pasirinkti_kanalai));
                     Pasirinkti_kanalai_yra=Pasirinkti_kanalai(find(ismember(Pasirinkti_kanalai,{EEG.chanlocs.labels})));
+                    catch err;
+                        Pasirinkti_kanalai_yra_Nr=[];
+                        Pasirinkti_kanalai_yra={};
+                    end;
                     
                     Epochuoti_pagal_stimulus_=get(handles.pushbutton_epoch_iv,'UserData') ;
                     Epochuoti_pagal_stimulus={};
