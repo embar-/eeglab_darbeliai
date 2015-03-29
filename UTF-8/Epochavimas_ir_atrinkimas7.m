@@ -213,16 +213,16 @@ end ;
 % Sukurti nauja aplanka, kuriame patalpinsime naujai sukursimus failus
 
 try
-    if ~exist(fullfile(pwd,NewDir),'dir') == 7;
+    if ~(exist(fullfile(pwd,NewDir),'dir') == 7);
         mkdir(NewDir);
     end;
 catch err;
-    disp(err.message);
+    warning(err.message);
 end;
 try
     cd(NewDir);
 catch err;
-    disp(err.message);
+    warning(err.message);
     %Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
 end;
 NewDir=pwd;
