@@ -1813,6 +1813,7 @@ function pushbutton18_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 senas=get(handles.uitable1,'Data');
 set(handles.uitable1,'Data',senas(1:end-1,:));
+edit51_Callback(hObject, eventdata, handles);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 checkbox_perziura_Callback(hObject, eventdata, handles);
 
