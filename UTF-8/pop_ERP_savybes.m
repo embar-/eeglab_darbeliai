@@ -1193,7 +1193,8 @@ if and(Ar_eksportuoti_savybes,~isempty(ALLEEG_(1).file));
                     fprintf(dok_id,'\r\n');
                 end;
                 fclose(dok_id);
-                %%
+                % Atvverti po įrašymo
+                open(dok);
             case 3
                 ERP_info=Excel_lentele;
                 save(fullfile(KELIAS_SAUGOJIMUI,dokumentas_savybiu_eksportui),'ERP_info','ERP_savyb','lentele');

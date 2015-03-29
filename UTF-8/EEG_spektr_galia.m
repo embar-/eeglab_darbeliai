@@ -466,9 +466,13 @@ for i=1:DUOMENYS.VISU.Dazniu_sriciu_N;
             tasku_sritis= [tasku_sritis_nuo:tasku_sritis_iki];
             % DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,sal}(tir,1:DUOMENYS.VISU.KANALU_N)= ( DUOMENYS.VISU.Dazniu_sritys{i}(2) - DUOMENYS.VISU.Dazniu_sritys{i}(1) ) * mean(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{tir,sal}(:,tasku_sritis),2)';
             for kan=1:DUOMENYS.VISU.KANALU_N;
+                try
                 DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,sal}(tir,kan)= ...
                     trapz(DUOMENYS.VISU.DAZNIAI(tasku_sritis), ...
                     DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{tir,sal}(kan,tasku_sritis));
+                catch err;
+                    warning([DUOMENYS.VISU.Tiriamieji{tir} ' : ' DUOMENYS.VISU.KANALAI{kan} ' : ' num2str(DUOMENYS.VISU.Dazniu_sritys{i}(1)) '-' num2str(DUOMENYS.VISU.Dazniu_sritys{i}(2)) 'Hz '  ] );
+                end;
             end;
         end;
     end;
@@ -920,6 +924,11 @@ for tir=1:DUOMENYS.VISU.Tiriamuju_N ;
     end;
 end;
 fclose(fid);
+end;
+try 
+    open(Rezultatu_TXT_failas);
+catch err;
+    warning(err.message);
 end;
 
 %% Išsaugoti į MAT
