@@ -1,6 +1,9 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.03.29.1
+% + Atverti sukurtus tekstinius failus.
+%
 % v2015.03.14.1
 % + Automatinis dažnių srities intervalo nustatymas skaičiuojant visą spektrinę galią.
 %

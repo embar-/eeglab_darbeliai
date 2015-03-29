@@ -1182,7 +1182,7 @@ if and(Ar_eksportuoti_savybes,~isempty(ALLEEG_(1).file));
                 lakstas=lango_intervalas_zodziu;
                 xlswrite(fullfile(KELIAS_SAUGOJIMUI,dokumentas_savybiu_eksportui), Excel_lentele, lakstas);
             case 2
-                %%
+                %
                 dok=[regexprep(dok,'.txt$','') '.txt']; % visada .txt galūnė
                 dok_id=fopen(dok,'w');
                 %size(Excel_lentele)
@@ -1193,7 +1193,8 @@ if and(Ar_eksportuoti_savybes,~isempty(ALLEEG_(1).file));
                     fprintf(dok_id,'\r\n');
                 end;
                 fclose(dok_id);
-                %%
+                % Atvverti po įrašymo
+                open(dok);
             case 3
                 ERP_info=Excel_lentele;
                 save(fullfile(KELIAS_SAUGOJIMUI,dokumentas_savybiu_eksportui),'ERP_info','ERP_savyb','lentele');
