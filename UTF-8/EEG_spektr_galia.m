@@ -926,7 +926,9 @@ end;
 fclose(fid);
 end;
 try 
-    open(Rezultatu_TXT_failas);
+    if exist(Rezultatu_TXT_failas); 
+        open(Rezultatu_TXT_failas); 
+    end
 catch err;
     warning(err.message);
 end;
