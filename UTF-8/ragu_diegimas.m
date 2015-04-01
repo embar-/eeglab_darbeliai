@@ -102,3 +102,5 @@ else
     end;
 end;
 
+rehash toolbox;
+
