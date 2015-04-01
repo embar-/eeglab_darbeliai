@@ -2,8 +2,7 @@
 %
 %
 %
-%
-% ERP savybių tyrinėjimui
+% Savita komanda
 %
 % GUI versija
 %
@@ -161,8 +160,10 @@ set(handles.edit_failu_filtras1,'String','*.set');
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 
-%susaldyk(hObject, eventdata, handles);
+set(handles.text_atlikta_darbu,'Visible','off');
+set(handles.text19,'Visible','off'); % atliktų darbų paaiškinimas
 
+%susaldyk(hObject, eventdata, handles);
 susildyk(hObject, eventdata, handles);
 
 tic;
@@ -320,7 +321,7 @@ set(handles.pushbutton14,'Enable','on');
 set(handles.pushbutton_v1,'Enable','on');
 set(handles.pushbutton_v2,'Enable','on');
 set(handles.radiobutton6,'Enable','on');
-set(handles.radiobutton7,'Enable','on');
+set(handles.radiobutton7,'Enable','off');
 
 
 set(handles.edit51,'Enable','on');
