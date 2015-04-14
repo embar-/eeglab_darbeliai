@@ -1,21 +1,24 @@
 eeglab_darbeliai
 ================
 
-EEGLAB plugin to do variuos tasks in GUI or command line:
-* rename datasets;
-* execute sequence of EEG processing jobs;
-* incorporate ECG signal into EEG, or just mark QRS events;
-* epoching - simple and conditional (e.g. by particular stimulus if particular response exist);
-* ERP analysis;
-* EEG spektral power analysis, both absolute and relative power for 
-  power bands (delta, theta, alpha, beta) are supported;
-* custom command execution for list of datasets.
+EEGLAB plugin Darbeliai was created with intention to facilitate batch processing of selected EEG data files in graphical user interface (GUI). Darbeliai uses EEG data files in various formats (\*.set, \*.edf, \*.cnt and others) as input directly, and outputs processed data directly to files in EEGLAB data format (\*.set), so this in contrast to EEGLAB itseft where user must work with EEG datasets. So (in most cases) you no longer need to care about EEG data importing from raw EEG files into EEGLAB dataset and writing processed data back to file. 
 
-Other features: 
-* Two languages supported (Lithuanian and English) and it would be easy to add more;
-* RAGU integration;
-* ECG and/or RRI preview dialog;
-* ability to work with multiple subdirectories.
+In Lithuanian – the most archaic live Indoeuropean language – darbeliai means the little works. 
+This EEGLAB plugin allows you to acomplish these jobs:
+* rename EEG data files according dataset atributes (like subject, group, experiment condition or session), also extract these atributes from filenames and edit them manually (only EEGLAB *.set files supported);
+* execute sequence of selected EEG processing tasks; results of each separate task can be saved with different filename suffix and/or into different subfolder.
+* simple and conditional epoching (e.g. by particular stimulus if particular response exist);
+* ERP visualization and feature extraction, exporting not only file-by-file, but also averages for subjects, groups, sessions, conditions separately, filtered by event type, channels and for custom time window;
+* EEG spectral power analysis for both absolute and relative power in separate customisable power bands, though delta, theta, alpha, beta are predefined;
+* custom command execution for list of data files.
+
+Other features:
+* filename filtering separately for listing available files and for selecting them;
+* ability to work with multiple subdirectories;
+* Loading files into EEGLAB as datasets after completing job;
+* RAGU integration in menu, ERP data exporting for RAGU;
+* two languages supported (Lithuanian and English) and it would be easy to add more;
+* multiplatform: tested in Windows and Linux, with systems of different encodings.
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
