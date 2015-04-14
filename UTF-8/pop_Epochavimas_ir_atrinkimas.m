@@ -1604,7 +1604,7 @@ function edit56_Callback(hObject, eventdata, handles)
 elementas=handles.edit56;
 x=str2num(get(elementas,'String'));
 epoch_interval=str2num(get(handles.edit55,'String'));
-if length(x) == 2 ;
+if and(length(x) == 2, strcmp(get(elementas,'Enable'),'on')) ;
     x(1)=max(x(1),epoch_interval(1));
     x(2)=min(x(2),epoch_interval(2));
     if x(1) < x(2);
@@ -1686,7 +1686,7 @@ function edit58_Callback(hObject, eventdata, handles)
 elementas=handles.edit58;
 x=str2num(get(elementas,'String'));
 epoch_interval=str2num(get(handles.edit57,'String'));
-if length(x) == 2 ;
+if and(length(x) == 2, strcmp(get(elementas,'Enable'),'on')) ;
     x(1)=max(x(1),epoch_interval(1));
     x(2)=min(x(2),epoch_interval(2));
     if x(1) < x(2);
