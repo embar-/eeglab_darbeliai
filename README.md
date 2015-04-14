@@ -38,6 +38,6 @@ Other features:
  
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-  (C) 2014 Mindaugas Baranauskas   
+  (C) 2014-2015 Mindaugas Baranauskas   
  
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
