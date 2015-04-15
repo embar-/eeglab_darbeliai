@@ -68,7 +68,7 @@ function varargout = pop_eeg_spektrine_galia(varargin)
 
 % Edit the above text to modify the response to help pop_eeg_spektrine_galia
 
-% Last Modified by GUIDE v2.5 14-Mar-2015 11:32:39
+% Last Modified by GUIDE v2.5 15-Apr-2015 12:45:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -137,6 +137,7 @@ end;
 set(handles.pushbutton_v1,'UserData',{});
 set(handles.pushbutton_v2,'UserData',{});
 set(handles.checkbox_perziura,'Value',0);
+set(handles.radiobutton_spektras,'Visible','on');
 
 atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
 KELIAS=pwd;
@@ -297,6 +298,7 @@ set(handles.checkbox_perziura,'Enable','off');
 set(handles.checkbox_interpol,'Enable','off');
 checkbox_perziura_Callback(hObject, eventdata, handles);
 popupmenu_doc_Callback(hObject, eventdata, handles);
+set(handles.radiobutton_spektras,'Enable','off');
 set(handles.radiobutton_galia_absol,'Enable','off');
 set(handles.radiobutton_galia_santyk,'Enable','off');
 
@@ -1392,13 +1394,14 @@ set(handles.checkbox_baigti_anksciau,'String',lokaliz('Break work'));
 set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'String',lokaliz('Go to saved files directory when completed'));
 set(handles.checkbox_pabaigus_atverti,'String',lokaliz('Load saved files in EEGLAB when completed'));
 set(handles.checkbox_interpol,'String',lokaliz('Allow interpolate channels'));
+set(handles.radiobutton_spektras,'String',lokaliz('Spectrum'));
 set(handles.checkbox75,'String',lokaliz('Spectrum'));
 set(handles.radiobutton_galia_absol,'String',lokaliz('Absolute power'));
 set(handles.checkbox76,'String',lokaliz('Absolute power'));
 set(handles.radiobutton_galia_santyk,'String',lokaliz('Relative power'));
 set(handles.checkbox77,'String',lokaliz('Relative power'));
 set(handles.checkbox_legenda,'String',lokaliz('Legend'));
-set(handles.togglebutton2,'String',lokaliz('Cancel'));
+set(handles.palaukite,'String',lokaliz('Palaukite!'));
 set(handles.text53,'String', [ lokaliz('FFT window length') ' '  lokaliz('(seconds_short)') ]);
 set(handles.text52,'String', lokaliz('Spectrum steps in 1 Hz:'));
 stlp1=lokaliz('Spectrum band');
@@ -1643,7 +1646,7 @@ if strcmp(get(handles.pushbutton1,'Enable'),'off');
     return;
 end;
 
-set(handles.togglebutton2,'Visible','on');
+set(handles.palaukite,'Visible','on');
 susaldyk(hObject, eventdata, handles);
 drawnow;
 
@@ -1670,7 +1673,7 @@ else
     if isempty(Pasirinkti_kanalai);
         warndlg(lokaliz('No common names of channels found.'),lokaliz('Selection of channels'));
         susildyk(hObject, eventdata, handles);
-        set(handles.togglebutton2,'Visible','off');
+        set(handles.palaukite,'Visible','off');
         return;
     end
     disp('Parinkti kanalai:');
@@ -1711,27 +1714,75 @@ try
     cla;
     
     if get(handles.radiobutton_spektras,'Value');
+        ylabel('log_{10}(\muV^{2}/Hz)');
+        set(handles.axes1,'XLim',str2num(get(handles.edit51,'String')));
+        set(handles.axes1,'XTickMode', 'auto');
+        set(handles.axes1,'XTickLabelMode', 'auto');
+        %set(handles.axes1,'XTick',[0 10 20 30 40 50 60]);
+        %set(handles.axes1,'XTickLabel',{'0' '10' '20' '30' '40' '50' '    60, Hz'});
+        tmp_lab=get(handles.axes1,'XTickLabel');
+        tmp_lab=[ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab(end,:) ' Hz' ]} ] ;
+        set(handles.axes1,'XTickLabel', tmp_lab);
         hold('on');
-        for i=2:DUOMENYS.VISU.Dazniu_sriciu_N;            
-            for j=1:DUOMENYS.VISU.Tiriamuju_N;
-                % FIXME: NOT REALIZED YET
-                % Dar nesukurta
+        TMP_SPEKTR=nan(DUOMENYS.VISU.KANALU_N * DUOMENYS.VISU.Tiriamuju_N, size(DUOMENYS.VISU.DAZNIAI,1));
+        for k=1:DUOMENYS.VISU.KANALU_N;
+            for i=1:DUOMENYS.VISU.Tiriamuju_N;
+                l=size(legendoje,1);
+                legendoje{l+1,1}=regexprep(DUOMENYS.VISU.failai{i},'.set$','');
+                legendoje{l+1,2}=DUOMENYS.VISU.KANALAI{k};
+                TMP_SPEKTR((k-1)*DUOMENYS.VISU.Tiriamuju_N + i,:)=log10(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{i,1}(k,:));
+            end;
+        end;
+        plot(DUOMENYS.VISU.DAZNIAI,TMP_SPEKTR);
+    end;
+    
+    if get(handles.radiobutton_galia_absol,'Value');
+        ylabel('\muV^{2}');
+        hold('on');
+        if (DUOMENYS.VISU.Dazniu_sriciu_N > 1 );
+            set(handles.axes1,'XLim',[1.5 DUOMENYS.VISU.Dazniu_sriciu_N + 0.5]);
+            set(handles.axes1,'XTick',[2:DUOMENYS.VISU.Dazniu_sriciu_N]');
+            set(handles.axes1,'XTickLabel',DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(2:end));
+            for i=2:DUOMENYS.VISU.Dazniu_sriciu_N;
+                for j=1:DUOMENYS.VISU.Tiriamuju_N;
+                    %plot(i,DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,1}(j,:),'o');
+                end;
+                plot(i,DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,1}(:),'o');
+            end;
+            
+        else
+            set(handles.axes1,'XLim',[1.5 2.5]);
+            set(handles.axes1,'XTick',[2]);
+            set(handles.axes1,'XTickLabel',DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(1));
+            plot(2,DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{1,1}(:),'o');
+        end;
+        for k=1:DUOMENYS.VISU.KANALU_N;
+            for i=1:DUOMENYS.VISU.Tiriamuju_N;
+                l=size(legendoje,1);
+                legendoje{l+1,1}=regexprep(DUOMENYS.VISU.failai{i},'.set$','');
+                legendoje{l+1,2}=DUOMENYS.VISU.KANALAI{k};
             end;
         end;
     end;
     
-    if and(get(handles.radiobutton_galia_absol,'Value'),...
-            (DUOMENYS.VISU.Dazniu_sriciu_N > 1 ));
+    if get(handles.radiobutton_galia_santyk,'Value')
         hold('on');
         ylabel('');
-        set(handles.axes1,'XLim',[1.5 DUOMENYS.VISU.Dazniu_sriciu_N + 0.5]);  
-        set(handles.axes1,'XTick',[2:DUOMENYS.VISU.Dazniu_sriciu_N]');        
-        set(handles.axes1,'XTickLabel',DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(2:end));
-        for i=2:DUOMENYS.VISU.Dazniu_sriciu_N;
-            for j=1:DUOMENYS.VISU.Tiriamuju_N;
-                %plot(i,DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,1}(j,:),'o');
+        if (DUOMENYS.VISU.Dazniu_sriciu_N > 1 );
+            set(handles.axes1,'XLim',[1.5 DUOMENYS.VISU.Dazniu_sriciu_N + 0.5]);
+            set(handles.axes1,'XTick',[2:DUOMENYS.VISU.Dazniu_sriciu_N]');
+            set(handles.axes1,'XTickLabel',DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(2:end));
+            for i=2:DUOMENYS.VISU.Dazniu_sriciu_N;
+                for j=1:DUOMENYS.VISU.Tiriamuju_N;
+                    %plot(i,DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{i,1}(j,:),'o');
+                end;
+                plot(i,DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{i,1}(:),'o');
             end;
-            plot(i,DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,1}(:),'o');
+        else            
+            set(handles.axes1,'XLim',[1.5 2.5]);
+            set(handles.axes1,'XTick',[2]);
+            set(handles.axes1,'XTickLabel',DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(1));
+            plot(2,DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{1,1}(:),'o');
         end;
         for k=1:DUOMENYS.VISU.KANALU_N;
             for i=1:DUOMENYS.VISU.Tiriamuju_N;
@@ -1740,29 +1791,7 @@ try
                 legendoje{l+1,2}=DUOMENYS.VISU.KANALAI{k};
             end;
         end;
-    end;    
-    
-    if and(get(handles.radiobutton_galia_santyk,'Value'),...
-            (DUOMENYS.VISU.Dazniu_sriciu_N > 1 ));
-        hold('on');
-        ylabel('');
-        set(handles.axes1,'XLim',[1.5 DUOMENYS.VISU.Dazniu_sriciu_N + 0.5]);  
-        set(handles.axes1,'XTick',[2:DUOMENYS.VISU.Dazniu_sriciu_N]'); 
-        set(handles.axes1,'XTickLabel',DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(2:end));
-        for i=2:DUOMENYS.VISU.Dazniu_sriciu_N;
-            for j=1:DUOMENYS.VISU.Tiriamuju_N;
-                %plot(i,DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{i,1}(j,:),'o');
-            end;
-            plot(i,DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{i,1}(:),'o');
-        end;
-        for k=1:DUOMENYS.VISU.KANALU_N;
-            for i=1:DUOMENYS.VISU.Tiriamuju_N;
-                l=size(legendoje,1);
-                legendoje{l+1,1}=regexprep(DUOMENYS.VISU.failai{i},'.set$','');
-                legendoje{l+1,2}=DUOMENYS.VISU.KANALAI{k};
-            end;
-        end;
-    end;    
+    end;
     
     set(handles.axes1, 'UserData', size(legendoje,1)); 
     if size(legendoje,1) > 1;
@@ -1794,7 +1823,7 @@ catch err;
     Pranesk_apie_klaida(err, lokaliz('EEG spektras ir galia'), '?');
 end;
 susildyk(hObject, eventdata, handles);
-set(handles.togglebutton2,'Visible','off');
+set(handles.palaukite,'Visible','off');
                 
 
 % --- Executes on button press in checkbox74.
@@ -2051,11 +2080,24 @@ function checkbox79_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox79
-if and(~get(handles.checkbox79,'Value'),...
-    strcmp(get(handles.checkbox79,'Enable'),'on'));
-    set(handles.edit51,'Enable','on');
-else
+if get(handles.checkbox79,'Value')
+    if strcmp(get(handles.checkbox79,'Enable'),'on');
+        try
+            lentele=get(handles.uitable1,'Data');
+            interv=[min([lentele{:,2}]) max([lentele{:,3}])];
+            set(handles.edit51,'String',num2str(interv));
+            edit51_Callback(hObject, eventdata, handles);
+        catch err;
+            set(handles.uitable1,'BackgroundColor', [1 1 0]);
+        end;
+    end;
     set(handles.edit51,'Enable','off');
+else
+    if strcmp(get(handles.checkbox79,'Enable'),'on');
+        set(handles.edit51,'Enable','on');
+    else
+        set(handles.edit51,'Enable','off');
+    end;
 end;
    
 
