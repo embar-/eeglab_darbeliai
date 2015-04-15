@@ -470,7 +470,7 @@ uimenu( darbeliai_m, 'Label',  [ lokaliz('Apie') ' ' strrep(vers,'Darbeliai ',''
 else
 uimenu( darbeliai_m, 'Label',  [ lokaliz('Apie') ' ' strrep(vers,'Darbeliai ','' ) ] , ...
           'separator','off', 'userdata', on, 'callback', ...
-           'rehash ; rehash(''toolbox'') ; open(''Documentation.pdf'') ; darbeliu_istorija ;'  );           
+           'rehash ; rehash(''toolbox'') ; open(''Documentation.pdf'') ; doc eegplugin_darbeliai ;'  );           
 end;
 
 
