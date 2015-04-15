@@ -1,6 +1,9 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.04.15.1
+% + Galios spektro vaizdavimas.
+%
 % v2015.03.29.1
 % + Atverti sukurtus tekstinius failus.
 %
