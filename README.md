@@ -3,13 +3,13 @@ eeglab_darbeliai
 
 EEGLAB plugin Darbeliai was created with intention to facilitate batch processing of selected EEG data files in graphical user interface (GUI). Darbeliai uses EEG data files in various formats (\*.set, \*.edf, \*.cnt and others) as input directly, and outputs processed data directly to files in EEGLAB data format (\*.set), so this in contrast to EEGLAB itseft where user must work with EEG datasets. So (in most cases) you no longer need to care about EEG data importing from raw EEG files into EEGLAB dataset and writing processed data back to file. 
 
-In Lithuanian – the most archaic live Indoeuropean language – darbeliai means the little works. 
+In Lithuanian – the most archaic live Indoeuropean language – *darbeliai* means *the little works*. 
 This EEGLAB plugin allows you to acomplish these jobs:
 * rename EEG data files according dataset atributes (like subject, group, experiment condition or session), also extract these atributes from filenames and edit them manually (only EEGLAB *.set files supported);
 * execute sequence of selected EEG processing tasks; results of each separate task can be saved with different filename suffix and/or into different subfolder.
 * simple and conditional epoching (e.g. by particular stimulus if particular response exist);
 * ERP visualization and feature extraction, exporting not only file-by-file, but also averages for subjects, groups, sessions, conditions separately, filtered by event type, channels and for custom time window;
-* EEG spectral power analysis for both absolute and relative power in separate customisable power bands, though delta, theta, alpha, beta are predefined;
+* EEG spectrum visualization and spectral power analysis for both absolute and relative power in separate customisable power bands, though delta, theta, alpha, beta are predefined;
 * custom command execution for list of data files.
 
 Other features:
