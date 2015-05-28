@@ -1062,7 +1062,11 @@ function checkbox_uzverti_pabaigus_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_uzverti_pabaigus
-
+if get(handles.checkbox_uzverti_pabaigus,'Value') == 1;
+    set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'Enable','off');
+else
+    set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'Enable','on');
+end;
 
 % --- Executes during object creation, after setting all properties.
 function edit2_CreateFcn(hObject, eventdata, handles)
