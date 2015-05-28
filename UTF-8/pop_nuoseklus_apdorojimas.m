@@ -2692,6 +2692,7 @@ if get(handles.checkbox_uzverti_pabaigus,'Value') == 1;
     set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'Enable','off');
 else
     set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'Enable','on');
+    uipanel15_SelectionChangeFcn(hObject, eventdata, handles);
 end;
 
 % --- Executes on selection change in popupmenu1.
