@@ -120,6 +120,13 @@ disp('===================================');
 disp('        E E G   +   E K G      ');
 disp(' ');
 
+%Pabandyk įkelti senąjį kelią
+function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+try
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
+    cd(Darbeliai.keliai.atverimui{1});
+catch err; 
+end;
 try
     tmp_mat=fullfile(tempdir,'tmp.mat');
     load(tmp_mat);
@@ -134,7 +141,6 @@ try
 catch err;
 end;
 
-
 set(handles.pushbutton_v1,'UserData',{});
 set(handles.pushbutton_v2,'UserData',{});
 set(handles.pushbutton_v3,'UserData',{});
@@ -147,7 +153,11 @@ KELIAS=pwd;
 cd(Kelias_dabar);
 
 % Patikrink kelią duomenų išsaugojimui
-set(handles.edit2,'String','');
+try
+    set(handles.edit2,'String',Darbeliai.keliai.saugojimui{1});
+catch err;
+    set(handles.edit2,'String','');
+end;
 edit2_Callback(hObject, eventdata, handles);
 
 %STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
@@ -538,6 +548,29 @@ KELIAS_SAUGOJIMUI=Tikras_Kelias(get(handles.edit2,'String'));
 disp('Apdoroti duomenys rašysimi į ');
 disp(fullfile(KELIAS_SAUGOJIMUI,NewDir));
 disp(' ');
+
+% Pasirinktų aplankų įsiminimas
+function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+try
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
+    try
+        lst=[{} KELIAS unique(Darbeliai.keliai.atverimui)];
+        [~,idx,~]=unique(lst);
+        Darbeliai.keliai.atverimui=lst(sort(idx));
+    catch err1;
+        Darbeliai.keliai.atverimui=[{} KELIAS];
+    end;    
+    try
+        lst=[{} KELIAS_SAUGOJIMUI unique(Darbeliai.keliai.saugojimui)];
+        [~,idx,~]=unique(lst);
+        Darbeliai.keliai.saugojimui=lst(sort(idx));
+    catch err2;
+        Darbeliai.keliai.saugojimui=[{} KELIAS_SAUGOJIMUI];
+    end;
+    save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
+catch err;
+    %warning(err.message);
+end;
 
 %STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
 %[ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
@@ -2904,11 +2937,32 @@ d1=arrayfun(@(x) [regexprep(c,[filesep '$'],'') filesep d0{x}], 3:length(d0),'Un
 l=dir(fileparts(c));
 l0={l(find([l.isdir])).name};
 l1=arrayfun(@(x) [regexprep(fileparts(c),[filesep '$'],'') filesep l0{x}], 3:length(l0),'UniformOutput', false);
-p=unique([p1 d1 l1 {pwd} ...    
-    [(fileparts(which('eeglab'))) filesep 'sample_data' ] ...
+
+% ankstesnių seansų kelių įkėlimas
+function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+try
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
+catch err;    
+    %warning(err.message);
+end;
+try x=strcmp(Darbeliai.keliai.atverimui{1},'');
+catch err; 
+    %warning(err.message);
+    Darbeliai.keliai.atverimui={};    
+end;
+s0=[{} [(fileparts(which('eeglab'))) filesep 'sample_data' ] ...
+    Darbeliai.keliai.atverimui ...
+    get(handles.pushbutton_v1,'UserData') ];
+s1={} ; 
+for x=1:length(s0) ; 
+    if strcmp(s0{x}, Tikras_Kelias(s0{x}));
+        s1=[s1 s0{x}] ;
+    end;
+end;
+
+p=unique([p1 d1 l1 s1 {pwd} ...  
     get(handles.edit2,'String') ...    
-    get(handles.edit_QRS_saltinis,'String') ...    
-    get(handles.pushbutton_v1,'UserData')  ]);
+    get(handles.edit_QRS_saltinis,'String') ]);
 a=listdlg(...
     'ListString',p,...
     'SelectionMode','single',...
@@ -2936,11 +2990,32 @@ d1=arrayfun(@(x) [regexprep(c,[filesep '$'],'') filesep d0{x}], 3:length(d0),'Un
 l=dir(fileparts(c));
 l0={l(find([l.isdir])).name};
 l1=arrayfun(@(x) [regexprep(fileparts(c),[filesep '$'],'') filesep l0{x}], 3:length(l0),'UniformOutput', false);
-p=unique([p1 d1 l1 {pwd} ...
+
+% anksčiau pasirinktų kelių įkėlimas
+function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+try
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
+catch err;    
+    %warning(err.message);
+end;
+try x=strcmp(Darbeliai.keliai.saugojimui{1},'');
+catch err; 
+    %warning(err.message);
+    Darbeliai.keliai.saugojimui={};    
+end;
+s0=[{} Darbeliai.keliai.saugojimui ...
+    get(handles.pushbutton_v2,'UserData') ];
+s1={} ; 
+for x=1:length(s0) ; 
+    if strcmp(s0{x}, Tikras_Kelias(s0{x}));
+        s1=[s1 s0{x}] ;
+    end;
+end;
+
+p=unique([p1 d1 l1 s1 {pwd} ...
     regexprep({tempdir}, [filesep '$'], '' )  ...
     get(handles.edit1,'String') ...
-    get(handles.edit_QRS_saltinis,'String') ...    
-    get(handles.pushbutton_v2,'UserData')  ]);
+    get(handles.edit_QRS_saltinis,'String') ]);
 a=listdlg(...
     'ListString',p,...
     'SelectionMode','single',...
