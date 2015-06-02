@@ -949,8 +949,8 @@ for i=1:Pasirinktu_failu_N;
                     QRS_ivykis=get(handles.edit_QRS_ivykis,'String');
                     tipas_ir_latencija=[{EEG.event.type}',{EEG.event.latency}'];
                     rodykles=find(ismember(tipas_ir_latencija(:,1),QRS_ivykis)==1) ;
-                    tik_R_idx=cell2mat(tipas_ir_latencija(rodykles,2)) ;
-                    R_laikai=[EEG.times(tik_R_idx)]';
+                    tik_R_idx=cell2mat(tipas_ir_latencija(rodykles,2));
+                    R_laikai=[EEG.times(round(tik_R_idx))]';
                     
                     if isempty(R_laikai);
                         error('QRS?');
@@ -976,6 +976,8 @@ for i=1:Pasirinktu_failu_N;
                         num2cell(R_laikai),...
                         'precision','%.3f',...
                         'newline', 'pc') ;
+                                        
+                    SaugomoNr = SaugomoNr +1;
                     
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Export R times'), NaujaRinkmena) ;
@@ -1018,7 +1020,7 @@ for i=1:Pasirinktu_failu_N;
                     tipas_ir_latencija=[{EEG.event.type}',{EEG.event.latency}'];
                     rodykles=find(ismember(tipas_ir_latencija(:,1),QRS_ivykis)==1) ;
                     tik_R_idx=cell2mat(tipas_ir_latencija(rodykles,2)) ;
-                    R_laikai=[EEG.times(tik_R_idx)]';
+                    R_laikai=[EEG.times(round(tik_R_idx))]';
                     RRI=num2cell(diff(R_laikai));
                     
                     if isempty(RRI);
@@ -1044,6 +1046,8 @@ for i=1:Pasirinktu_failu_N;
                         RRI,...
                         'precision','%.0f',...
                         'newline', 'pc') ;
+                    
+                    SaugomoNr = SaugomoNr +1;
                     
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Export RRI'), NaujaRinkmena) ;
