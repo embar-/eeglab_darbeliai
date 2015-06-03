@@ -1,7 +1,7 @@
 %
 % Pakeitimai:
 % ------------------------
-% v2015.06.02.3
+% v2015.06.03.1
 % + Atliktų darbų skaitliukas remiasi poaplankkių pavadinimais.
 % + Nuosekliame darbe filtruojami tik pasirinkti kanalai.
 %
