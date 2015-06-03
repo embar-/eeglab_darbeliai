@@ -1,6 +1,16 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.06.03.1
+% + Atliktų darbų skaitliukas remiasi poaplankkių pavadinimais.
+% + Nuosekliame darbe filtruojami pirmajame iš dviejų filtrų 
+%   filtruojami ne visi, o tik pasirinkti kanalai.
+% ~ Nuosekliame apdorojime pasirinkus įvykius epochavimui iš sąrašo, 
+%   neatnaujino „Vykdyti“ mygtuko būsenos.
+%
+% v2015.06.02.1
+% + Darbinių katalogų pasirinkimai prisimenami netgi iš naujo paleidus MATLAB.
+%
 % v2015.04.15.1
 % + Galios spektro vaizdavimas.
 %
@@ -16,16 +26,16 @@
 % v2015.02.24.1
 % + Eksportuojant į Ragu, EEGLAB duomenų rinkinio kanalai gali būti ne iš eilės 
 %   (tvarka suvienodinama eksportuojant pagal pirmąjį).
-%
+% 
 % v2015.02.14.1
 % + Galima rinktis savus kanalus atskaitos sistemai.
 % + Galima nurodyti fiksuotą ICA komponenčių kiekį.
 %
-% v2015.01.28.1
-% + ERP savybių peržiūroje failų grupavimas.
-%
 % v2015.02.01.1
 % + Veikia failų vidurkinimas ERP savybių peržiūroje ir eksportavime.
+%
+% v2015.01.28.1
+% + ERP savybių peržiūroje failų grupavimas.
 %
 % v2015.01.13.1
 % ~ Kanalų pasirinkimas galėjo neveikti, jei nebuvo įdiegtas SIFT priedas, 
@@ -246,5 +256,6 @@
 %
 % v2014.07.21
 % ~ nuoseklus apdorojimas v0.2
+
 function darbeliu_istorija
 doc darbeliu_istorija

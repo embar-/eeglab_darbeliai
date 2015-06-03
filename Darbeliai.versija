@@ -1,3 +1,4 @@
-Darbeliai v2015.06.02.1
-Darbinių katalogų pasirinkimai prisimenami netgi iš naujo paleidus MATLAB.
-Memory about selected directories survive reopening of MATLAB.
+Darbeliai v2015.06.03.1
++ Atliktų darbų skaitliukas remiasi poaplankių pavadinimais.
++ Nuosekliame darbe pirmajame iš dviejų filtrų filtruojami ne visi, o tik pasirinkti kanalai.
+~ Nuosekliame apdorojime pasirinkus įvykius epochavimui iš sąrašo, neatnaujino „Vykdyti“ mygtuko būsenos.

@@ -179,6 +179,7 @@ set(handles.checkbox_perziureti_ICA,'Value',0);
 set(handles.checkbox_epoch,'Value',0);
 
 % Numatytosios reikšmės
+set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf')
 set(handles.edit_epoch_iv,'String','');
 
 set(handles.text_apdorotini_kanalai,'String',lokaliz('all'));
@@ -487,7 +488,8 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 set(handles.checkbox_baigti_anksciau,'Visible','off');
 
 %Vidinis atliktų darbų skaitliukas
-set(handles.text_atlikta_darbu,'String',num2str(0));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
+    get(handles.edit2,'String'))));
 
 %set(handles.uipanel6,'Title', ['Duomenų apdorojimo funkcijos']);
 
@@ -899,8 +901,21 @@ for i=1:Pasirinktu_failu_N;
                 
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
                 
+                Kanalai=get(handles.pushbutton_apdorotini_kanalai,'UserData');
+                if isempty(Kanalai);
+                    KanaluNr=[1:EEG.nbchan];
+                else
+                    %Kanalai=intersect(Kanalai,{EEG.chanlocs.labels});
+                    KanaluNr=find(ismember({EEG.chanlocs.labels},Kanalai));
+                end;
+                
                 try
                     EEG = eeg_checkset( EEG );
+                    NeitrauktiKanNr=setdiff([1:EEG.nbchan],KanaluNr);
+                    if ~isempty(NeitrauktiKanNr);
+                        EEG2 = EEG;
+                        EEG = pop_select( EEG,'channel',KanaluNr);
+                    end;
                     daznis_filtravimui=str2num(get(handles.edit3,'String'));
                     disp([ 'Filtruokim <' num2str(daznis_filtravimui) '>' ] );
                     if     get(handles.popupmenu9,'Value') == 1 ;
@@ -911,6 +926,14 @@ for i=1:Pasirinktu_failu_N;
                         EEG = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 0, [], 0);
                     elseif get(handles.popupmenu9,'Value') == 4;                        
                         EEG = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 1, [], 0);
+                    end;
+                    if ~isempty(NeitrauktiKanNr);
+                        if length(size(EEG2.data)) == 2;
+                            EEG2.data(KanaluNr,:)=EEG.data;
+                        else
+                            EEG2.data(KanaluNr,:,:)=EEG.data;
+                        end;
+                        EEG = EEG2 ;
                     end;
                     EEG = eeg_checkset( EEG );
                 catch err;
@@ -2564,6 +2587,7 @@ set(handles.edit2,'String',pwd);
 set(handles.edit2,'TooltipString',pwd);
 set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') KELIAS {pwd}]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(pwd)));
 cd(KELIAS);
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 
@@ -2622,10 +2646,12 @@ catch err;
         cd(Tikras_Kelias(get(handles.edit2,'TooltipString')));
     end;
 end;
+
 set(handles.edit2,'String',pwd);
 set(handles.edit2,'TooltipString',pwd);
 set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') KELIAS {pwd}]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(pwd)));
 cd(KELIAS);
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 Ar_galima_vykdyti(hObject, eventdata, handles);
@@ -5405,7 +5431,7 @@ function edit_failu_filtras1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if isempty(get(handles.edit_failu_filtras1,'String'));
-    set(handles.edit_failu_filtras1,'String','*.set;*.cnt');
+    set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 end;
 set(handles.edit_failu_filtras1,'BackgroundColor',[1 1 1]);
 atnaujink_rodomus_failus(hObject, eventdata, handles);
@@ -5735,7 +5761,7 @@ if ~isempty(str2num(pasirinkti_ivykiai_str));
 else
     set(handles.edit_epoch_iv,'BackgroundColor',[1 1 1]);
 end;
-
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 
@@ -6104,10 +6130,12 @@ a=listdlg(...
     'OKString',lokaliz('OK'),...
     'CancelString',lokaliz('Cancel'));
 if isempty(a); return; end;
-set(handles.edit2,'String',Tikras_Kelias(p{a}));
-set(handles.edit2,'TooltipString',Tikras_Kelias(p{a}));
+k=Tikras_Kelias(p{a});
+set(handles.edit2,'String',k);
+set(handles.edit2,'TooltipString',k);
 set(handles.pushbutton_v2,'UserData',...
-    unique([get(handles.pushbutton_v2,'UserData') c p{a} ]));
+    unique([get(handles.pushbutton_v2,'UserData') c k ]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(k)));
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 
 % --- Executes on button press in pushbutton_v1.
@@ -6319,3 +6347,5 @@ function edit59_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+

@@ -429,7 +429,8 @@ set(handles.checkbox_baigti_anksciau,'Visible','off');
 set(handles.checkbox_pabaigus_atverti,'Visible','on');
 
 %Vidinis atliktų darbų skaitliukas
-set(handles.text_atlikta_darbu,'String',num2str(0));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
+   get(handles.edit2, 'String'))));
 
 set(handles.text_darbas,'Visible','off');
 set(handles.text_darbas,'String',' ');
@@ -949,8 +950,8 @@ for i=1:Pasirinktu_failu_N;
                     QRS_ivykis=get(handles.edit_QRS_ivykis,'String');
                     tipas_ir_latencija=[{EEG.event.type}',{EEG.event.latency}'];
                     rodykles=find(ismember(tipas_ir_latencija(:,1),QRS_ivykis)==1) ;
-                    tik_R_idx=cell2mat(tipas_ir_latencija(rodykles,2)) ;
-                    R_laikai=[EEG.times(tik_R_idx)]';
+                    tik_R_idx=cell2mat(tipas_ir_latencija(rodykles,2));
+                    R_laikai=[EEG.times(round(tik_R_idx))]';
                     
                     if isempty(R_laikai);
                         error('QRS?');
@@ -976,6 +977,8 @@ for i=1:Pasirinktu_failu_N;
                         num2cell(R_laikai),...
                         'precision','%.3f',...
                         'newline', 'pc') ;
+                                        
+                    SaugomoNr = SaugomoNr +1;
                     
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Export R times'), NaujaRinkmena) ;
@@ -1018,7 +1021,7 @@ for i=1:Pasirinktu_failu_N;
                     tipas_ir_latencija=[{EEG.event.type}',{EEG.event.latency}'];
                     rodykles=find(ismember(tipas_ir_latencija(:,1),QRS_ivykis)==1) ;
                     tik_R_idx=cell2mat(tipas_ir_latencija(rodykles,2)) ;
-                    R_laikai=[EEG.times(tik_R_idx)]';
+                    R_laikai=[EEG.times(round(tik_R_idx))]';
                     RRI=num2cell(diff(R_laikai));
                     
                     if isempty(RRI);
@@ -1044,6 +1047,8 @@ for i=1:Pasirinktu_failu_N;
                         RRI,...
                         'precision','%.0f',...
                         'newline', 'pc') ;
+                    
+                    SaugomoNr = SaugomoNr +1;
                     
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Export RRI'), NaujaRinkmena) ;
@@ -1475,6 +1480,7 @@ set(handles.edit2,'String',pwd);
 set(handles.edit2,'TooltipString',pwd);
 set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') KELIAS {pwd}]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(pwd)));
 cd(KELIAS);
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 
@@ -1538,6 +1544,7 @@ set(handles.edit2,'String',pwd);
 set(handles.edit2,'TooltipString',pwd);
 set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') KELIAS {pwd}]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(pwd)));
 cd(KELIAS);
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 Ar_galima_vykdyti(hObject, eventdata, handles);
@@ -1613,7 +1620,7 @@ function edit_failu_filtras1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if isempty(get(handles.edit_failu_filtras1,'String'));
-    set(handles.edit_failu_filtras1,'String','*.set;*.cnt');
+    set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 end;
 set(handles.edit_failu_filtras1,'BackgroundColor',[1 1 1]);
 atnaujink_rodomus_failus(hObject, eventdata, handles);
@@ -3024,10 +3031,12 @@ a=listdlg(...
     'OKString',lokaliz('OK'),...
     'CancelString',lokaliz('Cancel'));
 if isempty(a); return; end;
-set(handles.edit2,'String',Tikras_Kelias(p{a}));
-set(handles.edit2,'TooltipString',Tikras_Kelias(p{a}));
+k=Tikras_Kelias(p{a});
+set(handles.edit2,'String',k);
+set(handles.edit2,'TooltipString',k);
 set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') c p{a} ]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(k)));
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 
 

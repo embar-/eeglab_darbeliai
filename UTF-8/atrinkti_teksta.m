@@ -10,7 +10,6 @@ if ismember(';',teksto_filtras);
    teksto_filtrai=regexp(teksto_filtras,';', 'split');
    for i=1:length(teksto_filtrai);
       tmp=atrinkti_teksta(teksto_eilutes,teksto_filtrai{i});
-      %atrinktas_tekstas={atrinktas_tekstas{:} tmp};
       atrinktas_tekstas=[atrinktas_tekstas{:} tmp];
       [~,idx]=unique(atrinktas_tekstas);
       atrinktas_tekstas=atrinktas_tekstas(sort(idx));

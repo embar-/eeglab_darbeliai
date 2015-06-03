@@ -169,7 +169,7 @@ set(handles.pushbutton14,'UserData',{});
 %[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
 
 %eeglab('redraw');
-set(handles.edit_failu_filtras1,'String','*.set');
+set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 

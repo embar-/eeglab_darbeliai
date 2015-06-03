@@ -168,7 +168,7 @@ set(handles.pushbutton14,'UserData',{});
 %[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
 
 %eeglab('redraw');
-set(handles.edit_failu_filtras1,'String','*.set');
+set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 
@@ -349,7 +349,8 @@ set(handles.checkbox_baigti_anksciau,'Visible','off');
 set(handles.checkbox_pabaigus_atverti,'Visible','on');
 
 %Vidinis atliktų darbų skaitliukas
-set(handles.text_atlikta_darbu,'String',num2str(0));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
+   get(handles.edit2, 'String'))));
 
 set(handles.text_darbas,'Visible','off');
 set(handles.text_darbas,'String',' ');
@@ -1014,6 +1015,7 @@ set(handles.edit2,'String',pwd);
 set(handles.edit2,'TooltipString',pwd);
 set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') KELIAS {pwd}]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(pwd)));
 cd(KELIAS);
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 
@@ -1077,6 +1079,7 @@ set(handles.edit2,'String',pwd);
 set(handles.edit2,'TooltipString',pwd);
 set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') KELIAS {pwd}]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(pwd)));
 cd(KELIAS);
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 Ar_galima_vykdyti(hObject, eventdata, handles);
@@ -1154,7 +1157,7 @@ function edit_failu_filtras1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if isempty(get(handles.edit_failu_filtras1,'String'));
-    set(handles.edit_failu_filtras1,'String','*.set;*.cnt');
+    set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 end;
 set(handles.edit_failu_filtras1,'BackgroundColor',[1 1 1]);
 atnaujink_rodomus_failus(hObject, eventdata, handles);
@@ -1368,7 +1371,7 @@ if length(x) == 1 ;
     set(handles.text_atlikta_darbu,'UserData',regexprep(num2str(x), '[ ]*', ' '));
 end;
 set(handles.text_atlikta_darbu,'String',num2str(get(handles.text_atlikta_darbu,'UserData')));
-%set(handles.text_atlikta_darbu,'BackgroundColor',[1 1 1]);
+set(handles.text_atlikta_darbu,'BackgroundColor',[1 1 1]);
 
 
 % --- Executes on button press in checkbox_pabaigus_i_apdorotu_aplanka.
@@ -1876,10 +1879,12 @@ a=listdlg(...
     'OKString',lokaliz('OK'),...
     'CancelString',lokaliz('Cancel'));
 if isempty(a); return; end;
-set(handles.edit2,'String',Tikras_Kelias(p{a}));
-set(handles.edit2,'TooltipString',Tikras_Kelias(p{a}));
+k=Tikras_Kelias(p{a});
+set(handles.edit2,'String',k);
+set(handles.edit2,'TooltipString',k);
 set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') c p{a} ]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(k)));
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 
 function EEG=eval2(com,EEG, KELIAS_,NaujaRinkmena,laiko_intervalas,...
