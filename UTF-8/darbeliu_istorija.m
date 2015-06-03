@@ -253,5 +253,6 @@
 %
 % v2014.07.21
 % ~ nuoseklus apdorojimas v0.2
+
 function darbeliu_istorija
 doc darbeliu_istorija
