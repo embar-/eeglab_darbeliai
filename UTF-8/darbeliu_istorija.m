@@ -3,7 +3,8 @@
 % ------------------------
 % v2015.06.03.1
 % + Atliktų darbų skaitliukas remiasi poaplankkių pavadinimais.
-% + Nuosekliame darbe filtruojami tik pasirinkti kanalai.
+% + Nuosekliame darbe filtruojami pirmajame iš dviejų filtrų 
+%   filtruojami ne visi, o tik pasirinkti kanalai.
 %
 % v2015.06.02.1
 % + Darbinių katalogų pasirinkimai prisimenami netgi iš naujo paleidus MATLAB.
