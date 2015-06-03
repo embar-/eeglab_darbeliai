@@ -461,11 +461,11 @@ uimenu( darbeliai_m, 'Label',  [ lokaliz('Apie') ' ' strrep(vers,'Darbeliai ',''
            'rehash ; rehash(''toolbox'') ; darbeliu_istorija ;'  );
 uimenu( darbeliai_m, 'Label', [ lokaliz('Apie') ], ...
           'separator','off', 'userdata', on, 'callback', ...
-           'rehash ; rehash(''toolbox'') ; web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
+           'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
 else
 uimenu( darbeliai_m, 'Label',  [ lokaliz('Apie') ' ' strrep(vers,'Darbeliai ','' ) ] , ...
           'separator','off', 'userdata', on, 'callback', ...
-           'rehash ; rehash(''toolbox'') ; web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );           
+           'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );           
 end;
 
 % RAGU meniu
