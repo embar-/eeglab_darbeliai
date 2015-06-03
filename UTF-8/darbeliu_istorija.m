@@ -5,6 +5,8 @@
 % + Atliktų darbų skaitliukas remiasi poaplankkių pavadinimais.
 % + Nuosekliame darbe filtruojami pirmajame iš dviejų filtrų 
 %   filtruojami ne visi, o tik pasirinkti kanalai.
+% ~ Nuosekliame apdorojime pasirinkus įvykius epochavimui iš sąrašo, 
+%   neatnaujino „Vykdyti“ mygtuko būsenos.
 %
 % v2015.06.02.1
 % + Darbinių katalogų pasirinkimai prisimenami netgi iš naujo paleidus MATLAB.
