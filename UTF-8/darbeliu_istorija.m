@@ -1,6 +1,13 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.06.02.3
+% + Atliktų darbų skaitliukas remiasi poaplankkių pavadinimais.
+% + Nuosekliame darbe filtruojami tik pasirinkti kanalai.
+%
+% v2015.06.02.1
+% + Darbinių katalogų pasirinkimai prisimenami netgi iš naujo paleidus MATLAB.
+%
 % v2015.04.15.1
 % + Galios spektro vaizdavimas.
 %
