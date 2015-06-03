@@ -5761,7 +5761,7 @@ if ~isempty(str2num(pasirinkti_ivykiai_str));
 else
     set(handles.edit_epoch_iv,'BackgroundColor',[1 1 1]);
 end;
-
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 
