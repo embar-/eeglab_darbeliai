@@ -179,6 +179,7 @@ set(handles.checkbox_perziureti_ICA,'Value',0);
 set(handles.checkbox_epoch,'Value',0);
 
 % Numatytosios reikšmės
+set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf')
 set(handles.edit_epoch_iv,'String','');
 
 set(handles.text_apdorotini_kanalai,'String',lokaliz('all'));
@@ -487,7 +488,8 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 set(handles.checkbox_baigti_anksciau,'Visible','off');
 
 %Vidinis atliktų darbų skaitliukas
-set(handles.text_atlikta_darbu,'String',num2str(0));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
+    get(handles.edit2,'String'))));
 
 %set(handles.uipanel6,'Title', ['Duomenų apdorojimo funkcijos']);
 
@@ -5408,7 +5410,7 @@ function edit_failu_filtras1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if isempty(get(handles.edit_failu_filtras1,'String'));
-    set(handles.edit_failu_filtras1,'String','*.set;*.cnt');
+    set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 end;
 set(handles.edit_failu_filtras1,'BackgroundColor',[1 1 1]);
 atnaujink_rodomus_failus(hObject, eventdata, handles);

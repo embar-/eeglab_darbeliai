@@ -168,7 +168,7 @@ set(handles.pushbutton14,'UserData',{});
 %[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
 
 %eeglab('redraw');
-set(handles.edit_failu_filtras1,'String','*.set');
+set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 
@@ -1154,7 +1154,7 @@ function edit_failu_filtras1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if isempty(get(handles.edit_failu_filtras1,'String'));
-    set(handles.edit_failu_filtras1,'String','*.set;*.cnt');
+    set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 end;
 set(handles.edit_failu_filtras1,'BackgroundColor',[1 1 1]);
 atnaujink_rodomus_failus(hObject, eventdata, handles);
