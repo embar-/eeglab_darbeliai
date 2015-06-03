@@ -20,6 +20,8 @@ Other features:
 * two languages supported (Lithuanian and English) and it would be easy to add more;
 * multiplatform: tested in Windows and Linux, with systems of different encodings.
 
+More information can be found https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN 
+
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
   This program is free software; you can redistribute it and/or modify
