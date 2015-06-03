@@ -848,7 +848,7 @@ for i=1:Pasirinktu_failu_N;
                 Reikalingi_kanalai=get(handles.pushbutton9,'UserData');
                 
                 try
-                    Reikalingi_kanalai_yra=Reikalingi_kanalai(find(ismember(Reikalingi_kanalai,{EEG.chanlocs.labels})))
+                    Reikalingi_kanalai_yra=Reikalingi_kanalai(find(ismember(Reikalingi_kanalai,{EEG.chanlocs.labels})));
                     if get(handles.checkbox_atrink_kanalus1__,'Value') == 0 ;
                         EEG = pop_select( EEG,'channel',Reikalingi_kanalai_yra);
                     elseif length(Reikalingi_kanalai_yra) == length(Reikalingi_kanalai);
