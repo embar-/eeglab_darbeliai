@@ -848,7 +848,7 @@ for i=1:Pasirinktu_failu_N;
                 Reikalingi_kanalai=get(handles.pushbutton9,'UserData');
                 
                 try
-                    Reikalingi_kanalai_yra=Reikalingi_kanalai(find(ismember(Reikalingi_kanalai,{EEG.chanlocs.labels})));
+                    Reikalingi_kanalai_yra=Reikalingi_kanalai(find(ismember(Reikalingi_kanalai,{EEG.chanlocs.labels})))
                     if get(handles.checkbox_atrink_kanalus1__,'Value') == 0 ;
                         EEG = pop_select( EEG,'channel',Reikalingi_kanalai_yra);
                     elseif length(Reikalingi_kanalai_yra) == length(Reikalingi_kanalai);
@@ -901,8 +901,21 @@ for i=1:Pasirinktu_failu_N;
                 
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
                 
+                Kanalai=get(handles.pushbutton_apdorotini_kanalai,'UserData');
+                if isempty(Kanalai);
+                    KanaluNr=[1:EEG.nbchan];
+                else
+                    %Kanalai=intersect(Kanalai,{EEG.chanlocs.labels});
+                    KanaluNr=find(ismember({EEG.chanlocs.labels},Kanalai));
+                end;
+                
                 try
                     EEG = eeg_checkset( EEG );
+                    NeitrauktiKanNr=setdiff([1:EEG.nbchan],KanaluNr);
+                    if ~isempty(NeitrauktiKanNr);
+                        EEG2 = EEG;
+                        EEG = pop_select( EEG,'channel',KanaluNr);
+                    end;
                     daznis_filtravimui=str2num(get(handles.edit3,'String'));
                     disp([ 'Filtruokim <' num2str(daznis_filtravimui) '>' ] );
                     if     get(handles.popupmenu9,'Value') == 1 ;
@@ -913,6 +926,14 @@ for i=1:Pasirinktu_failu_N;
                         EEG = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 0, [], 0);
                     elseif get(handles.popupmenu9,'Value') == 4;                        
                         EEG = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 1, [], 0);
+                    end;
+                    if ~isempty(NeitrauktiKanNr);
+                        if length(size(EEG2.data)) == 2;
+                            EEG2.data(KanaluNr,:)=EEG.data;
+                        else
+                            EEG2.data(KanaluNr,:,:)=EEG.data;
+                        end;
+                        EEG = EEG2 ;
                     end;
                     EEG = eeg_checkset( EEG );
                 catch err;
