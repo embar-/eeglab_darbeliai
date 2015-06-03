@@ -2564,6 +2564,7 @@ set(handles.edit2,'String',pwd);
 set(handles.edit2,'TooltipString',pwd);
 set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') KELIAS {pwd}]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(pwd)));
 cd(KELIAS);
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 
@@ -2622,10 +2623,12 @@ catch err;
         cd(Tikras_Kelias(get(handles.edit2,'TooltipString')));
     end;
 end;
+
 set(handles.edit2,'String',pwd);
 set(handles.edit2,'TooltipString',pwd);
 set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') KELIAS {pwd}]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(pwd)));
 cd(KELIAS);
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 Ar_galima_vykdyti(hObject, eventdata, handles);
@@ -6104,10 +6107,12 @@ a=listdlg(...
     'OKString',lokaliz('OK'),...
     'CancelString',lokaliz('Cancel'));
 if isempty(a); return; end;
-set(handles.edit2,'String',Tikras_Kelias(p{a}));
-set(handles.edit2,'TooltipString',Tikras_Kelias(p{a}));
+k=Tikras_Kelias(p{a});
+set(handles.edit2,'String',k);
+set(handles.edit2,'TooltipString',k);
 set(handles.pushbutton_v2,'UserData',...
-    unique([get(handles.pushbutton_v2,'UserData') c p{a} ]));
+    unique([get(handles.pushbutton_v2,'UserData') c k ]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(k)));
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 
 % --- Executes on button press in pushbutton_v1.
@@ -6319,3 +6324,5 @@ function edit59_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
