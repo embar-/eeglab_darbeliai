@@ -203,6 +203,14 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+try
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat')); 
+catch err;
+end;
+
+Darbeliai.nuostatos=[];
+
 switch get(handles.popupmenu2,'Value') 
     case 1
         Darbeliai.nuostatos.stabili_versija=1;
@@ -250,7 +258,6 @@ else
     Darbeliai.nuostatos.lokale={ '' ; '' ; '' ; } ;
 end;
 
-function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
 
 if restart_eeglab ; 
