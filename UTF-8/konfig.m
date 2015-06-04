@@ -186,6 +186,15 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+try
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat')); 
+catch err;
+end;
+
+Darbeliai.nuostatos=[];
+
 Darbeliai.nuostatos.tikrinti_versija=get(handles.checkbox1,'Value');
 Darbeliai.nuostatos.diegti_auto=get(handles.checkbox2,'Value');
 locale_idx=get(handles.popupmenu1,'Value');
@@ -219,7 +228,6 @@ else
     Darbeliai.nuostatos.lokale={ '' ; '' ; '' ; } ;
 end;
 
-function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
 
 if restart_eeglab ; 
