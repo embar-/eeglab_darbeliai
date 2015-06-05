@@ -453,6 +453,7 @@ if and(exist('atnaujinimas','file') == 2,...
    end;
 end;
 
+
 % Apie
 if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
 uimenu( darbeliai_m, 'Label',  [ lokaliz('Apie') ' ' strrep(vers,'Darbeliai ','' ) ] , ...
