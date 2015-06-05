@@ -98,6 +98,8 @@ set(handles.figure1,'Name',mfilename);
 
 lokalizuoti(hObject, eventdata, handles);
 
+meniu(hObject, eventdata, handles);
+
 disp(' ');
 disp('===================================');
 disp('      NUOSEKLUS      DARBAS        ');
@@ -219,10 +221,9 @@ for i=1:length(siulomi_kanalu_padeciu_failai);
 end;
 set(handles.popupmenu12,'String',siulomi_kanalu_padeciu_failai);
 
-parinktis_ikelti(hObject, eventdata, handles, 'paskut');
+parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
 
 popupmenu12_Callback(hObject, eventdata, handles);
-
 susildyk(hObject, eventdata, handles);
 
 tic;
@@ -324,6 +325,8 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 
 % Neleisk nieko daryti
 function susaldyk(hObject, eventdata, handles)
+%Neleisti spausti Nuostatų meniu!
+a=findall(handles.figure1,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','off'); drawnow;
 set(handles.pushbutton1,'Value',0);
 set(handles.listbox1,'Enable','inactive');
 set(handles.edit1,'Enable','off');
@@ -394,6 +397,9 @@ set(handles.text_darbas,'String',' ');
 
 % Vel leisk ka nors daryti
 function susildyk(hObject, eventdata, handles)
+
+% Leisti spausti Nuostatų meniu!
+a=findall(handles.figure1,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','on'); 
 
 set(handles.pushbutton1,'Value',1);
 set(handles.listbox1,'Enable','on');
@@ -496,11 +502,9 @@ set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
 
 %set(handles.uipanel6,'Title', ['Duomenų apdorojimo funkcijos']);
 
-
 set(handles.text_darbas,'String',' ');
 
 set(handles.pushbutton2,'Value',0);
-
 
 
 function Ar_galima_vykdyti(hObject, eventdata, handles)
@@ -654,8 +658,10 @@ catch err;
     Pranesk_apie_klaida(err, 'pop_nuoseklus_apdorojimas.m', '-', 0);
 end;
 
-% Užduočių parinktys
-parinktis_irasyti(hObject, eventdata, handles, 'paskut');
+% Užduočių parinkčių įsiminimas
+parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
+%Neleisti spausti Nuostatų meniu!
+a=findall(gcf,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','off'); drawnow;
 
 STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
 %[ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
@@ -6357,11 +6363,14 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 function parinktis_ikelti(hObject, eventdata, handles, rinkinys)
+susaldyk(hObject, eventdata, handles);
 % Įkelti ankstenius nustatymus
 try    
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
-    Parinktys=eval(['Darbeliai.dialogai.pop_nuoseklus_apdorojimas.uzduotys.' rinkinys ]);
+    esami={Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.vardas};
+    i=find(ismember(esami,rinkinys));
+    Parinktys=Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka(i).parinktys;
     for i=1:length(Parinktys);
       set(eval(['handles.' Parinktys(i).id ]), ...
           'Value',         Parinktys(i).Value );      
@@ -6379,65 +6388,186 @@ try
 catch err;
     %Pranesk_apie_klaida(err, '', '', 0);
 end;
+popupmenu12_Callback(hObject, eventdata, handles);
+susildyk(hObject, eventdata, handles);
 
-function parinktis_irasyti(hObject, eventdata, handles, rinkinys)
+function parinktis_irasyti(hObject, eventdata, handles, vardas, komentaras)
+reikia_perkurti_meniu=0;
+if isempty(vardas); 
+    a=inputdlg({lokaliz('Pavadinimas:'),lokaliz('Komentaras:')}); 
+    if isempty(a); return; end;
+    if iscell(a);
+        if isempty(a{1});
+            vardas='paskutinis';
+            komentaras='';
+        else
+            vardas=a{1};
+            komentaras=a{2};
+        end;
+    end;
+end;
+    
 try
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
-        
-    % Užduočių parinktys
-    Parinktys=struct('id','','Value','','UserData','','String_','','String','','TooltipString_','','TooltipString','');
-    isimintini_el={'checkbox_uzverti_pabaigus' 'checkbox_pabaigus_atverti' 'checkbox_pabaigus_i_apdorotu_aplanka' ...
-        'checkbox_rf' 'checkbox_filtr1' 'checkbox_filtr2' 'checkbox_filtr_tinklo' 'checkbox_kanalu_padetis' 'checkbox_atrink_kanalus1' ...
-        'checkbox_atmesk_atkarpas_amp' 'checkbox_atmesk_atkarpas_dzn' 'checkbox_atmesk_kan_auto' 'checkbox_perziureti' 'checkbox_atmesk_iki2s' ...
-        'checkbox_vienoda_trukme' 'checkbox_ICA' 'checkbox_MARA' 'checkbox_atrink_kanalus2' 'checkbox_ASR' 'checkbox_perziureti_ICA' 'checkbox_epoch' ...
-        'checkbox_rf_' 'checkbox_filtr1_' 'checkbox_filtr2_' 'checkbox_filtr_tinklo_' 'checkbox_kanalu_padetis_' 'checkbox_atrink_kanalus1_' ...
-        'checkbox_atmesk_atkarpas_amp_' 'checkbox_atmesk_atkarpas_dzn_' 'checkbox_atmesk_kan_auto_' 'checkbox_perziureti_' 'checkbox_atmesk_iki2s_' ...
-        'checkbox_vienoda_trukme_' 'checkbox_ICA_' 'checkbox_MARA_' 'checkbox_atrink_kanalus2_' 'checkbox_ASR_' 'checkbox_perziureti_ICA_' 'checkbox_epoch_' ...
-        'checkbox_atrink_kanalus1__' 'checkbox41' 'checkbox_perziureti_demesio' 'checkbox_perziureti_ICA_demesio' 'checkbox_epoch_b' ...
-        'popupmenu9' 'popupmenu4' 'popupmenu5' 'popupmenu7' 'popupmenu8' 'popupmenu10' ...
-        'pushbutton14' 'pushbutton18' 'pushbutton9' 'pushbutton_apdorotini_kanalai' 'pushbutton7' 'pushbutton13' ...
-        'radiobutton6' 'radiobutton7' };
-    for i=1:length(isimintini_el);
-      Parinktys(i).id = isimintini_el{i} ;
-      Parinktys(i).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
-      Parinktys(i).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
-      Parinktys(i).String_  = 0;
-      Parinktys(i).TooltipString_ = 0;
+    esami={Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.vardas};
+    if and(ismember(vardas,esami),~ismember(vardas,{'numatytas','paskutinis'}));
+        ats=questdlg(lokaliz('Perrašyti nuostatų rinkinį?'),lokaliz('Nuostatos jau yra!'),lokaliz('Rewrite'),lokaliz('Cancel'),lokaliz('Cancel'));
+        if isempty(ats); return; end;
+        if ~strcmp(ats,lokaliz('Rewrite')); return; end;
+        reikia_perkurti_meniu=1;
     end;
-    isimintini_el={ 'edit3' 'edit50' 'edit58' 'edit57' 'edit44' 'edit43' 'edit40' 'edit_atmesk_kan_auto_slenkstis' ...
-        'edit59' 'edit20' 'edit19' 'edit21'  'edit_epoch_t' 'edit_epoch_b'}; 
-    for i=1:length(isimintini_el);
-      Parinktys(end+1).id = isimintini_el{i} ;
-      Parinktys(end).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
-      Parinktys(end).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
-      Parinktys(end).String_  = 1;
-      Parinktys(end).String   = get(eval(['handles.' isimintini_el{i}]), 'String');
-      Parinktys(end).TooltipString_ = 0 ;
+catch err;
+    %Pranesk_apie_klaida(err, 'pop_nuoseklus_apdorojimas.m', '-', 0);
+end;
+
+% Užduočių parinktys
+Parinktys=struct('id','','Value','','UserData','','String_','','String','','TooltipString_','','TooltipString','');
+isimintini_el={'checkbox_uzverti_pabaigus' 'checkbox_pabaigus_atverti' 'checkbox_pabaigus_i_apdorotu_aplanka' ...
+    'checkbox_rf' 'checkbox_filtr1' 'checkbox_filtr2' 'checkbox_filtr_tinklo' 'checkbox_kanalu_padetis' 'checkbox_atrink_kanalus1' ...
+    'checkbox_atmesk_atkarpas_amp' 'checkbox_atmesk_atkarpas_dzn' 'checkbox_atmesk_kan_auto' 'checkbox_perziureti' 'checkbox_atmesk_iki2s' ...
+    'checkbox_vienoda_trukme' 'checkbox_ICA' 'checkbox_MARA' 'checkbox_atrink_kanalus2' 'checkbox_ASR' 'checkbox_perziureti_ICA' 'checkbox_epoch' ...
+    'checkbox_rf_' 'checkbox_filtr1_' 'checkbox_filtr2_' 'checkbox_filtr_tinklo_' 'checkbox_kanalu_padetis_' 'checkbox_atrink_kanalus1_' ...
+    'checkbox_atmesk_atkarpas_amp_' 'checkbox_atmesk_atkarpas_dzn_' 'checkbox_atmesk_kan_auto_' 'checkbox_perziureti_' 'checkbox_atmesk_iki2s_' ...
+    'checkbox_vienoda_trukme_' 'checkbox_ICA_' 'checkbox_MARA_' 'checkbox_atrink_kanalus2_' 'checkbox_ASR_' 'checkbox_perziureti_ICA_' 'checkbox_epoch_' ...
+    'checkbox_atrink_kanalus1__' 'checkbox41' 'checkbox_perziureti_demesio' 'checkbox_perziureti_ICA_demesio' 'checkbox_epoch_b' ...
+    'popupmenu9' 'popupmenu4' 'popupmenu5' 'popupmenu7' 'popupmenu8' 'popupmenu10' ...
+    'pushbutton14' 'pushbutton18' 'pushbutton9' 'pushbutton_apdorotini_kanalai' 'pushbutton7' 'pushbutton13' ...
+    'radiobutton6' 'radiobutton7' };
+for i=1:length(isimintini_el);
+    Parinktys(i).id = isimintini_el{i} ;
+    Parinktys(i).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
+    Parinktys(i).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
+    Parinktys(i).String_  = 0;
+    Parinktys(i).TooltipString_ = 0;
+end;
+isimintini_el={ 'edit3' 'edit50' 'edit58' 'edit57' 'edit44' 'edit43' 'edit40' 'edit_atmesk_kan_auto_slenkstis' ...
+    'edit59' 'edit20' 'edit19' 'edit21'  'edit_epoch_t' 'edit_epoch_b'};
+for i=1:length(isimintini_el);
+    Parinktys(end+1).id = isimintini_el{i} ;
+    Parinktys(end).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
+    Parinktys(end).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
+    Parinktys(end).String_  = 1;
+    Parinktys(end).String   = get(eval(['handles.' isimintini_el{i}]), 'String');
+    Parinktys(end).TooltipString_ = 0 ;
+end;
+isimintini_el={ 'popupmenu12' 'popupmenu3' 'text8' 'text9' 'text_apdorotini_kanalai' ...
+    'edit_rf' 'edit_filtr1' 'edit_filtr2' 'edit_filtr_tinklo' 'edit_kanalu_padetis' 'edit_atrink_kanalus1' ...
+    'edit_atmesk_atkarpas_amp' 'edit_atmesk_atkarpas_dzn' 'edit_atmesk_kan_auto' 'edit_perziureti' 'edit_atmesk_iki2s' ...
+    'edit_vienoda_trukme' 'edit_ICA' 'edit_MARA' 'edit_atrink_kanalus2' 'edit_ASR' 'edit_perziureti_ICA' 'edit_epoch' ...
+    'edit_rf_' 'edit_filtr1_' 'edit_filtr2_' 'edit_filtr_tinklo_' 'edit_kanalu_padetis_' 'edit_atrink_kanalus1_' ...
+    'edit_atmesk_atkarpas_amp_' 'edit_atmesk_atkarpas_dzn_' 'edit_atmesk_kan_auto_' 'edit_perziureti_' 'edit_atmesk_iki2s_' ...
+    'edit_vienoda_trukme_' 'edit_ICA_' 'edit_MARA_' 'edit_atrink_kanalus2_' 'edit_ASR_' 'edit_perziureti_ICA_' 'edit_epoch_' ...
+    'edit_epoch_iv' };
+for i=1:length(isimintini_el);
+    Parinktys(end+1).id = isimintini_el{i} ;
+    Parinktys(end).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
+    Parinktys(end).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
+    Parinktys(end).String_  = 1;
+    Parinktys(end).String   = get(eval(['handles.' isimintini_el{i}]), 'String');
+    Parinktys(end).TooltipString_ = 1;
+    Parinktys(end).TooltipString   = get(eval(['handles.' isimintini_el{i}]), 'TooltipString');
+end;
+
+try
+    i=find(ismember(esami,vardas));
+    if isempty(i);
+        i=length(esami)+1; 
+        reikia_perkurti_meniu=1;
     end;
-    isimintini_el={ 'popupmenu12' 'popupmenu3' 'text8' 'text9' 'text_apdorotini_kanalai' ...
-        'edit_rf' 'edit_filtr1' 'edit_filtr2' 'edit_filtr_tinklo' 'edit_kanalu_padetis' 'edit_atrink_kanalus1' ...
-        'edit_atmesk_atkarpas_amp' 'edit_atmesk_atkarpas_dzn' 'edit_atmesk_kan_auto' 'edit_perziureti' 'edit_atmesk_iki2s' ...
-        'edit_vienoda_trukme' 'edit_ICA' 'edit_MARA' 'edit_atrink_kanalus2' 'edit_ASR' 'edit_perziureti_ICA' 'edit_epoch' ...
-        'edit_rf_' 'edit_filtr1_' 'edit_filtr2_' 'edit_filtr_tinklo_' 'edit_kanalu_padetis_' 'edit_atrink_kanalus1_' ...
-        'edit_atmesk_atkarpas_amp_' 'edit_atmesk_atkarpas_dzn_' 'edit_atmesk_kan_auto_' 'edit_perziureti_' 'edit_atmesk_iki2s_' ...
-        'edit_vienoda_trukme_' 'edit_ICA_' 'edit_MARA_' 'edit_atrink_kanalus2_' 'edit_ASR_' 'edit_perziureti_ICA_' 'edit_epoch_' ...
-        'edit_epoch_iv' };
-    for i=1:length(isimintini_el);
-      Parinktys(end+1).id = isimintini_el{i} ;
-      Parinktys(end).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
-      Parinktys(end).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
-      Parinktys(end).String_  = 1;
-      Parinktys(end).String   = get(eval(['handles.' isimintini_el{i}]), 'String');
-      Parinktys(end).TooltipString_ = 1;
-      Parinktys(end).TooltipString   = get(eval(['handles.' isimintini_el{i}]), 'TooltipString');
-    end;
-    
-    eval(['Darbeliai.dialogai.pop_nuoseklus_apdorojimas.uzduotys.' rinkinys ' = Parinktys']);
-    
-    % Įrašymas
-    save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');    
+catch err;
+    i=1;
+end;
+Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka(i).vardas    = vardas ;
+Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka(i).data      = datestr(now,'yyyy-mm-dd HH:MM:SS') ;
+Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka(i).komentaras= [ komentaras ' ' ] ;
+Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka(i).parinktys = Parinktys ;
+
+% Įrašymas
+try
+    save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
+catch err;
+    %Pranesk_apie_klaida(err, 'pop_nuoseklus_apdorojimas.m', '-', 0);
+end;
+if reikia_perkurti_meniu; meniu(hObject, eventdata, handles); end;
+
+function parinktis_trinti(hObject, eventdata, handles)
+try
+    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
+    esami={Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.vardas};
+    esami_N=length(esami);
+    esami_nr=find(~ismember(esami,{'numatytas','paskutinis'}));
+    esami=esami(esami_nr);
+    if isempty(esami); return; end;
+catch err;
+    %Pranesk_apie_klaida(err, 'pop_nuoseklus_apdorojimas.m', '-', 0);
+    return;
+end;
+pasirinkti=listdlg('ListString', esami,...
+    'SelectionMode','multiple',...
+    'PromptString', lokaliz('Trinti:'),...
+    'InitialValue',length(esami),...
+    'OKString',lokaliz('OK'),...
+    'CancelString',lokaliz('Cancel'));
+if isempty(pasirinkti); return; end;
+Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka= ...
+    Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka(...
+    setdiff([1:esami_N], esami_nr(pasirinkti)));
+% Įrašymas
+try
+    save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
 catch err;
     Pranesk_apie_klaida(err, 'pop_nuoseklus_apdorojimas.m', '-', 0);
 end;
+meniu(hObject, eventdata, handles);
+
+function meniu(hObject, eventdata, handles)
+delete(findall(handles.figure1,'type','uimenu'));
+yra_isimintu_rinkiniu=0;
+handles.meniu_parinktys = uimenu('Label',lokaliz('Nuostatos'),'Tag','Nuostatos');
+handles.meniu_parinktys_ikelti = uimenu(handles.meniu_parinktys,'Label',lokaliz('Ikelti'));
+uimenu(handles.meniu_parinktys_ikelti,'Label',lokaliz('Numatytas'),'Accelerator','R','Callback',{@parinktis_ikelti,handles,'numatytas'});
+try
+    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+    uimenu(handles.meniu_parinktys_ikelti,'Label',lokaliz('Paskiausias'),'Separator','off','Accelerator','0','Callback',{@parinktis_ikelti,handles,'paskutinis'});
+    par_pav={ Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.vardas };
+    par_dat={ Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.data };
+    par_kom={ Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.komentaras };
+    par_kom=par_kom(find(~ismember(par_pav,{'numatytas','paskutinis'})));
+    par_dat=par_dat(find(~ismember(par_pav,{'numatytas','paskutinis'})));
+    par_pav=par_pav(find(~ismember(par_pav,{'numatytas','paskutinis'})));
+    if ~isempty(par_pav); yra_isimintu_rinkiniu=1 ; end; 
+    for i=1:length(par_pav);
+        el=uimenu(handles.meniu_parinktys_ikelti,...
+            'Label', ['<html><font size="-2" color="#ADD8E6">' par_dat{i} '</font> ' ...
+            par_pav{i} ' <br><font size="-2" color="#ADD8E6">' par_kom{i} '</font></html>'],...
+            'Separator',fastif(i==1,'on','off'),...
+            'Accelerator',num2str(i),...
+            'Callback',{@parinktis_ikelti,handles,par_pav{i}});
+    end;
+catch err;
+    Pranesk_apie_klaida(err, 'pop_nuoseklus_apdorojimas.m', '-', 0);
+end;
+%handles.meniu_parinktys_irasyti = uimenu(handles.meniu_parinktys,'Label','Įrašyti');
+%uimenu(handles.meniu_parinktys_irasyti,'Label','Kaip paskutines','Callback',{@parinktis_irasyti,handles,'paskutinis',''});
+uimenu(handles.meniu_parinktys,'Label',lokaliz('Saugoti...'),...
+    'Accelerator','S','Callback',{@parinktis_irasyti,handles,'',''});
+uimenu(handles.meniu_parinktys,'Label',lokaliz('Trinti...'),...
+    'Enable',fastif(yra_isimintu_rinkiniu==1,'on','off'),'Callback',{@parinktis_trinti,handles});
+
+handles.meniu_apie = uimenu('Label',lokaliz('Pagalba'));
+if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
+    uimenu( handles.meniu_apie, 'Label', 'Darbeliai...', 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Nuoseklus apdorojimas'), 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.3.%20Nuoseklus%20apdorojimas'',''-browser'') ;'  );
+else
+    uimenu( handles.meniu_apie, 'Label', 'Darbeliai...', 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Nuoseklus apdorojimas'), 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.3.%20Serial%20processing'',''-browser'') ;'  );
+end;
+
 
