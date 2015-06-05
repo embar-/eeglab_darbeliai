@@ -193,7 +193,7 @@ try
    Darbeliai_nuostatos.lokale=Darbeliai.nuostatos.lokale;
    Darbeliai_nuostatos.tikrinti_versija=Darbeliai.nuostatos.tikrinti_versija;
    Darbeliai_nuostatos.diegti_auto=Darbeliai.nuostatos.diegti_auto;
-   Darbeliai_konfig_vers=Darbeliai.konfig_vers;
+   %Darbeliai_konfig_vers=Darbeliai.konfig_vers;
    Darbeliai_nuostatos.stabili_versija=Darbeliai.nuostatos.stabili_versija;
    Darbeliai_nuostatos.savita_versija=Darbeliai.nuostatos.savita_versija;
    Darbeliai_nuostatos.url_atnaujinimui=Darbeliai.nuostatos.url_atnaujinimui;
