@@ -97,7 +97,6 @@ tic;
 set(handles.figure1,'Name',mfilename);
 
 lokalizuoti(hObject, eventdata, handles);
-
 meniu(hObject, eventdata, handles);
 
 disp(' ');
@@ -326,7 +325,10 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 % Neleisk nieko daryti
 function susaldyk(hObject, eventdata, handles)
 %Neleisti spausti Nuostatų meniu!
-a=findall(handles.figure1,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','off'); drawnow;
+a=findall(handles.figure1,'type','uimenu'); 
+a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; 
+set(a,'Enable','off'); drawnow;
+
 set(handles.pushbutton1,'Value',0);
 set(handles.listbox1,'Enable','inactive');
 set(handles.edit1,'Enable','off');
@@ -397,9 +399,6 @@ set(handles.text_darbas,'String',' ');
 
 % Vel leisk ka nors daryti
 function susildyk(hObject, eventdata, handles)
-
-% Leisti spausti Nuostatų meniu!
-a=findall(handles.figure1,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','on'); 
 
 set(handles.pushbutton1,'Value',1);
 set(handles.listbox1,'Enable','on');
@@ -493,7 +492,6 @@ edit50_Callback(hObject, eventdata, handles);
 %Vykdymo mygtukas
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
-%
 set(handles.checkbox_baigti_anksciau,'Visible','off');
 
 %Vidinis atliktų darbų skaitliukas
@@ -501,11 +499,11 @@ set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
     get(handles.edit2,'String'))));
 
 %set(handles.uipanel6,'Title', ['Duomenų apdorojimo funkcijos']);
-
 set(handles.text_darbas,'String',' ');
-
 set(handles.pushbutton2,'Value',0);
 
+% Leisti spausti Nuostatų meniu!
+a=findall(handles.figure1,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','on'); 
 
 function Ar_galima_vykdyti(hObject, eventdata, handles)
 
@@ -6372,18 +6370,22 @@ try
     i=find(ismember(esami,rinkinys));
     Parinktys=Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka(i).parinktys;
     for i=1:length(Parinktys);
-      set(eval(['handles.' Parinktys(i).id ]), ...
-          'Value',         Parinktys(i).Value );      
-      set(eval(['handles.' Parinktys(i).id ]), ...
-          'UserData',      Parinktys(i).UserData );
-      if Parinktys(i).String_ ;
-          set(eval(['handles.' Parinktys(i).id ]), ...
-              'String',        Parinktys(i).String );
-      end;
-      if Parinktys(i).TooltipString_ ;
-          set(eval(['handles.' Parinktys(i).id ]), ...
-              'TooltipString', Parinktys(i).TooltipString );
-      end;
+        try
+            set(eval(['handles.' Parinktys(i).id ]), ...
+                'Value',         Parinktys(i).Value );
+            set(eval(['handles.' Parinktys(i).id ]), ...
+                'UserData',      Parinktys(i).UserData );
+            if Parinktys(i).String_ ;
+                set(eval(['handles.' Parinktys(i).id ]), ...
+                    'String',        Parinktys(i).String );
+            end;
+            if Parinktys(i).TooltipString_ ;
+                set(eval(['handles.' Parinktys(i).id ]), ...
+                    'TooltipString', Parinktys(i).TooltipString );
+            end;
+        catch err;
+            Pranesk_apie_klaida(err, 'pop_nuoseklus_apdorojimas.m', '-', 0);
+        end;
     end;
 catch err;
     %Pranesk_apie_klaida(err, '', '', 0);
@@ -6435,21 +6437,29 @@ isimintini_el={'checkbox_uzverti_pabaigus' 'checkbox_pabaigus_atverti' 'checkbox
     'pushbutton14' 'pushbutton18' 'pushbutton9' 'pushbutton_apdorotini_kanalai' 'pushbutton7' 'pushbutton13' ...
     'radiobutton6' 'radiobutton7' };
 for i=1:length(isimintini_el);
-    Parinktys(i).id = isimintini_el{i} ;
-    Parinktys(i).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
-    Parinktys(i).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
-    Parinktys(i).String_  = 0;
-    Parinktys(i).TooltipString_ = 0;
+    try
+        Parinktys(i).id = isimintini_el{i} ;
+        Parinktys(i).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
+        Parinktys(i).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
+        Parinktys(i).String_  = 0;
+        Parinktys(i).TooltipString_ = 0;
+    catch err;
+        Pranesk_apie_klaida(err, 'pop_nuoseklus_apdorojimas.m', '-', 0);
+    end;
 end;
 isimintini_el={ 'edit3' 'edit50' 'edit58' 'edit57' 'edit44' 'edit43' 'edit40' 'edit_atmesk_kan_auto_slenkstis' ...
     'edit59' 'edit20' 'edit19' 'edit21'  'edit_epoch_t' 'edit_epoch_b'};
 for i=1:length(isimintini_el);
-    Parinktys(end+1).id = isimintini_el{i} ;
-    Parinktys(end).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
-    Parinktys(end).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
-    Parinktys(end).String_  = 1;
-    Parinktys(end).String   = get(eval(['handles.' isimintini_el{i}]), 'String');
-    Parinktys(end).TooltipString_ = 0 ;
+    try
+        Parinktys(end+1).id = isimintini_el{i} ;
+        Parinktys(end).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
+        Parinktys(end).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
+        Parinktys(end).String_  = 1;
+        Parinktys(end).String   = get(eval(['handles.' isimintini_el{i}]), 'String');
+        Parinktys(end).TooltipString_ = 0 ;
+    catch err;
+        Pranesk_apie_klaida(err, 'pop_nuoseklus_apdorojimas.m', '-', 0);
+    end;
 end;
 isimintini_el={ 'popupmenu12' 'popupmenu3' 'text8' 'text9' 'text_apdorotini_kanalai' ...
     'edit_rf' 'edit_filtr1' 'edit_filtr2' 'edit_filtr_tinklo' 'edit_kanalu_padetis' 'edit_atrink_kanalus1' ...
@@ -6460,13 +6470,17 @@ isimintini_el={ 'popupmenu12' 'popupmenu3' 'text8' 'text9' 'text_apdorotini_kana
     'edit_vienoda_trukme_' 'edit_ICA_' 'edit_MARA_' 'edit_atrink_kanalus2_' 'edit_ASR_' 'edit_perziureti_ICA_' 'edit_epoch_' ...
     'edit_epoch_iv' };
 for i=1:length(isimintini_el);
-    Parinktys(end+1).id = isimintini_el{i} ;
-    Parinktys(end).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
-    Parinktys(end).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
-    Parinktys(end).String_  = 1;
-    Parinktys(end).String   = get(eval(['handles.' isimintini_el{i}]), 'String');
-    Parinktys(end).TooltipString_ = 1;
-    Parinktys(end).TooltipString   = get(eval(['handles.' isimintini_el{i}]), 'TooltipString');
+    try
+        Parinktys(end+1).id = isimintini_el{i} ;
+        Parinktys(end).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
+        Parinktys(end).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
+        Parinktys(end).String_  = 1;
+        Parinktys(end).String   = get(eval(['handles.' isimintini_el{i}]), 'String');
+        Parinktys(end).TooltipString_ = 1;
+        Parinktys(end).TooltipString   = get(eval(['handles.' isimintini_el{i}]), 'TooltipString');
+    catch err;
+        Pranesk_apie_klaida(err, 'pop_nuoseklus_apdorojimas.m', '-', 0);
+    end;
 end;
 
 try
@@ -6508,7 +6522,7 @@ pasirinkti=listdlg('ListString', esami,...
     'SelectionMode','multiple',...
     'PromptString', lokaliz('Trinti:'),...
     'InitialValue',length(esami),...
-    'OKString',lokaliz('OK'),...
+    'OKString',lokaliz('Trinti'),...
     'CancelString',lokaliz('Cancel'));
 if isempty(pasirinkti); return; end;
 Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka= ...
@@ -6525,22 +6539,28 @@ meniu(hObject, eventdata, handles);
 function meniu(hObject, eventdata, handles)
 delete(findall(handles.figure1,'type','uimenu'));
 yra_isimintu_rinkiniu=0;
-handles.meniu_parinktys = uimenu('Label',lokaliz('Nuostatos'),'Tag','Nuostatos');
-handles.meniu_parinktys_ikelti = uimenu(handles.meniu_parinktys,'Label',lokaliz('Ikelti'));
-uimenu(handles.meniu_parinktys_ikelti,'Label',lokaliz('Numatytas'),'Accelerator','R','Callback',{@parinktis_ikelti,handles,'numatytas'});
+% handles.meniu_veiksmai = uimenu('Label',lokaliz('Veiksmai'),'Tag','Veiksmai');
+% uimenu(handles.meniu_veiksmai,'Label',lokaliz('Execute'),...
+%     'Accelerator','E','Callback',{@pushbutton1_Callback,handles});
+handles.meniu_nuostatos = uimenu(handles.figure1,'Label',lokaliz('Nuostatos'),'Tag','Nuostatos');
+handles.meniu_nuostatos_ikelti = uimenu(handles.meniu_nuostatos,'Label',lokaliz('Ikelti'));
+uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Numatytas'),...
+    'Accelerator','R','Callback',{@parinktis_ikelti,handles,'numatytas'});
 try
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
-    uimenu(handles.meniu_parinktys_ikelti,'Label',lokaliz('Paskiausias'),'Separator','off','Accelerator','0','Callback',{@parinktis_ikelti,handles,'paskutinis'});
     par_pav={ Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.vardas };
-    par_dat={ Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.data };
-    par_kom={ Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.komentaras };
-    par_kom=par_kom(find(~ismember(par_pav,{'numatytas','paskutinis'})));
-    par_dat=par_dat(find(~ismember(par_pav,{'numatytas','paskutinis'})));
-    par_pav=par_pav(find(~ismember(par_pav,{'numatytas','paskutinis'})));
+    if ismember('paskutinis',par_pav);
+        uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Paskiausias'),'Separator','off',...
+            'Accelerator','0','Callback',{@parinktis_ikelti,handles,'paskutinis'});
+    end;
+    ids=find(~ismember(par_pav,{'numatytas','paskutinis'}));
+    par_pav=par_pav(ids);
+    par_dat={ Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.data };       par_dat=par_dat(ids);
+    par_kom={ Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.komentaras }; par_kom=par_kom(ids);
     if ~isempty(par_pav); yra_isimintu_rinkiniu=1 ; end; 
     for i=1:length(par_pav);
-        el=uimenu(handles.meniu_parinktys_ikelti,...
+        el=uimenu(handles.meniu_nuostatos_ikelti,...
             'Label', ['<html><font size="-2" color="#ADD8E6">' par_dat{i} '</font> ' ...
             par_pav{i} ' <br><font size="-2" color="#ADD8E6">' par_kom{i} '</font></html>'],...
             'Separator',fastif(i==1,'on','off'),...
@@ -6550,23 +6570,25 @@ try
 catch err;
     Pranesk_apie_klaida(err, 'pop_nuoseklus_apdorojimas.m', '-', 0);
 end;
-%handles.meniu_parinktys_irasyti = uimenu(handles.meniu_parinktys,'Label','Įrašyti');
-%uimenu(handles.meniu_parinktys_irasyti,'Label','Kaip paskutines','Callback',{@parinktis_irasyti,handles,'paskutinis',''});
-uimenu(handles.meniu_parinktys,'Label',lokaliz('Saugoti...'),...
+%handles.meniu_nuostatos_irasyti = uimenu(handles.meniu_nuostatos,'Label','Įrašyti');
+%uimenu(handles.meniu_nuostatos_irasyti,'Label','Kaip paskutines','Callback',{@parinktis_irasyti,handles,'paskutinis',''});
+uimenu(handles.meniu_nuostatos,'Label',lokaliz('Saugoti...'),...
     'Accelerator','S','Callback',{@parinktis_irasyti,handles,'',''});
-uimenu(handles.meniu_parinktys,'Label',lokaliz('Trinti...'),...
+uimenu(handles.meniu_nuostatos,'Label',lokaliz('Trinti...'),...
     'Enable',fastif(yra_isimintu_rinkiniu==1,'on','off'),'Callback',{@parinktis_trinti,handles});
 
-handles.meniu_apie = uimenu('Label',lokaliz('Pagalba'));
+handles.meniu_apie = uimenu(handles.figure1,'Label',lokaliz('Pagalba'));
 if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
     uimenu( handles.meniu_apie, 'Label', 'Darbeliai...', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
-    uimenu( handles.meniu_apie, 'Label', lokaliz('Nuoseklus apdorojimas'), 'callback', ...
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Nuoseklus apdorojimas'),  ...
+        'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.3.%20Nuoseklus%20apdorojimas'',''-browser'') ;'  );
 else
     uimenu( handles.meniu_apie, 'Label', 'Darbeliai...', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
-    uimenu( handles.meniu_apie, 'Label', lokaliz('Nuoseklus apdorojimas'), 'callback', ...
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Nuoseklus apdorojimas'), ...
+        'Accelerator','H','callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.3.%20Serial%20processing'',''-browser'') ;'  );
 end;
 
