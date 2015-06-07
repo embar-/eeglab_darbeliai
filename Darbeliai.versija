@@ -1,6 +1,5 @@
-Darbeliai v2015.06.03.1
-+ Atliktų darbų skaitliukas remiasi poaplankių pavadinimais.
-+ Nuosekliame darbe pirmajame iš dviejų filtrų filtruojami ne visi, 
-  o tik pasirinkti kanalai.
-~ Nuosekliame apdorojime pasirinkus įvykius epochavimui iš sąrašo, 
-  neatnaujino „Vykdyti“ mygtuko būsenos.
+Darbeliai v2015.06.07.1
+Visuose grafiniuose languose galima įsiminti parinktis išsaugant
+jas skirtingais pavadinimais ir vėliau jas įkelti arba pašalinti.
+
+All dialogs allow to save options, load them later or remove.

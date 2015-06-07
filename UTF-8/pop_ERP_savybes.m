@@ -112,6 +112,7 @@ end;
 tic;
 
 lokalizuoti(hObject, eventdata, handles);
+meniu(hObject, eventdata, handles);
 
 % global STUDY CURRENTSTUDY ALLEEG EEG CURRENTSET PLUGINLIST Rinkmena NaujaRinkmena KELIAS KELIAS_SAUGOJIMUI SaugomoNr;
 
@@ -202,28 +203,7 @@ set(handles.pushbutton11,'UserData',{});
 set(handles.pushbutton14,'UserData',{});
 set(handles.pushbutton15,'UserData',{});
 
-% set(handles.edit51,'String','-0.200 2.000 ');   % Epochavimo_intervalas_pirminis
-% set(handles.edit59,'String','31:36 51:56');     % Epochuoti_pagal_stimulus_
-% set(handles.edit54,'String','10');              % Epochuoti_pagal_atsakus
-% set(handles.edit55,'String','-0.600 0.250');   % Epochavimo_intervalas_atsakams
-% set(handles.edit56,'String','-0.600 0.000');    % Epochavimo_intervalas_atsakams_base
-% set(handles.edit57,'String','-0.350 0.700');    % Epochavimo_intervalas_stimulams
-% set(handles.edit58,'String','-0.350 0.000');    % Epochavimo_intervalas_stimulams_base
-% set(handles.edit62,'String',lokaliz('big_epoch_suffix'));   %
-
-% edit51_Callback(hObject, eventdata, handles);
-% edit59_Callback(hObject, eventdata, handles);
-% edit54_Callback(hObject, eventdata, handles);
-% edit55_Callback(hObject, eventdata, handles);
-% edit56_Callback(hObject, eventdata, handles);
-% edit57_Callback(hObject, eventdata, handles);
-% edit58_Callback(hObject, eventdata, handles);
-
-% Kurias parinktis įjungti vos paleidus
-%set(handles.checkbox_epoch,'Value',0);
-
-%susaldyk(hObject, eventdata, handles);
-
+parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
 susildyk(hObject, eventdata, handles);
 
 tic;
@@ -329,6 +309,11 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 
 % Neleisk nieko daryti
 function susaldyk(hObject, eventdata, handles)
+%Neleisti spausti Nuostatų meniu!
+a=findall(handles.figure1,'type','uimenu'); 
+a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; 
+set(a,'Enable','off'); drawnow;
+
 set(handles.pushbutton1,'Value',0);
 set(handles.listbox1,'Enable','inactive');
 set(handles.edit1,'Enable','off');
@@ -469,22 +454,19 @@ uipanel15_SelectionChangeFcn(hObject, eventdata, handles);
 %Vykdymo mygtukas
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
-%
 set(handles.checkbox_baigti_anksciau,'Visible','off');
 set(handles.checkbox_pabaigus_atverti,'Visible','on');
-
-
 set(handles.checkbox57,'Enable','on'); %Peržiūra
 
 %Vidinis atliktų darbų skaitliukas
 set(handles.text_atlikta_darbu,'String',num2str(0));
 
-
 set(handles.text_darbas,'Visible','off');
 set(handles.text_darbas,'String',' ');
-
 set(handles.pushbutton2,'Value',0);
 
+% Leisti spausti Nuostatų meniu!
+a=findall(handles.figure1,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','on'); 
 
 
 function Ar_galima_vykdyti(hObject, eventdata, handles)
@@ -694,6 +676,11 @@ try
 catch err;
     %warning(err.message);
 end;
+
+% Užduočių parinkčių įsiminimas
+parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
+%Neleisti spausti Nuostatų meniu!
+a=findall(gcf,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','off'); drawnow;
 
 STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
 %[ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
@@ -4064,3 +4051,221 @@ function checkbox73_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox73
+
+
+function parinktis_ikelti(hObject, eventdata, handles, rinkinys)
+susaldyk(hObject, eventdata, handles);
+% Įkelti ankstenius nustatymus
+try    
+    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
+    esami={Darbeliai.dialogai.pop_ERP_savybes.saranka.vardas};
+    i=find(ismember(esami,rinkinys));
+    Parinktys=Darbeliai.dialogai.pop_ERP_savybes.saranka(i).parinktys;
+    for i=1:length(Parinktys);
+        try
+            set(eval(['handles.' Parinktys(i).id ]), ...
+                'Value',         Parinktys(i).Value );
+            set(eval(['handles.' Parinktys(i).id ]), ...
+                'UserData',      Parinktys(i).UserData );
+            if Parinktys(i).String_ ;
+                set(eval(['handles.' Parinktys(i).id ]), ...
+                    'String',        Parinktys(i).String );
+            end;
+            if Parinktys(i).TooltipString_ ;
+                set(eval(['handles.' Parinktys(i).id ]), ...
+                    'TooltipString', Parinktys(i).TooltipString );
+            end;
+        catch err;
+            Pranesk_apie_klaida(err, 'pop_ERP_savybes.m', '-', 0);
+        end;
+    end;
+catch err;
+    %Pranesk_apie_klaida(err, '', '', 0);
+end;
+susildyk(hObject, eventdata, handles);
+
+function parinktis_irasyti(hObject, eventdata, handles, vardas, komentaras)
+reikia_perkurti_meniu=0;
+if isempty(vardas); 
+    a=inputdlg({lokaliz('Pavadinimas:'),lokaliz('Komentaras:')}); 
+    if isempty(a); return; end;
+    if iscell(a);
+        if isempty(a{1});
+            vardas='paskutinis';
+            komentaras='';
+        else
+            vardas=a{1};
+            komentaras=a{2};
+        end;
+    end;
+end;
+    
+try
+    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
+    esami={Darbeliai.dialogai.pop_ERP_savybes.saranka.vardas};
+    if and(ismember(vardas,esami),~ismember(vardas,{'numatytas','paskutinis'}));
+        ats=questdlg(lokaliz('Perrašyti nuostatų rinkinį?'),lokaliz('Nuostatos jau yra!'),lokaliz('Rewrite'),lokaliz('Cancel'),lokaliz('Cancel'));
+        if isempty(ats); return; end;
+        if ~strcmp(ats,lokaliz('Rewrite')); return; end;
+        reikia_perkurti_meniu=1;
+    end;
+catch err;
+    %Pranesk_apie_klaida(err, 'pop_ERP_savybes.m', '-', 0);
+end;
+
+% Užduočių parinktys
+Parinktys=struct('id','','Value','','UserData','','String_','','String','','TooltipString_','','TooltipString','');
+isimintini_el={'checkbox_uzverti_pabaigus' 'checkbox_pabaigus_atverti' 'checkbox_pabaigus_i_apdorotu_aplanka' ...
+    'checkbox61' 'checkbox65' 'checkbox64' 'checkbox63' 'checkbox66' 'checkbox67' ...
+    'checkbox73' 'checkbox59' 'checkbox58' 'checkbox57' 'checkbox60' 'checkbox72' 'checkbox69' ...
+    'pushbutton14' 'pushbutton11' 'pushbutton15' 'popupmenu9' 'popupmenu10' 'popupmenu11' ...
+    'radiobutton6' 'radiobutton7' };
+for i=1:length(isimintini_el);
+    try
+        Parinktys(i).id = isimintini_el{i} ;
+        Parinktys(i).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
+        Parinktys(i).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
+        Parinktys(i).String_  = 0;
+        Parinktys(i).TooltipString_ = 0;
+    catch err;
+        Pranesk_apie_klaida(err, 'pop_ERP_savybes.m', '-', 0);
+    end;
+end;
+isimintini_el={ 'edit51' 'edit60' 'edit70' };
+for i=1:length(isimintini_el);
+    try
+        Parinktys(end+1).id = isimintini_el{i} ;
+        Parinktys(end).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
+        Parinktys(end).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
+        Parinktys(end).String_  = 1;
+        Parinktys(end).String   = get(eval(['handles.' isimintini_el{i}]), 'String');
+        Parinktys(end).TooltipString_ = 0 ;
+    catch err;
+        Pranesk_apie_klaida(err, 'pop_ERP_savybes.m', '-', 0);
+    end;
+end;
+isimintini_el={ 'text47' 'edit59' };
+for i=1:length(isimintini_el);
+    try
+        Parinktys(end+1).id = isimintini_el{i} ;
+        Parinktys(end).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
+        Parinktys(end).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
+        Parinktys(end).String_  = 1;
+        Parinktys(end).String   = get(eval(['handles.' isimintini_el{i}]), 'String');
+        Parinktys(end).TooltipString_ = 1;
+        Parinktys(end).TooltipString   = get(eval(['handles.' isimintini_el{i}]), 'TooltipString');
+    catch err;
+        Pranesk_apie_klaida(err, 'pop_ERP_savybes.m', '-', 0);
+    end;
+end;
+
+try
+    i=find(ismember(esami,vardas));
+    if isempty(i);
+        i=length(esami)+1; 
+        reikia_perkurti_meniu=1;
+    end;
+catch err;
+    i=1;
+end;
+Darbeliai.dialogai.pop_ERP_savybes.saranka(i).vardas    = vardas ;
+Darbeliai.dialogai.pop_ERP_savybes.saranka(i).data      = datestr(now,'yyyy-mm-dd HH:MM:SS') ;
+Darbeliai.dialogai.pop_ERP_savybes.saranka(i).komentaras= [ komentaras ' ' ] ;
+Darbeliai.dialogai.pop_ERP_savybes.saranka(i).parinktys = Parinktys ;
+
+% Įrašymas
+try
+    save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
+catch err;
+    %Pranesk_apie_klaida(err, 'pop_ERP_savybes.m', '-', 0);
+end;
+if reikia_perkurti_meniu; meniu(hObject, eventdata, handles); end;
+
+function parinktis_trinti(hObject, eventdata, handles)
+try
+    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
+    esami={Darbeliai.dialogai.pop_ERP_savybes.saranka.vardas};
+    esami_N=length(esami);
+    esami_nr=find(~ismember(esami,{'numatytas','paskutinis'}));
+    esami=esami(esami_nr);
+    if isempty(esami); return; end;
+catch err;
+    %Pranesk_apie_klaida(err, 'pop_ERP_savybes.m', '-', 0);
+    return;
+end;
+pasirinkti=listdlg('ListString', esami,...
+    'SelectionMode','multiple',...
+    'PromptString', lokaliz('Trinti:'),...
+    'InitialValue',length(esami),...
+    'OKString',lokaliz('Trinti'),...
+    'CancelString',lokaliz('Cancel'));
+if isempty(pasirinkti); return; end;
+Darbeliai.dialogai.pop_ERP_savybes.saranka= ...
+    Darbeliai.dialogai.pop_ERP_savybes.saranka(...
+    setdiff([1:esami_N], esami_nr(pasirinkti)));
+% Įrašymas
+try
+    save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
+catch err;
+    Pranesk_apie_klaida(err, 'pop_ERP_savybes.m', '-', 0);
+end;
+meniu(hObject, eventdata, handles);
+
+function meniu(hObject, eventdata, handles)
+delete(findall(handles.figure1,'type','uimenu'));
+yra_isimintu_rinkiniu=0;
+handles.meniu_nuostatos = uimenu(handles.figure1,'Label',lokaliz('Nuostatos'),'Tag','Nuostatos');
+handles.meniu_nuostatos_ikelti = uimenu(handles.meniu_nuostatos,'Label',lokaliz('Ikelti'));
+uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Numatytas'),'Accelerator','R','Callback',{@parinktis_ikelti,handles,'numatytas'});
+try
+    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+    par_pav={ Darbeliai.dialogai.pop_ERP_savybes.saranka.vardas };
+    if ismember('paskutinis',par_pav);
+        uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Paskiausias'),'Separator','off',...
+            'Accelerator','0','Callback',{@parinktis_ikelti,handles,'paskutinis'});
+    end;
+    ids=find(~ismember(par_pav,{'numatytas','paskutinis'}));
+    par_pav=par_pav(ids);
+    par_dat={ Darbeliai.dialogai.pop_ERP_savybes.saranka.data };       par_dat=par_dat(ids);
+    par_kom={ Darbeliai.dialogai.pop_ERP_savybes.saranka.komentaras }; par_kom=par_kom(ids);
+    if ~isempty(par_pav); yra_isimintu_rinkiniu=1 ; end; 
+    for i=1:length(par_pav);
+        try
+        el=uimenu(handles.meniu_nuostatos_ikelti,...
+            'Label', ['<html><font size="-2" color="#ADD8E6">' par_dat{i} '</font> ' ...
+            par_pav{i} ' <br><font size="-2" color="#ADD8E6">' par_kom{i} '</font></html>'],...
+            'Separator',fastif(i==1,'on','off'),...
+            'Accelerator',num2str(i),...
+            'Callback',{@parinktis_ikelti,handles,par_pav{i}});
+        catch err0;
+            Pranesk_apie_klaida(err0, 'pop_pervadinimas.m', '-', 0);
+        end;
+    end;
+catch err;
+    %Pranesk_apie_klaida(err, 'pop_ERP_savybes.m', '-', 0);
+end;
+%handles.meniu_nuostatos_irasyti = uimenu(handles.meniu_nuostatos,'Label','Įrašyti');
+%uimenu(handles.meniu_nuostatos_irasyti,'Label','Kaip paskutines','Callback',{@parinktis_irasyti,handles,'paskutinis',''});
+uimenu(handles.meniu_nuostatos,'Label',lokaliz('Saugoti...'),...
+    'Accelerator','S','Callback',{@parinktis_irasyti,handles,'',''});
+uimenu(handles.meniu_nuostatos,'Label',lokaliz('Trinti...'),...
+    'Enable',fastif(yra_isimintu_rinkiniu==1,'on','off'),'Callback',{@parinktis_trinti,handles});
+
+handles.meniu_apie = uimenu(handles.figure1,'Label',lokaliz('Pagalba'));
+if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
+    uimenu( handles.meniu_apie, 'Label', 'Darbeliai...', 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
+    uimenu( handles.meniu_apie, 'Label', lokaliz('ERP properties, export...'), ...
+        'Accelerator','H', 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.5.%20S%C4%AESP%20savyb%C4%97s%20ir%20eksportas'',''-browser'') ;'  );
+else
+    uimenu( handles.meniu_apie, 'Label', 'Darbeliai...', 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
+    uimenu( handles.meniu_apie, 'Label', lokaliz('ERP properties, export...'), ...
+        'Accelerator','H', 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.5.%20ERP%20properties%20and%20export'',''-browser'') ;'  );
+end;

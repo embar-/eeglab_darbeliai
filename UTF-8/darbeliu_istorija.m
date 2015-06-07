@@ -1,6 +1,10 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.06.07.1
+% + Visuose grafiniuose languose galima įsiminti parinktis išsaugant
+%   jas skirtingais pavadinimais ir vėliau jas įkelti arba pašalinti.
+%
 % v2015.06.03.1
 % + Atliktų darbų skaitliukas remiasi poaplankkių pavadinimais.
 % + Nuosekliame darbe filtruojami pirmajame iš dviejų filtrų 
