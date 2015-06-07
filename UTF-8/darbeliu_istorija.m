@@ -1,16 +1,20 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.06.07.1
+% + Likusiuose languose galima įsiminti parinktis išsaugant jas 
+%   skirtingais pavadinimais ir vėliau jas įkelti arba pašalinti.
+%
+% v2015.06.05.1
+% + Nuosekliame darbe galima įsiminti parinktis išsaugant jas 
+%   skirtingais pavadinimais ir vėliau jas įkelti arba pašalinti.
+%
 % v2015.06.03.1
 % + Atliktų darbų skaitliukas remiasi poaplankkių pavadinimais.
 % + Nuosekliame darbe filtruojami pirmajame iš dviejų filtrų 
 %   filtruojami ne visi, o tik pasirinkti kanalai.
 % ~ Nuosekliame apdorojime pasirinkus įvykius epochavimui iš sąrašo, 
 %   neatnaujino „Vykdyti“ mygtuko būsenos.
-%
-% v2015.06.05.1
-% + Nuosekliame darbe galima įsiminti parinktis išsaugant jas 
-%   skirtingais pavadinimais ir vėliau jas įkelti arba pašalinti.
 %
 % v2015.06.02.1
 % + Darbinių katalogų pasirinkimai prisimenami netgi iš naujo paleidus MATLAB.
