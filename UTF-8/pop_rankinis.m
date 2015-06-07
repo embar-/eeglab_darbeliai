@@ -168,16 +168,12 @@ set(handles.pushbutton14,'UserData',{});
 %[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
 
 %eeglab('redraw');
+set(handles.text_atlikta_darbu,'Visible','off');
+set(handles.text19,'Visible','off'); % atliktų darbų paaiškinimas
 set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
-
-set(handles.text_atlikta_darbu,'Visible','off');
-set(handles.text19,'Visible','off'); % atliktų darbų paaiškinimas
-
 parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
-
-%susaldyk(hObject, eventdata, handles);
 susildyk(hObject, eventdata, handles);
 
 tic;
@@ -2098,15 +2094,19 @@ try
     par_kom={ Darbeliai.dialogai.pop_rankinis.saranka.komentaras }; par_kom=par_kom(ids);
     if ~isempty(par_pav); yra_isimintu_rinkiniu=1 ; end; 
     for i=1:length(par_pav);
+        try
         el=uimenu(handles.meniu_nuostatos_ikelti,...
             'Label', ['<html><font size="-2" color="#ADD8E6">' par_dat{i} '</font> ' ...
             par_pav{i} ' <br><font size="-2" color="#ADD8E6">' par_kom{i} '</font></html>'],...
             'Separator',fastif(i==1,'on','off'),...
             'Accelerator',num2str(i),...
             'Callback',{@parinktis_ikelti,handles,par_pav{i}});
+        catch err0;
+            Pranesk_apie_klaida(err0, 'pop_pervadinimas.m', '-', 0);
+        end;
     end;
 catch err;
-    Pranesk_apie_klaida(err, 'pop_rankinis.m', '-', 0);
+    %Pranesk_apie_klaida(err, 'pop_rankinis.m', '-', 0);
 end;
 %handles.meniu_nuostatos_irasyti = uimenu(handles.meniu_nuostatos,'Label','Įrašyti');
 %uimenu(handles.meniu_nuostatos_irasyti,'Label','Kaip paskutines','Callback',{@parinktis_irasyti,handles,'paskutinis',''});
