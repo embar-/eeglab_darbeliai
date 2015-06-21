@@ -1,6 +1,11 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.06.21.1 
+% ~ Ištaisytas Darbelių paleidimas.
+% ~ Spartusis klavišas tik pirmoms 9-ioms įsimintoms nuostatoms.
+% + Ragu integravimas pasirenkamas.
+%
 % v2015.06.07.1
 % + Visuose grafiniuose languose galima įsiminti parinktis išsaugant
 %   jas skirtingais pavadinimais ir vėliau jas įkelti arba pašalinti.

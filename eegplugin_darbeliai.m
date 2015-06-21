@@ -187,6 +187,7 @@ Darbeliai_nuostatos.stabili_versija=1;
 Darbeliai_nuostatos.savita_versija=0;
 Darbeliai_nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/stable.zip';
 Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
+Darbeliai_nuostatos.meniu_ragu=1;
 
 try
    load(fullfile(curdir,config_file));
@@ -198,6 +199,7 @@ try
    Darbeliai_nuostatos.savita_versija=Darbeliai.nuostatos.savita_versija;
    Darbeliai_nuostatos.url_atnaujinimui=Darbeliai.nuostatos.url_atnaujinimui;
    Darbeliai_nuostatos.url_versijai=Darbeliai.nuostatos.url_versijai;
+   Darbeliai_nuostatos.meniu_ragu=Darbeliai.nuostatos.meniu_ragu;
 catch err;
    %disp(err.message);
 end;
@@ -417,14 +419,15 @@ uimenu( darbeliai_m, 'Label', lokaliz('Custom command') , ...
           ' catch err ; end ; ' ...
           'pop_rankinis ;'  ] );
           
-          
-if (exist('Ragu','file') == 2 ) ;          
-    ragu_m = uimenu( darbeliai_m, 'Label', lokaliz('Ragu'), 'Separator','off', 'userdata', on);
-else
-    Ragu_atnaujinimo_meniu_pavadinimas=lokaliz('Diegti Ragu');
-    uimenu( darbeliai_m, 'Label', Ragu_atnaujinimo_meniu_pavadinimas, 'Separator','off', ...
-        'foregroundcolor', 'b', 'userdata', on, 'Callback', ...
-         'ragu_diegimas ;'  );		
+if Darbeliai_nuostatos.meniu_ragu ;          
+    if (exist('Ragu','file') == 2 ) ;          
+        ragu_m = uimenu( darbeliai_m, 'Label', lokaliz('Ragu'), 'Separator','off', 'userdata', on);
+    else
+        Ragu_atnaujinimo_meniu_pavadinimas=lokaliz('Diegti Ragu');
+        uimenu( darbeliai_m, 'Label', Ragu_atnaujinimo_meniu_pavadinimas, 'Separator','off', ...
+            'foregroundcolor', 'b', 'userdata', on, 'Callback', ...
+             'ragu_diegimas ;'  );		
+    end;
 end;
 
 uimenu( darbeliai_m, 'Label', [lokaliz('Nuostatos') ' (kalba/language)'], ...
@@ -456,7 +459,7 @@ if and(exist('atnaujinimas','file') == 2,...
 end;
 
 if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
-uimenu( darbeliai_m, 'Label',  [ lokaliz('Apie') ' ' vers ) ] , ...
+uimenu( darbeliai_m, 'Label',  [ lokaliz('Apie') ' ' vers ] , ...
           'separator','off', 'userdata', on, 'callback', ...
            'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
 else
@@ -466,7 +469,7 @@ uimenu( darbeliai_m, 'Label',  [ lokaliz('Apie') ' ' vers ] , ...
 end;
 
 % RAGU meniu
-if (exist('Ragu','file') == 2 ) ;
+if and(Darbeliai_nuostatos.meniu_ragu,(exist('Ragu','file') == 2 )) ;
 %    uimenu( ragu_m, 'Label', lokaliz('Eksp Ragu'), ...
 %    'Separator','on', 'userdata', on, 'Callback', ...
 %         'eksportuoti_ragu_programai(ALLEEG, EEG, CURRENTSET) ;'  );
