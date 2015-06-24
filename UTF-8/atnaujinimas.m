@@ -176,8 +176,10 @@ if status == 1 ;
         catch err;
         end;
         try
-           eeglab;
+           close(findobj('tag', 'EEGLAB'));
+           evalin('base','eeglab redraw');
         catch err;
+           disp(err.message);
         end;
     catch err;
         disp(err.message);
