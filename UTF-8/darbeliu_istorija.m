@@ -1,6 +1,12 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.06.24.1 
+% ~ Neištrinti EEG ir ALLEEG kintamųjų pakeitus Darbelių nuostatas.
+%
+% v2015.06.21.1 
+% ~ Spartusis klavišas tik pirmoms 9-ioms įsimintoms nuostatoms.
+%
 % v2015.06.07.1
 % + Likusiuose languose galima įsiminti parinktis išsaugant jas 
 %   skirtingais pavadinimais ir vėliau jas įkelti arba pašalinti.
