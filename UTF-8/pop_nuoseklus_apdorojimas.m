@@ -705,10 +705,12 @@ for i=1:Pasirinktu_failu_N;
         try
             % Importuoti
             EEG=pop_biosig(fullfile(KELIAS_, Rinkmena_));
+            EEG=eegh( ['pop_biosig(' fullfile(KELIAS_, Rinkmena_) ')' ], EEG);
         catch err;
             try
                 % Importuoti
                 EEG=pop_fileio(fullfile(KELIAS_, Rinkmena_));
+                EEG=eegh( ['pop_fileio(' fullfile(KELIAS_, Rinkmena_) ')' ], EEG);
             catch err;
                 try
                     % Importuoti
@@ -746,7 +748,8 @@ for i=1:Pasirinktu_failu_N;
                     %   EEG.chanlocs(knl).labels=strrep(esami_kanalai{knl},'.','');
                     %end;
                     
-                    EEG=pop_chanedit(EEG, 'lookup', kanalu_failas);
+                    EEG = pop_chanedit(EEG, 'lookup', kanalu_failas);
+                    EEG = eegh( [ 'EEG = pop_chanedit(EEG, ''lookup'', ''' kanalu_failas ''');' ] , EEG);
                     EEG = eeg_checkset( EEG );
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Set channel positions_noun'), NaujaRinkmena);
@@ -791,26 +794,27 @@ for i=1:Pasirinktu_failu_N;
                 
                 try
                     if get(handles.popupmenu3,'Value') == 1 ;
-                        EEG = pop_reref( EEG, []);
+                        [EEG, LASTCOM] = pop_reref( EEG, []);
                     elseif get(handles.popupmenu3,'Value') == 2
                         reref_chans=[find(ismember({EEG.chanlocs.labels},'M1')) find(ismember({EEG.chanlocs.labels},'M2'))];
                         if isempty(reref_chans);
                            error(lokaliz('Reference channels not found.'));
                         end;
-                        EEG = pop_reref( EEG, reref_chans);
+                        [EEG, LASTCOM] = pop_reref( EEG, reref_chans);
                     elseif get(handles.popupmenu3,'Value') == 3
                         reref_chans=[find(ismember({EEG.chanlocs.labels},'Cz')) ];
                         if isempty(reref_chans);
                            error(lokaliz('Reference channels not found.'));
                         end;
-                        EEG = pop_reref( EEG, reref_chans);
+                        [EEG, LASTCOM] = pop_reref( EEG, reref_chans);
                     else
                         reref_chans=[find(ismember({EEG.chanlocs.labels},get(handles.pushbutton18,'UserData'))) ];
                         if isempty(reref_chans);
                            error(lokaliz('Reference channels not found.'));
                         end;
-                        EEG = pop_reref( EEG, reref_chans);
+                        [EEG, LASTCOM] = pop_reref( EEG, reref_chans);
                     end;
+                    EEG = eegh(LASTCOM, EEG);
                     EEG = eeg_checkset( EEG );
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Re-referencing'), NaujaRinkmena);
@@ -862,14 +866,15 @@ for i=1:Pasirinktu_failu_N;
                 try
                     Reikalingi_kanalai_yra=Reikalingi_kanalai(find(ismember(Reikalingi_kanalai,{EEG.chanlocs.labels})));
                     if get(handles.checkbox_atrink_kanalus1__,'Value') == 0 ;
-                        EEG = pop_select( EEG,'channel',Reikalingi_kanalai_yra);
+                        [EEG, LASTCOM] = pop_select( EEG,'channel',Reikalingi_kanalai_yra);
                     elseif length(Reikalingi_kanalai_yra) == length(Reikalingi_kanalai);
-                        EEG = pop_select( EEG,'channel',Reikalingi_kanalai_yra);
+                        [EEG, LASTCOM] = pop_select( EEG,'channel',Reikalingi_kanalai_yra);
                     else
                         DarboPorcijaAtlikta=1;
                         PaskRinkmIssaugKelias='';
                         EEG.nbchan=0;
                     end ;
+                    EEG = eegh(LASTCOM, EEG);
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Channel selection'), NaujaRinkmena);
                     DarboPorcijaAtlikta=1;
@@ -925,27 +930,34 @@ for i=1:Pasirinktu_failu_N;
                     EEG = eeg_checkset( EEG );
                     NeitrauktiKanNr=setdiff([1:EEG.nbchan],KanaluNr);
                     if ~isempty(NeitrauktiKanNr);
-                        EEG2 = EEG;
-                        EEG = pop_select( EEG,'channel',KanaluNr);
+                        EEG2 = eegh('EEG2 = EEG;', EEG);
+                        [EEG, LASTCOM] = pop_select( EEG,'channel',KanaluNr);
+                        EEG2 = eegh(LASTCOM, EEG2);
                     end;
                     daznis_filtravimui=str2num(get(handles.edit3,'String'));
                     disp([ 'Filtruokim <' num2str(daznis_filtravimui) '>' ] );
                     if     get(handles.popupmenu9,'Value') == 1 ;
-                        EEG = pop_eegfiltnew(EEG, [], daznis_filtravimui, [], 1, [], 0);
+                        [EEG, LASTCOM] = pop_eegfiltnew(EEG, [], daznis_filtravimui, [], 1, [], 0);
                     elseif get(handles.popupmenu9,'Value') == 2 ;                        
-                        EEG = pop_eegfiltnew(EEG, [], daznis_filtravimui, [], 0, [], 0);
+                        [EEG, LASTCOM] = pop_eegfiltnew(EEG, [], daznis_filtravimui, [], 0, [], 0);
                     elseif get(handles.popupmenu9,'Value') == 3;                        
-                        EEG = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 0, [], 0);
+                        [EEG, LASTCOM] = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 0, [], 0);
                     elseif get(handles.popupmenu9,'Value') == 4;                        
-                        EEG = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 1, [], 0);
+                        [EEG, LASTCOM] = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 1, [], 0);
                     end;
                     if ~isempty(NeitrauktiKanNr);
+                        EEG2 = eegh(LASTCOM, EEG2);
                         if length(size(EEG2.data)) == 2;
                             EEG2.data(KanaluNr,:)=EEG.data;
+                            EEG2 = eegh(['EEG2.data([' num2str(KanaluNr) '],:)=EEG.data;' ], EEG2);
                         else
                             EEG2.data(KanaluNr,:,:)=EEG.data;
+                            EEG2 = eegh(['EEG2.data([' num2str(KanaluNr) '],:,:)=EEG.data;' ], EEG2);
                         end;
                         EEG = EEG2 ;
+                        EEG = eegh('EEG = EEG2;', EEG);
+                    else
+                        EEG = eegh(LASTCOM, EEG);                        
                     end;
                     EEG = eeg_checkset( EEG );
                 catch err;
@@ -1001,7 +1013,8 @@ for i=1:Pasirinktu_failu_N;
                 try
                     line_freq=str2num(get(handles.edit50,'String'));
                     line_freq_rem=[line_freq (2:round(EEG.srate/line_freq/2))*line_freq ];
-                    EEG = pop_cleanline(EEG, 'Bandwidth',2,'ChanCompIndices',KanaluNr,'SignalType','Channels','ComputeSpectralPower',false,'LineFrequencies',line_freq_rem ,'NormalizeSpectrum',false,'LineAlpha',0.01,'PaddingFactor',2,'PlotFigures',false,'ScanForLines',true,'SmoothingFactor',100,'VerboseOutput',1);
+                    [EEG, LASTCOM] = pop_cleanline(EEG, 'Bandwidth',2,'ChanCompIndices',KanaluNr,'SignalType','Channels','ComputeSpectralPower',false,'LineFrequencies',line_freq_rem ,'NormalizeSpectrum',false,'LineAlpha',0.01,'PaddingFactor',2,'PlotFigures',false,'ScanForLines',true,'SmoothingFactor',100,'VerboseOutput',1);
+                    EEG = eegh(LASTCOM, EEG);
                     EEG = eeg_checkset( EEG );
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Filtering power-line noise'), NaujaRinkmena);
@@ -1054,14 +1067,12 @@ for i=1:Pasirinktu_failu_N;
                     else
                         %Kanalai=intersect(Kanalai,{EEG.chanlocs.labels});
                         KanaluNr=find(ismember({EEG.chanlocs.labels},Kanalai));
-                    end;
-                                        
+                    end;                                        
                     ampl=str2num(get(handles.edit58,'String'));
                     langas=str2num(get(handles.edit57,'String'));
                     EEG = atmest_pg_amplit(EEG,ampl,langas,KanaluNr);
-                    
-                    EEG = eeg_checkset( EEG );
-                    
+                    EEG = eegh(['EEG = atmest_pg_amplit(EEG, [' num2str(ampl) '], [' num2str(langas) '], [' num2str(KanaluNr) ']);' ] , EEG);
+                    EEG = eeg_checkset( EEG );                    
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Reject noisy time intervals'), NaujaRinkmena);
                     DarboPorcijaAtlikta=1;
@@ -1110,10 +1121,11 @@ for i=1:Pasirinktu_failu_N;
                         KanaluNr=find(ismember({EEG.chanlocs.labels},Kanalai));
                     end;
                     
-                    EEG = pop_rejcont(EEG, 'elecrange',KanaluNr,...
+                    [EEG, ~, ~, LASTCOM] = pop_rejcont(EEG, 'elecrange',KanaluNr,...
                         'freqlimit',str2num(get(handles.edit44,'String')) ,...
                         'threshold',str2num(get(handles.edit43,'String')),...
                         'epochlength',0.5,'contiguous',4,'addlength',1,'taper','hamming');
+                    EEG = eegh(LASTCOM, EEG);
                     EEG = eeg_checkset( EEG );
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Reject noisy time intervals'), NaujaRinkmena);
@@ -1177,12 +1189,13 @@ for i=1:Pasirinktu_failu_N;
                     
                     %
                     % EEG = pop_rejchan(EEG, 'elec',[1:EEG.nbchan] ,'threshold',3.5,'norm','on','measure','spec');
-                    EEG = pop_rejchan(EEG, ...
+                    [EEG, ~, ~, LASTCOM] = pop_rejchan(EEG, ...
                         'elec',KanaluNr, ...
                         'threshold',str2num(get(handles.edit_atmesk_kan_auto_slenkstis,'String')), ...
                         'norm',     atmesk_kan_auto_normalizav, ...
                         'measure','spec', ...
                         'freqrange', str2num(get(handles.edit40,'String')));
+                    EEG = eegh(LASTCOM, EEG);
                     EEG = eeg_checkset( EEG );
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Reject noisy channels (auto)'), NaujaRinkmena);
@@ -1230,6 +1243,7 @@ for i=1:Pasirinktu_failu_N;
                     %if PLUGINLIST(find(ismember({PLUGINLIST.plugin},'clean_rawdata'))).version >= 0.3 ;
                     % tikrinta su clean_rawdata0.3 versija:
                     EEG = clean_rawdata(EEG, 5, [0.25 0.75], 0.8, 4, 5, 0.5);
+                    EEG = eegh('EEG = clean_rawdata(EEG, 5, [0.25 0.75], 0.8, 4, 5, 0.5);', EEG);
                     %else
                     % clean_rawdata0.2 versijai:
                     %    EEG = clean_rawdata(EEG, 5, [0.25 0.75], 0.45, 5, 0.5);
@@ -1283,6 +1297,7 @@ for i=1:Pasirinktu_failu_N;
                     EEG = eeg_checkset( EEG );
                     eeglab redraw;
                     pop_eegplot( EEG, 1, 1, 1);
+                    EEG = eegh('pop_eegplot( EEG, 1, 1, 1);', EEG);
                     
                     %eegplot( EEG.data, 'srate', EEG.srate, 'title', 'Scroll channel activities -- eegplot()', ...
                     %  'limits', [EEG.xmin EEG.xmax]*1000 , 'command', command, eegplotoptions{:}); 
@@ -1412,7 +1427,8 @@ for i=1:Pasirinktu_failu_N;
                             error(lokaliz('Internal error'));
                     end;
                     
-                    EEG = pop_runica(EEG, 'chanind', KanaluNr, 'extended',1, 'pca', ICA_N,  'interupt','on');
+                    [EEG, LASTCOM] = pop_runica(EEG, 'chanind', KanaluNr, 'extended',1, 'pca', ICA_N,  'interupt','on');
+                    EEG = eegh(LASTCOM, EEG);
                     EEG = eeg_checkset( EEG );
                     
                 catch err;
@@ -1464,23 +1480,29 @@ for i=1:Pasirinktu_failu_N;
                         case 1
                             [ALLEEG,EEG,CURRENTSET]= processMARA( ALLEEG ,EEG ,CURRENTSET,[0,0,0,0,0] );
                             artcomps=find(EEG.reject.gcompreject);
+                            EEG = eegh('[ALLEEG,EEG,CURRENTSET]= processMARA( ALLEEG ,EEG ,CURRENTSET,[0,0,0,0,0] );', EEG);
                         case 3
                             [ALLEEG,EEG,CURRENTSET]= processMARA( ALLEEG ,EEG ,CURRENTSET,[0,0,0,0,0] );
                             artcomps=find(EEG.reject.gcompreject);
+                            EEG = eegh('[ALLEEG,EEG,CURRENTSET]= processMARA( ALLEEG ,EEG ,CURRENTSET,[0,0,0,0,0] );', EEG);
                             pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
                             Palauk();
                         case 4
                             [ALLEEG,EEG,CURRENTSET]= processMARA( ALLEEG ,EEG ,CURRENTSET,[0,0,1,0,0] );
                             artcomps=find(EEG.reject.gcompreject);
+                            EEG = eegh('[ALLEEG,EEG,CURRENTSET]= processMARA( ALLEEG ,EEG ,CURRENTSET,[0,0,1,0,0] );', EEG);
                             Palauk();
                         case 5
                             [ALLEEG,EEG,CURRENTSET]= processMARA( ALLEEG ,EEG ,CURRENTSET,[0,0,1,1,0] );
                             artcomps=find(EEG.reject.gcompreject);
+                            EEG = eegh('[ALLEEG,EEG,CURRENTSET]= processMARA( ALLEEG ,EEG ,CURRENTSET,[0,0,1,1,0] );', EEG);
                             Palauk();
                         otherwise
                             [artcomps, info] = MARA (EEG);
+                            EEG = eegh('[artcomps, info] = MARA (EEG);', EEG);
                             EEG = eeg_checkset( EEG );
                             EEG = pop_subcomp( EEG, artcomps, 0);
+                            EEG = eegh('EEG = pop_subcomp( EEG, artcomps, 0);', EEG);
                     end;
                     
                     EEG = eeg_checkset( EEG );
@@ -1552,7 +1574,8 @@ for i=1:Pasirinktu_failu_N;
                     
                     switch get(handles.popupmenu7,'Value')
                         case 1
-                            EEG = pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
+                            EEG = pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);                            
+                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(length(EEG.reject.gcompreject)) ']);'], EEG);
                         case 2
                             pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
                             pop_eegplot( EEG, 1, 1, 1);
@@ -1568,9 +1591,11 @@ for i=1:Pasirinktu_failu_N;
                             pop_eegplot( EEG, 0, 1, 1);
                         case 7
                             EEG = pop_selectcomps_MARA(EEG);
+                            EEG = eegh('EEG = pop_selectcomps_MARA(EEG);', EEG);
                             pop_visualizeMARAfeatures(EEG.reject.gcompreject, EEG.reject.MARAinfo);
                         otherwise
                             EEG = pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
+                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(length(EEG.reject.gcompreject)) ']);'], EEG);
                     end;
                     
                     %if get(handles.popupmenu8,'Value') ~= 4 ;
@@ -1636,9 +1661,11 @@ for i=1:Pasirinktu_failu_N;
                     
                     switch get(handles.popupmenu8,'Value')
                         case 1
-                            EEG = pop_subcomp( EEG, find(EEG.reject.gcompreject) , 0 );
+                            EEG = pop_subcomp( EEG, find(EEG.reject.gcompreject) , 0 );                            
+                            EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(find(EEG.reject.gcompreject)) '] , 0 );'], EEG);
                         case 2
                             EEG = pop_subcomp( EEG, find(EEG.reject.gcompreject) , 1 );
+                            EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(find(EEG.reject.gcompreject)) '] , 1 );'], EEG);
                         otherwise
                             EEG = eeg_checkset( EEG );
                     end;
@@ -1734,8 +1761,8 @@ for i=1:Pasirinktu_failu_N;
                     % atmesti trumpas atkarpas
                     for a=sort(g.Atkarpu_padetis_N_Trumpu,'descend');
                         disp([ num2str(g.Atkarpu_padetis_s(a+1)) ' - ' num2str(g.Atkarpu_padetis_s(a)) ' = ' num2str(g.Atkarpu_padetis_s(a+1) - g.Atkarpu_padetis_s(a) ) ]);
-                        EEG = pop_select( EEG,'nopoint',[g.Atkarpu_padetis_pt(a) min(length(EEG.times),g.Atkarpu_padetis_pt(a+1))] );
-                        
+                        [EEG, LASTCOM] = pop_select( EEG,'nopoint',[g.Atkarpu_padetis_pt(a) min(length(EEG.times),g.Atkarpu_padetis_pt(a+1))] );
+                        EEG = eegh(LASTCOM, EEG);
                         %EEG = eeg_checkset( EEG ) ;
                         %[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET,'overwrite','on','gui','off');
                         EEG = eeg_checkset( EEG ) ;
@@ -1844,7 +1871,8 @@ for i=1:Pasirinktu_failu_N;
                     disp(['Kirpimo vieta gale ' num2str(g.Karpymui(1,2)) ]);
                     
                     % atmesti
-                    EEG = pop_select( EEG,'time',[g.Karpymui(1,1) g.Karpymui(1,2)] );
+                    [EEG, LASTCOM] = pop_select( EEG,'time',[g.Karpymui(1,1) g.Karpymui(1,2)] );
+                    EEG = eegh(LASTCOM, EEG);
                     EEG = eeg_checkset( EEG ) ;
                     %[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET,'overwrite','on','gui','off');
                     
@@ -2014,14 +2042,17 @@ for i=1:Pasirinktu_failu_N;
                 
                 % Interpoliuok pagal EEG.chanlocs2 struktura
                 try
-                    EEG = pop_interp(EEG, [EEG.chanlocs2], 'spherical');
+                    [EEG, LASTCOM] = pop_interp(EEG, [EEG.chanlocs2], 'spherical');
+                    EEG = eegh(LASTCOM, EEG);
                     
                     % Pasalink visus kanalus, isskyrus tuos N ;
                     % Kadangi po interpoliavimo pagal nurodyta struktura
                     % tie norimieji kanalai perkeliami i pabaiga,
                     % tai istrinkime visus kanalus, isskyrus N paskutiniuju
                     
-                    EEG = pop_select( EEG,'channel', Reikalingi_kanalai);
+                    [EEG, LASTCOM] = pop_select( EEG,'channel', Reikalingi_kanalai);
+                    EEG = eegh(LASTCOM, EEG);
+                    
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Channel selection and interpolation'), NaujaRinkmena) ;
                     DarboPorcijaAtlikta=1;
@@ -2072,14 +2103,15 @@ for i=1:Pasirinktu_failu_N;
                     daznis_filtravimui=str2num(get(handles.edit21,'String'));
                     %disp(['Filtruokim ' str2num(daznis_filtravimui)]);
                     if     get(handles.popupmenu10,'Value') == 1 ;
-                        EEG = pop_eegfiltnew(EEG, [], daznis_filtravimui, [], 1, [], 0);
+                        [EEG, LASTCOM] = pop_eegfiltnew(EEG, [], daznis_filtravimui, [], 1, [], 0);
                     elseif get(handles.popupmenu10,'Value') == 2 ;                        
-                        EEG = pop_eegfiltnew(EEG, [], daznis_filtravimui, [], 0, [], 0);
+                        [EEG, LASTCOM] = pop_eegfiltnew(EEG, [], daznis_filtravimui, [], 0, [], 0);
                     elseif get(handles.popupmenu10,'Value') == 3;                        
-                        EEG = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 0, [], 0);
+                        [EEG, LASTCOM] = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 0, [], 0);
                     elseif get(handles.popupmenu10,'Value') == 4;                        
-                        EEG = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 1, [], 0);
+                        [EEG, LASTCOM] = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 1, [], 0);
                     end;
+                    EEG = eegh(LASTCOM, EEG);
                     EEG = eeg_checkset( EEG );
                     
                 catch err;
@@ -2150,21 +2182,21 @@ for i=1:Pasirinktu_failu_N;
                         end;
                     end;
                     
-					EEG = eeg_checkset( EEG );
-					
-					disp(['pagal įvykius (' num2str(length(Epochuoti_pagal_stimulus)) '): ' ]);	
+                    EEG = eeg_checkset( EEG );
+                    
+                    disp(['pagal įvykius (' num2str(length(Epochuoti_pagal_stimulus)) '): ' ]);	
                     disp(sprintf('''%s'' ',Epochuoti_pagal_stimulus{:}));
                     
-					%disp(get(handles.edit_epoch_t,'UserData'));
-					%disp({get(handles.edit_epoch_t,'UserData')});
-					
-					%disp(get(handles.edit_epoch_t,'String'));
-					%disp({get(handles.edit_epoch_t,'String')});
-					
-					%disp(str2num(get(handles.edit_epoch_t,'String')));
-					%disp({str2num(get(handles.edit_epoch_t,'String'))});
-					
-					%EEG = pop_epoch( EEG, ...
+                    %disp(get(handles.edit_epoch_t,'UserData'));
+                    %disp({get(handles.edit_epoch_t,'UserData')});
+                    
+                    %disp(get(handles.edit_epoch_t,'String'));
+                    %disp({get(handles.edit_epoch_t,'String')});
+                    
+                    %disp(str2num(get(handles.edit_epoch_t,'String')));
+                    %disp({str2num(get(handles.edit_epoch_t,'String'))});
+                    
+                    %EEG = pop_epoch( EEG, ...
                     %    Epochuoti_pagal_stimulus, ...
                     %    get(handles.edit_epoch_t,'UserData'), ...
                     %    'epochinfo', 'yes');
@@ -2187,7 +2219,7 @@ for i=1:Pasirinktu_failu_N;
                     end;
                     %end;
                     
-                    EEG = pop_epoch( EEG, ...
+                    [EEG, ~, LASTCOM] = pop_epoch( EEG, ...
                         Epochuoti_pagal_stimulus, ...
                         Epochos_laiko_intervalas, ...
                         'epochinfo', 'yes');
@@ -2197,12 +2229,14 @@ for i=1:Pasirinktu_failu_N;
                     if and(isempty(EEG.data), exist('EEG_pries','var'));
                        warning(sprintf(['\n' lokaliz('Empty dataset') '.\n ' lokaliz('Trying again with') ...
                        ' [' num2str(Epochos_laiko_intervalas_alt)  '] \n' ]));
-                       EEG = pop_epoch( EEG_pries, ...
+                       [EEG, ~, LASTCOM] = pop_epoch( EEG_pries, ...
                         Epochuoti_pagal_stimulus, ...
                         Epochos_laiko_intervalas_alt, ...
                         'epochinfo', 'yes');                    
                        EEG = eeg_checkset( EEG );
                     end;
+                    
+                    EEG = eegh(LASTCOM, EEG);
                     
                     if isempty(EEG.data);
                         error(lokaliz('Empty dataset'));
