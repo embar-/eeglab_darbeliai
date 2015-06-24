@@ -240,19 +240,14 @@ end;
 save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
 
 if restart_eeglab ; 
-    a=questdlg(lokaliz('Restart EEGLAB?'),lokaliz('Settings changed'),...
-        lokaliz('No'),lokaliz('Yes'),lokaliz('Yes'));
-    if ~strcmp(a,lokaliz('Yes')); return; end;
     %pushbutton2_Callback(hObject, eventdata, handles);
-    close([findobj('-regexp','name','EEGLAB*')]);
+    close(findobj('tag', 'EEGLAB'));
     clear('lokaliz');
     %locale_text(hObject, eventdata, handles);
-	konfig_OpeningFcn(hObject, eventdata, handles);
+    konfig_OpeningFcn(hObject, eventdata, handles);
     drawnow;
-    eeglab;
+    evalin('base','eeglab redraw');
     drawnow;
-    %drawnow;
-    %pause(1);    
 end ;
 
 % --- Executes on selection change in popupmenu1.

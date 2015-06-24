@@ -1,6 +1,9 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.06.24.1 
+% ~ Neištrinti EEG ir ALLEEG kintamųjų pakeitus Darbelių nuostatas.
+%
 % v2015.06.21.1 
 % ~ Ištaisytas Darbelių paleidimas.
 % ~ Spartusis klavišas tik pirmoms 9-ioms įsimintoms nuostatoms.

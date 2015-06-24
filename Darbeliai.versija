@@ -1,3 +1,3 @@
-Darbeliai v2015.06.21.1
-Ragu meniu integravimas pasirenkamas.
-Ragu menu integration is optional.
+Darbeliai v2015.06.24.1
+Neištrinti EEG ir ALLEEG kintamųjų pakeitus Darbelių nuostatas.
+Don't destroy EEG and ALLEEG variables after changing settings.
