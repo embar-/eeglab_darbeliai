@@ -161,13 +161,6 @@ edit2_Callback(hObject, eventdata, handles);
 set(handles.pushbutton_epoch_iv,'UserData',{});
 set(handles.pushbutton14,'UserData',{});
 
-%STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
-%if isempty(findobj('-regexp','name','EEGLAB.*'));
-%    [ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
-%end;
-%[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
-
-%eeglab('redraw');
 set(handles.text_atlikta_darbu,'Visible','off');
 set(handles.text19,'Visible','off'); % atliktų darbų paaiškinimas
 set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');

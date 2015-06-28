@@ -163,13 +163,6 @@ edit2_Callback(hObject, eventdata, handles);
 
 set(handles.pushbutton14,'UserData',{});
 
-%STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
-%if isempty(findobj('-regexp','name','EEGLAB.*'));
-%    [ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
-%end;
-%[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
-
-%eeglab('redraw');
 set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);

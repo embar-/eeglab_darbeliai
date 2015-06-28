@@ -144,14 +144,6 @@ end;
 edit2_Callback(hObject, eventdata, handles);
 %cd(KELIAS);
 
-STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
-%if isempty(findobj('-regexp','name','EEGLAB.*'));
-%    [ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
-%end;
-[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
-
-%eeglab('redraw');
-
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 
 edit3_Callback(hObject, eventdata, handles);

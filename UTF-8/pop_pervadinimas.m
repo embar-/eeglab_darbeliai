@@ -150,14 +150,6 @@ STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
 
 Pabandyk_atspeti_failu_sablona(hObject, eventdata, handles);
 
-%eeglab redraw;
-STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
-%if isempty(findobj('-regexp','name','EEGLAB *'));
-%   [ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
-%end;
-
-[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
-
 uipanel2_SelectionChangeFcn(hObject, eventdata, handles);
 
 set(handles.edit11,'String','_ .-');
@@ -172,8 +164,6 @@ parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
 susildyk(hObject, eventdata, handles);
 
 tic;
-
-
 
 % Choose default command line output for pop_pervadinimas
 handles.output = hObject;
