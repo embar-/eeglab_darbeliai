@@ -162,13 +162,6 @@ catch err;
 end;
 edit2_Callback(hObject, eventdata, handles);
 
-%STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
-%if isempty(findobj('-regexp','name','EEGLAB.*'));
-%    [ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
-%end;
-%[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
-
-%eeglab('redraw');
 set(handles.edit_failu_filtras1,'String','*.set');
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
@@ -595,37 +588,7 @@ drawnow;
 %guidata(hObject, handles);
 
 
-
-%pause;
-% Epochavimo_intervalas_pirminis=       str2num(get(handles.edit51,'UserData')) ;
-% Epochuoti_pagal_stimulus_=            str2num(get(handles.edit59,'UserData')) ;
-% Epochuoti_pagal_atsakus=              str2num(get(handles.edit54,'UserData')) ;
-% Epochavimo_intervalas_atsakams=       str2num(get(handles.edit55,'UserData')) ;
-% Epochavimo_intervalas_atsakams_base=  str2num(get(handles.edit56,'UserData')) ;
-% Epochavimo_intervalas_stimulams=      str2num(get(handles.edit57,'UserData')) ;
-% Epochavimo_intervalas_stimulams_base= str2num(get(handles.edit58,'UserData')) ;
-
-% disp('vv')
-% disp(Epochavimo_intervalas_pirminis);
-% disp(Epochuoti_pagal_stimulus_);
-% disp(Epochuoti_pagal_atsakus);
-% disp(Epochavimo_intervalas_atsakams);
-% disp(Epochavimo_intervalas_atsakams_base);
-% disp(Epochavimo_intervalas_stimulams);
-% disp(Epochavimo_intervalas_stimulams_base);
-% disp('^^')
-
-%if get(handles.checkbox55,'Value');
-%    NewDir=get(handles.edit60,'String');
-%else
-    NewDir='';
-%end;
-% if get(handles.checkbox57,'Value');
-%     Pirminio_epochavimo_priesaga=get(handles.edit62,'String');
-% else
-%     Pirminio_epochavimo_priesaga='_tmp';
-% end;
-
+NewDir='';
 
 Pasirinkti_failu_indeksai=(get(handles.listbox1,'Value'));
 Rodomu_failu_pavadinimai=(get(handles.listbox1,'String'));
@@ -682,7 +645,7 @@ parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 %Neleisti spausti Nuostatų meniu!
 a=findall(gcf,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','off'); drawnow;
 
-STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
+%STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
 %[ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
 %eeglab redraw ;
 %[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
@@ -958,7 +921,7 @@ for i=1:Pasirinktu_failu_N;
     
     
     % Isvalyti atminti
-    STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
+    %STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
     %eeglab redraw;
     
     if get(handles.radiobutton6,'Value') == 1;

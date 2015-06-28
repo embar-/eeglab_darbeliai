@@ -150,14 +150,6 @@ STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
 
 Pabandyk_atspeti_failu_sablona(hObject, eventdata, handles);
 
-%eeglab redraw;
-STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
-%if isempty(findobj('-regexp','name','EEGLAB *'));
-%   [ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
-%end;
-
-[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
-
 uipanel2_SelectionChangeFcn(hObject, eventdata, handles);
 
 set(handles.edit11,'String','_ .-');
@@ -172,8 +164,6 @@ parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
 susildyk(hObject, eventdata, handles);
 
 tic;
-
-
 
 % Choose default command line output for pop_pervadinimas
 handles.output = hObject;
@@ -1259,10 +1249,16 @@ parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 %Neleisti spausti Nuostatų meniu!
 a=findall(gcf,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','off'); drawnow;
 
-STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
-%[ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
-%eeglab redraw ;
-[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
+try 
+    EEGLAB_senieji_kintamieji.EEG         =EEG;
+    EEGLAB_senieji_kintamieji.ALLEEG      =ALLEEG;
+    EEGLAB_senieji_kintamieji.CURRENTSET  =CURRENTSET;    
+    EEGLAB_senieji_kintamieji.ALLCOM      =ALLCOM;
+    EEGLAB_senieji_kintamieji.STUDY       =STUDY;
+    EEGLAB_senieji_kintamieji.CURRENTSTUDY=CURRENTSTUDY;    
+catch err,
+end;
+STUDY = []; CURRENTSTUDY = 0;
 
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko
 tic
@@ -1287,6 +1283,7 @@ for i=1:Pasirinktu_failu_N;
     %Darbo_eigos_busena(handles, 'Įkeliami duomenys...', DarboNr, i, Pasirinktu_failu_N);
     
     % Ikelti
+    [ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
     try
         EEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_);
         [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
@@ -1320,17 +1317,17 @@ for i=1:Pasirinktu_failu_N;
         
         %Atnaujinti info
         if get(handles.checkbox1,'Value');
-            Tiriamasis=Duomenys(i,1);
-            Grupe=Duomenys(i,2);
-            Salyga=Duomenys(i,3);
+            Tiriamasis=Duomenys{i,1};
+            Grupe=Duomenys{i,2};
+            Salyga=Duomenys{i,3};
             Sesija=konvertavimas_is_narvelio(Duomenys(i,4));
-            EEG = pop_editset(EEG, ...
+            [EEG, LASTCOM] = pop_editset(EEG, ...
                 'setname', [regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$','')], ...
                 'subject', Tiriamasis, ...
                 'condition', Salyga, ...
                 'group', Grupe, ...
                 'session', Sesija );
-           
+            EEG = eegh(LASTCOM, EEG);
         end;
         
     end;
@@ -1368,9 +1365,20 @@ end;
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
     toc ;
     disp(['Atlikta']);
-
-[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
-
+    
+% Grąžinti senuosius EEGLAB kintamuosius ir atnaujinti langą
+    %if atnaujinti_eeglab;
+        try
+            EEG=         EEGLAB_senieji_kintamieji.EEG;
+            ALLEEG=      EEGLAB_senieji_kintamieji.ALLEEG;
+            CURRENTSET=  EEGLAB_senieji_kintamieji.CURRENTSET;
+            ALLCOM=      EEGLAB_senieji_kintamieji.ALLCOM;
+            STUDY=       EEGLAB_senieji_kintamieji.STUDY;
+            CURRENTSTUDY=EEGLAB_senieji_kintamieji.CURRENTSTUDY;
+        catch err,
+        end;
+        if ~isempty(findobj('tag', 'EEGLAB')); eeglab redraw; end;
+    %end;
 
 susildyk(hObject, eventdata, handles);
 pushbutton5_Callback(hObject, eventdata, handles);
@@ -1572,21 +1580,21 @@ catch err;
 end;
 orig_savybes(1:length(PASIRINKTI_FAILAI),1:4)={''};
 if ~isempty(PASIRINKTI_FAILAI) ;
-    susaldyk(hObject, eventdata, handles);
-    try
+    susaldyk(hObject, eventdata, handles);    
     for i=1:length(PASIRINKTI_FAILAI);
+        try
         Rinkmena=PASIRINKTI_FAILAI{i};
         TMPEEG=[];
         TMPEEG = pop_loadset('filename',Rinkmena,'filepath',Kelias,'loadmode','info');
-        if ~isempty(TMPEEG);
-            orig_savybes{i,1}=[TMPEEG.subject];
-            orig_savybes{i,2}=[TMPEEG.group];
-            orig_savybes{i,3}=[TMPEEG.condition];
-            orig_savybes{i,4}=[num2str(TMPEEG.session)];
+            if ~isempty(TMPEEG);
+                orig_savybes{i,1}=[TMPEEG.subject];
+                orig_savybes{i,2}=[TMPEEG.group];
+                orig_savybes{i,3}=[TMPEEG.condition];
+                orig_savybes{i,4}=[num2str(TMPEEG.session)];
+            end;
+        catch err;
+            Pranesk_apie_klaida(err, 'Senos nuostatos', Rinkmena,0);
         end;
-    end;
-    catch err;
-        disp(err.message);
     end;
 else
     return;

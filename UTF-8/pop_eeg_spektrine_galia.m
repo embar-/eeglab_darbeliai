@@ -163,13 +163,6 @@ edit2_Callback(hObject, eventdata, handles);
 
 set(handles.pushbutton14,'UserData',{});
 
-%STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
-%if isempty(findobj('-regexp','name','EEGLAB.*'));
-%    [ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
-%end;
-%[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
-
-%eeglab('redraw');
 set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
@@ -552,8 +545,6 @@ parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 a=findall(gcf,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','off'); drawnow;
 
 %STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
-%[ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
-%eeglab redraw ;
 %[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
 
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko

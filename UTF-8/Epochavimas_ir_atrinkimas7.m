@@ -277,7 +277,8 @@ for i=1:NumberOfFiles ;
     % Epochuoti pagal nurodytus ivykius nurodytame intervale
     disp(' ');
     disp(' = Pirminis epochavimas tik pagal stimulus = ');
-    EEG = pop_epoch( EEG, Epochuoti_pagal_stimulus, Epochavimo_intervalas_pirminis, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epochs'], 'epochinfo', 'yes');
+    [EEG, ~, LASTCOM] = pop_epoch( EEG, Epochuoti_pagal_stimulus, Epochavimo_intervalas_pirminis, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epochs'], 'epochinfo', 'yes');
+    EEG = eegh(LASTCOM, EEG);
     EEG = eeg_checkset( EEG );
     
     % Baseline korekcija
@@ -289,7 +290,8 @@ for i=1:NumberOfFiles ;
     % Atrinkti tik nurodyta ivyki turincias epochas (teisingus atsakymus)
     try
         disp(' = Epochu su pasirinktais atsakais atrinkimas = ');
-        EEG = pop_selectevent( EEG, 'type', Epochuoti_pagal_atsakus ,'deleteevents','off','deleteepochs','on','invertepochs','off');
+        [EEG, ~, LASTCOM] = pop_selectevent( EEG, 'type', Epochuoti_pagal_atsakus ,'deleteevents','off','deleteepochs','on','invertepochs','off');
+        EEG = eegh(LASTCOM, EEG);
         EEG = eeg_checkset( EEG );
         
         % Sukurti laikina faila po pirminio epochavimo, kuriame yra tiek
@@ -318,12 +320,14 @@ for i=1:NumberOfFiles ;
             
             % Epochuoti pagal nurodytus ivykius nurodytame intervale trumpesniame
             % ATSAKAMS
-            EEG = pop_epoch( EEG, Epochuoti_pagal_atsakus, Epochavimo_intervalas_atsakams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch atsakai'], 'epochinfo', 'yes');
+            [EEG, ~, LASTCOM] = pop_epoch( EEG, Epochuoti_pagal_atsakus, Epochavimo_intervalas_atsakams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch atsakai'], 'epochinfo', 'yes');
+            EEG = eegh(LASTCOM, EEG);
             try
                 tmp_base_interval=[];
                 tmp_base_trukme=(Epochavimo_intervalas_atsakams_base(2) - Epochavimo_intervalas_atsakams_base(1) );
                 tmp_base_interval=1000 * [Epochavimo_intervalas_atsakams_base(1) Epochavimo_intervalas_atsakams_base(2)];
-                EEG = pop_rmbase( EEG, tmp_base_interval);
+                [EEG, LASTCOM] = pop_rmbase( EEG, tmp_base_interval);
+                EEG = eegh(LASTCOM, EEG);
                 EEG = eeg_checkset( EEG );
             catch err
                 disp([ 'Baseline ' num2str(tmp_base_interval) ' atsakams nekoreguota:' ]);
@@ -358,15 +362,18 @@ for i=1:NumberOfFiles ;
                     [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
                     
                     % Atrinkti tik nurodyta ivyki turincias epochas (teisingus atsakymus)
-                    EEG = pop_selectevent( EEG, 'type', [Epochuoti_pagal_stimulus_(y)] ,'deleteevents','off','deleteepochs','on','invertepochs','off');
+                    [EEG, ~, LASTCOM] = pop_selectevent( EEG, 'type', [Epochuoti_pagal_stimulus_(y)] ,'deleteevents','off','deleteepochs','on','invertepochs','off');
+                    EEG = eegh(LASTCOM, EEG);
                     EEG = eeg_checkset( EEG );
                     % Apkarpyti pagal pageidaujama atsako intervala
-                    EEG = pop_epoch( EEG, Epochuoti_pagal_atsakus, Epochavimo_intervalas_atsakams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch atsakai'], 'epochinfo', 'yes');
+                    [EEG, ~, LASTCOM] = pop_epoch( EEG, Epochuoti_pagal_atsakus, Epochavimo_intervalas_atsakams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch atsakai'], 'epochinfo', 'yes');
+                    EEG = eegh(LASTCOM, EEG);
                     try
                         tmp_base_interval=[];
                         tmp_base_trukme=(Epochavimo_intervalas_atsakams_base(2) - Epochavimo_intervalas_atsakams_base(1) );
                         tmp_base_interval=1000 * [Epochavimo_intervalas_atsakams_base(1) Epochavimo_intervalas_atsakams_base(2)];
-                        EEG = pop_rmbase( EEG, tmp_base_interval );
+                        [EEG, LASTCOM] = pop_rmbase( EEG, tmp_base_interval );
+                        EEG = eegh(LASTCOM, EEG);
                         EEG = eeg_checkset( EEG );
                     catch err
                         disp([ 'Baseline ' num2str(tmp_base_interval) ' atsakams(2) nekoreguota:' ]);
@@ -419,12 +426,14 @@ for i=1:NumberOfFiles ;
             % Epochuoti pagal nurodytus ivykius nurodytame intervale trumpesniame
             % STIMULAMS
             
-            EEG = pop_epoch( EEG, Epochuoti_pagal_stimulus, Epochavimo_intervalas_stimulams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch stimulai'], 'epochinfo', 'yes');
+            [EEG, ~, LASTCOM] = pop_epoch( EEG, Epochuoti_pagal_stimulus, Epochavimo_intervalas_stimulams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch stimulai'], 'epochinfo', 'yes');
+            EEG = eegh(LASTCOM, EEG);
             try
                 tmp_base_interval=[];
                 tmp_base_trukme=(Epochavimo_intervalas_stimulams_base(2) - Epochavimo_intervalas_stimulams_base(1) );
                 tmp_base_interval=1000 * [Epochavimo_intervalas_stimulams_base(1) Epochavimo_intervalas_stimulams_base(2)];
-                EEG = pop_rmbase( EEG, tmp_base_interval);
+                [EEG, LASTCOM] = pop_rmbase( EEG, tmp_base_interval);
+                EEG = eegh(LASTCOM, EEG);
                 EEG = eeg_checkset( EEG );
             catch err
                 disp([ 'Baseline ' num2str(tmp_base_interval) ' stimulams nekoreguota:' ]);
@@ -462,13 +471,16 @@ for i=1:NumberOfFiles ;
                     [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
                     
                     % Atrinkti tik nurodyta ivyki turincias epochas (teisingus atsakymus)
-                    EEG = pop_selectevent( EEG, 'type', [Epochuoti_pagal_stimulus_(y)] ,'deleteevents','off','deleteepochs','on','invertepochs','off');
-                    EEG = pop_epoch( EEG, Epochuoti_pagal_stimulus, Epochavimo_intervalas_stimulams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch stimulai'], 'epochinfo', 'yes');
+                    [EEG, ~, LASTCOM] = pop_selectevent( EEG, 'type', [Epochuoti_pagal_stimulus_(y)] ,'deleteevents','off','deleteepochs','on','invertepochs','off');
+                    EEG = eegh(LASTCOM, EEG);
+                    [EEG, ~, LASTCOM] = pop_epoch( EEG, Epochuoti_pagal_stimulus, Epochavimo_intervalas_stimulams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch stimulai'], 'epochinfo', 'yes');
+                    EEG = eegh(LASTCOM, EEG);
                     try
                         tmp_base_interval=[];
                         tmp_base_trukme=(Epochavimo_intervalas_stimulams_base(2) - Epochavimo_intervalas_stimulams_base(1) );
                         tmp_base_interval=1000 * [Epochavimo_intervalas_stimulams_base(1) Epochavimo_intervalas_stimulams_base(2)];
-                        EEG = pop_rmbase( EEG, tmp_base_interval);
+                        [EEG, LASTCOM] = pop_rmbase( EEG, tmp_base_interval);
+                        EEG = eegh(LASTCOM, EEG);
                         EEG = eeg_checkset( EEG );
                     catch err
                         disp([ 'Baseline ' num2str(tmp_base_interval) ' stimulams(2) nekoreguota:' ]);
