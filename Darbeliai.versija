@@ -1,3 +1,8 @@
-Darbeliai v2015.06.24.2
-Neištrinti EEG ir ALLEEG kintamųjų pakeitus nuostatas ar atnaujinus Darbelius.
-Don't destroy EEG and ALLEEG variables after changing settings or Darbeliai update.
+Darbeliai v2015.06.28.1
+Papildyti EEG.history pakeitus EEG. 
+Ištaisytas EEGLAB nenulūs į EEGLAB neįkėlus 
+naujų EEG duomenų po atliktų darbų.
+
+Append EEG.history after EEG modification.
+EEGLAB will not crash, if processed EEG data
+will not be loaded after jobs.
