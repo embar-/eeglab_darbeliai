@@ -1,6 +1,11 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.06.28.1
+% + Papildyti EEG.history pakeitus EEG.
+% ~ Ištaisytas EEGLAB nenulūs į EEGLAB neįkėlus 
+%   naujų EEG duomenų po atliktų darbų.
+%
 % v2015.06.24.1 
 % ~ Neištrinti EEG ir ALLEEG kintamųjų pakeitus Darbelių nuostatas.
 %
