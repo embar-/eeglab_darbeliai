@@ -552,8 +552,6 @@ parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 a=findall(gcf,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','off'); drawnow;
 
 %STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
-%[ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
-%eeglab redraw ;
 %[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
 
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko

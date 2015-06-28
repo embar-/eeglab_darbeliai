@@ -503,10 +503,16 @@ parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 %Neleisti spausti Nuostatų meniu!
 a=findall(gcf,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','off'); drawnow;
 
-%STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
-%[ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
-%eeglab redraw ;
-%[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
+try 
+    EEGLAB_senieji_kintamieji.EEG         =EEG;
+    EEGLAB_senieji_kintamieji.ALLEEG      =ALLEEG;
+    EEGLAB_senieji_kintamieji.CURRENTSET  =CURRENTSET;    
+    EEGLAB_senieji_kintamieji.ALLCOM      =ALLCOM;
+    EEGLAB_senieji_kintamieji.STUDY       =STUDY;
+    EEGLAB_senieji_kintamieji.CURRENTSTUDY=CURRENTSTUDY;    
+catch err,
+end;
+STUDY = []; CURRENTSTUDY = 0;
 
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko
 tic
@@ -516,36 +522,9 @@ PaskutinioIssaugotoDarboNr=0;
 Apdoroti_visi_tiriamieji=0;
 sukauptos_klaidos={};
 
-%axes(handles.axes1);
-%datacursormode off;
-
-Epochuoti_pagal_stimulus_=get(handles.pushbutton_epoch_iv,'UserData') ;
+skaiciai=str2num(get(handles.edit51,'String'));
 Pasirinkti_kanalai=get(handles.pushbutton14,'UserData');
-if ~isempty(Pasirinkti_kanalai);
-    Reikalingi_kanalai=Pasirinkti_kanalai;
-    Reikalingi_kanalai_sukaupti=Reikalingi_kanalai;
-else
-    Reikalingi_kanalai={}; %Nebus keičiamas darbų eigoje
-    Reikalingi_kanalai_sukaupti={}; % bus keičiamas darbų eigoje
-end;
-ribos=str2num(get(handles.edit51,'String'));%*1000;
-
-[~,ALLEEG_,~]=pop_newset([],[],[]);
-ALLEEG_=setfield(ALLEEG_,'datfile',[]);
-ALLEEG_=setfield(ALLEEG_,'chanlocs2',[]);
-%mūsų papildymas:
-ALLEEG_=setfield(ALLEEG_,'file','');
-%ALLEEG_=setfield(ALLEEG_,'erp_data',[]);
-ALLEEG_=setfield(ALLEEG_,'chans',{});
-
-% ALLEEGTMP nevisai atitiks ALLEEG, nes ALLEEGTMP kuriamas jau atrinkus įvykius, turi 'erp_data'
-ALLEEGTMP=get(handles.listbox1,'UserData');
-if isempty(ALLEEGTMP);
-    %ALLEEGTMP=struct('file',{},'erp_data',{},'times',{},'chanlocs',{});
-    ALLEEGTMP=ALLEEG_;
-end;
-
-legendoje={};
+Epochuoti_pagal_stimulus_=get(handles.pushbutton_epoch_iv,'UserData') ;
 
 %%
 
@@ -567,6 +546,7 @@ for i=1:Pasirinktu_failu_N;
     Darbo_eigos_busena(handles, lokaliz('Loading data...'), DarboNr, i, Pasirinktu_failu_N);
     
     % Ikelti
+    [ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
     try
         EEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_);
         [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
@@ -611,17 +591,14 @@ for i=1:Pasirinktu_failu_N;
                         com=sprintf('%s \n',com{:});
                     end;
                     
-                    skaiciai=str2num(get(handles.edit51,'String'));
-                    
                     try
-                    Pasirinkti_kanalai_yra_Nr=find(ismember({EEG.chanlocs.labels},Pasirinkti_kanalai));
-                    Pasirinkti_kanalai_yra=Pasirinkti_kanalai(find(ismember(Pasirinkti_kanalai,{EEG.chanlocs.labels})));
+                        Pasirinkti_kanalai_yra_Nr=find(ismember({EEG.chanlocs.labels},Pasirinkti_kanalai));
+                        Pasirinkti_kanalai_yra=Pasirinkti_kanalai(find(ismember(Pasirinkti_kanalai,{EEG.chanlocs.labels})));
                     catch err;
                         Pasirinkti_kanalai_yra_Nr=[];
                         Pasirinkti_kanalai_yra={};
                     end;
                     
-                    Epochuoti_pagal_stimulus_=get(handles.pushbutton_epoch_iv,'UserData') ;
                     Epochuoti_pagal_stimulus={};
                     for i_epoch=1:length(Epochuoti_pagal_stimulus_) ;
                         try
@@ -766,9 +743,9 @@ end;
 %
 if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr <  DarboNr ),...
         and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
+    atnaujinti_eeglab=true;
     
-    if Apdoroti_visi_tiriamieji == 1;
-        
+    if Apdoroti_visi_tiriamieji == 1;        
         if get(handles.checkbox_pabaigus_atverti,'Value') == 1;
             Pasirinkti_failu_pavadinimai=get(handles.listbox2,'String');
             Pasirinkti_failu_pavadinimai=Pasirinkti_failu_pavadinimai(find(~(cellfun(@isempty,Pasirinkti_failu_pavadinimai))));
@@ -803,10 +780,23 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
                 end;
             end;
             eeglab redraw;
+            atnaujinti_eeglab=false;
         end;
-        
     end;
     
+    % Grąžinti senuosius EEGLAB kintamuosius ir atnaujinti langą
+    if atnaujinti_eeglab;
+        try
+            EEG=         EEGLAB_senieji_kintamieji.EEG;
+            ALLEEG=      EEGLAB_senieji_kintamieji.ALLEEG;
+            CURRENTSET=  EEGLAB_senieji_kintamieji.CURRENTSET;
+            ALLCOM=      EEGLAB_senieji_kintamieji.ALLCOM;
+            STUDY=       EEGLAB_senieji_kintamieji.STUDY;
+            CURRENTSTUDY=EEGLAB_senieji_kintamieji.CURRENTSTUDY;
+        catch err,
+        end;
+        if ~isempty(findobj('tag', 'EEGLAB')); eeglab redraw; end;
+    end;
     
     if get(handles.checkbox_uzverti_pabaigus,'Value') == 1;
         delete(handles.figure1);

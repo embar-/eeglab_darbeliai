@@ -160,13 +160,6 @@ catch err;
 end;
 edit2_Callback(hObject, eventdata, handles);
 
-STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
-%if isempty(findobj('-regexp','name','EEGLAB.*'));
-%    [ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
-%end;
-[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
-
-%eeglab('redraw');
 set(handles.edit_failu_filtras1,'String','*.set');
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
@@ -579,10 +572,16 @@ parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 %Neleisti spausti Nuostatų meniu!
 a=findall(gcf,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','off'); drawnow;
 
-STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
-%[ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
-%eeglab redraw ;
-[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
+try 
+    EEGLAB_senieji_kintamieji.EEG         =EEG;
+    EEGLAB_senieji_kintamieji.ALLEEG      =ALLEEG;
+    EEGLAB_senieji_kintamieji.CURRENTSET  =CURRENTSET;    
+    EEGLAB_senieji_kintamieji.ALLCOM      =ALLCOM;
+    EEGLAB_senieji_kintamieji.STUDY       =STUDY;
+    EEGLAB_senieji_kintamieji.CURRENTSTUDY=CURRENTSTUDY;    
+catch err,
+end;
+STUDY = []; CURRENTSTUDY = 0;
 
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko
 tic
@@ -702,12 +701,9 @@ end;
 %
 if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr <  DarboNr ),...
         and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
-    
+    atnaujinti_eeglab=true;
     
     if Apdoroti_visi_tiriamieji == 1;
-        
-               
-        
         if get(handles.checkbox_pabaigus_atverti,'Value') == 1;
             Pasirinkti_failu_pavadinimai=get(handles.listbox2,'String');
             Pasirinkti_failu_pavadinimai=Pasirinkti_failu_pavadinimai(find(~(cellfun(@isempty,Pasirinkti_failu_pavadinimai))));
@@ -743,10 +739,23 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
                 end;
             end;
             eeglab redraw;
-        end;
-        
-    end;
+            atnaujinti_eeglab=false;           
+        end;          
+    end;    
     
+    % Grąžinti senuosius EEGLAB kintamuosius ir atnaujinti langą
+    if atnaujinti_eeglab;
+        try
+            EEG=         EEGLAB_senieji_kintamieji.EEG;
+            ALLEEG=      EEGLAB_senieji_kintamieji.ALLEEG;
+            CURRENTSET=  EEGLAB_senieji_kintamieji.CURRENTSET;
+            ALLCOM=      EEGLAB_senieji_kintamieji.ALLCOM;
+            STUDY=       EEGLAB_senieji_kintamieji.STUDY;
+            CURRENTSTUDY=EEGLAB_senieji_kintamieji.CURRENTSTUDY;
+        catch err,
+        end;
+        if ~isempty(findobj('tag', 'EEGLAB')); eeglab redraw; end;
+    end;    
     
     if get(handles.checkbox_uzverti_pabaigus,'Value') == 1;
         delete(handles.figure1);
