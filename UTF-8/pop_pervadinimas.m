@@ -1320,17 +1320,17 @@ for i=1:Pasirinktu_failu_N;
         
         %Atnaujinti info
         if get(handles.checkbox1,'Value');
-            Tiriamasis=Duomenys(i,1);
-            Grupe=Duomenys(i,2);
-            Salyga=Duomenys(i,3);
+            Tiriamasis=Duomenys{i,1};
+            Grupe=Duomenys{i,2};
+            Salyga=Duomenys{i,3};
             Sesija=konvertavimas_is_narvelio(Duomenys(i,4));
-            EEG = pop_editset(EEG, ...
+            [EEG, LASTCOM] = pop_editset(EEG, ...
                 'setname', [regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$','')], ...
                 'subject', Tiriamasis, ...
                 'condition', Salyga, ...
                 'group', Grupe, ...
                 'session', Sesija );
-           
+            EEG = eegh(LASTCOM, EEG);
         end;
         
     end;
@@ -1572,21 +1572,21 @@ catch err;
 end;
 orig_savybes(1:length(PASIRINKTI_FAILAI),1:4)={''};
 if ~isempty(PASIRINKTI_FAILAI) ;
-    susaldyk(hObject, eventdata, handles);
-    try
+    susaldyk(hObject, eventdata, handles);    
     for i=1:length(PASIRINKTI_FAILAI);
+        try
         Rinkmena=PASIRINKTI_FAILAI{i};
         TMPEEG=[];
         TMPEEG = pop_loadset('filename',Rinkmena,'filepath',Kelias,'loadmode','info');
-        if ~isempty(TMPEEG);
-            orig_savybes{i,1}=[TMPEEG.subject];
-            orig_savybes{i,2}=[TMPEEG.group];
-            orig_savybes{i,3}=[TMPEEG.condition];
-            orig_savybes{i,4}=[num2str(TMPEEG.session)];
+            if ~isempty(TMPEEG);
+                orig_savybes{i,1}=[TMPEEG.subject];
+                orig_savybes{i,2}=[TMPEEG.group];
+                orig_savybes{i,3}=[TMPEEG.condition];
+                orig_savybes{i,4}=[num2str(TMPEEG.session)];
+            end;
+        catch err;
+            Pranesk_apie_klaida(err, 'Senos nuostatos', Rinkmena,0);
         end;
-    end;
-    catch err;
-        disp(err.message);
     end;
 else
     return;
