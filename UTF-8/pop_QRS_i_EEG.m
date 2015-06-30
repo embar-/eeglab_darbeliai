@@ -461,6 +461,10 @@ end;
 if get(handles.edit_failu_filtras2,'BackgroundColor') == [1 1 0];
     drawnow; return;
 end;
+if isempty(get(handles.text_kanal,'TooltipString'));
+    set(handles.pushbutton_kanal,'BackgroundColor',[1 1 0]);
+    drawnow; return;
+end;
 % if isempty(get(handles.edit_ivykiai,'UserData'));
 %     set(handles.edit_ivykiai,'BackgroundColor', [1 1 0]);
 %     return;
@@ -687,7 +691,7 @@ for i=1:Pasirinktu_failu_N;
                             QRS_algoritmas=get(handles.popupmenu_QRS_algoritmas,'Value');
                             Reikalingas_kanalas=get(handles.text_kanal,'TooltipString');
                             if isempty(Reikalingas_kanalas);
-                                error('Kanalas?');
+                                error([lokaliz('Channel') '?' ]);
                             end;
                             EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1);
                             EEG=QRS_is_EEG(EEG,EKG_kanalas,QRS_ivykis,QRS_algoritmas,0);
@@ -2259,6 +2263,7 @@ else
     set(handles.pushbutton_kanal,'BackgroundColor',[1 1 0]);
 end;
 
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 
