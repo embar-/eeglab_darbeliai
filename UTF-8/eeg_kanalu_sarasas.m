@@ -1,6 +1,6 @@
 function [galimi_kanalai,visi_galimi_kanalai,bendri_kanalai]=...
     eeg_kanalu_sarasas (KELIAS, RINKMENOS)
-%   
+%
 % Ši programa yra laisva. Jūs galite ją platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
 % Viešosios licencijos sąlygomis: 2 licencijos versija, arba (savo
@@ -100,8 +100,8 @@ for i=1:length(RINKMENOS);
     catch err;
         warning(err.message);
     end;
-    
-    
+
+
     % statusbar
     tok=toc(tici);
     p=i/length(RINKMENOS);
@@ -111,7 +111,7 @@ for i=1:length(RINKMENOS);
     if isempty(statusbar(p,f));
         break;
     end;
-    
+
 end;
 
 % bent vienoje rinkmenoje rastas

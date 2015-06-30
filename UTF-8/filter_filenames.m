@@ -180,9 +180,9 @@ if ismember('*',dirstr);
             dir_idx=intersect(dir_idx,find(ismember(files_and_dirs,{'.' '..'})==0));
             if ~isempty(dir_idx);
                 if ~strcmp(dir1(end),filesep); dir1=[dir1 filesep]; end;
-                if ispc; 
+                if ispc;
                     filesepar='\\';
-                    dir1=strrep(dir1,filesep,filesepar); 
+                    dir1=strrep(dir1,filesep,filesepar);
                 else
                     filesepar=filesep;
                 end;

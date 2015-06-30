@@ -24,7 +24,7 @@ LabChart_sktm_iv=(g.LabchartComtext(g.LabchartCom(Labchart_skaitiniu_ivykiu_idx,
 LabChart_sktm_iv_=unique(cellfun(@(i) LabChart_sktm_iv(i,:), num2cell(1:length(LabChart_sktm_iv)),'UniformOutput', false ));
 
 
-% Vienas kanalas gali turėti kelis blokus, 
+% Vienas kanalas gali turėti kelis blokus,
 % jei įrašymas buvo sustabdytas, o po to toliau įrašinėta
 Labchart_skaitiniu_ivykiu_idx_blokai=g.LabchartCom(Labchart_skaitiniu_ivykiu_idx,2);
 Labchart_skaitiniu_ivykiu_blokai=unique(Labchart_skaitiniu_ivykiu_idx_blokai);
@@ -52,7 +52,7 @@ elseif bloku_N > 1;
         Labchart_skaitiniu_ivykiu_idx_blokai,Potencialiai_tinkami_blokai   ))));
     disp(['Pasirinktas blokas: ' num2str(blokas)]);
     % blokas=mode(g.LabchartCom(find(g.LabchartCom(:,4)==1),2));
-else 
+else
     return;
     error('LabChart įraše nėra skaičiais užkoduotų įvykių!');
 end;
@@ -76,7 +76,7 @@ for icomMain = [find(g.LabchartCom(:,2)==blokas)]' ; % 1: colCom ;
               is_LabChart_EKG_raktas=1;
            end;
         end;
-        if is_LabChart_EKG_raktas  
+        if is_LabChart_EKG_raktas
             %laikas, milisekundemis
            g.LabChart_QRS(iList,1) = g.LabchartCom(icomMain,3) * ( 1000 / g.LabchartTickrate ) ;%* g.Labchart_laiko_daugiklis ;
            iList = iList+1;
@@ -95,8 +95,8 @@ for icomMain = [find(g.LabchartCom(:,2)==blokas)]' ; % 1: colCom ;
     comtextMark = g.LabchartCom(icomMain, 5);
     comtextMark = g.LabchartComtext(comtextMark,:);
     comtextMark = deblank(comtextMark);
-    
-    % LabChart R danteliai apibudinti tekstu, 
+
+    % LabChart R danteliai apibudinti tekstu,
     % o ivykiai yra skaiciai
     if isstrprop(comtextMark, 'digit') ;
       comtextMark = str2num(comtextMark) ;
@@ -118,7 +118,7 @@ for icomMain = [find(g.LabchartCom(:,2)==blokas)]' ; % 1: colCom ;
             else
                 iList = iList+1;
             end;
-        else            
+        else
             g.LabChart_iv=g.LabChart_iv(1:(iList-1),:);
         end;
     end ;
@@ -144,7 +144,7 @@ spalvos='rgbcmyk';
 figure; hold('on');
 
 for ivdx=1:length(rez.ivykiai);
-    plot(rez.X,rez.Y{ivdx},spalvos(1+mod(ivdx,7)));    
+    plot(rez.X,rez.Y{ivdx},spalvos(1+mod(ivdx,7)));
 end;
 
 l=legend('show');

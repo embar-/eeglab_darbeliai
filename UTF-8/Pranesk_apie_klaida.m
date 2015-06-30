@@ -60,13 +60,13 @@ disp(' ');
 
 
 t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
-msg=sprintf('%s\n\n%s\n',err.identifier, err.message); 
-for i=1:(length(err.stack)-1); 
+msg=sprintf('%s\n\n%s\n',err.identifier, err.message);
+for i=1:(length(err.stack)-1);
     msg=sprintf('%s\n> <a href="matlab:opentoline(''%s'',%d,1)">%s:%d</a>', msg, ...
         err.stack(i).file, ...
         err.stack(i).line, ...
         err.stack(i).name, ...
-        err.stack(i).line ) ; 
+        err.stack(i).line ) ;
 end;
 if ~isempty(err.stack);
     msg=sprintf('%s\n\n  %s\n\n',msg,err.stack(end).name);
@@ -77,13 +77,13 @@ warning(msg);
 
 if strcmp('MATLAB:binder:loadFailure',err.identifier);
    warning('<a href="matlab:web http://stackoverflow.com/questions/19268293/matlab-error-cannot-open-with-static-tls -browser">http://stackoverflow.com/questions/19268293/matlab-error-cannot-open-with-static-tls</a>');
-   
+
    restart_dlg=errordlg([ lokaliz('You must restart MATLAB because of internal error.') ...
        ' http://stackoverflow.com/questions/19268293/matlab-error-cannot-open-with-static-tls' ], ...
        'MATLAB','replace') ;
    set(restart_dlg,'DeleteFcn', 'exit');
-   %set(allchild(restart_dlg),'Callback', 'exit');   
-   
+   %set(allchild(restart_dlg),'Callback', 'exit');
+
    error(lokaliz('You must restart MATLAB because of internal error.'));
 end;
 

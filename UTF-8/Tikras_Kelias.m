@@ -1,5 +1,5 @@
 function [varargout] = Tikras_Kelias(kelias_tikrinimui)
-%   
+%
 % Ši programa yra laisva. Jūs galite ją platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
 % Viešosios licencijos sąlygomis: 2 licencijos versija, arba (savo

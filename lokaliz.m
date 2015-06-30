@@ -1,16 +1,16 @@
 % lokaliz()
-% 
-% Naudojimas: 
+%
+% Naudojimas:
 %   lokalizuotas_tekstas = localiz(originalus_tekstas);
 %
-% Usage:  
+% Usage:
 %   lokalizd_text = lokaliz(original_text);
 %
 % (C) 2014 Mindaugas Baranauskas
-% 
+%
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   
+%
 % Ši programa yra laisva. Jūs galite ją platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
 % Viešosios licencijos sąlygomis: 2 licencijos versija, arba (savo
@@ -58,7 +58,7 @@ data_file='lokaliz.mat';
 % LC_info=struct('LANG', {'--' 'en' 'lt'}, 'COUNTRY', {'' 'US' 'LT'}, 'VARIANT', {'' '' ''});
 % LC_TXT={ ...
 %      'OK_button'     'OK'     'Gerai'    ; ...
-%      'Cancel_button' 'Cancel' 'Atšaukti' ; ... 
+%      'Cancel_button' 'Cancel' 'Atšaukti' ; ...
 %      'Close_button'  'Close'  'Užverti'  ; ...
 %      'Copy_button'   'Copy'   'Kopijuoti'; ...
 %          } ;
@@ -79,7 +79,7 @@ data_file='lokaliz.mat';
 
 % Current encoding:
 
-try   
+try
    if isempty(LC_current_locale);
        LC_current_locale=java.util.Locale.getDefault();
    end;
@@ -93,7 +93,7 @@ try
       end;
    end ;
    LANG_id=find(ismember({LC_info.LANG},char(LC_current_locale.getLanguage())));
-   %disp(LANG_id); 
+   %disp(LANG_id);
    if length(LANG_id) > 1;
        LANG_id=intersect(LANG_id,find(ismember({LC_info.COUNTRY},char(LC_current_locale.getCountry()))));
    end;
@@ -126,9 +126,9 @@ try
            char(LC_current_locale.getVariant()), ...
            function_dir, data_file);
        %error(msg);
-       end;       
+       end;
    end;
-   
+
    i=find(ismember(LC_TXT(:,1),orig_txt));
    if length(i) > 1 ;
        i=i(1);
@@ -144,7 +144,7 @@ try
              k={2 ; [char(LC_current_locale.getLanguage()) '_' char(LC_current_locale.getCountry())] };
          end;
          msg=sprintf([ '%s\n' ...
-           'String ''%s'' is not included for translation.\n' ...            
+           'String ''%s'' is not included for translation.\n' ...
            'Your can improve localization! \n' ...
            '1) import localization file by executing:' ...
            '\n  load(''%s%s'');\n' ...
@@ -162,14 +162,14 @@ try
            function_dir, data_file);
       end;
    %end;
-   
+
    %disp(i);
-   
+
    txt=[LC_TXT{i,LANG_id}];
    if isempty(txt);
       if and(~isempty(i),~isempty(LANG_id));
           msg=sprintf([ '\n' ...
-           'String ''%s'' is not translated to ' char(LC_current_locale) '.\n' ...            
+           'String ''%s'' is not translated to ' char(LC_current_locale) '.\n' ...
            'Your can improve localization! \n' ...
            '1) import localization file by executing:' ...
            '\n  load(''%s%s'');\n' ...
@@ -187,14 +187,14 @@ try
       end;
       txt=[LC_TXT{i,LANG_id_fallback}];
    end;
-   
+
    if ~strcmp(enc,'UTF-8');
        bytes=unicode2native(txt,enc);
        %disp(bytes);
        txt=native2unicode(bytes,enc);
    end;
-   
-   
+
+
    if ~isempty(msg);
 %       if ~strcmp(enc,'UTF-8');
 %           msg=sprintf([ msg '\n' ...
@@ -207,10 +207,10 @@ try
        msg=sprintf(['\n' msg ]);
        error(msg);
    end;
-   
+
 catch err ;
    warning(err.message);
-   if isempty(txt);      
+   if isempty(txt);
       txt=orig_txt;
    end;
 end;

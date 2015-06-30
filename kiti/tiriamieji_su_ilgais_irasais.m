@@ -10,12 +10,12 @@ s=unique({ALLEEG.subject});
 if isempty(s); return; end;
 c=unique({ALLEEG.condition});
 if isempty(c); return; end;
-for i=1:length(ALLEEG); 
-    
+for i=1:length(ALLEEG);
+
     laikai(...
         find(ismember(s,ALLEEG(i).subject)),...
         find(ismember(c,ALLEEG(i).condition)))...
-        = ALLEEG(i).xmax ; 
+        = ALLEEG(i).xmax ;
 end;
 
 s_g=s(find(laikai(:,1)>=laiko_minimum_sek));

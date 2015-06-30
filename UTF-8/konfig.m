@@ -1,6 +1,6 @@
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   
+%
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
 % the Free Software Foundation; either version 2 of the License, or
@@ -17,7 +17,7 @@
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% (C) 2014 Mindaugas Baranauskas   
+% (C) 2014 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -81,17 +81,17 @@ function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 Darbeliai_nuostatos_senos.lokale={ '' ; '' ; '' ; } ;
 if (exist('atnaujinimas','file') == 2) ;
     Darbeliai_nuostatos_senos.tikrinti_versija=1;
-else    
+else
     Darbeliai_nuostatos_senos.tikrinti_versija=0;
 end;
-Darbeliai_nuostatos_senos.diegti_auto=0;  
+Darbeliai_nuostatos_senos.diegti_auto=0;
 Darbeliai_nuostatos_senos.stabili_versija=0;
 Darbeliai_nuostatos_senos.savita_versija=0;
 Darbeliai_nuostatos_senos.url_atnaujinimui='';
 Darbeliai_nuostatos_senos.url_versijai='';
 
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));    
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
     Darbeliai_nuostatos_senos.lokale=Darbeliai.nuostatos.lokale;
     Darbeliai_nuostatos_senos.tikrinti_versija=Darbeliai.nuostatos.tikrinti_versija;
     Darbeliai_nuostatos_senos.diegti_auto=Darbeliai.nuostatos.diegti_auto;
@@ -99,12 +99,12 @@ try
     Darbeliai_nuostatos_senos.savita_versija=Darbeliai.nuostatos.savita_versija;
     Darbeliai_nuostatos_senos.url_atnaujinimui=Darbeliai.nuostatos.url_atnaujinimui;
     Darbeliai_nuostatos_senos.url_atnaujinimui=Darbeliai.nuostatos.url_versijai;
-catch err;    
+catch err;
     %warning(err.message);
 end;
 
 set(handles.popupmenu2,'String',{lokaliz('Stable version') ; lokaliz('Trunk version')});
-switch Darbeliai_nuostatos_senos.stabili_versija 
+switch Darbeliai_nuostatos_senos.stabili_versija
     case 1
         set(handles.popupmenu2,'Value',1);
     case 0
@@ -135,7 +135,7 @@ for i=1:length(LC_info);
     tmp_name=char(tmp_lc.getDisplayName(java.util.Locale(tmp_lc.getLanguage(),tmp_lc.getCountry(),tmp_lc.getVariant())));
     %list{i}=[ char(tmp_lc.getLanguage()) '_' char(tmp_lc.getCountry()) ' - ' tmp_name];
     list{i}=tmp_name;
-    
+
     if strcmp(Darbeliai_nuostatos_senos.lokale{1},LC_info(i).LANG);
         if strcmp(Darbeliai_nuostatos_senos.lokale{2},LC_info(i).COUNTRY);
             if strcmp(Darbeliai_nuostatos_senos.lokale{3},LC_info(i).VARIANT);
@@ -143,7 +143,7 @@ for i=1:length(LC_info);
             end;
         end;
     end;
-    
+
 end;
 %disp(list);
 list=char(list);
@@ -162,7 +162,7 @@ guidata(hObject, handles);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = konfig_OutputFcn(hObject, eventdata, handles) 
+function varargout = konfig_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -205,16 +205,16 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat')); 
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
 catch err;
 end;
 
 Darbeliai.nuostatos=[];
 
-switch get(handles.popupmenu2,'Value') 
+switch get(handles.popupmenu2,'Value')
     case 1
         Darbeliai.nuostatos.stabili_versija=1;
-        Darbeliai.nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/stable.zip' ; 
+        Darbeliai.nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/stable.zip' ;
         Darbeliai.nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
     case 2
         Darbeliai.nuostatos.stabili_versija=0;
@@ -234,7 +234,7 @@ restart_eeglab=0;
 if locale_idx > 1;
     lc=get(handles.text2,'String');
     lc=lc([1 2 3] + ((locale_idx - 1) * 3));
-    
+
     tmp_lc=java.util.Locale.getDefault();
     if strcmp(char(tmp_lc.getLanguage()),lc(1));
         if strcmp(char(tmp_lc.getCountry()),lc(2));
@@ -249,18 +249,18 @@ if locale_idx > 1;
     else
         restart_eeglab=1;
     end;
-    
+
     java.util.Locale.setDefault(java.util.Locale(lc(1),lc(2),lc(3)));
     disp(char(java.util.Locale.getDefault()));
-    Darbeliai.nuostatos.lokale=lc;    
-    
+    Darbeliai.nuostatos.lokale=lc;
+
 else
     Darbeliai.nuostatos.lokale={ '' ; '' ; '' ; } ;
 end;
 
 save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
 
-if restart_eeglab ; 
+if restart_eeglab ;
     %pushbutton2_Callback(hObject, eventdata, handles);
     close(findobj('tag', 'EEGLAB'));
     clear('lokaliz');
@@ -268,7 +268,7 @@ if restart_eeglab ;
     konfig_OpeningFcn(hObject, eventdata, handles);
     drawnow;
     evalin('base','eeglab redraw');
-    drawnow;    
+    drawnow;
 end ;
 
 % --- Executes on selection change in popupmenu1.
@@ -302,11 +302,11 @@ function checkbox1_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox1
 
-if (exist('atnaujinimas','file') ~= 2) ;     
+if (exist('atnaujinimas','file') ~= 2) ;
     %set(handles.uipanel1,'Visible','off')
     set(handles.checkbox1,'Enable','off');
     set(handles.checkbox2,'Enable','off');
-    return; 
+    return;
 end;
 
 if get(handles.checkbox1,'Value')
@@ -314,7 +314,7 @@ if get(handles.checkbox1,'Value')
 else
     set(handles.checkbox2,'Enable','off');
 end;
- 
+
 % --- Executes when user attempts to close figure1.
 function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)

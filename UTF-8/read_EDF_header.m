@@ -8,10 +8,10 @@ EDF_header=struct;
 
 for i=1:length(EDF_FAILAI);
     EDF_FAILAS=EDF_FAILAI{i};
-    
+
         disp([ ' ' EDF_FAILAS ' ' ]);
-        
-        
+
+
         fid=fopen(EDF_FAILAS,'r','ieee-le');
         hdr=char(fread(fid,256,'uchar')');
         EDF_header(i).ver=str2num(hdr(1:8));            % 8 ascii : version of this data format (0)
@@ -24,7 +24,7 @@ for i=1:length(EDF_FAILAI);
         EDF_header(i).records = str2num(hdr(237:244)); % 8 ascii : number of data records (-1 if unknown)
         EDF_header(i).duration = str2num(hdr(245:252)); % 8 ascii : duration of a data record, in seconds
         EDF_header(i).channels = str2num(hdr(253:256));% 4 ascii : number of signals (ns) in data record
-        
+
         EDF_header(i).labels=cellstr(char(fread(fid,[16,EDF_header(i).channels],'char')')); % ns * 16 ascii : ns * label (e.g. EEG FpzCz or Body temp)
         EDF_header(i).transducer =cellstr(char(fread(fid,[80,EDF_header(i).channels],'char')')); % ns * 80 ascii : ns * transducer type (e.g. AgAgCl electrode)
         EDF_header(i).units = cellstr(char(fread(fid,[8,EDF_header(i).channels],'char')')); % ns * 8 ascii : ns * physical dimension (e.g. uV or degreeC)
@@ -37,5 +37,5 @@ for i=1:length(EDF_FAILAI);
 
         fclose(fid);
     end;
-    
+
     toc;

@@ -1,5 +1,5 @@
 function [RR_idx,RRI]=QRS_detekt(EKG,sampling_rate,mode)
-%[RR_idx,RRI]=QRS_detekt(EKG,sampling_rate,mode)   
+%[RR_idx,RRI]=QRS_detekt(EKG,sampling_rate,mode)
 %
 % Ši programa yra laisva. Jūs galite ją platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
@@ -37,13 +37,13 @@ function [RR_idx,RRI]=QRS_detekt(EKG,sampling_rate,mode)
 
 SR=sampling_rate;
 RR_idx=[];
- 
+
 switch mode
-    case {1 , '1', 'PT' } 
+    case {1 , '1', 'PT' }
         %% Pan-Tompkin algorithm, implemented by Hooman Sedghamiz, 2014
         % PAN.J, TOMPKINS. W.J,"A Real-Time QRS Detection Algorithm" IEEE
         % TRANSACTIONS ON BIOMEDICAL ENGINEERING, VOL. BME-32, NO. 3, MARCH 1985.
-        
+
         % Check if there is no some custom 'findpeaks.m'
         rehash toolbox;
         findpeaks_paths={};
@@ -56,17 +56,17 @@ switch mode
             findpeaks_path=fileparts(which('findpeaks'));
             findpeaks_path_=strrep(regexprep(findpeaks_path,matlabroot,''),filesep,'/');
         end;
-        
+
         % QRS
         [qrs_amp_raw,qrs_i_raw,delay]=...
             QRS_detekt_Pan_Tompkin(EKG,SR,0);
         RR_idx=[qrs_i_raw]';
-        
+
         % Atstatyti findpeaks
         if ~isempty(findpeaks_paths);
             addpath(findpeaks_paths{:});
-        end;        
-        
+        end;
+
     case {2 , '2', 'DPI', 'dpi' }
         %% Threshold-Independent QRS Detection Using the Dynamic Plosion Index
         %  A. G. Ramakrishnan and A. P. Prathosh and T. V. Ananthapadmanabhaha.
@@ -78,8 +78,8 @@ switch mode
         RR_idx=[qrs(2:end)]';
     case {3, '3' , 'ECGlab', 'ECGLAB', 'ecglab' }
         %% from ECGlab 2.0
-        % Suppappola, S.; Sun, Y., "Nonlinear transforms of ECG signals 
-        % for digital QRS detection: A quantitative analysis", 
+        % Suppappola, S.; Sun, Y., "Nonlinear transforms of ECG signals
+        % for digital QRS detection: A quantitative analysis",
         % IEEE Trans. Biomed. Eng., 41/4, April 1994
         qrs=QRS_detekt_mobd(EKG,SR);
         RR_idx=qrs;

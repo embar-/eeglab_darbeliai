@@ -3,7 +3,7 @@ atrinktas_tekstas={};
 if ischar(teksto_eilutes);
    teksto_eilutes=cellstr(teksto_eilutes);
 end;
-if ~iscellstr(teksto_eilutes); 
+if ~iscellstr(teksto_eilutes);
     return;
 end;
 if ismember(';',teksto_filtras);

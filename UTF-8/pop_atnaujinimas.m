@@ -19,7 +19,7 @@
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% (C) 2014 Mindaugas Baranauskas   
+% (C) 2014 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -87,7 +87,7 @@ sena_versija='';
 nauja_versija='';
 apie_vers='';
 curdir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-if strcmp(curdir(end),filesep); 
+if strcmp(curdir(end),filesep);
    curdir=curdir(1:end-1);
 end ;
 curdir_sep=find(ismember(curdir,filesep));
@@ -124,7 +124,7 @@ handles.url_atnaujinimui=Darbeliai_nuostatos.url_atnaujinimui;
 
 if length(varargin) > 1 ;
     sena_versija=varargin{2};
-else    
+else
     try
         fid_vers=fopen(fullfile(Tikras_Kelias(fullfile(curdir,'..')),'Darbeliai.versija'));
         vers=fgets(fid_vers);
@@ -138,9 +138,9 @@ if ~isempty(sena_versija)
     Tekstas=[ Tekstas ; lokaliz('Naudojate') ; sena_versija ; {' '} ];
 end;
 
-if length(varargin) > 2 ;  
-   nauja_versija=varargin{3};   
-else   
+if length(varargin) > 2 ;
+   nauja_versija=varargin{3};
+else
    %url='https://www.dropbox.com/s/q57pntndm704isv/Darbeliai.versija?dl=1';
    %url='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
    %url='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
@@ -161,7 +161,7 @@ else
            apie_vers=[apie_vers apie_vers_];
            apie_vers_ = fgets(fid_nvers);
        end;
-       fclose(fid_nvers); 
+       fclose(fid_nvers);
        try delete(filestr); catch err; end;
        try delete([filestr '~']); catch err; end;
    end;
@@ -211,7 +211,7 @@ guidata(hObject, handles);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = pop_atnaujinimas_OutputFcn(hObject, eventdata, handles) 
+function varargout = pop_atnaujinimas_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB

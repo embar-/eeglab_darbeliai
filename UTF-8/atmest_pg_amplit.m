@@ -1,8 +1,8 @@
-% Atkarpėlių, viršijančių amplitudės ribas, atmetimas 
+% Atkarpėlių, viršijančių amplitudės ribas, atmetimas
 % Didelė dalis kodo yra iš ERPLAB
 %
 % Removing time intervals by amplitude
-% Big part part of code is prom ERPLAB 
+% Big part part of code is prom ERPLAB
 %
 % (C) 2007 The Regents of the University of California, Javier Lopez-Calderon and Steven Luck
 % (C) 2010,2011 Javier Lopez-Calderon
@@ -45,11 +45,11 @@
 
 function [EEG]=atmest_pg_amplit(EEG, ampth, winms, chanArray, varargin)
 
-    
+
     if isempty(chanArray);
         chanArray=1:EEG.nbchan;
     end;
-    
+
     %ampth=[70];
     %winms=1500;
     stepms=winms/2;
@@ -60,13 +60,13 @@ function [EEG]=atmest_pg_amplit(EEG, ampth, winms, chanArray, varargin)
     firstdet=0;
     winoffset=0;
     fcutoff=[];
-    
+
     shortisisam  = floor(shortisi*EEG.srate/1000);  % to samples
     shortsegsam  = floor(shortseg*EEG.srate/1000);  % to samples
     winoffsetsam = floor(winoffset*EEG.srate/1000); % to samples
-    
+
     [WinRej, chanrej] = basicrap2(EEG, chanArray, ampth, winms, stepms, firstdet, fcutoff, forder); %, filter, forder)
-    
+
     if isempty(WinRej)
         fprintf('\nCriterion was not found. No rejection was performed.\n');
     else
@@ -80,18 +80,18 @@ function [EEG]=atmest_pg_amplit(EEG, ampth, winms, chanArray, varargin)
         if ~isempty(winoffsetsam)
             [WinRej, chanrej ] = movesegments(WinRej, chanrej, winoffsetsam, EEG.pnts);
         end
-        
+
         colormatrej = repmat(colorseg, size(WinRej,1),1);
         matrixrej = [WinRej colormatrej chanrej];
         assignin('base', 'WinRej', WinRej);
         fprintf('\n %g segments were marked.\n\n', size(WinRej,1));
-        
+
         commrej = sprintf('disp(''WinRej=''); disp(WinRej); EEG = eeg_eegrej( EEG, WinRej);');
         % call figure
         %WinRej
         %disp('------------------');
         %eegplot(EEG.data, 'winrej', matrixrej, 'srate', EEG.srate,'butlabel','REJECT','command', commrej,'events', EEG.event,'winlength', 50);
-        
+
         EEG= eeg_eegrej( EEG, WinRej) ;
         EEG = eeg_checkset( EEG );
         if length(EEG.event)>=1;
@@ -106,10 +106,10 @@ function [EEG]=atmest_pg_amplit(EEG, ampth, winms, chanArray, varargin)
                 EEG = eeg_checkset( EEG );
             end;
         end;
-        
+
     end;
     EEG = eeg_checkset( EEG );
-    
+
 %%
 
 
@@ -314,7 +314,7 @@ while q<=nibound-1  % segments among boundaries
                         end
                 end
         end
-        
+
         %
         % Moving window
         %
@@ -401,7 +401,7 @@ function [WinRej2 ChanRej2 ] = discardshortsegments(WinRej, chanrej, shortsegsam
 % INPUTS:
 %
 % WinRej         - latency array. Each row is a pair of values (start end), so the array has 2 columns.
-% chanrej        - marked channels array 
+% chanrej        - marked channels array
 % shortsegsam    - duration threshold in seconds (marked windows lower than this value will be unmarked)
 % dwarning       - display warning. 1 yes; 0 no
 %
@@ -481,7 +481,7 @@ function [WinRej2 ChanRej2 ] = joinclosesegments2(WinRej, chanrej, shortisisam)
 % INPUTS:
 %
 % WinRej         - latency array. Each row is a pair of values (start end), so the array has 2 columns.
-% chanrej        - marked channels array 
+% chanrej        - marked channels array
 % shortisisam    - inter window time. (marked windows closer than this value will be joined together)
 %
 %
