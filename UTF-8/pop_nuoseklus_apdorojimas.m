@@ -1,5 +1,5 @@
-% 
-% 
+%
+%
 %
 % (C) 2014 Mindaugas Baranauskas
 %
@@ -109,9 +109,9 @@ Kelias_dabar=pwd;
 %Pabandyk įkelti senąjį kelią
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
     cd(Darbeliai.keliai.atverimui{1});
-catch err; 
+catch err;
 end;
 try
     tmp_mat=fullfile(tempdir,'tmp.mat');
@@ -252,10 +252,10 @@ varargout{1} = handles.output;
 % Atnaujink rodoma kelia
 function atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles)
 kelias_orig=pwd;
-try 
+try
     cd(get(handles.edit1,'String'));
 catch err;
-    cd(Tikras_Kelias(get(handles.edit1,'TooltipString')));    
+    cd(Tikras_Kelias(get(handles.edit1,'TooltipString')));
 end;
 set(handles.edit1,'String',pwd);
 set(handles.edit1,'TooltipString',pwd);
@@ -299,7 +299,7 @@ else
         end;
     end;
     set(handles.listbox1,'Max',length(FAILAI));
-    Pasirinkti_failu_indeksai=find(ismember(FAILAI,intersect(FAILAI_filtruoti_,FAILAI)));   
+    Pasirinkti_failu_indeksai=find(ismember(FAILAI,intersect(FAILAI_filtruoti_,FAILAI)));
     if and(isempty(Pasirinkti_failu_indeksai),length(FAILAI)==1);
        set(handles.listbox1,'Value',1);
     else
@@ -317,8 +317,8 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 % Neleisk nieko daryti
 function susaldyk(hObject, eventdata, handles)
 %Neleisti spausti Nuostatų meniu!
-a=findall(handles.figure1,'type','uimenu'); 
-a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; 
+a=findall(handles.figure1,'type','uimenu');
+a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ;
 set(a,'Enable','off'); drawnow;
 
 set(handles.pushbutton1,'Value',0);
@@ -439,7 +439,7 @@ set(handles.checkbox_ICA,'Enable','on');
 if exist('MARA','file') == 2;
     set(handles.checkbox_MARA,'Enable','on');
     set(handles.checkbox_MARA,'TooltipString', '' ) ;
-else        
+else
     set(handles.checkbox_MARA,'Enable','off');
     set(handles.checkbox_MARA,'TooltipString', 'Reikia įdiegti MARA papildinį' ) ;
 end;
@@ -495,7 +495,7 @@ set(handles.text_darbas,'String',' ');
 set(handles.pushbutton2,'Value',0);
 
 % Leisti spausti Nuostatų meniu!
-a=findall(handles.figure1,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','on'); 
+a=findall(handles.figure1,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','on');
 
 function Ar_galima_vykdyti(hObject, eventdata, handles)
 
@@ -556,7 +556,7 @@ if get(handles.edit_failu_filtras2,'BackgroundColor') == [1 1 0];
     drawnow; return;
 end;
 set(handles.pushbutton1,'Enable','on');
-drawnow; 
+drawnow;
 %set(handles.checkbox_epoch_b,'TooltipString', ' ' ) ;
 
 
@@ -625,8 +625,8 @@ disp(' ');
 % Nuostatų įsiminimas, jei yra Darbeliai_config.mat
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
-    
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+
     % Pasirinktų aplankų įsiminimas
     try
         lst=[{} KELIAS unique(Darbeliai.keliai.atverimui)];
@@ -634,7 +634,7 @@ try
         Darbeliai.keliai.atverimui=lst(sort(idx));
     catch err1;
         Darbeliai.keliai.atverimui=[{} KELIAS];
-    end;    
+    end;
     try
         lst=[{} KELIAS_SAUGOJIMUI unique(Darbeliai.keliai.saugojimui)];
         [~,idx,~]=unique(lst);
@@ -643,7 +643,7 @@ try
         Darbeliai.keliai.saugojimui=[{} KELIAS_SAUGOJIMUI];
     end;
     % Įrašymas
-    save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');    
+    save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
 catch err;
     Pranesk_apie_klaida(err, 'pop_nuoseklus_apdorojimas.m', '-', 0);
 end;
@@ -657,13 +657,13 @@ STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
 %[ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
 %eeglab redraw ;
 %[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
-try 
+try
     EEGLAB_senieji_kintamieji.EEG         =EEG;
     EEGLAB_senieji_kintamieji.ALLEEG      =ALLEEG;
-    EEGLAB_senieji_kintamieji.CURRENTSET  =CURRENTSET;    
+    EEGLAB_senieji_kintamieji.CURRENTSET  =CURRENTSET;
     EEGLAB_senieji_kintamieji.ALLCOM      =ALLCOM;
     EEGLAB_senieji_kintamieji.STUDY       =STUDY;
-    EEGLAB_senieji_kintamieji.CURRENTSTUDY=CURRENTSTUDY;    
+    EEGLAB_senieji_kintamieji.CURRENTSTUDY=CURRENTSTUDY;
 catch err,
 end;
 STUDY = []; CURRENTSTUDY = 0;
@@ -695,10 +695,10 @@ for i=1:Pasirinktu_failu_N;
     DarboPorcijaAtlikta=0;
     PaskutinioIssaugotoDarboNr=0;
     PaskRinkmIssaugKelias=KELIAS;
-    
+
     %guidata(hObject, handles);
         Darbo_eigos_busena(handles, lokaliz('Loading data...'), DarboNr, i, Pasirinktu_failu_N);
-        
+
     % Ikelti
     [ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
     try
@@ -723,34 +723,34 @@ for i=1:Pasirinktu_failu_N;
             end;
         end;
     end;
-    
+
     %uiwait(gcf,1);
-    
-    
+
+
     if ~isempty(EEG);
-        
+
         EEG = eeg_checkset( EEG );
         %eeglab redraw;
-        
-                
+
+
         % Kanalų padėtis
         Darbo_apibudinimas=lokaliz('Setting channel positions...');
         if get(handles.checkbox_kanalu_padetis,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 try
                     kanalu_failai=get(handles.popupmenu12,'String');
                     kanalu_failas=kanalu_failai{get(handles.popupmenu12,'Value')};
-                    
+
                     % Pašalinti taškus iš kanalų pavadinimų
                     %esami_kanalai={EEG.chanlocs.labels};
                     %for knl=1:length(esami_kanalai);
                     %   EEG.chanlocs(knl).labels=strrep(esami_kanalai{knl},'.','');
                     %end;
-                    
+
                     EEG = pop_chanedit(EEG, 'lookup', kanalu_failas);
                     EEG = eegh( [ 'EEG = pop_chanedit(EEG, ''lookup'', ''' kanalu_failas ''');' ] , EEG);
                     EEG = eeg_checkset( EEG );
@@ -760,8 +760,8 @@ for i=1:Pasirinktu_failu_N;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_kanalu_padetis,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_kanalu_padetis_,'String')) ] ;
@@ -775,26 +775,26 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_kanalu_padetis,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % Reference
         Darbo_apibudinimas=lokaliz('Re-referencing...');
         if get(handles.checkbox_rf,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 try
                     if get(handles.popupmenu3,'Value') == 1 ;
                         [EEG, LASTCOM] = pop_reref( EEG, []);
@@ -825,8 +825,8 @@ for i=1:Pasirinktu_failu_N;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_rf,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_rf_,'String')) ] ;
@@ -840,32 +840,32 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_rf,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % Kanalų atrinkimas 1
         Darbo_apibudinimas=lokaliz('Selecting channels...');
         if get(handles.checkbox_atrink_kanalus1,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 EEG = eeg_checkset( EEG );
                 %VISI_KANALAI_66={'Fp1' 'Fpz' 'Fp2' 'F7' 'F3' 'Fz' 'F4' 'F8' 'FC5' 'FC1' 'FC2' 'FC6' 'M1' 'T7' 'C3' 'Cz' 'C4' 'T8' 'M2' 'CP5' 'CP1' 'CP2' 'CP6' 'P7' 'P3' 'Pz' 'P4' 'P8' 'POz' 'O1' 'Oz' 'O2' 'AF7' 'AF3' 'AF4' 'AF8' 'F5' 'F1' 'F2' 'F6' 'FC3' 'FCz' 'FC4' 'C5' 'C1' 'C2' 'C6' 'CP3' 'CPz' 'CP4' 'P5' 'P1' 'P2' 'P6' 'PO5' 'PO3' 'PO4' 'PO6' 'FT7' 'FT8' 'TP7' 'TP8' 'PO7' 'PO8' 'EOG' 'EOGh';};
                 %Pasirinkti_kanalai=textscan(get(handles.text8,'TooltipString'),'%s','delimiter',' ');
                 %Reikalingi_kanalai=Pasirinkti_kanalai{1};
                 Reikalingi_kanalai=get(handles.pushbutton9,'UserData');
-                
+
                 try
                     Reikalingi_kanalai_yra=Reikalingi_kanalai(find(ismember(Reikalingi_kanalai,{EEG.chanlocs.labels})));
                     if get(handles.checkbox_atrink_kanalus1__,'Value') == 0 ;
@@ -884,8 +884,8 @@ for i=1:Pasirinktu_failu_N;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 disp(NaujaRinkmena);
                 Priesaga=(get(handles.edit_atrink_kanalus1,'String')) ;
@@ -901,26 +901,26 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_atrink_kanalus1,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % Filtruoti dažnius
         Darbo_apibudinimas=lokaliz('First filtering...');
         if get(handles.checkbox_filtr1,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 Kanalai=get(handles.pushbutton_apdorotini_kanalai,'UserData');
                 if isempty(Kanalai);
                     KanaluNr=[1:EEG.nbchan];
@@ -928,7 +928,7 @@ for i=1:Pasirinktu_failu_N;
                     %Kanalai=intersect(Kanalai,{EEG.chanlocs.labels});
                     KanaluNr=find(ismember({EEG.chanlocs.labels},Kanalai));
                 end;
-                
+
                 try
                     EEG = eeg_checkset( EEG );
                     NeitrauktiKanNr=setdiff([1:EEG.nbchan],KanaluNr);
@@ -941,11 +941,11 @@ for i=1:Pasirinktu_failu_N;
                     disp([ 'Filtruokim <' num2str(daznis_filtravimui) '>' ] );
                     if     get(handles.popupmenu9,'Value') == 1 ;
                         [EEG, LASTCOM] = pop_eegfiltnew(EEG, [], daznis_filtravimui, [], 1, [], 0);
-                    elseif get(handles.popupmenu9,'Value') == 2 ;                        
+                    elseif get(handles.popupmenu9,'Value') == 2 ;
                         [EEG, LASTCOM] = pop_eegfiltnew(EEG, [], daznis_filtravimui, [], 0, [], 0);
-                    elseif get(handles.popupmenu9,'Value') == 3;                        
+                    elseif get(handles.popupmenu9,'Value') == 3;
                         [EEG, LASTCOM] = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 0, [], 0);
-                    elseif get(handles.popupmenu9,'Value') == 4;                        
+                    elseif get(handles.popupmenu9,'Value') == 4;
                         [EEG, LASTCOM] = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 1, [], 0);
                     end;
                     if ~isempty(NeitrauktiKanNr);
@@ -960,7 +960,7 @@ for i=1:Pasirinktu_failu_N;
                         EEG = EEG2 ;
                         EEG = eegh('EEG = EEG2;', EEG);
                     else
-                        EEG = eegh(LASTCOM, EEG);                        
+                        EEG = eegh(LASTCOM, EEG);
                     end;
                     EEG = eeg_checkset( EEG );
                 catch err;
@@ -969,8 +969,8 @@ for i=1:Pasirinktu_failu_N;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_filtr1,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_filtr1_,'String')) ] ;
@@ -984,27 +984,27 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_filtr1,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % Filtruoti tinklo triukšmą
         Darbo_apibudinimas=lokaliz('Filtering power-line noise...');
         if get(handles.checkbox_filtr_tinklo,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
-                
+
+
                 Kanalai=get(handles.pushbutton_apdorotini_kanalai,'UserData');
                 if isempty(Kanalai);
                     KanaluNr=[1:EEG.nbchan];
@@ -1012,7 +1012,7 @@ for i=1:Pasirinktu_failu_N;
                     %Kanalai=intersect(Kanalai,{EEG.chanlocs.labels});
                     KanaluNr=find(ismember({EEG.chanlocs.labels},Kanalai));
                 end;
-                
+
                 try
                     line_freq=str2num(get(handles.edit50,'String'));
                     line_freq_rem=[line_freq (2:round(EEG.srate/line_freq/2))*line_freq ];
@@ -1025,8 +1025,8 @@ for i=1:Pasirinktu_failu_N;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_filtr_tinklo,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_filtr_tinklo_,'String')) ] ;
@@ -1040,50 +1040,50 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_filtr_tinklo,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
-        
+
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-        
-                
+
+
         % Atmesti triukšmingas atkarpėles (pagal amplitudę)
         Darbo_apibudinimas=lokaliz('Rejecting noisy intervals...');
         if get(handles.checkbox_atmesk_atkarpas_amp,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 try
-                    
+
                     Kanalai=get(handles.pushbutton_apdorotini_kanalai,'UserData');
                     if isempty(Kanalai);
                         KanaluNr=[1:EEG.nbchan];
                     else
                         %Kanalai=intersect(Kanalai,{EEG.chanlocs.labels});
                         KanaluNr=find(ismember({EEG.chanlocs.labels},Kanalai));
-                    end;                                        
+                    end;
                     ampl=str2num(get(handles.edit58,'String'));
                     langas=str2num(get(handles.edit57,'String'));
                     EEG = atmest_pg_amplit(EEG,ampl,langas,KanaluNr);
                     EEG = eegh(['EEG = atmest_pg_amplit(EEG, [' num2str(ampl) '], [' num2str(langas) '], [' num2str(KanaluNr) ']);' ] , EEG);
-                    EEG = eeg_checkset( EEG );                    
+                    EEG = eeg_checkset( EEG );
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Reject noisy time intervals'), NaujaRinkmena);
                     DarboPorcijaAtlikta=1;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_atmesk_atkarpas_amp,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_atmesk_atkarpas_amp_,'String')) ] ;
@@ -1097,25 +1097,25 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_atmesk_atkarpas_amp,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
+
         % Atmesti triukšmingas atkarpėles (pagal dažnių spektrą)
         Darbo_apibudinimas=lokaliz('Rejecting noisy intervals...');
         if get(handles.checkbox_atmesk_atkarpas_dzn,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 try
-                    
+
                     Kanalai=get(handles.pushbutton_apdorotini_kanalai,'UserData');
                     if isempty(Kanalai);
                         KanaluNr=[1:EEG.nbchan];
@@ -1123,7 +1123,7 @@ for i=1:Pasirinktu_failu_N;
                         %Kanalai=intersect(Kanalai,{EEG.chanlocs.labels});
                         KanaluNr=find(ismember({EEG.chanlocs.labels},Kanalai));
                     end;
-                    
+
                     [EEG, ~, ~, LASTCOM] = pop_rejcont(EEG, 'elecrange',KanaluNr,...
                         'freqlimit',str2num(get(handles.edit44,'String')) ,...
                         'threshold',str2num(get(handles.edit43,'String')),...
@@ -1136,8 +1136,8 @@ for i=1:Pasirinktu_failu_N;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_atmesk_atkarpas_dzn,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_atmesk_atkarpas_dzn_,'String')) ] ;
@@ -1151,35 +1151,35 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_atmesk_atkarpas_dzn,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
-        
+
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % Atmesti triukšmingus kanalus (auto)
         Darbo_apibudinimas=lokaliz('Rejecting noisy channels (auto)...');
         if get(handles.checkbox_atmesk_kan_auto,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 try
                     if get(handles.checkbox41,'Value');
                         atmesk_kan_auto_normalizav='on';
                     else
                         atmesk_kan_auto_normalizav='off';
                     end;
-                    
-                    
+
+
                     Kanalai=get(handles.pushbutton_apdorotini_kanalai,'UserData');
                     if isempty(Kanalai);
                         KanaluNr=[1:EEG.nbchan];
@@ -1188,8 +1188,8 @@ for i=1:Pasirinktu_failu_N;
                         %Kanalai=intersect(Kanalai,{EEG.chanlocs.labels});
                         KanaluNr=find(ismember({EEG.chanlocs.labels},Kanalai));
                     end;
-                    
-                    
+
+
                     %
                     % EEG = pop_rejchan(EEG, 'elec',[1:EEG.nbchan] ,'threshold',3.5,'norm','on','measure','spec');
                     [EEG, ~, ~, LASTCOM] = pop_rejchan(EEG, ...
@@ -1206,8 +1206,8 @@ for i=1:Pasirinktu_failu_N;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_atmesk_kan_auto,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_atmesk_kan_auto_,'String')) ] ;
@@ -1221,28 +1221,28 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_atmesk_kan_auto,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % ASR
         Darbo_apibudinimas=lokaliz('Rejecting artefacts with ASR..');
         if get(handles.checkbox_ASR,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 try
-                    
+
                     %if PLUGINLIST(find(ismember({PLUGINLIST.plugin},'clean_rawdata'))).version >= 0.3 ;
                     % tikrinta su clean_rawdata0.3 versija:
                     EEG = clean_rawdata(EEG, 5, [0.25 0.75], 0.8, 4, 5, 0.5);
@@ -1251,17 +1251,17 @@ for i=1:Pasirinktu_failu_N;
                     % clean_rawdata0.2 versijai:
                     %    EEG = clean_rawdata(EEG, 5, [0.25 0.75], 0.45, 5, 0.5);
                     %end ;
-                    
+
                     EEG = eeg_checkset( EEG );
-                    
+
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Reject artefacts with ASR'), NaujaRinkmena);
                     DarboPorcijaAtlikta=1;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_ASR,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_ASR_,'String')) ] ;
@@ -1275,46 +1275,46 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_ASR,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
-        
+
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % Peržiūrėti įrašą
         Darbo_apibudinimas=lokaliz('You are reviewind data...');
         if get(handles.checkbox_perziureti,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 try
                     EEG = eeg_checkset( EEG );
                     eeglab redraw;
                     pop_eegplot( EEG, 1, 1, 1);
                     EEG = eegh('pop_eegplot( EEG, 1, 1, 1);', EEG);
-                    
+
                     %eegplot( EEG.data, 'srate', EEG.srate, 'title', 'Scroll channel activities -- eegplot()', ...
-                    %  'limits', [EEG.xmin EEG.xmax]*1000 , 'command', command, eegplotoptions{:}); 
-                    
+                    %  'limits', [EEG.xmin EEG.xmax]*1000 , 'command', command, eegplotoptions{:});
+
                     %f = warndlg(sprintf('Jums atvėrėme langą, kuriame siūlome peržiūrėti artefaktus. Nepamirškite patvirtinimui nuspausti Reject mygtuko. Klausiant kur saugoi failą, tiesiog spauskite OK. '), 'Dėmesio!');
                     %disp('Dėmesio! Kai nuspausite mygtuką, užsivers langas, kuriame siūlome peržiūrėti artefaktus.');
                     %drawnow     % Necessary to print the message
                     %waitfor(f);
-                    
+
                     %eeglab redraw;
-                    
-                    
+
+
                     if get(handles.checkbox_perziureti_ICA_demesio,'Value') == 0 ;
-                        
+
                         while ~isempty([...
                                 findobj('-regexp','name','Reject components by map.*')  ; ...
                                 findobj('-regexp','name','pop_prop().*') ; ...
@@ -1322,9 +1322,9 @@ for i=1:Pasirinktu_failu_N;
                                 findobj('-regexp','name','Scroll component activities.*') ; ...
                                 findobj('-regexp','name','Confirmation.*') ; ...
                                 findobj('-regexp','name','Black = channel before rejection.*') ; ] ) ;
-                            
+
                             if 1 == 0
-                                
+
                                 waitfor([...
                                     findobj('-regexp','name','Reject components by map.*')  ; ...
                                     findobj('-regexp','name','pop_prop().*') ; ...
@@ -1332,20 +1332,20 @@ for i=1:Pasirinktu_failu_N;
                                     findobj('-regexp','name','Scroll component activities.*') ; ...
                                     findobj('-regexp','name','Confirmation.*') ; ...
                                     findobj('-regexp','name','Black = channel before rejection.*') ; ] ) ;
-                                
+
                                 pause(1) ;
-                                
+
                             end ;
-                            
+
                             uiwait(gcf,3);
-                            
-                            
+
+
                         end ;
-                        
+
                     else
-                        
+
                         Palauk();
-                        
+
                         try
                             close([...
                                 findobj('-regexp','name','Reject components by map.*')  ; ...
@@ -1356,25 +1356,25 @@ for i=1:Pasirinktu_failu_N;
                                 findobj('-regexp','name','Black = channel before rejection.*') ; ] );
                         catch err;
                         end;
-                        
-                        
+
+
                     end;
-                    
+
                     %[ALLEEG EEG CURRENTSET] = eeg_store([], EEG);
                     eeglab redraw;
-                    
+
                     %Palauk();
-                    
+
                     EEG = eeg_checkset( EEG );
-                    
+
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Data review'), NaujaRinkmena);
                     DarboPorcijaAtlikta=1;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_perziureti,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_perziureti_,'String')) ] ;
@@ -1388,36 +1388,36 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_perziureti,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % ICA
         Darbo_apibudinimas=lokaliz('ICA...');
         if get(handles.checkbox_ICA,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 try
-                    
+
                     Kanalai=get(handles.pushbutton_apdorotini_kanalai,'UserData');
                     if isempty(Kanalai);
                         KanaluNr=[1:EEG.nbchan];
                     else
                         %Kanalai=intersect(Kanalai,{EEG.chanlocs.labels});
                         KanaluNr=find(ismember({EEG.chanlocs.labels},Kanalai));
-                    end;                    
-                    
+                    end;
+
                     % komponenčių kiekis
                     switch get(handles.popupmenu4,'Value')
                         case 1
@@ -1429,19 +1429,19 @@ for i=1:Pasirinktu_failu_N;
                         otherwise
                             error(lokaliz('Internal error'));
                     end;
-                    
+
                     [EEG, LASTCOM] = pop_runica(EEG, 'chanind', KanaluNr, 'extended',1, 'pca', ICA_N,  'interupt','on');
                     EEG = eegh(LASTCOM, EEG);
                     EEG = eeg_checkset( EEG );
-                    
+
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('ICA'), NaujaRinkmena);
                     DarboPorcijaAtlikta=1;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_ICA,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_ICA_,'String')) ] ;
@@ -1455,30 +1455,30 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_ICA,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
-        
+
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % MARA
         Darbo_apibudinimas=lokaliz('MARA...');
         if get(handles.checkbox_MARA,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 EEG = eeg_checkset( EEG );
                 try
-                    
+
                     switch get(handles.popupmenu5,'Value')
                         case 1
                             [ALLEEG,EEG,CURRENTSET]= processMARA( ALLEEG ,EEG ,CURRENTSET,[0,0,0,0,0] );
@@ -1507,21 +1507,21 @@ for i=1:Pasirinktu_failu_N;
                             EEG = pop_subcomp( EEG, artcomps, 0);
                             EEG = eegh('EEG = pop_subcomp( EEG, artcomps, 0);', EEG);
                     end;
-                    
+
                     EEG = eeg_checkset( EEG );
-                    
+
                     %Aprašyk
                     fprintf(fid, [strrep(strrep(NaujaRinkmena,'.cnt',''),'.set','') '	' num2str(artcomps) '\r\n']);
                     disp(strrep(strrep(NaujaRinkmena,'.cnt',''),'.set','')); disp(artcomps);
-                    
+
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('MARA'), NaujaRinkmena);
                     DarboPorcijaAtlikta=1;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_MARA,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_MARA_,'String')) ] ;
@@ -1535,31 +1535,31 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_MARA,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
-        
+
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % Peržiūrėti ICA
         Darbo_apibudinimas=lokaliz('You review ICA...');
         if get(handles.checkbox_perziureti_ICA,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 try
-                    
+
                     EEG = eeg_checkset( EEG );
-                    
+
                     try
                         close([...
                             findobj('-regexp','name','Reject components by map.*')  ; ...
@@ -1570,14 +1570,14 @@ for i=1:Pasirinktu_failu_N;
                             findobj('-regexp','name','Black = channel before rejection.*') ; ] );
                     catch err;
                     end;
-                    
-                    
+
+
                     eeglab redraw ;
                     drawnow ;
-                    
+
                     switch get(handles.popupmenu7,'Value')
                         case 1
-                            EEG = pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);                            
+                            EEG = pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
                             EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(length(EEG.reject.gcompreject)) ']);'], EEG);
                         case 2
                             pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
@@ -1600,17 +1600,17 @@ for i=1:Pasirinktu_failu_N;
                             EEG = pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
                             EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(length(EEG.reject.gcompreject)) ']);'], EEG);
                     end;
-                    
+
                     %if get(handles.popupmenu8,'Value') ~= 4 ;
-                    
+
                     eeglab redraw ;
                     drawnow ;
                     pause(1) ;
-                    
-                    
+
+
                     if get(handles.checkbox_perziureti_ICA_demesio,'Value') == 0 ;
-                        
-                        
+
+
                         while ~isempty([...
                                 findobj('-regexp','name','Reject components by map.*')  ; ...
                                 findobj('-regexp','name','pop_prop().*') ; ...
@@ -1618,10 +1618,10 @@ for i=1:Pasirinktu_failu_N;
                                 findobj('-regexp','name','Scroll component activities.*') ; ...
                                 findobj('-regexp','name','Confirmation.*') ; ...
                                 findobj('-regexp','name','Black = channel before rejection.*') ; ] ) ;
-                            
-                            
+
+
                             if 1 == 0
-                                
+
                                 waitfor([...
                                     findobj('-regexp','name','Reject components by map.*')  ; ...
                                     findobj('-regexp','name','pop_prop().*') ; ...
@@ -1629,21 +1629,21 @@ for i=1:Pasirinktu_failu_N;
                                     findobj('-regexp','name','Scroll component activities.*') ; ...
                                     findobj('-regexp','name','Confirmation.*') ; ...
                                     findobj('-regexp','name','Black = channel before rejection.*') ; ] ) ;
-                                
+
                                 pause(1) ;
-                                
+
                             end ;
-                            
+
                             uiwait(gcf,3);
-                            
+
                             eeglab redraw ;
-                            
+
                         end ;
-                        
+
                     else
-                        
+
                         Palauk();
-                        
+
                         try
                             close([...
                                 findobj('-regexp','name','Reject components by map.*')  ; ...
@@ -1654,17 +1654,17 @@ for i=1:Pasirinktu_failu_N;
                                 findobj('-regexp','name','Black = channel before rejection.*') ; ] );
                         catch err;
                         end;
-                        
-                        
+
+
                     end;
-                    
+
                     EEG = eeg_checkset( EEG );
-                    
-                    
-                    
+
+
+
                     switch get(handles.popupmenu8,'Value')
                         case 1
-                            EEG = pop_subcomp( EEG, find(EEG.reject.gcompreject) , 0 );                            
+                            EEG = pop_subcomp( EEG, find(EEG.reject.gcompreject) , 0 );
                             EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(find(EEG.reject.gcompreject)) '] , 0 );'], EEG);
                         case 2
                             EEG = pop_subcomp( EEG, find(EEG.reject.gcompreject) , 1 );
@@ -1672,12 +1672,12 @@ for i=1:Pasirinktu_failu_N;
                         otherwise
                             EEG = eeg_checkset( EEG );
                     end;
-                    
+
                     eeglab redraw ;
                     drawnow ;
                     pause(1) ;
-                    
-                    
+
+
                     try
                         close([...
                             findobj('-regexp','name','Reject components by map.*')  ; ...
@@ -1688,18 +1688,18 @@ for i=1:Pasirinktu_failu_N;
                             findobj('-regexp','name','Black = channel before rejection.*') ; ] );
                     catch err;
                     end;
-                    
-                    
+
+
                     EEG = eeg_checkset( EEG );
-                    
+
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('ICA review'), NaujaRinkmena);
                     DarboPorcijaAtlikta=1;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_perziureti_ICA,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_perziureti_ICA_,'String')) ] ;
@@ -1713,29 +1713,29 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_perziureti_ICA,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
-        
+
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % Atmesti atkarpėles iki 2 s
         Darbo_apibudinimas=lokaliz('Rejecting very short intervals between boundaries...');
         if get(handles.checkbox_atmesk_iki2s,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 try
-                    
+
                     g={};
                     g.Atkarpu_padetis_N=find(strcmp({EEG.event(:).type},'boundary' )) ;
                     % visas iraso ilgis, sekundemis
@@ -1753,14 +1753,14 @@ for i=1:Pasirinktu_failu_N;
                         % didziausias ilgis, sekundemis
                         g.Atkarpu_trukme_max=max(g.Atkarpu_trukmes);
                     end ;
-                    
+
                     g.Atkarpu_padetis_pt=[1 round([EEG.event(g.Atkarpu_padetis_N).latency]) EEG.pnts] ;
-                    
+
                     % Rasti atkarpas, kurios trumpesnes nei, pvz, 2 s
                     g.Atkarpu_padetis_N_Trumpu=find(g.Atkarpu_trukmes<str2num(get(handles.edit20,'String')));
-                    
+
                     disp( [ 'Buvo bendra trukmė: ' num2str(EEG.times(end)/1000 ) ]);
-                    
+
                     % atmesti trumpas atkarpas
                     for a=sort(g.Atkarpu_padetis_N_Trumpu,'descend');
                         disp([ num2str(g.Atkarpu_padetis_s(a+1)) ' - ' num2str(g.Atkarpu_padetis_s(a)) ' = ' num2str(g.Atkarpu_padetis_s(a+1) - g.Atkarpu_padetis_s(a) ) ]);
@@ -1771,15 +1771,15 @@ for i=1:Pasirinktu_failu_N;
                         EEG = eeg_checkset( EEG ) ;
                     end;
                     disp( [ 'Nauja trukmė: ' num2str(EEG.times(end)/1000 )]);
-                    
+
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Reject very short intervals between boundaries'), NaujaRinkmena);
                     DarboPorcijaAtlikta=1;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_atmesk_iki2s,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_atmesk_iki2s_,'String')) ];
@@ -1793,26 +1793,26 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_atmesk_iki2s,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % Suvienodinti trukmę
         Darbo_apibudinimas=lokaliz('Unifying duration...');
         if get(handles.checkbox_vienoda_trukme,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 NORIMA_EEG_TRUKME=str2num(get(handles.edit19,'String'));
                 variantas=2;
                 g={};
@@ -1832,14 +1832,14 @@ for i=1:Pasirinktu_failu_N;
                     % didziausias ilgis, sekundemis
                     g.Atkarpu_trukme_max=max(g.Atkarpu_trukmes);
                 end ;
-                
-                
+
+
                 %g.Atkarpu_padetis_pt=[1 round([EEG.event(g.Atkarpu_padetis_N).latency]) EEG.pnts] ;
-                
+
                 Atmestina_trukme = g.Iraso_trukme - NORIMA_EEG_TRUKME ;
-                
+
                 if Atmestina_trukme >= 0;
-                    
+
                     if variantas == 1 ;
                         % stengtis palikti irasu pradzias
                         g.Karpymui(1,1)=0 ;
@@ -1868,17 +1868,17 @@ for i=1:Pasirinktu_failu_N;
                             end;
                         end;
                     end;
-                    
+
                     disp([NaujaRinkmena ' ' num2str(g.Iraso_trukme) '-' num2str(NORIMA_EEG_TRUKME) '=' num2str(Atmestina_trukme) ]);
                     disp(['Kirpimo vieta prad ' num2str(g.Karpymui(1,1)) ]);
                     disp(['Kirpimo vieta gale ' num2str(g.Karpymui(1,2)) ]);
-                    
+
                     % atmesti
                     [EEG, LASTCOM] = pop_select( EEG,'time',[g.Karpymui(1,1) g.Karpymui(1,2)] );
                     EEG = eegh(LASTCOM, EEG);
                     EEG = eeg_checkset( EEG ) ;
                     %[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET,'overwrite','on','gui','off');
-                    
+
                     %Tikrinimui
                     disp( [ 'Nauja trukme: ' num2str(EEG.times(end)/1000) ]);
                     disp([g.Atkarpu_trukmes]);
@@ -1901,15 +1901,15 @@ for i=1:Pasirinktu_failu_N;
                     end ;
                     disp([g.Atkarpu_trukmes]);
                 end;
-                
+
                 if round(EEG.times(end)/1000*EEG.srate) ~= NORIMA_EEG_TRUKME * EEG.srate ;
                     DarboPorcijaAtlikta=1;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 else
-                    
-                    
-                    
+
+
+
                     % Išsaugoti
                     Priesaga=(get(handles.edit_vienoda_trukme,'String')) ;
                     Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_vienoda_trukme_,'String')) ] ;
@@ -1923,35 +1923,35 @@ for i=1:Pasirinktu_failu_N;
                     else
                         PaskRinkmIssaugKelias='';
                     end;
-                    
+
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_vienoda_trukme,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % Atrinkti kanalus, interpoliuojant trūkstamus
         Darbo_apibudinimas=lokaliz('Selecting channels, interpolating missing...');
         if get(handles.checkbox_atrink_kanalus2,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 EEG = eeg_checkset( EEG );
-                
+
                 VISI_KANALAI_66={'Fp1' 'Fpz' 'Fp2' 'F7' 'F3' 'Fz' 'F4' 'F8' 'FC5' 'FC1' 'FC2' 'FC6' 'M1' 'T7' 'C3' 'Cz' 'C4' 'T8' 'M2' 'CP5' 'CP1' 'CP2' 'CP6' 'P7' 'P3' 'Pz' 'P4' 'P8' 'POz' 'O1' 'Oz' 'O2' 'AF7' 'AF3' 'AF4' 'AF8' 'F5' 'F1' 'F2' 'F6' 'FC3' 'FCz' 'FC4' 'C5' 'C1' 'C2' 'C6' 'CP3' 'CPz' 'CP4' 'P5' 'P1' 'P2' 'P6' 'PO5' 'PO3' 'PO4' 'PO6' 'FT7' 'FT8' 'TP7' 'TP8' 'PO7' 'PO8' 'EOG' 'EOGh';};
                 disp(get(handles.pushbutton7,'Value'));
                 %Reikalingi_kanalai=VISI_KANALAI_66(get(handles.pushbutton7,'UserData'));
                 Reikalingi_kanalai=get(handles.pushbutton7,'UserData');
-                
+
                 KANALU_DUOMENYS={
                     'Fp1','',-17.9260000000000,0.514988888888889,80.7840137690914,26.1330144040702,-4.00108454195971,17.9260000000000,-2.69799999999999,85,1,'';
                     'Fpz','',0,0.506688888888889,84.9812336134463,0,-1.78603850374883,0,-1.20399999999999,85,2,'';
@@ -2020,13 +2020,13 @@ for i=1:Pasirinktu_failu_N;
                     'EOG','','','','','','','','','','','';
                     'EOGh','','','','','','','','','','','';
                     } ;
-                
-                
+
+
                 NORIMU_KANALU_DUOMENYS=KANALU_DUOMENYS(find(ismember(KANALU_DUOMENYS(:,1),Reikalingi_kanalai)),:) ;
-                
+
                 disp(length(NORIMU_KANALU_DUOMENYS));
                 disp(length(Reikalingi_kanalai));
-                
+
                 for k=1:length(Reikalingi_kanalai) ;
                     EEG.chanlocs2(k).labels=    NORIMU_KANALU_DUOMENYS{k,1}         ;
                     EEG.chanlocs2(k).type=      NORIMU_KANALU_DUOMENYS{k,2}         ;
@@ -2041,31 +2041,31 @@ for i=1:Pasirinktu_failu_N;
                     EEG.chanlocs2(k).urchan=    NORIMU_KANALU_DUOMENYS{k,11}        ;
                     EEG.chanlocs2(k).ref=       NORIMU_KANALU_DUOMENYS{k,12}        ;
                 end ;
-                
-                
+
+
                 % Interpoliuok pagal EEG.chanlocs2 struktura
                 try
                     [EEG, LASTCOM] = pop_interp(EEG, [EEG.chanlocs2], 'spherical');
                     EEG = eegh(LASTCOM, EEG);
-                    
+
                     % Pasalink visus kanalus, isskyrus tuos N ;
                     % Kadangi po interpoliavimo pagal nurodyta struktura
                     % tie norimieji kanalai perkeliami i pabaiga,
                     % tai istrinkime visus kanalus, isskyrus N paskutiniuju
-                    
+
                     [EEG, LASTCOM] = pop_select( EEG,'channel', Reikalingi_kanalai);
                     EEG = eegh(LASTCOM, EEG);
-                    
+
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Channel selection and interpolation'), NaujaRinkmena) ;
                     DarboPorcijaAtlikta=1;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
-                
-                
+
+
+
+
                 % Išsaugoti
                 disp(NaujaRinkmena);
                 Priesaga=(get(handles.edit_atrink_kanalus2,'String')) ;
@@ -2081,50 +2081,50 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_atrink_kanalus2,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % Filtruoti dažnius
         Darbo_apibudinimas=lokaliz('Second filtering...');
         if get(handles.checkbox_filtr2,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 try
-                    
+
                     daznis_filtravimui=str2num(get(handles.edit21,'String'));
                     %disp(['Filtruokim ' str2num(daznis_filtravimui)]);
                     if     get(handles.popupmenu10,'Value') == 1 ;
                         [EEG, LASTCOM] = pop_eegfiltnew(EEG, [], daznis_filtravimui, [], 1, [], 0);
-                    elseif get(handles.popupmenu10,'Value') == 2 ;                        
+                    elseif get(handles.popupmenu10,'Value') == 2 ;
                         [EEG, LASTCOM] = pop_eegfiltnew(EEG, [], daznis_filtravimui, [], 0, [], 0);
-                    elseif get(handles.popupmenu10,'Value') == 3;                        
+                    elseif get(handles.popupmenu10,'Value') == 3;
                         [EEG, LASTCOM] = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 0, [], 0);
-                    elseif get(handles.popupmenu10,'Value') == 4;                        
+                    elseif get(handles.popupmenu10,'Value') == 4;
                         [EEG, LASTCOM] = pop_eegfiltnew(EEG, daznis_filtravimui(1), daznis_filtravimui(2), [], 1, [], 0);
                     end;
                     EEG = eegh(LASTCOM, EEG);
                     EEG = eeg_checkset( EEG );
-                    
+
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Second filtering'), NaujaRinkmena) ;
                     DarboPorcijaAtlikta=1;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_filtr2,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_filtr2_,'String')) ] ;
@@ -2138,28 +2138,28 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_filtr2,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-                
+
         % Epochuoti
         Darbo_apibudinimas=lokaliz('Epoching...');
         if get(handles.checkbox_epoch,'Value') == 1 ;
             DarboNr = DarboNr + 1 ;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
+
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
+
                 EEG = eeg_checkset( EEG );
-                
+
                 %Epochuoti_pagal_stimulus_=(str2num(get(handles.edit_epoch_iv,'String') ));
                 try
                     Epochuoti_pagal_stimulus_=get(handles.pushbutton13,'UserData') ;
@@ -2178,32 +2178,32 @@ for i=1:Pasirinktu_failu_N;
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus orig_epoch];
                             else
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus num2str(str2num(orig_epoch))];
-                            end;                            
+                            end;
                         else
                             warning([lokaliz('Internal error') '. ']);
                             disp(orig_epoch);
                         end;
                     end;
-                    
+
                     EEG = eeg_checkset( EEG );
-                    
+
                     disp(['pagal įvykius (' num2str(length(Epochuoti_pagal_stimulus)) '): ' ]);	
                     disp(sprintf('''%s'' ',Epochuoti_pagal_stimulus{:}));
-                    
+
                     %disp(get(handles.edit_epoch_t,'UserData'));
                     %disp({get(handles.edit_epoch_t,'UserData')});
-                    
+
                     %disp(get(handles.edit_epoch_t,'String'));
                     %disp({get(handles.edit_epoch_t,'String')});
-                    
+
                     %disp(str2num(get(handles.edit_epoch_t,'String')));
                     %disp({str2num(get(handles.edit_epoch_t,'String'))});
-                    
+
                     %EEG = pop_epoch( EEG, ...
                     %    Epochuoti_pagal_stimulus, ...
                     %    get(handles.edit_epoch_t,'UserData'), ...
                     %    'epochinfo', 'yes');
-                    
+
                     Epochos_laiko_intervalas=str2num(get(handles.edit_epoch_t,'String'));
                     %if length(Epochos_laiko_intervalas)==2;
                     if ~isempty(EEG.epoch);
@@ -2216,35 +2216,35 @@ for i=1:Pasirinktu_failu_N;
                              lokaliz('Your selected epoch interval may be too big.') '\n' ...
                              lokaliz('Consider to use') '\n'  ...
                              ' [' num2str(Epochos_laiko_intervalas_alt)  '] \n' ]));
-                            %EEG_pries=EEG; 
-                        end; 
-                        
+                            %EEG_pries=EEG;
+                        end;
+
                     end;
                     %end;
-                    
+
                     [EEG, ~, LASTCOM] = pop_epoch( EEG, ...
                         Epochuoti_pagal_stimulus, ...
                         Epochos_laiko_intervalas, ...
                         'epochinfo', 'yes');
-                    
+
                     EEG = eeg_checkset( EEG );
-                    
+
                     if and(isempty(EEG.data), exist('EEG_pries','var'));
                        warning(sprintf(['\n' lokaliz('Empty dataset') '.\n ' lokaliz('Trying again with') ...
                        ' [' num2str(Epochos_laiko_intervalas_alt)  '] \n' ]));
                        [EEG, ~, LASTCOM] = pop_epoch( EEG_pries, ...
                         Epochuoti_pagal_stimulus, ...
                         Epochos_laiko_intervalas_alt, ...
-                        'epochinfo', 'yes');                    
+                        'epochinfo', 'yes');
                        EEG = eeg_checkset( EEG );
                     end;
-                    
+
                     EEG = eegh(LASTCOM, EEG);
-                    
+
                     if isempty(EEG.data);
                         error(lokaliz('Empty dataset'));
                     end;
-                    
+
                     if get(handles.checkbox_epoch_b,'Value') == 1 ;
                         %EEG = pop_rmbase( EEG, 1000 * get(handles.edit_epoch_b,'UserData'));
 						EEG = pop_rmbase( EEG, 1000 * str2num(get(handles.edit_epoch_b,'String')));
@@ -2256,10 +2256,10 @@ for i=1:Pasirinktu_failu_N;
                     PaskRinkmIssaugKelias='';
                     EEG.nbchan=0;
                 end;
-                
+
                 %[NaujaRinkmena, SaugomoNr, PaskutinioIssaugotoDarboNr, DarboPorcijaAtlikta]=Issaugoti1(ALLEEG,EEG,KELIAS_SAUGOJIMUI,NaujaRinkmena,SaugomoNr,PaskutinioIssaugotoDarboNr,DarboNr);
-                
-                
+
+
                 % Išsaugoti
                 Priesaga=(get(handles.edit_epoch,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_epoch_,'String')) ] ;
@@ -2273,33 +2273,33 @@ for i=1:Pasirinktu_failu_N;
                 else
                     PaskRinkmIssaugKelias='';
                 end;
-                
-                                
+
+
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
                     set(handles.checkbox_epoch,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
-                
+
             end;
         end;
-        
-        
+
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err;  end;
-                
+
         %try
         %    komanda
         %catch err;
         %Pranesk_apie_klaida(err, Darbelis, Rinkmena);
         %end;
-        
+
         %pause;
-        
-        
+
+
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(0 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
-        
-        
-        
+
+
+
         % Išsaugoti
         if isempty(PaskRinkmIssaugKelias);
             Poaplankis='.';
@@ -2309,10 +2309,10 @@ for i=1:Pasirinktu_failu_N;
             DarboPorcijaAtlikta = 1;
         %else   disp('Duomenys jau įrašyti');
         end;
-        
+
         str=(sprintf('%s apdorotas (%d/%d = %3.2f%%)\r\n', NaujaRinkmena, i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100 )) ;
         disp(str);
-        
+
         if and(~isempty(EEG),DarboPorcijaAtlikta);
             if and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)) ;
                 NaujosRinkmenos=get(handles.listbox2,'String');
@@ -2321,43 +2321,43 @@ for i=1:Pasirinktu_failu_N;
                 disp(['+']);
             end;
         end;
-        
+
     else
         msgbox(sprintf([lokaliz('Time:') ' %s\n' lokaliz('Path:') ' %s\n' lokaliz('File:') ' %s'], ...
                t, pwd, Rinkmena),lokaliz('Empty dataset'),'error');
     end;
-    
-    
+
+
     % Isvalyti atminti
     STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
     %eeglab redraw;
-    
+
     %uiwait ;
     %uiresume;
-    
-    
+
+
     if get(handles.radiobutton6,'Value') == 1;
         tmp_idx=get(handles.listbox1,'Value');
         if length(tmp_idx) > 1 ;
             set(handles.listbox1,'Value',tmp_idx(2:end));
         end;
-        
+
         if i == Pasirinktu_failu_N ;
             Apdoroti_visi_tiriamieji=1;
         end;
-        
+
         %Galbūt naudotojas nori nutraukti anksčiau
         if get(handles.checkbox_baigti_anksciau,'Value') == 1 ;
             break;
         end;
     end;
-    
+
     %set(handles.listbox2,'Visible','on');
     %set(handles.listbox1,'Visible','off');
-    
+
 end;
 
-%% Po darbų 
+%% Po darbų
 
 set(handles.text_darbas,'String',' ' );
 drawnow;
@@ -2367,10 +2367,10 @@ if and(Apdoroti_visi_tiriamieji == 1, ...
         get(handles.radiobutton6,'Value') == 0 ,...
         get(handles.checkbox_pabaigus_i_apdorotu_aplanka, 'Value') == 1 ...
         ) ...
-        );      
+        );
     if ~isempty(PaskRinkmIssaugKelias);
        set(handles.edit1,'String',PaskRinkmIssaugKelias);
-    end;    
+    end;
 end;
 
 % Jei nėra taip, kad pirmenybė eiti per darbus, o surasta daug darbų
@@ -2384,8 +2384,8 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
         and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
         set(handles.uipanel6,'Title', lokaliz('Data processing functions'));
     atnaujinti_eeglab=true;
-    
-    if Apdoroti_visi_tiriamieji == 1;          
+
+    if Apdoroti_visi_tiriamieji == 1;
         if get(handles.checkbox_pabaigus_atverti,'Value') == 1;
             Pasirinkti_failu_pavadinimai=get(handles.listbox2,'String');
             Pasirinkti_failu_pavadinimai=Pasirinkti_failu_pavadinimai(find(~(cellfun(@isempty,Pasirinkti_failu_pavadinimai))));
@@ -2401,7 +2401,7 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
                    Pasirinkti_failu_pavadinimai2{end,3}=Rinkmena__;
                 end;
             end;
-            Pasirinktu_failu_N=size(Pasirinkti_failu_pavadinimai2,1);        
+            Pasirinktu_failu_N=size(Pasirinkti_failu_pavadinimai2,1);
             if Pasirinktu_failu_N > 0 ;
                 try
                     disp(' ');
@@ -2421,10 +2421,10 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
                 end;
             end;
             eeglab redraw;
-            atnaujinti_eeglab=false;           
-        end;          
-    end;    
-    
+            atnaujinti_eeglab=false;
+        end;
+    end;
+
     % Grąžinti senuosius EEGLAB kintamuosius ir atnaujinti langą
     if atnaujinti_eeglab;
         try
@@ -2438,13 +2438,13 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
         end;
         if ~isempty(findobj('tag', 'EEGLAB')); eeglab redraw; end;
     end;
-        
+
     % Uždaryk failą, jei MARA apibendrinimai buvo rašomi
     if get(handles.checkbox_MARA,'Value') == 1 ;
         fclose(fid);
     end;
-    
-    
+
+
     if get(handles.checkbox_uzverti_pabaigus,'Value') == 1;
         delete(handles.figure1);
     else
@@ -2454,43 +2454,43 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
                 get(handles.checkbox_pabaigus_i_apdorotu_aplanka, 'Value') == 1 ...
                 ) ...
                 );
-            
+
            if ~isempty(PaskRinkmIssaugKelias);
               set(handles.edit1,'String',PaskRinkmIssaugKelias);
-           end;    
+           end;
         end;
         set(handles.edit_failu_filtras2,'BackgroundColor','remove');
         set(handles.edit_failu_filtras2,'Style','pushbutton');
         set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
-        atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);        
+        atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
         atnaujink_rodomus_failus(hObject, eventdata, handles);
         susildyk(hObject, eventdata, handles);
     end;
-    
-    
+
+
     % Parodyk, kiek laiko uztruko
     disp(' ');
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
     toc ;
     disp(['Atlikta']);
-    
+
 else
     %try
         %cd(get(handles.edit2,'String'));
-        %cd(PaskRinkmIssaugKelias);        
+        %cd(PaskRinkmIssaugKelias);
     %end;
-    
+
     if ~isempty(PaskRinkmIssaugKelias);
        set(handles.edit1,'String',PaskRinkmIssaugKelias);
-    end;    
+    end;
     set(handles.edit_failu_filtras2,'BackgroundColor','remove');
     set(handles.edit_failu_filtras2,'Style','pushbutton');
     set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
     atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
     atnaujink_rodomus_failus(hObject, eventdata, handles);
-    
+
     disp([ 'Buvo ' num2str(DarboNr) ' darbai(-as,-ų), o atliktas tik vienas – suksimas kitas darbas.']);
-    
+
     pushbutton1_Callback(hObject, eventdata, handles);
 end;
 
@@ -2532,7 +2532,7 @@ if strcmp(get(handles.checkbox_baigti_anksciau,'Visible'),'on');
     %set(handles.pushbutton2,'Enable','off');
 else
     close(mfilename);
-    
+
     % Parodyk, kiek laiko uztruko
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
     %toc ;
@@ -2699,7 +2699,7 @@ catch err;
         try
             mkdir(KELIAS_siulomas);
             cd(KELIAS_siulomas);
-        catch err ;            
+        catch err ;
             warning(err.message);
             cd(Tikras_Kelias(get(handles.edit2,'TooltipString')));
         end;
@@ -2936,21 +2936,23 @@ function edit3_Callback(hObject, eventdata, handles)
 x=str2num(get(handles.edit3,'String'));
 senas=get(handles.edit3,'UserData');
 %disp(x);
+tinka=0;
 if and(length(x) == 1, get(handles.popupmenu9,'Value') < 3 ) ;
+  if x > 0 ;
+    tinka=1;
     set(handles.edit3,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+  end;
 elseif and(length(x) == 2, get(handles.popupmenu9,'Value') > 2 ) ;
-    if x(1) < x(2);
-        set(handles.edit3,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-    end;
+  if and(0 < x(1), x(1) < x(2));
+    tinka=1;
+    set(handles.edit3,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+  end;
 end;
-%set(handles.edit3,'String',num2str(get(handles.edit3,'UserData')));
+if tinka;
+    set(handles.edit3,'String',get(handles.edit3,'UserData'));
+end;
+set(handles.edit3,'BackgroundColor',[1 1 tinka]);
 %x=str2num(get(handles.edit3,'String'));
-if or(and(length(x) == 1, get(handles.popupmenu9,'Value') < 3 ),...
-      and(length(x) == 2, get(handles.popupmenu9,'Value') > 2 )) ;
-   set(handles.edit3,'BackgroundColor',[1 1 1]);
-else
-   set(handles.edit3,'BackgroundColor',[1 1 0]);
-end;
 if ~strcmp(senas,get(handles.edit3,'String'));
     set(handles.edit_filtr1,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(handles.edit3,'UserData')) , '[ ]*', '-')   ]  ) ;
     set(handles.edit_filtr1_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(handles.edit3,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
@@ -2992,7 +2994,7 @@ if and(get(handles.checkbox_atrink_kanalus1, 'Value') == 1, ...
         set(handles.text8,'TooltipString','');
         set(handles.text8,'String','?');
     end;
-    
+
 else
     set(handles.checkbox_atrink_kanalus1__,'Enable','off');
     set(handles.checkbox_atrink_kanalus1_,'Enable','off');
@@ -3149,14 +3151,14 @@ if and(get(handles.checkbox_atrink_kanalus2, 'Value') == 1, ...
     set(handles.checkbox_atrink_kanalus2_,'Enable','on');
     set(handles.edit_atrink_kanalus2,'Enable','on');
     set(handles.pushbutton7,'Enable','on');
-    
-    
+
+
     if ~strcmp('1',get(handles.checkbox_atrink_kanalus2,'UserData'));
         pushbutton7_Callback(hObject, eventdata, handles);
     end;
-    
+
     %disp(get(handles.pushbutton7,'UserData'));
-    
+
     %set(handles.pushbutton7,'UserData',get(handles.pushbutton7,'Value'));
     %if or(get(handles.pushbutton7,'UserData') ~= 0, ~isempty(get(handles.pushbutton7,'UserData'))) ;
     if ~isempty(get(handles.pushbutton7,'UserData'));
@@ -3166,7 +3168,7 @@ if and(get(handles.checkbox_atrink_kanalus2, 'Value') == 1, ...
         set(handles.pushbutton7,'BackgroundColor',[1 1 0]);
         set(handles.text9,'String','?');
     end;
-    
+
 else
     set(handles.checkbox_atrink_kanalus2_,'Enable','off');
     set(handles.edit_atrink_kanalus2,'Enable','off');
@@ -3827,7 +3829,9 @@ function edit19_Callback(hObject, eventdata, handles)
 x=str2num(get(handles.edit19,'String'));
 senas=get(handles.edit19,'UserData');
 if length(x) == 1 ;
-    set(handles.edit19,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    if x > 0 ;
+        set(handles.edit19,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    end;
 end;
 set(handles.edit19,'String',get(handles.edit19,'UserData'));
 set(handles.edit19,'BackgroundColor',[1 1 1]);
@@ -3859,7 +3863,9 @@ function edit20_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of edit20 as a double
 x=str2num(get(handles.edit20,'String'));
 if length(x) == 1 ;
+  if x > 0;
     set(handles.edit20,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+  end;
 end;
 set(handles.edit20,'String',num2str(get(handles.edit20,'UserData')));
 set(handles.edit20,'BackgroundColor',[1 1 1]);
@@ -3889,21 +3895,23 @@ function edit21_Callback(hObject, eventdata, handles)
 x=str2num(get(handles.edit21,'String'));
 senas=get(handles.edit21,'UserData');
 %disp(x);
+tinka=0;
 if and(length(x) == 1, get(handles.popupmenu10,'Value') < 3 ) ;
+  if x > 0;
+    tinka=1;
     set(handles.edit21,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+  end;
 elseif and(length(x) == 2, get(handles.popupmenu10,'Value') > 2 ) ;
-    if x(1) < x(2);
-        set(handles.edit21,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-    end;
+  if and(0 < x(1), x(1) < x(2));
+    tinka=1;
+    set(handles.edit21,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+  end;
 end;
-%set(handles.edit21,'String',num2str(get(handles.edit21,'UserData')));
+if tinka;
+    set(handles.edit21,'String',get(handles.edit21,'UserData'));
+end;
+set(handles.edit21,'BackgroundColor',[1 1 tinka]);
 %x=str2num(get(handles.edit21,'String'));
-if or(and(length(x) == 1, get(handles.popupmenu10,'Value') < 3 ),...
-      and(length(x) == 2, get(handles.popupmenu10,'Value') > 2 )) ;
-   set(handles.edit21,'BackgroundColor',[1 1 1]);
-else
-   set(handles.edit21,'BackgroundColor',[1 1 0]);
-end;
 if ~strcmp(senas,get(handles.edit21,'String'));
     set(handles.edit_filtr2,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(handles.edit21,'UserData')) , '[ ]*', '-')   ]  ) ;
     set(handles.edit_filtr2_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(handles.edit21,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
@@ -3920,7 +3928,9 @@ function edit50_Callback(hObject, eventdata, handles)
 x=str2num(get(handles.edit50,'String'));
 senas=get(handles.edit50,'UserData');
 if length(x) == 1 ;
+  if x > 0;
     set(handles.edit50,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+  end;
 end;
 set(handles.edit50,'String',num2str(get(handles.edit50,'UserData')));
 set(handles.edit50,'BackgroundColor',[1 1 1]);
@@ -4417,13 +4427,13 @@ RINKMENOS=get(handles.listbox1,'String');
 if isempty(RINKMENOS);
     set(handles.edit1,'BackgroundColor',[1 1 0]);
     drawnow;
-    return; 
+    return;
 end;
 RINKMENOS=RINKMENOS(get(handles.listbox1,'Value'));
 if isempty(RINKMENOS);
     set(handles.listbox1,'BackgroundColor',[1 1 0]);    pause(1);
     set(handles.listbox1,'BackgroundColor',[1 1 1]);    drawnow;
-    return; 
+    return;
 end;
 set(handles.pushbutton7,'Enable','off'); drawnow;
 [~,visi_galimi_kanalai,bendri_kanalai]=eeg_kanalu_sarasas (get(handles.edit1,'String'), RINKMENOS);
@@ -4436,7 +4446,7 @@ end;
 pateikiami_kanalai={};
 pradinis_pasirinkimas=[];
 pateikiami_bendri_v=0;
-if ~isempty(bendri_kanalai); 
+if ~isempty(bendri_kanalai);
     if length(RINKMENOS) == 1;
         pateikiami_kanalai={bendri_kanalai{:}};
         pateikiami_bendri_v=0;
@@ -4455,16 +4465,16 @@ else
     dar_kiti_kanalai=sort(VISI_KANALAI_64(find(ismember(VISI_KANALAI_64,visi_galimi_kanalai)==0)));
 end;
 pateikiami_nebendri_v=0;
-if ~isempty(nebendri_idx); 
+if ~isempty(nebendri_idx);
    pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(not common:)') visi_galimi_kanalai{nebendri_idx} };
    pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_kanalai);
    if ~pateikiami_bendri_v;
-       pradinis_pasirinkimas=[(pateikiami_nebendri_v +1) : (length(visi_galimi_kanalai) + pateikiami_bendri_v + 1 ) ];       
+       pradinis_pasirinkimas=[(pateikiami_nebendri_v +1) : (length(visi_galimi_kanalai) + pateikiami_bendri_v + 1 ) ];
        disp(pradinis_pasirinkimas);
    end;
 end;
 pateikiami_kiti_v=0;
-if ~isempty(dar_kiti_kanalai); 
+if ~isempty(dar_kiti_kanalai);
    pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(other:)') dar_kiti_kanalai{:} };
    pateikiami_kiti_v=1+pateikiami_bendri_v + (pateikiami_nebendri_v ~= 0) + length(visi_galimi_kanalai);
    disp(pateikiami_kiti_v);
@@ -4477,9 +4487,9 @@ if ~isempty(Ankstesni_kanalai);
 %   senas=Ankstesni_kanalai{1};
 %   if ~isempty(senas);
 %     pradinis_pasirinkimas=find(ismember(pateikiami_kanalai,senas)==1);
-%   end;  
+%   end;
     pradinis_pasirinkimas=find(ismember(pateikiami_kanalai,Ankstesni_kanalai)==1);
-end;  
+end;
 if ~iscellstr(pateikiami_kanalai);
     warning(lokaliz('unexpected channels types.'),lokaliz('Selection of channels'));
     disp(pateikiami_kanalai);
@@ -4523,7 +4533,7 @@ if ~isempty(pasirinktu_leidziamu_kanalu_idx) ;
     pasirinkti_kanalai_str=sprintf('%s ', pasirinkti_kanalai{:});
     pasirinkti_kanalai_str=regexprep(pasirinkti_kanalai_str, ' $', '');
     disp([ '''' regexprep(pasirinkti_kanalai_str, ' ', ''' ''') '''' ]);
-    
+
     set(handles.text9,'String',length(pasirinktu_leidziamu_kanalu_idx));
     pasirinkti_leidziami_kanalai_str=[pasirinkti_leidziami_kanalai{1}];
     for i=2:length(pasirinkti_leidziami_kanalai);
@@ -4571,13 +4581,13 @@ RINKMENOS=get(handles.listbox1,'String');
 if isempty(RINKMENOS);
     set(handles.edit1,'BackgroundColor',[1 1 0]);
     drawnow;
-    return; 
+    return;
 end;
 RINKMENOS=RINKMENOS(get(handles.listbox1,'Value'));
 if isempty(RINKMENOS);
     set(handles.listbox1,'BackgroundColor',[1 1 0]);    pause(1);
     set(handles.listbox1,'BackgroundColor',[1 1 1]);    drawnow;
-    return; 
+    return;
 end;
 set(handles.pushbutton9,'Enable','off'); drawnow;
 [~,visi_galimi_kanalai,bendri_kanalai]=eeg_kanalu_sarasas (get(handles.edit1,'String'), RINKMENOS);
@@ -4590,7 +4600,7 @@ end;
 pateikiami_kanalai={};
 pradinis_pasirinkimas=[];
 pateikiami_bendri_v=0;
-if ~isempty(bendri_kanalai); 
+if ~isempty(bendri_kanalai);
     if length(RINKMENOS) == 1;
         pateikiami_kanalai={bendri_kanalai{:}};
         pateikiami_bendri_v=0;
@@ -4610,7 +4620,7 @@ else
     %dar_kiti_kanalai=sort(VISI_KANALAI_66(find(ismember(VISI_KANALAI_66,visi_galimi_kanalai)==0)));
 end;
 pateikiami_nebendri_v=0;
-if ~isempty(nebendri_idx); 
+if ~isempty(nebendri_idx);
    pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(not common:)') visi_galimi_kanalai{nebendri_idx} };
    pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_kanalai);
    if ~pateikiami_bendri_v;
@@ -4618,7 +4628,7 @@ if ~isempty(nebendri_idx);
    end;
 end;
 pateikiami_kiti_v=0;
-if ~isempty(dar_kiti_kanalai); 
+if ~isempty(dar_kiti_kanalai);
    pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(other:)') dar_kiti_kanalai{:} };
    pateikiami_kiti_v=1+pateikiami_bendri_v + (pateikiami_nebendri_v ~= 0) + length(visi_galimi_kanalai);
    disp(pateikiami_kiti_v);
@@ -4626,14 +4636,14 @@ end;
 %vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
 %Ankstesni_kanalai=get(handles.text8,'TooltipString');
 Ankstesni_kanalai=get(handles.pushbutton9,'UserData');
-if ~isempty(Ankstesni_kanalai);  
+if ~isempty(Ankstesni_kanalai);
   %Ankstesni_kanalai=textscan(Ankstesni_kanalai,'%s','delimiter',' ');
   %senas=Ankstesni_kanalai{1};
   %if ~isempty(senas);
   %  pradinis_pasirinkimas=find(ismember(pateikiami_kanalai,senas)==1);
-  %end;  
+  %end;
   pradinis_pasirinkimas=find(ismember(pateikiami_kanalai,Ankstesni_kanalai)==1);
-end;  
+end;
 if ~iscellstr(pateikiami_kanalai);
     warning(lokaliz('unexpected channels types.'),lokaliz('Selection of channels'));
     disp(pateikiami_kanalai);
@@ -4736,24 +4746,24 @@ if ~isempty(findobj('-regexp','name','nuoseklus_apdorojimas')) ;
         checkbox_baigti_anksciau_Callback(hObject, eventdata, handles);
     else
         %if get(handles.pushbutton1,'Value') == 1 ;
-        
+
         % delete(hObject);
         % error('Darbą nutraukė naudotojas');
-        
+
         %else
         button1 = questdlg(lokaliz('Quit function help') , ...
             lokaliz('Quit function'), ...
             lokaliz('Close window'), lokaliz('Allow change options'), lokaliz('Continue as is'), ...
             lokaliz('Continue as is'));
-        
-                
+
+
         switch button1
             case lokaliz('Close window')
                 				
 				button2 = 'Tik užverti langą';
 				
 				
-				% Neklausti 
+				% Neklausti
 				if 1 < 0 ;
                   button2 = questdlg(['Jei per klaidą nuspaudėte užvėrimo mygtuką, ' ...
                     'spauskite „Tęsti kaip buvo“. ' ...
@@ -4771,17 +4781,17 @@ if ~isempty(findobj('-regexp','name','nuoseklus_apdorojimas')) ;
                         error('Darbą nutraukė naudotojas');
                         %    case 'Grįžti į parinktis'
                         %        %error('Darbą nutraukė naudotojas');
-                        %        pop_nuoseklus_apdorojimas;                        
+                        %        pop_nuoseklus_apdorojimas;
                     case 'Tik užverti langą'
                         delete(hObject);
-                        disp('Langą naudotojas užvėrė ');                        
+                        disp('Langą naudotojas užvėrė ');
                     case lokaliz('Allow change options')
                         disp('Naudotojas paprašė atitirpdyti parinktis');
                         susildyk(hObject, eventdata, handles);
                     case lokaliz('Continue as is')
                         disp('Tęsiama');
                 end;
-                                
+
             case lokaliz('Allow change options')
                 disp('Naudotojas paprašė atitirpdyti parinktis');
                 susildyk(hObject, eventdata, handles);
@@ -4814,11 +4824,11 @@ if get(handles.popupmenu4,'Value') > 2;
     maxim=str2num(get(handles.text_apdorotini_kanalai,'String'));
     if ~isempty(maxim);
         if dabar > maxim ;
-            set(handles.edit59,'String',num2str(maxim));            
+            set(handles.edit59,'String',num2str(maxim));
         end;
     end;
     set(handles.edit59,'Visible','on');
-else    
+else
     set(handles.edit59,'Visible','off');
 end;
 
@@ -4920,7 +4930,7 @@ function edit40_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of edit40 as a double
 x=str2num(get(handles.edit40,'String'));
 if length(x) == 2 ;
-    if x(1) < x(2);
+    if and(0 < x(1), x(1) < x(2));
         set(handles.edit40,'UserData',regexprep(num2str(x), '[ ]*', ' '));
     end;
 end;
@@ -5134,7 +5144,7 @@ function edit44_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of edit44 as a double
 x=str2num(get(handles.edit44,'String'));
 if length(x) == 2 ;
-    if x(1) < x(2);
+    if and(0 < x(1), x(1) < x(2));
         set(handles.edit44,'UserData',regexprep(num2str(x), '[ ]*', ' '));
     end;
 end;
@@ -5215,7 +5225,7 @@ else
         set(elementas,'UserData',senas_str);
     catch err;
         %set(elementas,'UserData',sprintf('%d ', iv));
-    end;        
+    end;
     warning(lokaliz('This version allow to select any real events from dataset, but manually you can enter only numbers.'));
 end;
 set(elementas,'String',num2str(get(elementas,'UserData')));
@@ -5533,7 +5543,7 @@ function edit_failu_filtras1_KeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
     set(handles.edit_failu_filtras1,'BackgroundColor',[1 1 0]);
     Ar_galima_vykdyti(hObject, eventdata, handles);
- 
+
 
 % --- Executes on selection change in popupmenu9.
 function popupmenu9_Callback(hObject, eventdata, handles)
@@ -5579,7 +5589,7 @@ function popupmenu10_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-    
+
 
 function pushbutton1_KeyPressFcn(hObject, eventdata, handles)
     key = get(gcf,'CurrentKey');
@@ -5653,14 +5663,14 @@ set(handles.popupmenu3,'String', { ...
    lokaliz('M1_M2_reference') ...
    lokaliz('Cz_reference') });
 
-set(handles.popupmenu5,'String', { ...   
+set(handles.popupmenu5,'String', { ...
    lokaliz('clasify only'        ) ...
    lokaliz('reject automatically') ...
    lokaliz('view traditionally'  ) ...
    lokaliz('view via MARA'       ) ...
    lokaliz('view detailed'       ) });
 
-set(handles.popupmenu7,'String', { ...   
+set(handles.popupmenu7,'String', { ...
    lokaliz('traditionally'        ) ...
    lokaliz('+ channel curves'     ) ...
    lokaliz('+ ICA curves'         ) ...
@@ -5669,19 +5679,19 @@ set(handles.popupmenu7,'String', { ...
    lokaliz('+curves'              ) ...
    lokaliz('+MARA info'           ) });
 
-set(handles.popupmenu8,'String', { ...   
+set(handles.popupmenu8,'String', { ...
    lokaliz('reject immediately'   ) ...
    lokaliz('wait for confirmation') ...
    lokaliz('nothing'              ) });
 
-set(handles.popupmenu9,'String', { ...   
+set(handles.popupmenu9,'String', { ...
    lokaliz('(filter) high-pass') ...
    lokaliz('(filter) low-pass' ) ...
    lokaliz('(filter) band-pass') ...
    lokaliz('(filter) notch'    )  });
 
-set(handles.popupmenu10,'String', { ...  
-   lokaliz('(filter) high-pass') ... 
+set(handles.popupmenu10,'String', { ...
+   lokaliz('(filter) high-pass') ...
    lokaliz('(filter) low-pass' ) ...
    lokaliz('(filter) band-pass') ...
    lokaliz('(filter) notch'    ) });
@@ -5726,7 +5736,7 @@ set(handles.edit_atrink_kanalus2_,      'String', lokaliz('_Nuosekl_apdor_defaul
 set(handles.edit_filtr2_,               'String', lokaliz('_Nuosekl_apdor_default_dir_filter2'               ));
 set(handles.edit_epoch_,                'String', lokaliz('_Nuosekl_apdor_default_dir_epoch'                 ));
 
-set(handles.edit59,'TooltipString', lokaliz('Number of independent components'));    
+set(handles.edit59,'TooltipString', lokaliz('Number of independent components'));
 
 
 
@@ -5739,13 +5749,13 @@ RINKMENOS=get(handles.listbox1,'String');
 if isempty(RINKMENOS);
     set(handles.edit1,'BackgroundColor',[1 1 0]);
     drawnow;
-    return; 
+    return;
 end;
 RINKMENOS=RINKMENOS(get(handles.listbox1,'Value'));
 if isempty(RINKMENOS);
     set(handles.listbox1,'BackgroundColor',[1 1 0]);    pause(1);
     set(handles.listbox1,'BackgroundColor',[1 1 1]);    drawnow;
-    return; 
+    return;
 end;
 set(handles.pushbutton13,'Enable','off'); drawnow;
 [~,visi_galimi_ivykiai,bendri_ivykiai]=eeg_ivykiu_sarasas (get(handles.edit1,'String'), RINKMENOS);
@@ -5765,7 +5775,7 @@ end;
 pateikiami_ivykiai={};
 pradinis_pasirinkimas=[];
 pateikiami_bendri_v=0;
-if ~isempty(bendri_ivykiai); 
+if ~isempty(bendri_ivykiai);
     if length(RINKMENOS) == 1;
         pateikiami_ivykiai={bendri_ivykiai{:}};
         pateikiami_bendri_v=0;
@@ -5778,7 +5788,7 @@ if ~isempty(bendri_ivykiai);
 end;
 nebendri_idx=find(ismember(visi_galimi_ivykiai,bendri_ivykiai) == 0);
 pateikiami_nebendri_v=0;
-if ~isempty(nebendri_idx); 
+if ~isempty(nebendri_idx);
    pateikiami_ivykiai={pateikiami_ivykiai{:} lokaliz('(not common:)') visi_galimi_ivykiai{nebendri_idx} };
    pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_ivykiai);
    if ~pateikiami_bendri_v;
@@ -5832,6 +5842,7 @@ if ~isempty(str2num(pasirinkti_ivykiai_str));
 else
     set(handles.edit_epoch_iv,'BackgroundColor',[1 1 1]);
 end;
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 
@@ -5877,8 +5888,8 @@ if f;
       set(handles.popupmenu12,'Value',1+length(seni));
    end;
 end;
-      
-      
+
+
 
 
 
@@ -5974,7 +5985,9 @@ function edit57_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of edit57 as a double
 x=str2num(get(handles.edit57,'String'));
 if length(x) == 1 ;
+  if x > 0;
     set(handles.edit57,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+  end;
 end;
 set(handles.edit57,'String',num2str(get(handles.edit57,'UserData')));
 set(handles.edit57,'BackgroundColor',[1 1 1]);
@@ -6039,13 +6052,13 @@ RINKMENOS=get(handles.listbox1,'String');
 if isempty(RINKMENOS);
     set(handles.edit1,'BackgroundColor',[1 1 0]);
     drawnow;
-    return; 
+    return;
 end;
 RINKMENOS=RINKMENOS(get(handles.listbox1,'Value'));
 if isempty(RINKMENOS);
     set(handles.listbox1,'BackgroundColor',[1 1 0]);    pause(1);
     set(handles.listbox1,'BackgroundColor',[1 1 1]);    drawnow;
-    return; 
+    return;
 end;
 set(handles.pushbutton_apdorotini_kanalai,'Enable','off'); drawnow;
 [~,visi_galimi_kanalai,bendri_kanalai]=eeg_kanalu_sarasas (get(handles.edit1,'String'), RINKMENOS);
@@ -6062,7 +6075,7 @@ end;
 pateikiami_kanalai={};
 pradinis_pasirinkimas=[];
 pateikiami_bendri_v=0;
-if ~isempty(bendri_kanalai); 
+if ~isempty(bendri_kanalai);
     if length(RINKMENOS) == 1;
         pateikiami_kanalai={bendri_kanalai{:}};
         pateikiami_bendri_v=0;
@@ -6082,7 +6095,7 @@ else
     %dar_kiti_kanalai=sort(VISI_KANALAI_66(find(ismember(VISI_KANALAI_66,visi_galimi_kanalai)==0)));
 end;
 pateikiami_nebendri_v=0;
-if ~isempty(nebendri_idx); 
+if ~isempty(nebendri_idx);
    pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(not common:)') visi_galimi_kanalai{nebendri_idx} };
    pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_kanalai);
    if ~pateikiami_bendri_v;
@@ -6090,7 +6103,7 @@ if ~isempty(nebendri_idx);
    end;
 end;
 pateikiami_kiti_v=0;
-if ~isempty(dar_kiti_kanalai); 
+if ~isempty(dar_kiti_kanalai);
    pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(other:)') dar_kiti_kanalai{:} };
    pateikiami_kiti_v=1+pateikiami_bendri_v + (pateikiami_nebendri_v ~= 0) + length(visi_galimi_kanalai);
    disp(pateikiami_kiti_v);
@@ -6098,14 +6111,14 @@ end;
 %vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
 %Ankstesni_kanalai=get(handles.text8,'TooltipString');
 Ankstesni_kanalai=get(handles.pushbutton_apdorotini_kanalai,'UserData');
-if ~isempty(Ankstesni_kanalai);  
+if ~isempty(Ankstesni_kanalai);
   %Ankstesni_kanalai=textscan(Ankstesni_kanalai,'%s','delimiter',' ');
   %senas=Ankstesni_kanalai{1};
   %if ~isempty(senas);
   %  pradinis_pasirinkimas=find(ismember(pateikiami_kanalai,senas)==1);
-  %end;  
+  %end;
   pradinis_pasirinkimas=find(ismember(pateikiami_kanalai,Ankstesni_kanalai)==1);
-end;  
+end;
 if ~iscellstr(pateikiami_kanalai);
     warning(lokaliz('unexpected channels types.'),lokaliz('Selection of channels'));
     disp(pateikiami_kanalai);
@@ -6117,12 +6130,12 @@ pasirinkti_kanalai_idx=listdlg('ListString', pateikiami_kanalai,...
     'InitialValue',pradinis_pasirinkimas ,...
     'OKString',lokaliz('OK'),...
     'CancelString',lokaliz('Cancel'));
-if isempty(pasirinkti_kanalai_idx); 
+if isempty(pasirinkti_kanalai_idx);
     set(handles.text_apdorotini_kanalai,'String',lokaliz('all'));
     set(handles.text_apdorotini_kanalai,'TooltipString','');
     set(handles.pushbutton_apdorotini_kanalai,'BackgroundColor','remove');
     set(handles.pushbutton_apdorotini_kanalai,'UserData',{});
-    return ; 
+    return ;
 end;
 pasirinkti_kanalai={};
 if ismember(pateikiami_bendri_v,pasirinkti_kanalai_idx);
@@ -6172,19 +6185,19 @@ l1=arrayfun(@(x) [regexprep(fileparts(c),[filesep '$'],'') filesep l0{x}], 3:len
 % anksčiau pasirinktų kelių įkėlimas
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
-catch err;    
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+catch err;
     %warning(err.message);
 end;
 try x=strcmp(Darbeliai.keliai.saugojimui{1},'');
-catch err; 
+catch err;
     %warning(err.message);
-    Darbeliai.keliai.saugojimui={};    
+    Darbeliai.keliai.saugojimui={};
 end;
 s0=[{} Darbeliai.keliai.saugojimui ...
     get(handles.pushbutton_v2,'UserData') ];
-s1={} ; 
-for x=1:length(s0) ; 
+s1={} ;
+for x=1:length(s0) ;
     if strcmp(s0{x}, Tikras_Kelias(s0{x}));
         s1=[s1 s0{x}] ;
     end;
@@ -6227,26 +6240,26 @@ l1=arrayfun(@(x) [regexprep(fileparts(c),[filesep '$'],'') filesep l0{x}], 3:len
 % ankstesnių seansų kelių įkėlimas
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
-catch err;    
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+catch err;
     %warning(err.message);
 end;
 try x=strcmp(Darbeliai.keliai.atverimui{1},'');
-catch err; 
+catch err;
     %warning(err.message);
-    Darbeliai.keliai.atverimui={};    
+    Darbeliai.keliai.atverimui={};
 end;
 s0=[{} [(fileparts(which('eeglab'))) filesep 'sample_data' ] ...
     Darbeliai.keliai.atverimui ...
     get(handles.pushbutton_v1,'UserData') ];
-s1={} ; 
-for x=1:length(s0) ; 
+s1={} ;
+for x=1:length(s0) ;
     if strcmp(s0{x}, Tikras_Kelias(s0{x}));
         s1=[s1 s0{x}] ;
     end;
 end;
 
-p=unique([p1 d1 l1 s1 {pwd} ...    
+p=unique([p1 d1 l1 s1 {pwd} ...
     get(handles.edit2,'String')]);
 a=listdlg(...
     'ListString',p,...
@@ -6276,13 +6289,13 @@ RINKMENOS=get(handles.listbox1,'String');
 if isempty(RINKMENOS);
     set(handles.edit1,'BackgroundColor',[1 1 0]);
     drawnow;
-    return; 
+    return;
 end;
 RINKMENOS=RINKMENOS(get(handles.listbox1,'Value'));
 if isempty(RINKMENOS);
     set(handles.listbox1,'BackgroundColor',[1 1 0]);    pause(1);
     set(handles.listbox1,'BackgroundColor',[1 1 1]);    drawnow;
-    return; 
+    return;
 end;
 set(handles.pushbutton18,'Enable','off'); drawnow;
 [~,visi_galimi_kanalai,bendri_kanalai]=eeg_kanalu_sarasas (get(handles.edit1,'String'), RINKMENOS);
@@ -6295,7 +6308,7 @@ end;
 pateikiami_kanalai={};
 pradinis_pasirinkimas=[];
 pateikiami_bendri_v=0;
-if ~isempty(bendri_kanalai); 
+if ~isempty(bendri_kanalai);
     if length(RINKMENOS) == 1;
         pateikiami_kanalai={bendri_kanalai{:}};
         pateikiami_bendri_v=0;
@@ -6315,7 +6328,7 @@ else
     %dar_kiti_kanalai=sort(VISI_KANALAI_66(find(ismember(VISI_KANALAI_66,visi_galimi_kanalai)==0)));
 end;
 pateikiami_nebendri_v=0;
-if ~isempty(nebendri_idx); 
+if ~isempty(nebendri_idx);
    pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(not common:)') visi_galimi_kanalai{nebendri_idx} };
    pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_kanalai);
    if ~pateikiami_bendri_v;
@@ -6323,7 +6336,7 @@ if ~isempty(nebendri_idx);
    end;
 end;
 pateikiami_kiti_v=0;
-if ~isempty(dar_kiti_kanalai); 
+if ~isempty(dar_kiti_kanalai);
    pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(other:)') dar_kiti_kanalai{:} };
    pateikiami_kiti_v=1+pateikiami_bendri_v + (pateikiami_nebendri_v ~= 0) + length(visi_galimi_kanalai);
    disp(pateikiami_kiti_v);
@@ -6331,14 +6344,14 @@ end;
 %vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
 %Ankstesni_kanalai=get(handles.text8,'TooltipString');
 Ankstesni_kanalai=get(handles.pushbutton18,'UserData');
-if ~isempty(Ankstesni_kanalai);  
+if ~isempty(Ankstesni_kanalai);
   %Ankstesni_kanalai=textscan(Ankstesni_kanalai,'%s','delimiter',' ');
   %senas=Ankstesni_kanalai{1};
   %if ~isempty(senas);
   %  pradinis_pasirinkimas=find(ismember(pateikiami_kanalai,senas)==1);
-  %end;  
+  %end;
   pradinis_pasirinkimas=find(ismember(pateikiami_kanalai,Ankstesni_kanalai)==1);
-end;  
+end;
 if ~iscellstr(pateikiami_kanalai);
     warning(lokaliz('unexpected channels types.'),lokaliz('Selection of channels'));
     disp(pateikiami_kanalai);
@@ -6350,12 +6363,12 @@ pasirinkti_kanalai_idx=listdlg('ListString', pateikiami_kanalai,...
     'InitialValue',pradinis_pasirinkimas ,...
     'OKString',lokaliz('OK'),...
     'CancelString',lokaliz('Cancel'));
-if isempty(pasirinkti_kanalai_idx); 
+if isempty(pasirinkti_kanalai_idx);
     set(handles.text_apdorotini_kanalai,'String',lokaliz('all'));
     set(handles.text_apdorotini_kanalai,'TooltipString','');
     set(handles.pushbutton18,'BackgroundColor','remove');
     set(handles.pushbutton18,'UserData',{});
-    return ; 
+    return ;
 end;
 pasirinkti_kanalai={};
 if ismember(pateikiami_bendri_v,pasirinkti_kanalai_idx);
@@ -6380,9 +6393,9 @@ if ~isempty(pasirinkti_kanalai_str) ;
     popupmenu3_senas=get(handles.popupmenu3,'String');
     set(handles.popupmenu3,'String',[popupmenu3_senas(1:3) ; pasirinkti_kanalai_str ]);
     set(handles.popupmenu3,'Value',length(get(handles.popupmenu3,'String')));
-    
+
     set(handles.pushbutton18,'BackgroundColor','remove');
-    set(handles.pushbutton18,'UserData',pasirinkti_kanalai);        
+    set(handles.pushbutton18,'UserData',pasirinkti_kanalai);
 else
     %set(handles.text_apdorotini_kanalai,'String','?');
     %set(handles.text_apdorotini_kanalai,'TooltipString','');
@@ -6422,9 +6435,9 @@ end
 function parinktis_ikelti(hObject, eventdata, handles, rinkinys)
 susaldyk(hObject, eventdata, handles);
 % Įkelti ankstenius nustatymus
-try    
+try
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
     esami={Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.vardas};
     i=find(ismember(esami,rinkinys));
     Parinktys=Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka(i).parinktys;
@@ -6454,8 +6467,8 @@ susildyk(hObject, eventdata, handles);
 
 function parinktis_irasyti(hObject, eventdata, handles, vardas, komentaras)
 reikia_perkurti_meniu=0;
-if isempty(vardas); 
-    a=inputdlg({lokaliz('Pavadinimas:'),lokaliz('Komentaras:')}); 
+if isempty(vardas);
+    a=inputdlg({lokaliz('Pavadinimas:'),lokaliz('Komentaras:')});
     if isempty(a); return; end;
     if iscell(a);
         if isempty(a{1});
@@ -6467,10 +6480,10 @@ if isempty(vardas);
         end;
     end;
 end;
-    
+
 try
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
     esami={Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.vardas};
     if and(ismember(vardas,esami),~ismember(vardas,{'numatytas','paskutinis'}));
         ats=questdlg(lokaliz('Perrašyti nuostatų rinkinį?'),lokaliz('Nuostatos jau yra!'),lokaliz('Rewrite'),lokaliz('Cancel'),lokaliz('Cancel'));
@@ -6545,7 +6558,7 @@ end;
 try
     i=find(ismember(esami,vardas));
     if isempty(i);
-        i=length(esami)+1; 
+        i=length(esami)+1;
         reikia_perkurti_meniu=1;
     end;
 catch err;
@@ -6567,7 +6580,7 @@ if reikia_perkurti_meniu; meniu(hObject, eventdata, handles); end;
 function parinktis_trinti(hObject, eventdata, handles)
 try
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
     esami={Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.vardas};
     esami_N=length(esami);
     esami_nr=find(~ismember(esami,{'numatytas','paskutinis'}));
@@ -6617,7 +6630,7 @@ try
     par_pav=par_pav(ids);
     par_dat={ Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.data };       par_dat=par_dat(ids);
     par_kom={ Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.komentaras }; par_kom=par_kom(ids);
-    if ~isempty(par_pav); yra_isimintu_rinkiniu=1 ; end; 
+    if ~isempty(par_pav); yra_isimintu_rinkiniu=1 ; end;
     for i=1:length(par_pav);
         try
         el=uimenu(handles.meniu_nuostatos_ikelti,...
