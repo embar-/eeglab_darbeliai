@@ -2933,8 +2933,8 @@ function edit3_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit3 as text
 %        str2double(get(hObject,'String')) returns contents of edit3 as a double
-set(handles.edit3,'BackgroundColor',[1 1 1]);
 x=str2num(get(handles.edit3,'String'));
+senas=get(handles.edit3,'UserData');
 %disp(x);
 if and(length(x) == 1, get(handles.popupmenu9,'Value') < 3 ) ;
     set(handles.edit3,'UserData',regexprep(num2str(x), '[ ]*', ' '));
@@ -2951,8 +2951,10 @@ if or(and(length(x) == 1, get(handles.popupmenu9,'Value') < 3 ),...
 else
    set(handles.edit3,'BackgroundColor',[1 1 0]);
 end;
-set(handles.edit_filtr1,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(handles.edit3,'UserData')) , '[ ]*', '-')   ]  ) ;
-set(handles.edit_filtr1_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(handles.edit3,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
+if ~strcmp(senas,get(handles.edit3,'String'));
+    set(handles.edit_filtr1,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(handles.edit3,'UserData')) , '[ ]*', '-')   ]  ) ;
+    set(handles.edit_filtr1_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(handles.edit3,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
+end;
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
 % --- Executes on button press in checkbox_atrink_kanalus1.
@@ -3823,13 +3825,16 @@ function edit19_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of edit19 as text
 %        str2double(get(hObject,'String')) returns contents of edit19 as a double
 x=str2num(get(handles.edit19,'String'));
+senas=get(handles.edit19,'UserData');
 if length(x) == 1 ;
     set(handles.edit19,'UserData',regexprep(num2str(x), '[ ]*', ' '));
 end;
-set(handles.edit19,'String',num2str(get(handles.edit19,'UserData')));
+set(handles.edit19,'String',get(handles.edit19,'UserData'));
 set(handles.edit19,'BackgroundColor',[1 1 1]);
-set(handles.edit_vienoda_trukme,'String',[ '_' num2str(get(handles.edit19,'UserData')) lokaliz('seconds_short') ] );
-set(handles.edit_vienoda_trukme_,'String',[ lokaliz('_Nuosekl_apdor_default_dir_unify_duration')  ' ' num2str(get(handles.edit19,'UserData')) ' ' lokaliz('seconds_short') ] );
+if ~strcmp(senas,get(handles.edit19,'String'));
+    set(handles.edit_vienoda_trukme,'String',[ '_' num2str(get(handles.edit19,'UserData')) lokaliz('seconds_short') ] );
+    set(handles.edit_vienoda_trukme_,'String',[ lokaliz('_Nuosekl_apdor_default_dir_unify_duration')  ' ' num2str(get(handles.edit19,'UserData')) ' ' lokaliz('seconds_short') ] );
+end;
 
 % --- Executes during object creation, after setting all properties.
 function edit19_CreateFcn(hObject, eventdata, handles)
@@ -3881,8 +3886,8 @@ function edit21_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit21 as text
 %        str2double(get(hObject,'String')) returns contents of edit21 as a double
-set(handles.edit21,'BackgroundColor',[1 1 1]);
 x=str2num(get(handles.edit21,'String'));
+senas=get(handles.edit21,'UserData');
 %disp(x);
 if and(length(x) == 1, get(handles.popupmenu10,'Value') < 3 ) ;
     set(handles.edit21,'UserData',regexprep(num2str(x), '[ ]*', ' '));
@@ -3899,8 +3904,10 @@ if or(and(length(x) == 1, get(handles.popupmenu10,'Value') < 3 ),...
 else
    set(handles.edit21,'BackgroundColor',[1 1 0]);
 end;
-set(handles.edit_filtr2,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(handles.edit21,'UserData')) , '[ ]*', '-')   ]  ) ;
-set(handles.edit_filtr2_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(handles.edit21,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
+if ~strcmp(senas,get(handles.edit21,'String'));
+    set(handles.edit_filtr2,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(handles.edit21,'UserData')) , '[ ]*', '-')   ]  ) ;
+    set(handles.edit_filtr2_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(handles.edit21,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
+end;
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
 function edit50_Callback(hObject, eventdata, handles)
@@ -3911,13 +3918,16 @@ function edit50_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of edit50 as text
 %        str2double(get(hObject,'String')) returns contents of edit50 as a double
 x=str2num(get(handles.edit50,'String'));
+senas=get(handles.edit50,'UserData');
 if length(x) == 1 ;
     set(handles.edit50,'UserData',regexprep(num2str(x), '[ ]*', ' '));
 end;
 set(handles.edit50,'String',num2str(get(handles.edit50,'UserData')));
 set(handles.edit50,'BackgroundColor',[1 1 1]);
-set(handles.edit_filtr_tinklo_,'String',[lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' num2str(get(handles.edit50,'UserData')) ' ' lokaliz('Hz') ]) ;
-set(handles.edit_filtr_tinklo,'String',[lokaliz('_Nuosekl_apdor_default_file_suffix_filter') num2str(get(handles.edit50,'UserData')) ]) ;
+if ~strcmp(senas,get(handles.edit50,'String'));
+    set(handles.edit_filtr_tinklo_,'String',[lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' num2str(get(handles.edit50,'UserData')) ' ' lokaliz('Hz') ]) ;
+    set(handles.edit_filtr_tinklo,'String',[lokaliz('_Nuosekl_apdor_default_file_suffix_filter') num2str(get(handles.edit50,'UserData')) ]) ;
+end;
 
 
 % --- Executes during object creation, after setting all properties.
