@@ -46,16 +46,8 @@ switch mode
 
         % Check if there is no some custom 'findpeaks.m'
         rehash toolbox;
-        findpeaks_paths={};
-        findpeaks_path=fileparts(which('findpeaks'));
-        findpeaks_path_=strrep(regexprep(findpeaks_path,matlabroot,''),filesep,'/');
-        while ~strcmp(findpeaks_path_,'/toolbox/signal/signal');
-            rmpath(findpeaks_path);
-            findpeaks_paths={findpeaks_paths{:} findpeaks_path};
-            rehash toolbox;
-            findpeaks_path=fileparts(which('findpeaks'));
-            findpeaks_path_=strrep(regexprep(findpeaks_path,matlabroot,''),filesep,'/');
-        end;
+        findpeaks_paths=galima_fja('findpeaks',...
+           'findpeaks([1 2 1],''MINPEAKDISTANCE'',1);');
 
         % QRS
         [qrs_amp_raw,qrs_i_raw,delay]=...
@@ -64,7 +56,7 @@ switch mode
 
         % Atstatyti findpeaks
         if ~isempty(findpeaks_paths);
-            addpath(findpeaks_paths{:});
+            addpath(findpeaks_paths);
         end;
 
     case {2 , '2', 'DPI', 'dpi' }
