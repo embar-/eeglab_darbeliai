@@ -187,6 +187,7 @@ Darbeliai_nuostatos.stabili_versija=0;
 Darbeliai_nuostatos.savita_versija=0;
 Darbeliai_nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/master.zip';
 Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
+Darbeliai_nuostatos.meniu_ragu=1;
 
 try
    load(fullfile(curdir,config_file));
@@ -198,6 +199,7 @@ try
    Darbeliai_nuostatos.stabili_versija=Darbeliai.nuostatos.stabili_versija;
    Darbeliai_nuostatos.savita_versija=Darbeliai.nuostatos.savita_versija;
    Darbeliai_konfig_vers=Darbeliai.konfig_vers;
+   Darbeliai_nuostatos.meniu_ragu=Darbeliai.nuostatos.meniu_ragu;
 catch err;
    %disp(err.message);
 end;
@@ -342,16 +344,18 @@ if and((exist('atnaujinimas','file') == 2),...
 end;
 
 % Ieškoti Ragu
-if ~(exist('Ragu','file') == 2 ) ;
-    eeglab_plugin_dir=([ fileparts(which('eeglab')) filesep 'plugins' filesep ]);
-    
-    gal_ragu=filter_filenames([eeglab_plugin_dir '*' filesep 'Ragu.m;']);
-    if ~isempty(gal_ragu) ; addpath(fileparts(gal_ragu{1}));   end;
-    
-    gal_ragu=filter_filenames([eeglab_plugin_dir '*' filesep '*' filesep 'Ragu.m;']);
-    if ~isempty(gal_ragu) ; 
-        addpath(fileparts(gal_ragu{1}));   
-        addpath([(fileparts(gal_ragu{1} )) filesep '..']);
+if Darbeliai_nuostatos.meniu_ragu ;
+    if ~(exist('Ragu','file') == 2 ) ;
+        eeglab_plugin_dir=([ fileparts(which('eeglab')) filesep 'plugins' filesep ]);
+        
+        gal_ragu=filter_filenames([eeglab_plugin_dir '*' filesep 'Ragu.m;']);
+        if ~isempty(gal_ragu) ; addpath(fileparts(gal_ragu{1}));   end;
+        
+        gal_ragu=filter_filenames([eeglab_plugin_dir '*' filesep '*' filesep 'Ragu.m;']);
+        if ~isempty(gal_ragu) ; 
+            addpath(fileparts(gal_ragu{1}));   
+            addpath([(fileparts(gal_ragu{1} )) filesep '..']);
+        end;
     end;
 end;
 
@@ -467,7 +471,7 @@ end;
 
 
 % RAGU meniu
-if (exist('Ragu','file') == 2 ) ;
+if and(Darbeliai_nuostatos.meniu_ragu,(exist('Ragu','file') == 2 )) ;
 %    uimenu( ragu_m, 'Label', lokaliz('Eksp Ragu'), ...
 %    'Separator','on', 'userdata', on, 'Callback', ...
 %         'eksportuoti_ragu_programai(ALLEEG, EEG, CURRENTSET) ;'  );

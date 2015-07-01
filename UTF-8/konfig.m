@@ -47,7 +47,7 @@ function varargout = konfig(varargin)
 
 % Edit the above text to modify the response to help konfig
 
-% Last Modified by GUIDE v2.5 13-Jan-2015 16:04:43
+% Last Modified by GUIDE v2.5 01-Jul-2015 19:48:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -84,6 +84,7 @@ if (exist('atnaujinimas','file') == 2) ;
 else
     Darbeliai_nuostatos_senos.tikrinti_versija=0;
 end;
+Darbeliai_nuostatos_senos.meniu_ragu=1;
 Darbeliai_nuostatos_senos.diegti_auto=0;
 Darbeliai_nuostatos_senos.stabili_versija=0;
 Darbeliai_nuostatos_senos.savita_versija=0;
@@ -92,13 +93,14 @@ Darbeliai_nuostatos_senos.url_versijai='';
 
 try
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
-    Darbeliai_nuostatos_senos.lokale=Darbeliai.nuostatos.lokale;
-    Darbeliai_nuostatos_senos.tikrinti_versija=Darbeliai.nuostatos.tikrinti_versija;
-    Darbeliai_nuostatos_senos.diegti_auto=Darbeliai.nuostatos.diegti_auto;
-    Darbeliai_nuostatos_senos.stabili_versija=Darbeliai.nuostatos.stabili_versija;
-    Darbeliai_nuostatos_senos.savita_versija=Darbeliai.nuostatos.savita_versija;
-    Darbeliai_nuostatos_senos.url_atnaujinimui=Darbeliai.nuostatos.url_atnaujinimui;
-    Darbeliai_nuostatos_senos.url_atnaujinimui=Darbeliai.nuostatos.url_versijai;
+    Darbeliai_nuostatos_senos.lokale           = Darbeliai.nuostatos.lokale;
+    Darbeliai_nuostatos_senos.tikrinti_versija = Darbeliai.nuostatos.tikrinti_versija;
+    Darbeliai_nuostatos_senos.diegti_auto      = Darbeliai.nuostatos.diegti_auto;
+    Darbeliai_nuostatos_senos.meniu_ragu       = Darbeliai.nuostatos.meniu_ragu;
+    Darbeliai_nuostatos_senos.stabili_versija  = Darbeliai.nuostatos.stabili_versija;
+    Darbeliai_nuostatos_senos.savita_versija   = Darbeliai.nuostatos.savita_versija;
+    Darbeliai_nuostatos_senos.url_atnaujinimui = Darbeliai.nuostatos.url_atnaujinimui;
+    Darbeliai_nuostatos_senos.url_atnaujinimui = Darbeliai.nuostatos.url_versijai;
 catch err;
     %warning(err.message);
 end;
@@ -114,6 +116,7 @@ switch Darbeliai_nuostatos_senos.stabili_versija
 end;
 set(handles.checkbox1,'Value',Darbeliai_nuostatos_senos.tikrinti_versija);
 set(handles.checkbox2,'Value',Darbeliai_nuostatos_senos.diegti_auto);
+set(handles.checkbox3,'Value',Darbeliai_nuostatos_senos.meniu_ragu);
 checkbox1_Callback(hObject, eventdata, handles);
 
 locale_text(hObject, eventdata, handles);
@@ -181,6 +184,8 @@ kalbos_skydelio_pavad=(unique({lokaliz('Lokale'),'Kalba','Locale','Langue'}));
 set(handles.uipanel2,'Title',regexprep(sprintf('%s / ',kalbos_skydelio_pavad{:}),' / $',''));
 set(handles.checkbox1,'String',lokaliz('Tikrinti paleidimo metu'));
 set(handles.checkbox2,'String',lokaliz('Diegti auto'));
+set(handles.uipanel3,'Title',lokaliz('Kita'));
+set(handles.checkbox3,'String',lokaliz('Ragu meniu integravimas'));
 
 
 % --- Executes on button press in pushbutton1.
@@ -226,7 +231,8 @@ switch get(handles.popupmenu2,'Value')
         Darbeliai.nuostatos.url_versijai='';
 end;
 Darbeliai.nuostatos.tikrinti_versija=get(handles.checkbox1,'Value');
-Darbeliai.nuostatos.diegti_auto=get(handles.checkbox2,'Value');
+Darbeliai.nuostatos.diegti_auto     =get(handles.checkbox2,'Value');
+Darbeliai.nuostatos.meniu_ragu      =get(handles.checkbox3,'Value');
 locale_idx=get(handles.popupmenu1,'Value');
 
 restart_eeglab=0;
@@ -362,3 +368,12 @@ function popupmenu2_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in checkbox3.
+function checkbox3_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox3
