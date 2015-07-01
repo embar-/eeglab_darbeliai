@@ -81,7 +81,7 @@ end;
 i=~isnan(P1T); P1R=P1R(i); L1R=L1R(i); P1T=P1T(i); L1T=L1T(i); 
 i=~isnan(P2T); P2R=P2R(i); L2R=L2R(i); P2T=P2T(i); L2T=L2T(i);
 
-m=mean(EKG);
+m=median(EKG);
 ar_apversta = (median(P1R+P1T)-m) < (median(P2R-P2T)-m);
 
 if fig;
