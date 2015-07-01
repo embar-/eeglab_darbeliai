@@ -117,6 +117,7 @@ end;
 set(handles.checkbox1,'Value',Darbeliai_nuostatos_senos.tikrinti_versija);
 set(handles.checkbox2,'Value',Darbeliai_nuostatos_senos.diegti_auto);
 set(handles.checkbox3,'Value',Darbeliai_nuostatos_senos.meniu_ragu);
+set(handles.checkbox3,'UserData',Darbeliai_nuostatos_senos.meniu_ragu);
 checkbox1_Callback(hObject, eventdata, handles);
 
 locale_text(hObject, eventdata, handles);
@@ -235,7 +236,11 @@ Darbeliai.nuostatos.diegti_auto     =get(handles.checkbox2,'Value');
 Darbeliai.nuostatos.meniu_ragu      =get(handles.checkbox3,'Value');
 locale_idx=get(handles.popupmenu1,'Value');
 
-restart_eeglab=0;
+if get(handles.checkbox3,'Value') ~= get(handles.checkbox3,'UserData');
+    restart_eeglab=1;
+else
+    restart_eeglab=0;
+end;
 
 if locale_idx > 1;
     lc=get(handles.text2,'String');
@@ -244,9 +249,7 @@ if locale_idx > 1;
     tmp_lc=java.util.Locale.getDefault();
     if strcmp(char(tmp_lc.getLanguage()),lc(1));
         if strcmp(char(tmp_lc.getCountry()),lc(2));
-            if strcmp(char(tmp_lc.getVariant()),lc(3));
-                restart_eeglab=0;
-            else
+            if ~strcmp(char(tmp_lc.getVariant()),lc(3));
                 restart_eeglab=1;
             end;
         else
