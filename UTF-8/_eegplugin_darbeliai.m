@@ -197,9 +197,9 @@ try
    Darbeliai_nuostatos.url_atnaujinimui=Darbeliai.nuostatos.url_atnaujinimui;
    Darbeliai_nuostatos.url_versijai=Darbeliai.nuostatos.url_versijai;
    Darbeliai_nuostatos.stabili_versija=Darbeliai.nuostatos.stabili_versija;
+   Darbeliai_nuostatos.meniu_ragu=Darbeliai.nuostatos.meniu_ragu;
    Darbeliai_nuostatos.savita_versija=Darbeliai.nuostatos.savita_versija;
    Darbeliai_konfig_vers=Darbeliai.konfig_vers;
-   Darbeliai_nuostatos.meniu_ragu=Darbeliai.nuostatos.meniu_ragu;
 catch err;
    %disp(err.message);
 end;
@@ -344,18 +344,16 @@ if and((exist('atnaujinimas','file') == 2),...
 end;
 
 % Ieškoti Ragu
-if Darbeliai_nuostatos.meniu_ragu ;
-    if ~(exist('Ragu','file') == 2 ) ;
-        eeglab_plugin_dir=([ fileparts(which('eeglab')) filesep 'plugins' filesep ]);
-        
-        gal_ragu=filter_filenames([eeglab_plugin_dir '*' filesep 'Ragu.m;']);
-        if ~isempty(gal_ragu) ; addpath(fileparts(gal_ragu{1}));   end;
-        
-        gal_ragu=filter_filenames([eeglab_plugin_dir '*' filesep '*' filesep 'Ragu.m;']);
-        if ~isempty(gal_ragu) ; 
-            addpath(fileparts(gal_ragu{1}));   
-            addpath([(fileparts(gal_ragu{1} )) filesep '..']);
-        end;
+if ~(exist('Ragu','file') == 2 ) ;
+    eeglab_plugin_dir=([ fileparts(which('eeglab')) filesep 'plugins' filesep ]);
+    
+    gal_ragu=filter_filenames([eeglab_plugin_dir '*' filesep 'Ragu.m;']);
+    if ~isempty(gal_ragu) ; addpath(fileparts(gal_ragu{1}));   end;
+    
+    gal_ragu=filter_filenames([eeglab_plugin_dir '*' filesep '*' filesep 'Ragu.m;']);
+    if ~isempty(gal_ragu) ; 
+        addpath(fileparts(gal_ragu{1}));   
+        addpath([(fileparts(gal_ragu{1} )) filesep '..']);
     end;
 end;
 
@@ -419,14 +417,16 @@ uimenu( darbeliai_m, 'Label', lokaliz('Custom command') , ...
           ' catch err ; end ; ' ...
           'pop_rankinis ;'  ] );
           
-          
-if (exist('Ragu','file') == 2 ) ;          
-    ragu_m = uimenu( darbeliai_m, 'Label', lokaliz('Ragu'), 'Separator','off', 'userdata', on);
-else
-    Ragu_atnaujinimo_meniu_pavadinimas=lokaliz('Diegti Ragu');
-    uimenu( darbeliai_m, 'Label', Ragu_atnaujinimo_meniu_pavadinimas, 'Separator','off', ...
-        'foregroundcolor', 'b', 'userdata', on, 'Callback', ...
-         'ragu_diegimas ;'  );		
+
+if Darbeliai_nuostatos.meniu_ragu ;          
+    if (exist('Ragu','file') == 2 ) ;          
+        ragu_m = uimenu( darbeliai_m, 'Label', lokaliz('Ragu'), 'Separator','off', 'userdata', on);
+    else
+        Ragu_atnaujinimo_meniu_pavadinimas=lokaliz('Diegti Ragu');
+        uimenu( darbeliai_m, 'Label', Ragu_atnaujinimo_meniu_pavadinimas, 'Separator','off', ...
+            'foregroundcolor', 'b', 'userdata', on, 'Callback', ...
+             'ragu_diegimas ;'  );		
+    end;
 end;
 
 uimenu( darbeliai_m, 'Label', [lokaliz('Nuostatos') ' (kalba/language)'], ...
