@@ -32,13 +32,20 @@ function [RR_idx,RRI]=QRS_detekt(EKG,sampling_rate,mode)
 % Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 %
 %%
-% (C) 2014 Mindaugas Baranauskas
+% (C) 2014-2015 Mindaugas Baranauskas
 %%
 
 SR=sampling_rate;
+qrs=[]; 
 RR_idx=[];
 
+if length(EKG)/SR < 2.5 ; 
+   warning('EKG too short!');
+   return; 
+end;
+
 switch mode
+
     case {1 , '1', 'PT' }
         %% Pan-Tompkin algorithm, implemented by Hooman Sedghamiz, 2014
         % PAN.J, TOMPKINS. W.J,"A Real-Time QRS Detection Algorithm" IEEE
@@ -48,7 +55,10 @@ switch mode
         rehash toolbox;
         findpeaks_paths=galima_fja('findpeaks',...
            'findpeaks([1 2 1],''MINPEAKDISTANCE'',1);');
-
+        
+        % Check upside-down EKG 
+        if ekg_apversta(EKG,SR,0); EKG=-EKG; end;
+        
         % QRS
         [qrs_amp_raw,qrs_i_raw,delay]=...
             QRS_detekt_Pan_Tompkin(EKG,SR,0);
@@ -59,6 +69,7 @@ switch mode
             addpath(findpeaks_paths);
         end;
 
+        
     case {2 , '2', 'DPI', 'dpi' }
         %% Threshold-Independent QRS Detection Using the Dynamic Plosion Index
         %  A. G. Ramakrishnan and A. P. Prathosh and T. V. Ananthapadmanabhaha.
@@ -68,6 +79,8 @@ switch mode
         param=5 ; % default value by authors is param=5
         qrs=QRS_detekt_DPI(EKG,SR,wind,param);
         RR_idx=[qrs(2:end)]';
+        
+        
     case {3, '3' , 'ECGlab', 'ECGLAB', 'ecglab' }
         %% from ECGlab 2.0
         % Suppappola, S.; Sun, Y., "Nonlinear transforms of ECG signals
@@ -75,11 +88,19 @@ switch mode
         % IEEE Trans. Biomed. Eng., 41/4, April 1994
         qrs=QRS_detekt_mobd(EKG,SR);
         RR_idx=qrs;
+        
+        
     case {4, '4'}
         %% Adaptive detector, writen by Hooman Sedghamiz, 2014
+        
+        % Check upside-down EKG 
+        if ekg_apversta(EKG,SR,0); EKG=-EKG; end;
+        
         [R_i,R_amp,S_i,S_amp,T_i,T_amp,Q_i,Q_amp,heart_rate,buffer_plot]= ...
-            QRS_detekt_adaptive_Sedghamiz(EKG,SR,0);
+            QRS_detekt_adaptive_Sedghamiz(double(EKG),SR,0);
         RR_idx=R_i';
+        
+        
     otherwise
         warning('Unknown mode');
 end;
