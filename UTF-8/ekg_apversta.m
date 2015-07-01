@@ -40,6 +40,7 @@
 function ar_apversta=ekg_apversta(EKG,Hz,fig)
 
 EKG=double(EKG);
+if size(EKG,1) > 1; EKG=EKG'; end;
 
 % Rasti gerą findpeaks
 rehash toolbox;
