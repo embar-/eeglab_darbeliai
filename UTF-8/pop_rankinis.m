@@ -67,7 +67,7 @@ function varargout = pop_rankinis(varargin)
 
 % Edit the above text to modify the response to help pop_rankinis
 
-% Last Modified by GUIDE v2.5 20-Nov-2014 17:07:39
+% Last Modified by GUIDE v2.5 01-Jul-2015 15:05:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -161,8 +161,8 @@ edit2_Callback(hObject, eventdata, handles);
 set(handles.pushbutton_epoch_iv,'UserData',{});
 set(handles.pushbutton14,'UserData',{});
 
-set(handles.text_atlikta_darbu,'Visible','off');
-set(handles.text19,'Visible','off'); % atliktų darbų paaiškinimas
+%set(handles.text_atlikta_darbu,'Visible','off');
+%set(handles.text19,'Visible','off'); % atliktų darbų paaiškinimas
 set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
@@ -300,6 +300,10 @@ set(handles.edit_epoch_iv,'Enable','off');
 
 set(handles.edit_command,'Enable','off');
 
+set(handles.edit_priesaga,'Enable','off');
+set(handles.checkbox_poaplankis,'Enable','off');
+checkbox_poaplankis_Callback(hObject, eventdata, handles);
+
 set(handles.checkbox_baigti_anksciau,'Value',0);
 set(handles.checkbox_baigti_anksciau,'Visible','on');
 %set(handles.checkbox_pabaigus_atverti,'Value',0);
@@ -336,6 +340,10 @@ set(handles.edit51,'Enable','on');
 set(handles.edit_epoch_iv,'Enable','on');
 
 set(handles.edit_command,'Enable','on');
+
+set(handles.edit_priesaga,'Enable','on');
+set(handles.checkbox_poaplankis,'Enable','on');
+checkbox_poaplankis_Callback(hObject, eventdata, handles);
 
 uipanel15_SelectionChangeFcn(hObject, eventdata, handles);
 
@@ -632,9 +640,9 @@ for i=1:Pasirinktu_failu_N;
                 
                 
                 % Išsaugoti
-                %Priesaga=(get(handles.edit_kanalu_padetis,'String')) ;
-                %Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_kanalu_padetis_,'String')) ] ;
-                %[~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
+                %Priesaga=(get(handles.edit_priesaga,'String')) ;
+                %Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_poaplankis,'String')) ] ;
+                %[~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[NaujaRinkmena Priesaga '.set'];
                 %if get(handles.checkbox_kanalu_padetis_,'Value') == 1 ;
                 %    Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                 %    PaskutinioIssaugotoDarboNr=DarboNr;
@@ -659,8 +667,13 @@ for i=1:Pasirinktu_failu_N;
         
         % Išsaugoti
         if isempty(PaskRinkmIssaugKelias);
-            Poaplankis='.';
-            Priesaga='';
+            if get(handles.checkbox_poaplankis,'Value');
+                Poaplankis=[ './' num2str(SaugomoNr) ' - ' get(handles.edit_poaplankis,'String') ] ;
+            else
+                Poaplankis='.';
+            end;
+            Priesaga=get(handles.edit_priesaga,'String');
+            [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[NaujaRinkmena Priesaga '.set'];
             Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
             PaskRinkmIssaugKelias=Tikras_Kelias(fullfile(KELIAS_SAUGOJIMUI,Poaplankis));
             DarboPorcijaAtlikta = 1;
@@ -1013,6 +1026,7 @@ set(handles.edit2,'String',pwd);
 set(handles.edit2,'TooltipString',pwd);
 set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') KELIAS {pwd}]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(pwd)));
 cd(KELIAS);
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 
@@ -1549,10 +1563,12 @@ set(handles.uipanel5,'Title',lokaliz('Files for work'));
 set(handles.uipanel15,'Title',lokaliz('File loading options'));
 set(handles.uipanel16,'Title',lokaliz('File saving options'));
 set(handles.uipanel17,'Title',lokaliz('Task'));
-set(handles.uipanel18,'Title',lokaliz('Code'));
+set(handles.text_i,'String',lokaliz('Code'));
 set(handles.text24,'String', [lokaliz('Time interval') ]);
 set(handles.text_failu_filtras1,'String',lokaliz('Show_filenames_filter:'));
 set(handles.text_failu_filtras2,'String',lokaliz('Select_filenames_filter:'));
+set(handles.text_priesaga,'String', lokaliz('Suffix:'));
+set(handles.checkbox_poaplankis,'String', lokaliz('Subdirectory:'));
 set(handles.checkbox_uzverti_pabaigus,'String',lokaliz('Close when complete'));
 set(handles.checkbox_baigti_anksciau,'String',lokaliz('Break work'));
 set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'String',lokaliz('Go to saved files directory when completed'));
@@ -1886,10 +1902,12 @@ a=listdlg(...
     'OKString',lokaliz('OK'),...
     'CancelString',lokaliz('Cancel'));
 if isempty(a); return; end;
-set(handles.edit2,'String',Tikras_Kelias(p{a}));
-set(handles.edit2,'TooltipString',Tikras_Kelias(p{a}));
+k=Tikras_Kelias(p{a});
+set(handles.edit2,'String',k);
+set(handles.edit2,'TooltipString',k);
 set(handles.pushbutton_v2,'UserData',...
-    unique([get(handles.pushbutton_v2,'UserData') c p{a} ]));
+    unique([get(handles.pushbutton_v2,'UserData') c k ]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(k)));
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 
 function EEG=eval2(com,EEG, KELIAS_,NaujaRinkmena,laiko_intervalas,...
@@ -1964,7 +1982,7 @@ end;
 % Užduočių parinktys
 Parinktys=struct('id','','Value','','UserData','','String_','','String','','TooltipString_','','TooltipString','');
 isimintini_el={'checkbox_uzverti_pabaigus' 'checkbox_pabaigus_atverti' 'checkbox_pabaigus_i_apdorotu_aplanka' ...
-    'pushbutton14' 'pushbutton_epoch_iv' 'radiobutton6' 'radiobutton7' };
+    'checkbox_poaplankis' 'pushbutton14' 'pushbutton_epoch_iv' 'radiobutton6' 'radiobutton7' };
 for i=1:length(isimintini_el);
     try
         Parinktys(i).id = isimintini_el{i} ;
@@ -1989,7 +2007,7 @@ for i=1:length(isimintini_el);
         Pranesk_apie_klaida(err, 'pop_rankinis.m', '-', 0);
     end;
 end;
-isimintini_el={ 'text47' 'edit_epoch_iv' };
+isimintini_el={ 'text47' 'edit_epoch_iv' 'edit_poaplankis' 'edit_priesaga' };
 for i=1:length(isimintini_el);
     try
         Parinktys(end+1).id = isimintini_el{i} ;
@@ -2111,4 +2129,66 @@ else
     uimenu( handles.meniu_apie, 'Label', lokaliz('Custom command'), ...
         'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.7.%20Custom%20command'',''-browser'') ;'  );
+end;
+
+
+
+function edit_priesaga_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_priesaga (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_priesaga as text
+%        str2double(get(hObject,'String')) returns contents of edit_priesaga as a double
+set(handles.edit_priesaga,'TooltipString',get(handles.edit_priesaga,'String'));
+
+
+% --- Executes during object creation, after setting all properties.
+function edit_priesaga_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_priesaga (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit_poaplankis_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_poaplankis (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_poaplankis as text
+%        str2double(get(hObject,'String')) returns contents of edit_poaplankis as a double
+set(handles.edit_poaplankis,'TooltipString',get(handles.edit_poaplankis,'String'));
+
+% --- Executes during object creation, after setting all properties.
+function edit_poaplankis_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_poaplankis (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkbox_poaplankis.
+function checkbox_poaplankis_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_poaplankis (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_poaplankis
+if and(get(handles.checkbox_poaplankis, 'Value') == 1, ...
+        strcmp(get(handles.checkbox_poaplankis, 'Enable'),'on'));
+    set(handles.edit_poaplankis,'Enable','on');
+else
+    set(handles.edit_poaplankis,'Enable','off');
 end;
