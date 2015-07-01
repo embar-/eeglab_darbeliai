@@ -55,7 +55,6 @@ for i=1:length(L1R);
     [x,o]=setdiff(L1R(i):min(length(EKG),L1R(i)+round(0.3*Hz)),(L1R(i)-round(0.1*Hz)):(L1R(i)+round(0.1*Hz)));
     if isempty(x);
         P1T=[P1T NaN];
-        P1M=[P1M NaN];
         L1T=[L1T NaN];
     else
         [r,v]=max(EKG(x));
