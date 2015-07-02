@@ -98,6 +98,14 @@ function pop_rankinis_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to pop_rankinis (see VARARGIN)
 
+if and(nargin > 3, mod(nargin, 2)) ;
+    if iscellstr(varargin((1:(nargin-3)/2)*2-1)); 
+        g = struct(varargin{:});
+    else  warning('Bad input');
+        g=[];     end;
+else    g=[];
+end;
+
 set(handles.figure1,'Name',mfilename);
 
 %Įsimink prieš funkcijų vykdymą buvusį kelią; netrukus bandysime laikinai pakeisti kelią
@@ -120,24 +128,24 @@ disp('===================================');
 disp('    RANKINIS KOMANDOS NURODYMAS    ');
 disp(' ');
 
-%Pabandyk įkelti senąjį kelią
+% Pabandyk įkelti senąjį kelią
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
     cd(Darbeliai.keliai.atverimui{1});
 catch err; 
 end;
+
+% Pabandyk nustatyti kelią pagal parametrus
+try set(handles.edit1,'String',g(1).path);   catch err; end;
+try set(handles.edit1,'String',g(1).pathin); catch err; end;
+% Pabandyk parinkti rinkmenas pagal parametrus
 try
-    tmp_mat=fullfile(tempdir,'tmp.mat');
-    load(tmp_mat);
-    %disp(g);
-    cd(g.path{1});
-    if ~isempty(g.files);
-        set(handles.listbox2,'String',g.files);
-        %set(handles.edit_failu_filtras2,'Style','pushbutton');
+    if ~isempty({g.files});
+        set(handles.listbox2,'String',{g.files});
+        set(handles.edit_failu_filtras2,'Style','edit'); % 'pushbutton'
         edit_failu_filtras2_ButtonDownFcn(hObject, eventdata, handles);
     end;
-    delete(tmp_mat);
 catch err;
 end;
 
@@ -156,6 +164,8 @@ try
 catch err;
     set(handles.edit2,'String','');
 end;
+try set(handles.edit2,'String',g(1).path);    catch err; end;
+try set(handles.edit2,'String',g(1).pathout); catch err; end;
 edit2_Callback(hObject, eventdata, handles);
 
 set(handles.pushbutton_epoch_iv,'UserData',{});
@@ -163,13 +173,35 @@ set(handles.pushbutton14,'UserData',{});
 
 %set(handles.text_atlikta_darbu,'Visible','off');
 %set(handles.text19,'Visible','off'); % atliktų darbų paaiškinimas
-set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
+set(    handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
+try set(handles.edit_failu_filtras1,'String',g(1).flt_show); catch err; end;
+
+try 
+    if ~isempty(g(1).flt_slct);    
+        set(handles.edit_failu_filtras2,'Style','pushbutton'); % 'edit'
+        edit_failu_filtras2_ButtonDownFcn(hObject, eventdata, handles);
+        set(handles.edit_failu_filtras2,'String',g(1).flt_slct);
+    end
+catch err; end;
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
-susildyk(hObject, eventdata, handles);
+try 
+    parinktis_ikelti(hObject, eventdata, handles, g(1).preset); 
+catch err; 
+    susildyk(hObject, eventdata, handles);
+end;
+
+try set(handles.text_atlikta_darbu,'String',num2str(g(1).counter)); catch err; end;
 
 tic;
+
+try 
+    if g(1).mode == 'exec';
+        pushbutton1_Callback(hObject, eventdata, handles);
+    end;
+catch err;
+end;
 
 % Choose default command line output for pop_rankinis
 handles.output = hObject;
@@ -281,6 +313,7 @@ set(handles.pushbutton1,'Value',0);
 set(handles.listbox1,'Enable','inactive');
 set(handles.edit1,'Enable','off');
 set(handles.edit2,'Enable','off');
+set(handles.text_atlikta_darbu,'Enable','off');
 set(handles.pushbutton1,'Enable','off');
 %set(handles.pushbutton2,'Enable','off');
 set(handles.pushbutton3,'Enable','off');
