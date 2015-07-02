@@ -130,7 +130,6 @@ try set(handles.edit_tikri,'String',g(1).pathin); catch err; end;
 try
     if ~isempty({g.files});
         set(handles.text_tikri,'String',{g.files});
-        pushbutton7_Callback(hObject, eventdata, handles);
     end;
 catch err;
 end;
@@ -218,6 +217,7 @@ catch err;
     varargout{3} = {};
 end;
 
+%pushbutton7_Callback(hObject, eventdata, handles);
 
 % Atnaujink rodoma kelia
 function atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles)
@@ -1079,8 +1079,10 @@ if ~isempty(PASIRINKTI_FAILAI) ;
             catch err;
             end;
         end;
-        tmp2=strrep(tmp2, [ '%O' ],regexprep(PASIRINKTI_FAILAI,'.set$',''));
-        tmp2=strrep(tmp2, [ '%i' ],cellstr(num2str([1:length(tmp2)]')));
+        if length(tmp2) == length (PASIRINKTI_FAILAI);
+            tmp2=strrep(tmp2, [ '%O' ],regexprep(PASIRINKTI_FAILAI,'.set$',''));
+            tmp2=strrep(tmp2, [ '%i' ],cellstr(num2str([1:length(tmp2)]')));
+        end;
         %disp( tmp2);
         set(handles.listbox_siulomi,'String',  tmp2 );
         set(handles.listbox_siulomi,'Value', 1:length(tmp2) );
