@@ -713,6 +713,10 @@ function edit4_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit4 as text
 %        str2double(get(hObject,'String')) returns contents of edit4 as a double
+if isempty(regexprep(get(handles.edit4,'String'),'[ ]+',''));
+    set(handles.edit4,'BackgroundColor',[1 1 0]);
+    return;
+end;
 try
     PASIRINKTI_FAILAI=get(handles.listbox_tikri,'String');
     if isempty(PASIRINKTI_FAILAI);
@@ -728,11 +732,18 @@ try
     end;
     %disp(lentele);
     %lentele=[lentele];
-    set(handles.uitable1,'Data',  lentele );
-    set(handles.edit4,'BackgroundColor',[1 1 1]);
+    if iscellstr(lentele);
+        set(handles.edit4,'BackgroundColor',[1 1 1]);
+    else    
+        lentele={};
+        set(handles.edit4,'BackgroundColor',[1 1 0]);
+    end;
 catch err;
+    lentele={};
+    set(handles.edit4,'BackgroundColor',[1 1 0]);
     %disp(err.message);
 end;
+set(handles.uitable1,'Data',  lentele );
 set(handles.uitable2,'Data',  {'' '' '' ''} );
 edit5_Callback(hObject, eventdata, handles);
 edit6_Callback(hObject, eventdata, handles);
@@ -1019,6 +1030,10 @@ function edit10_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit10 as text
 %        str2double(get(hObject,'String')) returns contents of edit10 as a double
+if isempty(regexprep(get(handles.edit10,'String'),'[ ]+',''));
+    set(handles.edit10,'BackgroundColor',[1 1 0]);
+    return;
+end;
 PASIRINKTI_FAILAI=get(handles.listbox_tikri,'String');
 try
     PASIRINKTI_FAILAI=PASIRINKTI_FAILAI(get(handles.listbox_tikri,'Value'));
