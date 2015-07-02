@@ -8,7 +8,7 @@
 % GUI versija
 %
 %
-% (C) 2014 Mindaugas Baranauskas
+% (C) 2014-2015 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -99,6 +99,14 @@ function pop_QRS_i_EEG_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to pop_QRS_i_EEG (see VARARGIN)
 
+if and(nargin > 3, mod(nargin, 2)) ;
+    if iscellstr(varargin((1:(nargin-3)/2)*2-1)); 
+        g = struct(varargin{:});
+    else  warning(lokaliz('Netinkami parametrai'));
+        g=[];     end;
+else    g=[];
+end;
+
 set(handles.figure1,'Name',mfilename);
 
 %Įsimink prieš funkcijų vykdymą buvusį kelią; netrukus bandysime laikinai pakeisti kelią
@@ -128,17 +136,17 @@ try
     cd(Darbeliai.keliai.atverimui{1});
 catch err; 
 end;
+
+% Pabandyk nustatyti kelią pagal parametrus
+try set(handles.edit1,'String',g(1).path);   catch err; end;
+try set(handles.edit1,'String',g(1).pathin); catch err; end;
+% Pabandyk parinkti rinkmenas pagal parametrus
 try
-    tmp_mat=fullfile(tempdir,'tmp.mat');
-    load(tmp_mat);
-    %disp(g);
-    cd(g.path{1});
-    if ~isempty(g.files);
-        set(handles.listbox2,'String',g.files);
-        %set(handles.edit_failu_filtras2,'Style','pushbutton');
+    if ~isempty({g.files});
+        set(handles.listbox2,'String',{g.files});
+        set(handles.edit_failu_filtras2,'Style','edit'); % 'pushbutton'
         edit_failu_filtras2_ButtonDownFcn(hObject, eventdata, handles);
     end;
-    delete(tmp_mat);
 catch err;
 end;
 
@@ -159,13 +167,31 @@ try
 catch err;
     set(handles.edit2,'String','');
 end;
+try set(handles.edit2,'String',g(1).path);    catch err; end;
+try set(handles.edit2,'String',g(1).pathout); catch err; end;
 edit2_Callback(hObject, eventdata, handles);
 
 set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
+try set(handles.edit_failu_filtras1,'String',g(1).flt_show); catch err; end;
+try 
+    if ~isempty(g(1).flt_slct);    
+        set(handles.edit_failu_filtras2,'Style','pushbutton'); % 'edit'
+        edit_failu_filtras2_ButtonDownFcn(hObject, eventdata, handles);
+        set(handles.edit_failu_filtras2,'String',g(1).flt_slct);
+    end
+catch err; 
+end;
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
-susildyk(hObject, eventdata, handles);
+try 
+    parinktis_ikelti(hObject, eventdata, handles, g(1).preset); 
+catch err; 
+    susildyk(hObject, eventdata, handles);
+end;
+
+try set(handles.text_atlikta_darbu,'String',num2str(g(1).counter)); catch err; end;
+set(handles.checkbox_uzverti_pabaigus,'UserData',0);
 
 tic;
 
@@ -174,6 +200,19 @@ handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
+
+% Jei prašoma, vykdyti automatiškai
+try 
+    if g(1).mode == 'exec';
+        set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'Enable','off');
+        set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'Value',1);
+        set(handles.checkbox_uzverti_pabaigus,'UserData',1);
+        set(handles.checkbox_uzverti_pabaigus,'Value',1);
+        %set(handles.checkbox_pabaigus_atverti,'Value',0);
+        pushbutton1_Callback(hObject, eventdata, handles);
+    end;
+catch err;
+end;
 
 % UIWAIT makes pop_QRS_i_EEG wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -191,8 +230,28 @@ function varargout = pop_QRS_i_EEG_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+try
+    varargout{1} = handles.output;
+    varargout{2} = get(handles.edit1,'String'); % kelias
+    varargout{3} = get(handles.listbox2,'String'); % rinkmenos    
+    varargout{4} = varargout{3}(find(cellfun(@exist,fullfile(varargout{2},varargout{3}))==2)); % esamos rinkmenos
+    varargout{5} = str2num(get(handles.text_atlikta_darbu,'String')); % skaitliukas
+catch err;
+    varargout{1} = [];
+    varargout{2} = '';
+    varargout{3} = {};
+    varargout{4} = {};
+    varargout{5} = [];
+end;
 
+% Užverti langą, jei nurodyta parinktyse
+try    
+    if and( get(handles.checkbox_uzverti_pabaigus,'UserData'),...
+            get(handles.checkbox_uzverti_pabaigus,'Value'));
+        delete(handles.figure1);
+    end;
+catch err;
+end;
 
 
 
@@ -1284,7 +1343,8 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
     end;
     
     
-    if get(handles.checkbox_uzverti_pabaigus,'Value') == 1;
+    if and(~get(handles.checkbox_uzverti_pabaigus,'UserData'),...
+            get(handles.checkbox_uzverti_pabaigus,'Value'));
         delete(handles.figure1);
     else
         if and(Apdoroti_visi_tiriamieji == 1, ...

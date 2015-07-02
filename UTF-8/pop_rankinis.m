@@ -7,7 +7,7 @@
 % GUI versija
 %
 %
-% (C) 2014 Mindaugas Baranauskas
+% (C) 2014-2015 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -101,7 +101,7 @@ function pop_rankinis_OpeningFcn(hObject, eventdata, handles, varargin)
 if and(nargin > 3, mod(nargin, 2)) ;
     if iscellstr(varargin((1:(nargin-3)/2)*2-1)); 
         g = struct(varargin{:});
-    else  warning('Bad input');
+    else  warning(lokaliz('Netinkami parametrai'));
         g=[];     end;
 else    g=[];
 end;
@@ -175,14 +175,14 @@ set(handles.pushbutton14,'UserData',{});
 %set(handles.text19,'Visible','off'); % atliktų darbų paaiškinimas
 set(    handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 try set(handles.edit_failu_filtras1,'String',g(1).flt_show); catch err; end;
-
 try 
     if ~isempty(g(1).flt_slct);    
         set(handles.edit_failu_filtras2,'Style','pushbutton'); % 'edit'
         edit_failu_filtras2_ButtonDownFcn(hObject, eventdata, handles);
         set(handles.edit_failu_filtras2,'String',g(1).flt_slct);
     end
-catch err; end;
+catch err;
+end;
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
@@ -215,7 +215,6 @@ try
     end;
 catch err;
 end;
-
 
 % UIWAIT makes pop_rankinis wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -262,7 +261,7 @@ try
         delete(handles.figure1);
     end;
 catch err;
-end;    
+end;
 
 
 % Atnaujink rodoma kelia

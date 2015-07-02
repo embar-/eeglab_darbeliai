@@ -1,7 +1,7 @@
 %
 % Išmanus pop_pervadinimas su galimybe atnaujinti EEGLAB duomenų inormaciją
 %
-% (C) 2014 Mindaugas Baranauskas
+% (C) 2014-2015 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -91,6 +91,13 @@ function pop_pervadinimas_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to pop_pervadinimas (see VARARGIN)
 
+if and(nargin > 3, mod(nargin, 2)) ;
+    if iscellstr(varargin((1:(nargin-3)/2)*2-1)); 
+        g = struct(varargin{:});
+    else  warning(lokaliz('Netinkami parametrai'));
+        g=[];     end;
+else    g=[];
+end;
 
 set(handles.figure1,'Name',mfilename);
 
@@ -115,18 +122,17 @@ disp('===================================');
 disp('            PERVADINIMAS           ');
 disp(' ');
 Kelias_dabar=pwd;
+
+% Pabandyk nustatyti kelią pagal parametrus
+try set(handles.edit_tikri,'String',g(1).path);   catch err; end;
+try set(handles.edit_tikri,'String',g(1).pathin); catch err; end;
+% Pabandyk parinkti rinkmenas pagal parametrus
 try
-    tmp_mat=fullfile(tempdir,'tmp.mat');
-    load(tmp_mat);
-    %disp(g);
-    cd(g.path{1});
-    if ~isempty(g.files);
-        % Įsimink pasirinktus failus
-        set(handles.text_tikri,'String',g.files);        
+    if ~isempty({g.files});
+        set(handles.text_tikri,'String',{g.files});
+        pushbutton7_Callback(hObject, eventdata, handles);
     end;
-    delete(tmp_mat);
 catch err;
-    %try     cd('..');     end;
 end;
 
 
@@ -137,12 +143,18 @@ atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
 KELIAS=pwd;
 % Patikrink kelią duomenų išsaugojimui
 set(handles.edit_siulomi,'String','');
+try set(handles.edit_siulomi,'String',g(1).path);    catch err; end;
+try set(handles.edit_siulomi,'String',g(1).pathout); catch err; end;
 edit_siulomi_Callback(hObject, eventdata, handles);
 cd(Kelias_dabar);
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
-% Įšaldyk jau pasirinktus failus
-edit_filtras_ButtonDownFcn(hObject, eventdata, handles);
+% Jei nenurodytas filtras - įšaldyk jau pasirinktus failus
+try 
+    set(handles.edit_filtras,'String',g(1).flt_slct); 
+catch err; 
+    edit_filtras_ButtonDownFcn(hObject, eventdata, handles);
+end;
 
 %[ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
 STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
@@ -161,7 +173,11 @@ if isempty(get(handles.listbox_tikri,'String'))
 end;
 
 parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
-susildyk(hObject, eventdata, handles);
+try 
+    parinktis_ikelti(hObject, eventdata, handles, g(1).preset); 
+catch err; 
+    susildyk(hObject, eventdata, handles);
+end;
 
 tic;
 
@@ -170,6 +186,14 @@ handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
+
+% Jei prašoma, vykdyti automatiškai
+try 
+    if g(1).mode == 'exec';
+        pushbutton1_Callback(hObject, eventdata, handles);
+    end;
+catch err;
+end;
 
 % UIWAIT makes pop_pervadinimas wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -183,8 +207,16 @@ function varargout = pop_pervadinimas_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
-
+try
+    varargout{1} = handles.output;
+    varargout{2} = get(handles.edit_siulomi,'String'); % kelias
+    varargout{3} = get(handles.listbox_siulomi,'String'); % visos rinkmenos
+    varargout{3} = varargout{3}(get(handles.listbox_siulomi,'Value')); % pažymėtos rinkmenos
+catch err;
+    varargout{1} = [];
+    varargout{2} = '';
+    varargout{3} = {};
+end;
 
 
 % Atnaujink rodoma kelia

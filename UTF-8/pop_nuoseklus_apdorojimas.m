@@ -1,7 +1,7 @@
 %
 %
 %
-% (C) 2014 Mindaugas Baranauskas
+% (C) 2014-2015 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -94,7 +94,7 @@ function pop_nuoseklus_apdorojimas_OpeningFcn(hObject, eventdata, handles, varar
 if and(nargin > 3, mod(nargin, 2)) ;
     if iscellstr(varargin((1:(nargin-3)/2)*2-1)); 
         g = struct(varargin{:});
-    else  warning('Bad input');
+    else  warning(lokaliz('Netinkami parametrai'));
         g=[];     end;
 else    g=[];
 end;
@@ -255,7 +255,7 @@ try
         set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'Value',1);
         set(handles.checkbox_uzverti_pabaigus,'UserData',1);
         set(handles.checkbox_uzverti_pabaigus,'Value',1);
-        %set(handles.checkbox_pabaigus_atverti,'Value',0);        
+        %set(handles.checkbox_pabaigus_atverti,'Value',0);
         pushbutton1_Callback(hObject, eventdata, handles);
     end;
 catch err;
