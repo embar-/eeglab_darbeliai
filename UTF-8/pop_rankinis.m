@@ -244,13 +244,15 @@ function varargout = pop_rankinis_OutputFcn(hObject, eventdata, handles)
 try
     varargout{1} = handles.output;
     varargout{2} = get(handles.edit1,'String'); % kelias
-    varargout{3} = get(handles.listbox2,'String'); % rinkmenos
-    varargout{4} = str2num(get(handles.text_atlikta_darbu,'String')); % skaitliukas
+    varargout{3} = get(handles.listbox2,'String'); % rinkmenos    
+    varargout{4} = varargout{3}(find(cellfun(@exist,fullfile(varargout{2},varargout{3}))==2)); % esamos rinkmenos
+    varargout{5} = str2num(get(handles.text_atlikta_darbu,'String')); % skaitliukas
 catch err;
     varargout{1} = [];
     varargout{2} = '';
     varargout{3} = {};
-    varargout{4} = [];
+    varargout{4} = {};
+    varargout{5} = [];
 end;
 
 % Užverti langą, jei nurodyta parinktyse
