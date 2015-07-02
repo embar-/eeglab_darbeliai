@@ -255,7 +255,10 @@ kelias_orig=pwd;
 try
     cd(get(handles.edit1,'String'));
 catch err;
-    cd(Tikras_Kelias(get(handles.edit1,'TooltipString')));
+    try
+        cd(Tikras_Kelias(get(handles.edit1,'TooltipString')));
+    catch err;
+    end;
 end;
 set(handles.edit1,'String',pwd);
 set(handles.edit1,'TooltipString',pwd);
