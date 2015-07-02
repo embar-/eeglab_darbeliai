@@ -193,21 +193,29 @@ catch err;
 end;
 
 try set(handles.text_atlikta_darbu,'String',num2str(g(1).counter)); catch err; end;
+set(handles.checkbox_uzverti_pabaigus,'UserData',0);
 
 tic;
-
-try 
-    if g(1).mode == 'exec';
-        pushbutton1_Callback(hObject, eventdata, handles);
-    end;
-catch err;
-end;
 
 % Choose default command line output for pop_rankinis
 handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
+
+% Jei prašoma, vykdyti automatiškai
+try 
+    if g(1).mode == 'exec';
+        set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'Enable','off');
+        set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'Value',1);
+        set(handles.checkbox_uzverti_pabaigus,'UserData',1);
+        set(handles.checkbox_uzverti_pabaigus,'Value',1);
+        %set(handles.checkbox_pabaigus_atverti,'Value',0);        
+        pushbutton1_Callback(hObject, eventdata, handles);
+    end;
+catch err;
+end;
+
 
 % UIWAIT makes pop_rankinis wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -233,7 +241,26 @@ function varargout = pop_rankinis_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+try
+    varargout{1} = handles.output;
+    varargout{2} = get(handles.edit1,'String'); % kelias
+    varargout{3} = get(handles.listbox2,'String'); % rinkmenos
+    varargout{4} = str2num(get(handles.text_atlikta_darbu,'String')); % skaitliukas
+catch err;
+    varargout{1} = [];
+    varargout{2} = '';
+    varargout{3} = {};
+    varargout{4} = [];
+end;
+
+% Užverti langą, jei nurodyta parinktyse
+try    
+    if and( get(handles.checkbox_uzverti_pabaigus,'UserData'),...
+            get(handles.checkbox_uzverti_pabaigus,'Value'));
+        delete(handles.figure1);
+    end;
+catch err;
+end;    
 
 
 % Atnaujink rodoma kelia
@@ -837,7 +864,8 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
         if ~isempty(findobj('tag', 'EEGLAB')); eeglab redraw; end;
     end;
     
-    if get(handles.checkbox_uzverti_pabaigus,'Value') == 1;
+    if and(~get(handles.checkbox_uzverti_pabaigus,'UserData'),...
+            get(handles.checkbox_uzverti_pabaigus,'Value'));
         delete(handles.figure1);
     else
         if and(Apdoroti_visi_tiriamieji == 1, ...
