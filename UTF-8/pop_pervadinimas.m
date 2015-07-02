@@ -459,7 +459,11 @@ function listbox_tikri_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns listbox_tikri contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from listbox_tikri
-edit4_Callback(hObject, eventdata, handles);
+if or(isempty(get(handles.edit4,'String')),isempty(get(handles.edit10,'String')));
+    Pabandyk_atspeti_failu_sablona(hObject, eventdata, handles);
+else    
+    edit4_Callback(hObject, eventdata, handles);
+end;
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -715,6 +719,7 @@ function edit4_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of edit4 as a double
 if isempty(regexprep(get(handles.edit4,'String'),'[ ]+',''));
     set(handles.edit4,'BackgroundColor',[1 1 0]);
+    set(handles.uitable1,'Data', {});
     return;
 end;
 try
@@ -732,18 +737,18 @@ try
     end;
     %disp(lentele);
     %lentele=[lentele];
-    if iscellstr(lentele);
+    if and(iscellstr(lentele),length(tmp)>0);
+        set(handles.uitable1,'Data', lentele);
         set(handles.edit4,'BackgroundColor',[1 1 1]);
     else    
-        lentele={};
+        set(handles.uitable1,'Data', {});
         set(handles.edit4,'BackgroundColor',[1 1 0]);
     end;
 catch err;
-    lentele={};
+    set(handles.uitable1,'Data', {});
     set(handles.edit4,'BackgroundColor',[1 1 0]);
     %disp(err.message);
 end;
-set(handles.uitable1,'Data',  lentele );
 set(handles.uitable2,'Data',  {'' '' '' ''} );
 edit5_Callback(hObject, eventdata, handles);
 edit6_Callback(hObject, eventdata, handles);
