@@ -193,7 +193,10 @@ Kelias_dabar=pwd;
 try 
     cd(get(handles.edit_tikri,'String'));
 catch err;
-    cd(Tikras_Kelias(get(handles.edit_tikri,'TooltipString')));    
+    try
+        cd(Tikras_Kelias(get(handles.edit_tikri,'TooltipString')));
+    catch err;
+    end; 
 end;
 set(handles.edit_tikri,'String',pwd);
 set(handles.edit_tikri,'TooltipString',pwd);
