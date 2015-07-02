@@ -2503,7 +2503,7 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
     end;
 
     
-    if and( get(handles.checkbox_uzverti_pabaigus,'UserData'),...
+    if and(~get(handles.checkbox_uzverti_pabaigus,'UserData'),...
             get(handles.checkbox_uzverti_pabaigus,'Value'));
         delete(handles.figure1);
     else
