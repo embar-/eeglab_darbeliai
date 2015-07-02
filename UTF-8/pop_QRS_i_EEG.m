@@ -498,6 +498,7 @@ a=findall(handles.figure1,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuos
 function Ar_galima_vykdyti(hObject, eventdata, handles)
 
 set(handles.pushbutton1,'Enable','off');
+set(handles.pushbutton_kanal,'BackgroundColor','remove');
 if isempty(get(handles.listbox1,'String'));
     drawnow; return;
 end;
@@ -520,7 +521,10 @@ end;
 if get(handles.edit_failu_filtras2,'BackgroundColor') == [1 1 0];
     drawnow; return;
 end;
-if isempty(get(handles.text_kanal,'TooltipString'));
+if and(isempty(get(handles.text_kanal,'TooltipString')), or(...
+    and(get(handles.checkbox_QRS_aptikimas,'Value'), ...
+       get(handles.popupmenu_QRS_saltinis,'Value') == 1), ...
+        get(handles.checkbox_trint_EKG,'Value')));
     set(handles.pushbutton_kanal,'BackgroundColor',[1 1 0]);
     drawnow; return;
 end;
@@ -2389,6 +2393,7 @@ else
     set(handles.edit_trint_EKG,'Enable','off');
 end;
 checkbox_trint_EKG__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 
@@ -2479,6 +2484,7 @@ else
 end;
 checkbox_QRS_aptikimas__Callback(hObject, eventdata, handles);
 popupmenu_QRS_saltinis_Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 % --- Executes on button press in checkbox_QRS_korekcija.
 function checkbox_QRS_korekcija_Callback(hObject, eventdata, handles)
