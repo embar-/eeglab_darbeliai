@@ -417,7 +417,8 @@ set(handles.checkbox_baigti_anksciau,'Visible','off');
 set(handles.checkbox_pabaigus_atverti,'Visible','on');
 
 %Vidinis atliktų darbų skaitliukas
-set(handles.text_atlikta_darbu,'String',num2str(0));
+%set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
+%    get(handles.edit2,'String'))));
 
 set(handles.text_darbas,'Visible','off');
 set(handles.text_darbas,'String',' ');
@@ -700,23 +701,9 @@ for i=1:Pasirinktu_failu_N;
                     EEG.nbchan=0;
                 end;
                 
-                
-                % Išsaugoti
-                %Priesaga=(get(handles.edit_priesaga,'String')) ;
-                %Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_poaplankis,'String')) ] ;
-                %[~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[NaujaRinkmena Priesaga '.set'];
-                %if get(handles.checkbox_kanalu_padetis_,'Value') == 1 ;
-                %    Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
-                %    PaskutinioIssaugotoDarboNr=DarboNr;
-                %    DarboPorcijaAtlikta = 1;
-                %    SaugomoNr = SaugomoNr +1;
-                %    PaskRinkmIssaugKelias=Tikras_Kelias(fullfile(KELIAS_SAUGOJIMUI,Poaplankis));
-                %else
-                    PaskRinkmIssaugKelias='';
-                %end;
+                PaskRinkmIssaugKelias='';
                 
                 if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
-                    set(handles.checkbox_kanalu_padetis,'Value',0);
                     set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
                 end;
                 
@@ -1153,6 +1140,7 @@ set(handles.edit2,'String',pwd);
 set(handles.edit2,'TooltipString',pwd);
 set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') KELIAS {pwd}]));
+set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(pwd)));
 cd(KELIAS);
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 Ar_galima_vykdyti(hObject, eventdata, handles);
