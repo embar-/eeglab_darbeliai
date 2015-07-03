@@ -156,7 +156,7 @@ set(handles.checkbox_perziura,'Value',0);
 set(handles.radiobutton_spektras,'Visible','on');
 
 atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
-KELIAS=pwd;
+
 % Sugrįžk į kelią prieš šios funkcijos atvėrimą
 cd(Kelias_dabar);
 
@@ -203,11 +203,14 @@ guidata(hObject, handles);
 
 % Jei prašoma, vykdyti automatiškai
 try 
-    if g(1).mode == 'exec';
-        set(handles.checkbox_uzverti_pabaigus,'UserData',1);
-        set(handles.checkbox_uzverti_pabaigus,'Value',1);
-        %set(handles.checkbox_pabaigus_atverti,'Value',0);
-        pushbutton1_Callback(hObject, eventdata, handles);
+    if strcmp(g(1).mode,'exec');
+        Ar_galima_vykdyti(hObject, eventdata, handles);
+        if strcmp(get(handles.pushbutton1,'Enable'),'on');
+            set(handles.checkbox_uzverti_pabaigus,'UserData',1);
+            set(handles.checkbox_uzverti_pabaigus,'Value',1);
+            %set(handles.checkbox_pabaigus_atverti,'Value',0);
+            pushbutton1_Callback(hObject, eventdata, handles);
+        end;
     end;
 catch err;
 end;

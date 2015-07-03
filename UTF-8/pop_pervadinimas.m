@@ -140,7 +140,7 @@ end;
 %set(handles.pushbutton_v2,'UserData',{});
 
 atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
-KELIAS=pwd;
+
 % Patikrink kelią duomenų išsaugojimui
 set(handles.edit_siulomi,'String','');
 try set(handles.edit_siulomi,'String',g(1).path);    catch err; end;
@@ -189,8 +189,11 @@ guidata(hObject, handles);
 
 % Jei prašoma, vykdyti automatiškai
 try 
-    if g(1).mode == 'exec';
-        pushbutton1_Callback(hObject, eventdata, handles);
+    if strcmp(g(1).mode,'exec');
+        Ar_galima_vykdyti(hObject, eventdata, handles);
+        if strcmp(get(handles.pushbutton1,'Enable'),'on');
+            pushbutton1_Callback(hObject, eventdata, handles);
+        end;
     end;
 catch err;
 end;
