@@ -808,20 +808,18 @@ catch err;
 end;
 
 if ~isempty(PASIRINKTI_FAILAI) ;
+    tmp2(1:length(PASIRINKTI_FAILAI),1)={konvertavimas_is_narvelio(get(handles.edit5,'String'))};
     lentele=get(handles.uitable1,'Data');
     if ~isempty(lentele) ;
-        tmp2(1:length(lentele(:,1)),1)={konvertavimas_is_narvelio(get(handles.edit5,'String'))};
         for i=1:length(lentele(1,:));
             tmp2=strrep(tmp2, [ '%' num2str(i) ],lentele(:,i));
         end;
-        visa=get(handles.uitable2,'Data');
-        visa(1:length(tmp2),1)=tmp2;
-        %disp( tmp2);
-        set(handles.uitable2,'Data', visa );
-        set(handles.edit5,'BackgroundColor',[1 1 1]);
-    else
-        set(handles.uitable2,'Data', {} );
     end;
+    visa=get(handles.uitable2,'Data');
+    visa(1:length(tmp2),1)=tmp2;
+    %disp( tmp2);
+    set(handles.uitable2,'Data', visa );
+    set(handles.edit5,'BackgroundColor',[1 1 1]);
 else
     set(handles.edit5,'BackgroundColor',[1 1 1]);
     set(handles.uitable2,'Data', {} );
@@ -856,21 +854,18 @@ catch err;
 	PASIRINKTI_FAILAI={};
 end;
 if ~isempty(PASIRINKTI_FAILAI) ;
+    tmp2(1:length(PASIRINKTI_FAILAI),1)={konvertavimas_is_narvelio(get(handles.edit6,'String'))};
     lentele=get(handles.uitable1,'Data');
     if ~isempty(lentele) ;
-        tmp2(1:length(lentele(:,1)),1)={konvertavimas_is_narvelio(get(handles.edit6,'String'))};
         for i=1:length(lentele(1,:));
             tmp2=strrep(tmp2, [ '%' num2str(i) ],lentele(:,i));
         end;
-        visa=get(handles.uitable2,'Data');
-        visa(1:length(tmp2),2)=tmp2;
-        %disp( tmp2);
-        set(handles.uitable2,'Data', visa );
-        set(handles.edit6,'BackgroundColor',[1 1 1]);
-    else
-        set(handles.uitable2,'Data', {} );
     end;
-    
+    visa=get(handles.uitable2,'Data');
+    visa(1:length(tmp2),2)=tmp2;
+    %disp( tmp2);
+    set(handles.uitable2,'Data', visa );
+    set(handles.edit6,'BackgroundColor',[1 1 1]);
 else
     set(handles.edit6,'BackgroundColor',[1 1 1]);
     set(handles.uitable2,'Data', {} );
@@ -905,21 +900,18 @@ catch err;
 	PASIRINKTI_FAILAI={};
 end;
 if ~isempty(PASIRINKTI_FAILAI) ;
+    tmp2(1:length(lentele(:,1)),1)={konvertavimas_is_narvelio(get(handles.edit7,'String'))};
     lentele=get(handles.uitable1,'Data');
     if ~isempty(lentele) ;
-        tmp2(1:length(lentele(:,1)),1)={konvertavimas_is_narvelio(get(handles.edit7,'String'))};
         for i=1:length(lentele(1,:));
             tmp2=strrep(tmp2, [ '%' num2str(i) ],lentele(:,i));
         end;
-        visa=get(handles.uitable2,'Data');
-        visa(1:length(tmp2),3)=tmp2;
-        %disp( tmp2);
-        set(handles.uitable2,'Data', visa );
-        set(handles.edit7,'BackgroundColor',[1 1 1]);
-    else
-        set(handles.uitable2,'Data', {} );
     end;
-    
+    visa=get(handles.uitable2,'Data');
+    visa(1:length(tmp2),3)=tmp2;
+    %disp( tmp2);
+    set(handles.uitable2,'Data', visa );
+    set(handles.edit7,'BackgroundColor',[1 1 1]);
 else
     set(handles.edit7,'BackgroundColor',[1 1 1]);
     set(handles.uitable2,'Data', {} );
@@ -952,30 +944,28 @@ PASIRINKTI_FAILAI=get(handles.listbox_tikri,'String');
 try
     PASIRINKTI_FAILAI=PASIRINKTI_FAILAI(get(handles.listbox_tikri,'Value'));
 catch err;
-	PASIRINKTI_FAILAI={};
+    PASIRINKTI_FAILAI={};
 end;
 if ~isempty(PASIRINKTI_FAILAI) ;
+    tmp2(1:length(lentele(:,1)),1)={konvertavimas_is_narvelio(get(handles.edit8,'String'))};
     lentele=get(handles.uitable1,'Data');
     if ~isempty(lentele) ;
-        tmp2(1:length(lentele(:,1)),1)={konvertavimas_is_narvelio(get(handles.edit8,'String'))};
         for i=1:length(lentele(1,:));
             tmp2=strrep(tmp2, [ '%' num2str(i) ],lentele(:,i));
         end;
-        tmp2=cellfun(@(x) numstr(x), tmp2, 'UniformOutput', false);
-        visa=get(handles.uitable2,'Data');        
-        visa(1:length(tmp2),4)=tmp2;
-        %disp( tmp2);
-        set(handles.uitable2,'Data', visa );
-        set(handles.edit8,'BackgroundColor',[1 1 1]);
-    else
-        set(handles.uitable2,'Data', {} );
     end;
-    
+    tmp2=cellfun(@(x) numstr(x), tmp2, 'UniformOutput', false);
+    visa=get(handles.uitable2,'Data');
+    visa(1:length(tmp2),4)=tmp2;
+    %disp( tmp2);
+    set(handles.uitable2,'Data', visa );
+    set(handles.edit8,'BackgroundColor',[1 1 1]);
 else
     set(handles.edit8,'BackgroundColor',[1 1 1]);
     set(handles.uitable2,'Data', {} );
 end;
 edit10_Callback(hObject, eventdata, handles);
+
 
 function str = numstr(string)
 str='';
