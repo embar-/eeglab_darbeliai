@@ -423,17 +423,18 @@ for sablono_i=1:length(sablonai);
     set(handles.edit6, 'String',sablonas{4}); % grupė
     set(handles.edit7, 'String',sablonas{5}); % sąlyga
     set(handles.edit8, 'String',sablonas{6}); % sesija
-    edit4_Callback(hObject, eventdata, handles);
+    edit4_Callback(hObject, eventdata, handles);    
+    lentele =get(handles.uitable1, 'Data');
     Duomenys=get(handles.uitable2, 'Data');
             
     if strcmp(get(handles.pushbutton1,'Enable'),'on') ;
-        if ~isempty(Duomenys)
+        if and(~isempty(Duomenys),~isempty(lentele));
             Tiriamasis=Duomenys(:,1);
             if ~ismember('',Tiriamasis);                
                 break;
             end;
         end;
-    end;    
+    end;
     
     % statusbar
     tok=toc(tici);
@@ -900,7 +901,7 @@ catch err;
 	PASIRINKTI_FAILAI={};
 end;
 if ~isempty(PASIRINKTI_FAILAI) ;
-    tmp2(1:length(lentele(:,1)),1)={konvertavimas_is_narvelio(get(handles.edit7,'String'))};
+    tmp2(1:length(PASIRINKTI_FAILAI),1)={konvertavimas_is_narvelio(get(handles.edit7,'String'))};
     lentele=get(handles.uitable1,'Data');
     if ~isempty(lentele) ;
         for i=1:length(lentele(1,:));
@@ -947,7 +948,7 @@ catch err;
     PASIRINKTI_FAILAI={};
 end;
 if ~isempty(PASIRINKTI_FAILAI) ;
-    tmp2(1:length(lentele(:,1)),1)={konvertavimas_is_narvelio(get(handles.edit8,'String'))};
+    tmp2(1:length(PASIRINKTI_FAILAI),1)={konvertavimas_is_narvelio(get(handles.edit8,'String'))};
     lentele=get(handles.uitable1,'Data');
     if ~isempty(lentele) ;
         for i=1:length(lentele(1,:));
