@@ -1,8 +1,4 @@
-Darbeliai v2015.06.28.1
-Papildyti EEG.history pakeitus EEG. 
-Ištaisytas EEGLAB nenulūs į EEGLAB neįkėlus 
-naujų EEG duomenų po atliktų darbų.
+Darbeliai v2015.07.03.1
+Nežymus stabilumo pagerinimas.
 
-Append EEG.history after EEG modification.
-EEGLAB will not crash, if processed EEG data
-will not be loaded after jobs.
+Minor stability enhancement.
