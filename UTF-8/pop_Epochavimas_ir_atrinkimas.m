@@ -448,7 +448,7 @@ set(handles.checkbox_baigti_anksciau,'Visible','off');
 set(handles.checkbox_pabaigus_atverti,'Visible','off');
 
 %Vidinis atliktų darbų skaitliukas
-set(handles.text_atlikta_darbu,'String',num2str(0));
+% set(handles.text_atlikta_darbu,'String',num2str(0));
 
 set(handles.text_darbas,'String',' ');
 set(handles.pushbutton2,'Value',0);

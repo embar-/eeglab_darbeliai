@@ -417,7 +417,7 @@ set(handles.checkbox_baigti_anksciau,'Visible','off');
 set(handles.checkbox_pabaigus_atverti,'Visible','on');
 
 %Vidinis atliktų darbų skaitliukas
-%set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
+% set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
 %    get(handles.edit2,'String'))));
 
 set(handles.text_darbas,'Visible','off');
@@ -798,6 +798,8 @@ end;
 %
 if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr <  DarboNr ),...
         and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
+    
+    set(handles.text_atlikta_darbu,'String',num2str(SaugomoNr));
     atnaujinti_eeglab=true;
     
     if Apdoroti_visi_tiriamieji == 1;        

@@ -548,8 +548,8 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 set(handles.checkbox_baigti_anksciau,'Visible','off');
 
 %Vidinis atliktų darbų skaitliukas
-set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
-    get(handles.edit2,'String'))));
+% set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
+%    get(handles.edit2,'String'))));
 
 %set(handles.uipanel6,'Title', ['Duomenų apdorojimo funkcijos']);
 set(handles.text_darbas,'String',' ');
@@ -2442,9 +2442,11 @@ end;
 %     pirmenybė eiti per darbus, o naudotojas prašo baigti anksčiau
 %
 if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr <  DarboNr ),...
-        and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
-        set(handles.uipanel6,'Title', lokaliz('Data processing functions'));
-    atnaujinti_eeglab=true;
+       and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
+   
+   set(handles.uipanel6,'Title', lokaliz('Data processing functions'));
+   set(handles.text_atlikta_darbu,'String',num2str(DarboNr));
+   atnaujinti_eeglab=true;
 
     if Apdoroti_visi_tiriamieji == 1;
         if get(handles.checkbox_pabaigus_atverti,'Value') == 1;

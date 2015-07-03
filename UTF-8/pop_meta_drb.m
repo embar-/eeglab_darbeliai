@@ -429,8 +429,8 @@ set(handles.checkbox_baigti_anksciau,'Visible','off');
 set(handles.checkbox_pabaigus_atverti,'Visible','on');
 
 %Vidinis atliktų darbų skaitliukas
-set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
-   get(handles.edit2, 'String'))));
+% set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
+%   get(handles.edit2, 'String'))));
 
 set(handles.text_darbas,'Visible','off');
 set(handles.text_darbas,'String',' ');
@@ -652,6 +652,7 @@ end;
 %% Po darbų
 
 set(handles.text_darbas,'String',' ' );
+set(handles.text_atlikta_darbu,'String',num2str(DarboNr));
 if ~isempty(Sukamos_rinkmn);
     set(handles.listbox2,'String',Sukamos_rinkmn);
 end;
