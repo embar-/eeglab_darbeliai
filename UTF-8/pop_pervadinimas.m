@@ -457,16 +457,17 @@ for sablono_i=1:length(sablonai);
     set(handles.edit7, 'String',sablonas{5}); % sąlyga
     set(handles.edit8, 'String',sablonas{6}); % sesija
     edit4_Callback(hObject, eventdata, handles);
+    lentele =get(handles.uitable1, 'Data');
     Duomenys=get(handles.uitable2, 'Data');
             
     if strcmp(get(handles.pushbutton1,'Enable'),'on') ;
-        if ~isempty(Duomenys)
+        if and(~isempty(Duomenys),~isempty(lentele));
             Tiriamasis=Duomenys(:,1);
             if ~ismember('',Tiriamasis);                
                 break;
             end;
         end;
-    end;    
+    end;
     
     % statusbar
     tok=toc(tici);
@@ -773,8 +774,9 @@ try
         set(handles.edit4,'BackgroundColor',[1 1 0]);
     end;
 catch err;
+    set(handles.edit4,'BackgroundColor',[1 1 0]);
     set(handles.uitable1,'Data', {});
-    %disp(err.message);
+    %Pranesk_apie_klaida(err,'Pervadinimas','',0);
 end;
 set(handles.uitable2,'Data',  {'' '' '' ''} );
 edit5_Callback(hObject, eventdata, handles);
@@ -930,7 +932,7 @@ catch err;
 	PASIRINKTI_FAILAI={};
 end;
 if ~isempty(PASIRINKTI_FAILAI) ;
-    tmp2(1:length(lentele(:,1)),1)={konvertavimas_is_narvelio(get(handles.edit7,'String'))};
+    tmp2(1:length(PASIRINKTI_FAILAI),1)={konvertavimas_is_narvelio(get(handles.edit7,'String'))};
     lentele=get(handles.uitable1,'Data');
     if ~isempty(lentele) ;
         for i=1:length(lentele(1,:));
@@ -977,7 +979,7 @@ catch err;
     PASIRINKTI_FAILAI={};
 end;
 if ~isempty(PASIRINKTI_FAILAI) ;
-    tmp2(1:length(lentele(:,1)),1)={konvertavimas_is_narvelio(get(handles.edit8,'String'))};
+    tmp2(1:length(PASIRINKTI_FAILAI),1)={konvertavimas_is_narvelio(get(handles.edit8,'String'))};
     lentele=get(handles.uitable1,'Data');
     if ~isempty(lentele) ;
         for i=1:length(lentele(1,:));
