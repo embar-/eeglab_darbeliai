@@ -642,6 +642,10 @@ for dbr_i=1:10;
             Pranesk_apie_klaida(err, 'Meta Darbeliai', dbr_id);
             DarboPorcijaAtlikta=1;
         end;
+        
+        if get(handles.checkbox_baigti_anksciau,'Value') == 1 ;
+            break;
+        end;
     end;
 end;
 
