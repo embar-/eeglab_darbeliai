@@ -608,7 +608,7 @@ for dbr_i=1:10;
                 'preset', preset,...
                 'counter',DarboNr,...
                 'mode','exec'};
-            assignin('base', ['dbr_param' dbr_id], dbr_param);
+            %assignin('base', ['dbr_param' dbr_id], dbr_param);
             clear functions;
             switch get(eval(['handles.popupmenu_drb' dbr_id]),'Value')
                 case 1
@@ -637,161 +637,13 @@ for dbr_i=1:10;
                     warning(lokaliz('Netinkami parametrai'));
             end;
             clear functions;
-            drawnow; pause(5);
+            %drawnow; pause(5);
         catch err;
             Pranesk_apie_klaida(err, 'Meta Darbeliai', dbr_id);
             DarboPorcijaAtlikta=1;
         end;
     end;
 end;
-
-for i=1:0 %Pasirinktu_failu_N;
-    Rinkmena=Pasirinkti_failu_pavadinimai{i};
-    [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(KELIAS,Rinkmena));
-    Rinkmena_=[Rinkmena_ galune];
-    KELIAS_=Tikras_Kelias(KELIAS_);
-    NaujaRinkmena=Rinkmena_;
-    disp(sprintf([lokaliz('Opened file') ' %d/%d (%.2f%%) %s'], i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100, Rinkmena));
-    t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
-    SaugomoNr=1+str2num(get(handles.text_atlikta_darbu,'String'));
-    DarboNr=0;
-    DarboPorcijaAtlikta=0;
-    PaskutinioIssaugotoDarboNr=0;
-    PaskRinkmIssaugKelias=KELIAS;
-    
-    %guidata(hObject, handles);
-    
-    % Ikelti
-    Darbo_eigos_busena(handles, lokaliz('Loading data...'), DarboNr, i, Pasirinktu_failu_N);
-    [ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
-    try
-        EEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_);
-        [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
-    catch err;
-        try
-            % Importuoti
-            EEG=pop_biosig(fullfile(KELIAS_, Rinkmena_));
-        catch err;
-            try
-                % Importuoti
-                EEG=pop_fileio(fullfile(KELIAS_, Rinkmena_));
-            catch err;
-                try
-                    % Importuoti
-                    load(fullfile(KELIAS_, Rinkmena_),'-mat');
-                catch err;
-                end;
-            end;
-        end;
-    end;
-    
-    %uiwait(gcf,1);
-    
-    
-    if ~isempty(EEG);
-        
-        EEG = eeg_checkset( EEG );
-        %eeglab redraw;
-        
-        
-        % Darbas
-        Darbo_apibudinimas=[ lokaliz('Darbas') '...'];
-        %if get(handles.checkbox_kanalu_padetis,'Value') == 1 ;
-            DarboNr = DarboNr + 1 ;
-            if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
-                Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
-                try
-                    
-                    EEG=[];
-                    
-                catch err;
-                    Pranesk_apie_klaida(err, lokaliz('Darbas'), NaujaRinkmena);
-                    DarboPorcijaAtlikta=1;
-                    PaskRinkmIssaugKelias='';
-                    EEG.nbchan=0;
-                end;
-                
-                
-                % Išsaugoti
-                %Priesaga=(get(handles.edit_kanalu_padetis,'String')) ;
-                %Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_kanalu_padetis_,'String')) ] ;
-                %[~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                %if get(handles.checkbox_kanalu_padetis_,'Value') == 1 ;
-                %    Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
-                %    PaskutinioIssaugotoDarboNr=DarboNr;
-                %    DarboPorcijaAtlikta = 1;
-                %    SaugomoNr = SaugomoNr +1;
-                %    PaskRinkmIssaugKelias=Tikras_Kelias(fullfile(KELIAS_SAUGOJIMUI,Poaplankis));
-                %else
-                    PaskRinkmIssaugKelias='';
-                %end;
-                
-                if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
-                    set(handles.checkbox_kanalu_padetis,'Value',0);
-                    set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
-                end;
-                
-            end;
-        %end;
-        
-        %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
-        try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-               
-        
-        % Išsaugoti
-        if isempty(PaskRinkmIssaugKelias);
-            Poaplankis='.';
-            Priesaga='';
-            Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
-            PaskRinkmIssaugKelias=Tikras_Kelias(fullfile(KELIAS_SAUGOJIMUI,Poaplankis));
-            DarboPorcijaAtlikta = 1;
-        %else   disp('Duomenys jau įrašyti');
-        end;
-        
-        str=(sprintf('%s apdorotas (%d/%d = %3.2f%%)\r\n', NaujaRinkmena, i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100 )) ;
-        %disp(str);
-        
-        if and(~isempty(EEG),DarboPorcijaAtlikta);
-            if EEG.nbchan > 0 ;
-                NaujosRinkmenos=get(handles.listbox2,'String');
-                NaujosRinkmenos{i}=NaujaRinkmena;
-                set(handles.listbox2,'String',NaujosRinkmenos);
-                disp(['+']);
-            end;
-        end;
-        
-    else
-        msgbox(sprintf([lokaliz('Time:') ' %s\n' lokaliz('Path:') ' %s\n' lokaliz('File:') ' %s'], ...
-               t, pwd, Rinkmena),lokaliz('Empty dataset'),'error');
-    end;
-    
-    % Isvalyti atminti
-    %STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
-    %eeglab redraw;
-    
-    if get(handles.radiobutton6,'Value') == 1;
-        tmp_idx=get(handles.listbox1,'Value');
-        if length(tmp_idx) > 1 ;
-            set(handles.listbox1,'Value',tmp_idx(2:end));
-        end;
-        
-        if i == Pasirinktu_failu_N ;
-            Apdoroti_visi_tiriamieji=1;
-        end;
-        
-        %Galbūt naudotojas nori nutraukti anksčiau
-        if get(handles.checkbox_baigti_anksciau,'Value') == 1 ;
-            break;
-        end;
-    end;
-    
-    %set(handles.listbox2,'Visible','on');
-    %set(handles.listbox1,'Visible','off');
-    
-end;
-
 
 %% Po darbų
 
