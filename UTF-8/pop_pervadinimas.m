@@ -268,22 +268,24 @@ set(handles.pushbutton1,'Enable','off');
 if isempty(get(handles.listbox_siulomi,'String'));    
     set(handles.text_kartojasi,'Visible','off');
     set(handles.pushbutton8,'Enable','off');
+    set(handles.edit4, 'BackgroundColor',[1 1 1]);
+    set(handles.edit10,'BackgroundColor',[1 1 1]);
     drawnow; return;
 else
     set(handles.pushbutton8,'Enable','on');
 end;
-if ismember('',get(handles.listbox_siulomi,'String'));
+i=ismember(regexprep(get(handles.listbox_siulomi,'String'),'[ ]+',''),{'' '.set'});
+if sum(i);
     set(handles.text_kartojasi,'Visible','off');
-    drawnow; return;
-end;
-if ismember('.set',get(handles.listbox_siulomi,'String'));
-    set(handles.text_kartojasi,'Visible','off');
+    set(handles.listbox_siulomi,'Value',find(i));
+    set(handles.edit10,'BackgroundColor',[1 1 0]);
     drawnow; return;
 end;
 if length(unique(get(handles.listbox_siulomi,'String'))) ~= ...
         length(get(handles.listbox_siulomi,'String'));
     set(handles.text_kartojasi,'String',lokaliz('Dublicate filenames'));
     set(handles.text_kartojasi,'Visible','on');
+    set(handles.edit10,'BackgroundColor',[1 1 0]);
     drawnow; return;
 else    
     set(handles.text_kartojasi,'Visible','off');
@@ -357,7 +359,7 @@ end;
 
 
 set(handles.pushbutton1,'Enable','on');
-drawnow; 
+drawnow;
 
 
 function lentele=tikrinti_rinkmenu_perrasyma(KELIAS_ORIG, RINKMENOS_ORIG, KELIAS_NAUJ, RINKMENOS_NAUJ)
@@ -459,11 +461,7 @@ function listbox_tikri_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns listbox_tikri contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from listbox_tikri
-if or(isempty(get(handles.edit4,'String')),isempty(get(handles.edit10,'String')));
-    Pabandyk_atspeti_failu_sablona(hObject, eventdata, handles);
-else    
-    edit4_Callback(hObject, eventdata, handles);
-end;
+edit4_Callback(hObject, eventdata, handles);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -717,16 +715,13 @@ function edit4_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit4 as text
 %        str2double(get(hObject,'String')) returns contents of edit4 as a double
-if isempty(regexprep(get(handles.edit4,'String'),'[ ]+',''));
-    set(handles.edit4,'BackgroundColor',[1 1 0]);
-    set(handles.uitable1,'Data', {});
-    return;
-end;
 try
     PASIRINKTI_FAILAI=get(handles.listbox_tikri,'String');
     if isempty(PASIRINKTI_FAILAI);
-        set(handles.edit4,'BackgroundColor',[1 1 1]);
-        %return;
+        error('nepasirinkta rinkmenų');
+    end;
+    if isempty(get(handles.edit4,'String'));
+        error('tuščias edit4');
     end;
     PASIRINKTI_FAILAI=PASIRINKTI_FAILAI(get(handles.listbox_tikri,'Value'));
     lentele={};
@@ -746,7 +741,6 @@ try
     end;
 catch err;
     set(handles.uitable1,'Data', {});
-    set(handles.edit4,'BackgroundColor',[1 1 0]);
     %disp(err.message);
 end;
 set(handles.uitable2,'Data',  {'' '' '' ''} );
@@ -1035,8 +1029,12 @@ function edit10_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit10 as text
 %        str2double(get(hObject,'String')) returns contents of edit10 as a double
-if isempty(regexprep(get(handles.edit10,'String'),'[ ]+',''));
+if isempty(regexprep(get(handles.edit10,'String'),'[ ]+','')); 
     set(handles.edit10,'BackgroundColor',[1 1 0]);
+    set(handles.uitable1,'Data', {});
+    set(handles.listbox_siulomi,'Value',[]);
+    set(handles.listbox_siulomi,'String',{});
+    Ar_galima_vykdyti(hObject, eventdata, handles);
     return;
 end;
 PASIRINKTI_FAILAI=get(handles.listbox_tikri,'String');
@@ -1053,38 +1051,38 @@ if ~isempty(PASIRINKTI_FAILAI) ;
     catch err;
         disp(err.message);
     end;
+    tmp2(1:length(PASIRINKTI_FAILAI),1)={konvertavimas_is_narvelio(get(handles.edit10,'String'))};
     if ~isempty(lentele) ;
-        tmp2(1:length(lentele(:,1)),1)={konvertavimas_is_narvelio(get(handles.edit10,'String'))};
-        for i=1:length(lentele(1,:));
-            tmp2=strrep(tmp2, [ '%' num2str(i) ],lentele(:,i));            
-        end;
-        if ~isempty(Duomenys);
-            try
-               tmp2=strrep(tmp2, [ '%T' ],Duomenys(:,1)); % Tiriamasis
-               tmp2=strrep(tmp2, [ '%G' ],Duomenys(:,2)); % Grupe
-               tmp2=strrep(tmp2, [ '%C' ],Duomenys(:,3)); % Salyga
-               tmp2=strrep(tmp2, [ '%S' ],Duomenys(:,4)); % Sesija
-            catch err;
+        try
+            for i=1:length(lentele(1,:));
+                tmp2=strrep(tmp2, [ '%' num2str(i) ],lentele(:,i));
             end;
+        catch err;
         end;
-        if length(tmp2) == length (PASIRINKTI_FAILAI);
-            tmp2=strrep(tmp2, [ '%O' ],regexprep(PASIRINKTI_FAILAI,'.set$',''));
-            tmp2=strrep(tmp2, [ '%i' ],cellstr(num2str([1:length(tmp2)]')));
-        end;
-        %disp( tmp2);
-        set(handles.listbox_siulomi,'String',  tmp2 );
-        set(handles.listbox_siulomi,'Value', 1:length(tmp2) );
-        set(handles.listbox_siulomi,'Max', length(tmp2) );
-        set(handles.edit10,'BackgroundColor',[1 1 1]);
-    else
-        set(handles.listbox_siulomi,'String', '' );
     end;
-    
+    if ~isempty(Duomenys);
+        try
+            tmp2=strrep(tmp2, [ '%T' ],Duomenys(:,1)); % Tiriamasis
+            tmp2=strrep(tmp2, [ '%G' ],Duomenys(:,2)); % Grupe
+            tmp2=strrep(tmp2, [ '%C' ],Duomenys(:,3)); % Salyga
+            tmp2=strrep(tmp2, [ '%S' ],Duomenys(:,4)); % Sesija
+        catch err;
+        end;
+    end;
+    tmp2=strrep(tmp2, [ '%O' ],regexprep(PASIRINKTI_FAILAI,'.set$',''));
+    tmp2=strrep(tmp2, [ '%i' ],cellstr(num2str([1:length(tmp2)]')));
+    %disp( tmp2);
+    set(handles.listbox_siulomi,'String',  tmp2 );
+    set(handles.listbox_siulomi,'Value', 1:length(tmp2) );
+    set(handles.listbox_siulomi,'Max', length(tmp2) );
+    set(handles.edit10,'BackgroundColor',[1 1 1]);
 else
     set(handles.edit10,'BackgroundColor',[1 1 1]);
     set(handles.listbox_siulomi,'String', '' );
 end;
 Ar_galima_vykdyti(hObject, eventdata, handles);
+
+
 
 % --- Executes during object creation, after setting all properties.
 function edit10_CreateFcn(hObject, eventdata, handles)
