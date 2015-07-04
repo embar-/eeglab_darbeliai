@@ -22,7 +22,7 @@ Other features:
 
 More information can be found https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN
 
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -38,8 +38,7 @@ More information can be found https://github.com/embar-/eeglab_darbeliai/wiki/0.
   along with this program; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+--
  
   (C) 2014-2015 Mindaugas Baranauskas   
- 
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
