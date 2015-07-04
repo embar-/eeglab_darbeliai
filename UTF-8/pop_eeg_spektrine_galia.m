@@ -201,22 +201,31 @@ handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
 
-% Jei prašoma, vykdyti automatiškai
-try 
-    if strcmp(g(1).mode,'exec');
-        Ar_galima_vykdyti(hObject, eventdata, handles);
-        if strcmp(get(handles.pushbutton1,'Enable'),'on');
-            set(handles.checkbox_uzverti_pabaigus,'UserData',1);
-            set(handles.checkbox_uzverti_pabaigus,'Value',1);
-            %set(handles.checkbox_pabaigus_atverti,'Value',0);
-            pushbutton1_Callback(hObject, eventdata, handles);
-        end;
+% UIWAIT makes pop_eeg_spektrine_galia wait for user response (see UIRESUME)
+% uiwait(handles.figure1);
+
+% Jei nurodyta veiksena
+try
+    agv=strcmp(get(handles.pushbutton1,'Enable'),'on');
+    if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'}),...
+      and(ismember(g(1).mode,{'tryforce'}),agv));
+        set(handles.checkbox_uzverti_pabaigus,'Enable','off');
+    end;
+    if ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec' 'e' 'exec' 't' 'try' 'tryexec' 'tryforce' 'c' 'confirm'});
+        set(handles.checkbox_uzverti_pabaigus,'UserData',1);
+        set(handles.checkbox_uzverti_pabaigus,'Value',1);
+        %set(handles.checkbox_pabaigus_atverti,'Value',0);
+    end;
+    if or(ismember(g(1).mode,{'c' 'confirm'}),...
+      and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),~agv)    );
+        uiwait(handles.figure1); % UIRESUME bus įvykdžius užduotis
+    end;
+    if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec' 'e' 'exec'}),...
+      and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),agv));
+        pushbutton1_Callback(hObject, eventdata, handles);
     end;
 catch err;
 end;
-
-% UIWAIT makes pop_eeg_spektrine_galia wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
 
 
 function Palauk()
@@ -226,9 +235,6 @@ disp('Ar tikrai peržiūrėjote duomenis? Eisime prie kitų darbų.');
 drawnow     % Necessary to print the message
 waitfor(f);
 disp('Einama toliau...');
-
-
-
 
 
 % --- Outputs from this function are returned to the command line.
@@ -805,11 +811,10 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
         set(handles.edit_failu_filtras2,'BackgroundColor','remove');
         set(handles.edit_failu_filtras2,'Style','pushbutton');
         set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
-        %if ~strcmp(char(mfilename),'pop_eeg_spektrine_galia');
         atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
         atnaujink_rodomus_failus(hObject, eventdata, handles);
-        %end;
         susildyk(hObject, eventdata, handles);
+        uiresume(handles.figure1);
     end;
     
     

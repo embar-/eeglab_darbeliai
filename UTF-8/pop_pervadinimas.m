@@ -187,19 +187,27 @@ handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
 
-% Jei prašoma, vykdyti automatiškai
-try 
-    if strcmp(g(1).mode,'exec');
-        Ar_galima_vykdyti(hObject, eventdata, handles);
-        if strcmp(get(handles.pushbutton1,'Enable'),'on');
-            pushbutton1_Callback(hObject, eventdata, handles);
-        end;
+% UIWAIT makes pop_pervadinimas wait for user response (see UIRESUME)
+% uiwait(handles.figure1);
+
+% Jei nurodyta veiksena
+try
+    agv=strcmp(get(handles.pushbutton1,'Enable'),'on');
+    if ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec' 'e' 'exec' 't' 'try' 'tryexec' 'tryforce' 'confirm'});
+        set(handles.pushbutton7,'UserData',1);
+    else
+        set(handles.pushbutton7,'UserData',0);
+    end;
+    if or(ismember(g(1).mode,{'c' 'confirm'}),...
+      and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),~agv)    );
+        uiwait(handles.figure1); % UIRESUME bus įvykdžius užduotis
+    end;
+    if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec' 'e' 'exec'}),...
+      and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),agv));
+        pushbutton1_Callback(hObject, eventdata, handles);
     end;
 catch err;
 end;
-
-% UIWAIT makes pop_pervadinimas wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -221,7 +229,12 @@ catch err;
     varargout{3} = {};
 end;
 
-%pushbutton7_Callback(hObject, eventdata, handles);
+try
+    if get(handles.pushbutton7,'UserData');
+        pushbutton7_Callback(hObject, eventdata, handles);
+    end;
+catch err;
+end;
 
 % Atnaujink rodoma kelia
 function atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles)
@@ -1426,6 +1439,7 @@ end;
     %end;
 
 susildyk(hObject, eventdata, handles);
+uiresume(handles.figure1);
 pushbutton5_Callback(hObject, eventdata, handles);
 
 
