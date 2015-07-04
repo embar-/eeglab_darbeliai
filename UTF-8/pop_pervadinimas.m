@@ -1393,6 +1393,8 @@ for i=1:Pasirinktu_failu_N;
     % Išsaugoti
     try
         RinkmenaSaugojimuiSuKeliu=fullfile(KELIAS_SAUGOJIMUI, RinkmenaSaugojimui);
+        TikrasSaugojimoKelias=fileparts(RinkmenaSaugojimuiSuKeliu);
+        if exist(TikrasSaugojimoKelias) ~= 7; try mkdir(TikrasSaugojimoKelias); catch err ; end; end;
         [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
             'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
             'savenew',RinkmenaSaugojimuiSuKeliu);
