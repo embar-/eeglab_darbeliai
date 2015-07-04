@@ -1,8 +1,12 @@
-Darbeliai v2015.06.28.1
-Papildyti EEG.history pakeitus EEG. 
-Ištaisytas EEGLAB nenulūs į EEGLAB neįkėlus 
-naujų EEG duomenų po atliktų darbų.
+Darbeliai v2015.07.04.1
+Darbelių pop_*.m galima paleisti uždavus parametrus.
+Naujame dialoge Darbų tvarkytuvė (pop_meta_drb.m) 
+galima tvarkyti Darbelių funkcijų parinkčių rinkinius
+ir atlikti darbus pereinant per skirtingus Darbelių langus.
+Pagerintas pop_pervadinimas stabilumas.
 
-Append EEG.history after EEG modification.
-EEGLAB will not crash, if processed EEG data
-will not be loaded after jobs.
+pop_*.m of Darbeliai accepts parameters for execution.
+New dialog Workflow Master to manage meta-presets 
+of configurations and execute sequences of jobs 
+through multiple dialogs of Darbeliai.
+Enhanced stability of pop_pervadinimas.
