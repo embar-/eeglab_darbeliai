@@ -65,7 +65,7 @@ function varargout = pop_meta_drb(varargin)
 
 % Edit the above text to modify the response to help pop_meta_drb
 
-% Last Modified by GUIDE v2.5 03-Jul-2015 09:52:43
+% Last Modified by GUIDE v2.5 04-Jul-2015 13:40:18
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -186,6 +186,9 @@ end;
 
 try set(handles.text_atlikta_darbu,'String',num2str(g(1).counter)); catch err; end;
 set(handles.checkbox_uzverti_pabaigus,'UserData',0);
+set(handles.radiobutton6,'Visible','off');
+set(handles.radiobutton7,'Visible','off');
+set(handles.text7,'Visible','off');
 
 tic;
 
@@ -405,7 +408,7 @@ set(handles.pushbutton6,'Enable','on');
 set(handles.pushbutton_v1,'Enable','on');
 set(handles.pushbutton_v2,'Enable','on');
 set(handles.radiobutton6,'Enable','on');
-set(handles.radiobutton7,'Enable','off');
+set(handles.radiobutton7,'Enable','on');
 
 set(handles.checkbox_drb1,'Enable','on');
 set(handles.checkbox_drb2,'Enable','on');
@@ -626,8 +629,10 @@ for dbr_i=1:10;
                 otherwise
                     Kelias_sg=KELIAS_SAUGOJIMUI;
             end;
+            veiksenos={'confirm' 'tryexec' 'forceexec'};
+            veiksena=veiksenos{get(handles.popupmenu_patvirt,'Value')};
             dbr_param={'files',Sukamos_rinkmn, 'pathin',Sukamas_kelias, 'pathout',Kelias_sg, ...
-                       'preset', preset, 'counter',DarboNr, 'mode','try'};
+                       'preset', preset, 'counter',DarboNr, 'mode',veiksena};
             %assignin('base', ['dbr_param' dbr_id], dbr_param);
             switch Darbo_tipo_id
                 case 1
@@ -1417,6 +1422,10 @@ end;
 
 
 function lokalizuoti(hObject, eventdata, handles)
+set(handles.popupmenu_patvirt, 'String',{...
+    lokaliz('visada')...
+    lokaliz('kai negalima vykdyti')...
+    lokaliz('niekada');});
 fjos={ ...
     lokaliz('Pervadinimas su info suvedimu') ...
     lokaliz('Nuoseklus apdorojimas') ...
@@ -1448,6 +1457,7 @@ set(handles.popupmenu_drb9_, 'String',{''});
 set(handles.popupmenu_drb10_, 'String',{''});
 set(handles.text51,'String', lokaliz('Job'));
 set(handles.text52,'String', lokaliz('Job preset'));
+set(handles.text53,'String', lokaliz('Patvirtinti paskiro darbelio parinktis:'));
 set(handles.pushbutton1,'String',lokaliz('Execute'));
 set(handles.pushbutton2,'String',lokaliz('Close'));
 set(handles.pushbutton4,'String',lokaliz('Update'));
@@ -1460,7 +1470,7 @@ set(handles.uipanel4,'Title',lokaliz('File filter'));
 set(handles.uipanel5,'Title',lokaliz('Files for work'));
 set(handles.uipanel15,'Title',lokaliz('File loading options'));
 set(handles.uipanel16,'Title',lokaliz('File saving options'));
-set(handles.uipanel17,'Title',lokaliz('Task'));
+set(handles.uipanel17,'Title',lokaliz('Vykdymo parinktys'));
 set(handles.text_failu_filtras1,'String',lokaliz('Show_filenames_filter:'));
 set(handles.text_failu_filtras2,'String',lokaliz('Select_filenames_filter:'));
 set(handles.checkbox_uzverti_pabaigus,'String',lokaliz('Close when complete'));
@@ -1653,7 +1663,7 @@ isimintini_el={'checkbox_uzverti_pabaigus' 'checkbox_pabaigus_atverti' 'checkbox
     'popupmenu_drb6' 'popupmenu_drb7' 'popupmenu_drb7' 'popupmenu_drb9' 'popupmenu_drb10' ...
     'popupmenu_drb1_' 'popupmenu_drb2_' 'popupmenu_drb3_' 'popupmenu_drb4_' 'popupmenu_drb5_' ...
     'popupmenu_drb6_' 'popupmenu_drb7_' 'popupmenu_drb7_' 'popupmenu_drb9_' 'popupmenu_drb10_'...
-    'radiobutton6' 'radiobutton7' };
+    'popupmenu_patvirt' 'radiobutton6' 'radiobutton7' };
 for i=1:length(isimintini_el);
     try
         Parinktys(i).id = isimintini_el{i} ;
@@ -2689,3 +2699,26 @@ end;
 
 
 
+
+
+% --- Executes on selection change in popupmenu_patvirt.
+function popupmenu_patvirt_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_patvirt (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_patvirt contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_patvirt
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_patvirt_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_patvirt (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
