@@ -274,7 +274,7 @@ set(handles.uipanel23,'Title',lokaliz('Suffix and subdirectory'));
 set(handles.text19,'String', lokaliz('# of done jobs for subdir names'));
 set(handles.uipanel15,'Title',lokaliz('File loading options'));
 set(handles.uipanel16,'Title',lokaliz('File saving options'));
-set(handles.uipanel17,'Title',' ');
+set(handles.uipanel17,'Title',lokaliz('Vykdymo parinktys'));
 set(handles.uipanel18,'Title',' ');
 set(handles.radiobutton6,'String',lokaliz('through data'));
 set(handles.radiobutton7,'String',lokaliz('through functions'));
