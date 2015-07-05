@@ -83,6 +83,9 @@ if (exist('atnaujinimas','file') == 2) ;
     Darbeliai_nuostatos_senos.tikrinti_versija=1;
 else
     Darbeliai_nuostatos_senos.tikrinti_versija=0;
+    set(handles.popupmenu2,'Enable','off');
+    set(handles.checkbox1, 'Enable','off');
+    set(handles.checkbox2, 'Enable','off');
 end;
 Darbeliai_nuostatos_senos.meniu_ragu=1;
 Darbeliai_nuostatos_senos.diegti_auto=0;
@@ -108,12 +111,14 @@ end;
 set(handles.popupmenu2,'String',{lokaliz('Stable version') ; lokaliz('Trunk version')});
 switch Darbeliai_nuostatos_senos.stabili_versija
     case 1
-        set(handles.popupmenu2,'Value',1);
+        stabili_versija=1;
     case 0
-        set(handles.popupmenu2,'Value',2);
+        stabili_versija=2;
     otherwise
-        set(handles.popupmenu2,'Value',3);
+        stabili_versija=3;
 end;
+set(handles.popupmenu2,'Value',stabili_versija);
+set(handles.popupmenu2,'UserData',stabili_versija);
 set(handles.checkbox1,'Value',Darbeliai_nuostatos_senos.tikrinti_versija);
 set(handles.checkbox2,'Value',Darbeliai_nuostatos_senos.diegti_auto);
 set(handles.checkbox3,'Value',Darbeliai_nuostatos_senos.meniu_ragu);
@@ -209,6 +214,9 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+v=findall(handles.figure1);
+for i=1:length(v); try set(v(i),'Enable','off'); catch err; end; end;
+
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
@@ -269,6 +277,12 @@ end;
 
 save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
 
+if get(handles.popupmenu2,'Value') ~= get(handles.popupmenu2,'UserData');
+    figure1_CloseRequestFcn(hObject, eventdata, handles);
+    atnaujinimas(Darbeliai.nuostatos.url_atnaujinimui) ;
+    return;
+end;
+
 if restart_eeglab ;
     %pushbutton2_Callback(hObject, eventdata, handles);
     close(findobj('tag', 'EEGLAB'));
@@ -279,6 +293,10 @@ if restart_eeglab ;
     evalin('base','eeglab redraw');
     drawnow;
 end ;
+
+v=[]; try v=findall(handles.figure1); catch err; end;
+for i=1:length(v); try set(v(i),'Enable','on'); catch err; end; end;
+
 
 % --- Executes on selection change in popupmenu1.
 function popupmenu1_Callback(hObject, eventdata, handles)
@@ -310,14 +328,6 @@ function checkbox1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox1
-
-if (exist('atnaujinimas','file') ~= 2) ;
-    %set(handles.uipanel1,'Visible','off')
-    set(handles.checkbox1,'Enable','off');
-    set(handles.checkbox2,'Enable','off');
-    return;
-end;
-
 if get(handles.checkbox1,'Value')
     set(handles.checkbox2,'Enable','on');
 else
