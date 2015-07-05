@@ -106,7 +106,7 @@
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% (C) 2014 Mindaugas Baranauskas   
+% (C) 2014-2015 Mindaugas Baranauskas   
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -118,6 +118,7 @@ curdir = [fileparts(which(mfilename)) filesep];
 main_menu_name ='Darbeliai';
 vers = 'Darbeliai v?';
 config_file='Darbeliai_config.mat';
+kelias=pwd;
 
 try
    fid_vers=fopen(fullfile(curdir,'Darbeliai.versija'));
@@ -142,6 +143,7 @@ while ~isempty(dublik);
     movefile(dublik,path_deactivated,'f');
     [dublik,~,~]=fileparts(which(mfilename));
 end;
+cd(kelias);
 addpath(curdir);
 addpath(genpath(fullfile(curdir, 'fig')));
 addpath(genpath(fullfile(curdir, 'external')));
