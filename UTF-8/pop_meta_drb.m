@@ -2426,38 +2426,35 @@ dbr=get(pm,'UserData'); set(pm_,'UserData',     dbr{get(pm_,'Value')});
 
 
 function [rinkiniai_lokaliz,rinkiniai_orig]=Darbeliu_nuostatu_rinkiniai(darbelio_Nr)
-rinkiniai_lokaliz={};
-rinkiniai_orig={};
+rinkiniai_orig={'numatytas'}; % Net jei tokio ir dar nėra, jis sukuriamas paleidižiant dialogą
 try
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
     switch darbelio_Nr
         case 1
-            rinkiniai={Darbeliai.dialogai.pop_pervadinimas.saranka.vardas};
+            rinkiniai_orig={Darbeliai.dialogai.pop_pervadinimas.saranka.vardas};
         case 2
-            rinkiniai={Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.vardas};
+            rinkiniai_orig={Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.vardas};
         case 3
-            rinkiniai={Darbeliai.dialogai.pop_QRS_i_EEG.saranka.vardas};
+            rinkiniai_orig={Darbeliai.dialogai.pop_QRS_i_EEG.saranka.vardas};
         case 4
-            rinkiniai={Darbeliai.dialogai.pop_Epochavimas_ir_atrinkimas.saranka.vardas};
+            rinkiniai_orig={Darbeliai.dialogai.pop_Epochavimas_ir_atrinkimas.saranka.vardas};
         case 5
-            rinkiniai={Darbeliai.dialogai.pop_ERP_savybes.saranka.vardas};
+            rinkiniai_orig={Darbeliai.dialogai.pop_ERP_savybes.saranka.vardas};
         case 6
-            rinkiniai={Darbeliai.dialogai.pop_eeg_spektrine_galia.saranka.vardas};
+            rinkiniai_orig={Darbeliai.dialogai.pop_eeg_spektrine_galia.saranka.vardas};
         case 7
-            rinkiniai={Darbeliai.dialogai.pop_rankinis.saranka.vardas};
+            rinkiniai_orig={Darbeliai.dialogai.pop_rankinis.saranka.vardas};
         otherwise
             disp('darbelio_Nr=');
             disp(darbelio_Nr);
             error([lokaliz('Netinkami parametrai')]);
     end;
-    rinkiniai_orig=rinkiniai;
-    rinkiniai(find(ismember(rinkiniai,'numatytas'))) ={lokaliz('Numatytas')};
-    rinkiniai(find(ismember(rinkiniai,'paskutinis')))={lokaliz('Paskiausias')};
-    rinkiniai_lokaliz=rinkiniai;
 catch err;
-    Pranesk_apie_klaida(err, 'Darbeliu_nuostatu_rinkiniai', darbelio_Nr, 0);
+    %Pranesk_apie_klaida(err, 'Darbeliu_nuostatu_rinkiniai', darbelio_Nr, 0);
 end;
+rinkiniai_lokaliz(find(ismember(rinkiniai_orig,   'numatytas' )))={lokaliz('Numatytas')};
+rinkiniai_lokaliz(find(ismember(rinkiniai_lokaliz,'paskutinis')))={lokaliz('Paskiausias')};
 
 
 % --- Executes on selection change in popupmenu_patvirt.
