@@ -1793,13 +1793,7 @@ function checkbox_drb1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_drb1
-if and(get(handles.checkbox_drb1, 'Value'), ...
-        strcmp(get(handles.checkbox_drb1, 'Enable'),'on'));
-    set(handles.popupmenu_drb1,'Enable','on');
-else
-    set(handles.popupmenu_drb1,'Enable','off');
-end;
-popupmenu_drb1_Callback(hObject, eventdata, handles);
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 1);
 
 
 % --- Executes on selection change in popupmenu_drb1.
@@ -1810,26 +1804,7 @@ function popupmenu_drb1_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb1 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb1
-if strcmp(get(handles.popupmenu_drb1, 'Enable'),'on');
-    [rinkiniai,rinkiniai2]=Darbeliu_nuostatu_rinkiniai(get(handles.popupmenu_drb1, 'Value'));
-    if ~isempty(rinkiniai);
-        set(handles.popupmenu_drb1_,'String',rinkiniai);
-        set(handles.popupmenu_drb1,'UserData',rinkiniai2);
-        i = []; 
-        try i=find(ismember(rinkiniai2,get(handles.popupmenu_drb1_,'UserData'))); catch err; end;
-        if isempty(i); i=find(ismember(rinkiniai2,'paskutinis')); end; if isempty(i); i=1; end;
-        set(handles.popupmenu_drb1_,'Value',i(1));
-        set(handles.popupmenu_drb1_,'Enable','on');
-    else
-        set(handles.popupmenu_drb1,'UserData',{'paskutinis'});
-        set(handles.popupmenu_drb1_,'String',{' '});
-        set(handles.popupmenu_drb1_,'Value',1);
-        set(handles.popupmenu_drb1_,'Enable','off');        
-    end;
-    popupmenu_drb1__Callback(hObject, eventdata, handles);
-else
-    set(handles.popupmenu_drb1_,'Enable','off');
-end;
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 1);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -1853,12 +1828,7 @@ function popupmenu_drb1__Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb1_ contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb1_
-str=get(handles.popupmenu_drb1_,'String');
-set(handles.popupmenu_drb1_,'TooltipString',str{...
-    get(handles.popupmenu_drb1_,'Value')});
-dbr=get(handles.popupmenu_drb1,'UserData');
-set(handles.popupmenu_drb1_,'UserData',dbr{...
-    get(handles.popupmenu_drb1_,'Value')});
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 1);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -1881,13 +1851,7 @@ function checkbox_drb2_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_drb2
-if and(get(handles.checkbox_drb2, 'Value'), ...
-        strcmp(get(handles.checkbox_drb2, 'Enable'),'on'));
-    set(handles.popupmenu_drb2,'Enable','on');
-else
-    set(handles.popupmenu_drb2,'Enable','off');
-end;
-popupmenu_drb2_Callback(hObject, eventdata, handles);
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 2);
 
 
 % --- Executes on selection change in popupmenu_drb2.
@@ -1898,26 +1862,7 @@ function popupmenu_drb2_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb2 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb2
-if strcmp(get(handles.popupmenu_drb2, 'Enable'),'on');
-    [rinkiniai,rinkiniai2]=Darbeliu_nuostatu_rinkiniai(get(handles.popupmenu_drb2, 'Value'));
-    if ~isempty(rinkiniai);
-        set(handles.popupmenu_drb2_,'String',rinkiniai);
-        set(handles.popupmenu_drb2,'UserData',rinkiniai2);
-        i = []; 
-        try i=find(ismember(rinkiniai2,get(handles.popupmenu_drb2_,'UserData'))); catch err; end;
-        if isempty(i); i=find(ismember(rinkiniai2,'paskutinis')); end; if isempty(i); i=1; end;
-        set(handles.popupmenu_drb2_,'Value',i(1));
-        set(handles.popupmenu_drb2_,'Enable','on');
-    else
-        set(handles.popupmenu_drb2,'UserData',{'paskutinis'});
-        set(handles.popupmenu_drb2_,'String',{' '});
-        set(handles.popupmenu_drb2_,'Value',1);
-        set(handles.popupmenu_drb2_,'Enable','off');        
-    end;
-    popupmenu_drb2__Callback(hObject, eventdata, handles);
-else
-    set(handles.popupmenu_drb2_,'Enable','off');
-end;
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 2);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -1941,12 +1886,7 @@ function popupmenu_drb2__Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb2_ contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb2_
-str=get(handles.popupmenu_drb2_,'String');
-set(handles.popupmenu_drb2_,'TooltipString',str{...
-    get(handles.popupmenu_drb2_,'Value')});
-dbr=get(handles.popupmenu_drb2,'UserData');
-set(handles.popupmenu_drb2_,'UserData',dbr{...
-    get(handles.popupmenu_drb2_,'Value')});
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 2);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -1969,13 +1909,7 @@ function checkbox_drb3_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_drb3
-if and(get(handles.checkbox_drb3, 'Value'), ...
-        strcmp(get(handles.checkbox_drb3, 'Enable'),'on'));
-    set(handles.popupmenu_drb3,'Enable','on');
-else
-    set(handles.popupmenu_drb3,'Enable','off');
-end;
-popupmenu_drb3_Callback(hObject, eventdata, handles);
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 3);
 
 
 % --- Executes on selection change in popupmenu_drb3.
@@ -1986,26 +1920,7 @@ function popupmenu_drb3_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb3 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb3
-if strcmp(get(handles.popupmenu_drb3, 'Enable'),'on');
-    [rinkiniai,rinkiniai2]=Darbeliu_nuostatu_rinkiniai(get(handles.popupmenu_drb3, 'Value'));
-    if ~isempty(rinkiniai);
-        set(handles.popupmenu_drb3_,'String',rinkiniai);
-        set(handles.popupmenu_drb3,'UserData',rinkiniai2);
-        i = [];
-        try i=find(ismember(rinkiniai2,get(handles.popupmenu_drb3_,'UserData'))); catch err; end;
-        if isempty(i); i=find(ismember(rinkiniai2,'paskutinis')); end; if isempty(i); i=1; end;
-        set(handles.popupmenu_drb3_,'Value',i(1));
-        set(handles.popupmenu_drb3_,'Enable','on');
-    else
-        set(handles.popupmenu_drb3,'UserData',{'paskutinis'});
-        set(handles.popupmenu_drb3_,'String',{' '});
-        set(handles.popupmenu_drb3_,'Value',1);
-        set(handles.popupmenu_drb3_,'Enable','off');        
-    end;
-    popupmenu_drb3__Callback(hObject, eventdata, handles);
-else
-    set(handles.popupmenu_drb3_,'Enable','off');
-end;
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 3);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2029,12 +1944,7 @@ function popupmenu_drb3__Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb3_ contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb3_
-str=get(handles.popupmenu_drb3_,'String');
-set(handles.popupmenu_drb3_,'TooltipString',str{...
-    get(handles.popupmenu_drb3_,'Value')});
-dbr=get(handles.popupmenu_drb3,'UserData');
-set(handles.popupmenu_drb3_,'UserData',dbr{...
-    get(handles.popupmenu_drb3_,'Value')});
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 3);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2057,13 +1967,7 @@ function checkbox_drb4_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_drb4
-if and(get(handles.checkbox_drb4, 'Value'), ...
-        strcmp(get(handles.checkbox_drb4, 'Enable'),'on'));
-    set(handles.popupmenu_drb4,'Enable','on');
-else
-    set(handles.popupmenu_drb4,'Enable','off');
-end;
-popupmenu_drb4_Callback(hObject, eventdata, handles);
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 4);
 
 
 % --- Executes on selection change in popupmenu_drb4.
@@ -2074,26 +1978,7 @@ function popupmenu_drb4_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb4 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb4
-if strcmp(get(handles.popupmenu_drb4, 'Enable'),'on');
-    [rinkiniai,rinkiniai2]=Darbeliu_nuostatu_rinkiniai(get(handles.popupmenu_drb4, 'Value'));
-    if ~isempty(rinkiniai);
-        set(handles.popupmenu_drb4_,'String',rinkiniai);
-        set(handles.popupmenu_drb4,'UserData',rinkiniai2);
-        i = [];
-        try i=find(ismember(rinkiniai2,get(handles.popupmenu_drb4_,'UserData'))); catch err; end;
-        if isempty(i); i=find(ismember(rinkiniai2,'paskutinis')); end; if isempty(i); i=1; end;
-        set(handles.popupmenu_drb4_,'Value',i(1));
-        set(handles.popupmenu_drb4_,'Enable','on');
-    else
-        set(handles.popupmenu_drb4,'UserData',{'paskutinis'});
-        set(handles.popupmenu_drb4_,'String',{' '});
-        set(handles.popupmenu_drb4_,'Value',1);
-        set(handles.popupmenu_drb4_,'Enable','off');        
-    end;
-    popupmenu_drb4__Callback(hObject, eventdata, handles);
-else
-    set(handles.popupmenu_drb4_,'Enable','off');
-end;
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 4);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2117,12 +2002,7 @@ function popupmenu_drb4__Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb4_ contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb4_
-str=get(handles.popupmenu_drb4_,'String');
-set(handles.popupmenu_drb4_,'TooltipString',str{...
-    get(handles.popupmenu_drb4_,'Value')});
-dbr=get(handles.popupmenu_drb4,'UserData');
-set(handles.popupmenu_drb4_,'UserData',dbr{...
-    get(handles.popupmenu_drb4_,'Value')});
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 4);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2145,13 +2025,7 @@ function checkbox_drb5_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_drb5
-if and(get(handles.checkbox_drb5, 'Value'), ...
-        strcmp(get(handles.checkbox_drb5, 'Enable'),'on'));
-    set(handles.popupmenu_drb5,'Enable','on');
-else
-    set(handles.popupmenu_drb5,'Enable','off');
-end;
-popupmenu_drb5_Callback(hObject, eventdata, handles);
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 5);
 
 
 % --- Executes on selection change in popupmenu_drb5.
@@ -2162,26 +2036,7 @@ function popupmenu_drb5_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb5 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb5
-if strcmp(get(handles.popupmenu_drb5, 'Enable'),'on');
-    [rinkiniai,rinkiniai2]=Darbeliu_nuostatu_rinkiniai(get(handles.popupmenu_drb5, 'Value'));
-    if ~isempty(rinkiniai);
-        set(handles.popupmenu_drb5_,'String',rinkiniai);
-        set(handles.popupmenu_drb5,'UserData',rinkiniai2);
-        i = [];
-        try i=find(ismember(rinkiniai2,get(handles.popupmenu_drb5_,'UserData'))); catch err; end;
-        if isempty(i); i=find(ismember(rinkiniai2,'paskutinis')); end; if isempty(i); i=1; end;
-        set(handles.popupmenu_drb5_,'Value',i(1));
-        set(handles.popupmenu_drb5_,'Enable','on');
-    else
-        set(handles.popupmenu_drb5,'UserData',{'paskutinis'});
-        set(handles.popupmenu_drb5_,'String',{' '});
-        set(handles.popupmenu_drb5_,'Value',1);
-        set(handles.popupmenu_drb5_,'Enable','off');        
-    end;
-    popupmenu_drb5__Callback(hObject, eventdata, handles);
-else
-    set(handles.popupmenu_drb5_,'Enable','off');
-end;
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 5);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2205,12 +2060,7 @@ function popupmenu_drb5__Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb5_ contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb5_
-str=get(handles.popupmenu_drb5_,'String');
-set(handles.popupmenu_drb5_,'TooltipString',str{...
-    get(handles.popupmenu_drb5_,'Value')});
-dbr=get(handles.popupmenu_drb5,'UserData');
-set(handles.popupmenu_drb5_,'UserData',dbr{...
-    get(handles.popupmenu_drb5_,'Value')});
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 5);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2233,13 +2083,7 @@ function checkbox_drb6_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_drb6
-if and(get(handles.checkbox_drb6, 'Value'), ...
-        strcmp(get(handles.checkbox_drb6, 'Enable'),'on'));
-    set(handles.popupmenu_drb6,'Enable','on');
-else
-    set(handles.popupmenu_drb6,'Enable','off');
-end;
-popupmenu_drb6_Callback(hObject, eventdata, handles);
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 6);
 
 
 % --- Executes on selection change in popupmenu_drb6.
@@ -2250,26 +2094,7 @@ function popupmenu_drb6_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb6 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb6
-if strcmp(get(handles.popupmenu_drb6, 'Enable'),'on');
-    [rinkiniai,rinkiniai2]=Darbeliu_nuostatu_rinkiniai(get(handles.popupmenu_drb6, 'Value'));
-    if ~isempty(rinkiniai);
-        set(handles.popupmenu_drb6_,'String',rinkiniai);
-        set(handles.popupmenu_drb6,'UserData',rinkiniai2);
-        i = [];
-        try i=find(ismember(rinkiniai2,get(handles.popupmenu_drb6_,'UserData'))); catch err; end;
-        if isempty(i); i=find(ismember(rinkiniai2,'paskutinis')); end; if isempty(i); i=1; end;
-        set(handles.popupmenu_drb6_,'Value',i(1));
-        set(handles.popupmenu_drb6_,'Enable','on');
-    else
-        set(handles.popupmenu_drb6,'UserData',{'paskutinis'});
-        set(handles.popupmenu_drb6_,'String',{' '});
-        set(handles.popupmenu_drb6_,'Value',1);
-        set(handles.popupmenu_drb6_,'Enable','off');        
-    end;
-    popupmenu_drb6__Callback(hObject, eventdata, handles);
-else
-    set(handles.popupmenu_drb6_,'Enable','off');
-end;
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 6);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2293,12 +2118,7 @@ function popupmenu_drb6__Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb6_ contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb6_
-str=get(handles.popupmenu_drb6_,'String');
-set(handles.popupmenu_drb6_,'TooltipString',str{...
-    get(handles.popupmenu_drb6_,'Value')});
-dbr=get(handles.popupmenu_drb6,'UserData');
-set(handles.popupmenu_drb6_,'UserData',dbr{...
-    get(handles.popupmenu_drb6_,'Value')});
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 6);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2321,13 +2141,7 @@ function checkbox_drb7_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_drb7
-if and(get(handles.checkbox_drb7, 'Value'), ...
-        strcmp(get(handles.checkbox_drb7, 'Enable'),'on'));
-    set(handles.popupmenu_drb7,'Enable','on');
-else
-    set(handles.popupmenu_drb7,'Enable','off');
-end;
-popupmenu_drb7_Callback(hObject, eventdata, handles);
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 7);
 
 
 % --- Executes on selection change in popupmenu_drb7.
@@ -2338,26 +2152,7 @@ function popupmenu_drb7_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb7 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb7
-if strcmp(get(handles.popupmenu_drb7, 'Enable'),'on');
-    [rinkiniai,rinkiniai2]=Darbeliu_nuostatu_rinkiniai(get(handles.popupmenu_drb7, 'Value'));
-    if ~isempty(rinkiniai);
-        set(handles.popupmenu_drb7_,'String',rinkiniai);
-        set(handles.popupmenu_drb7,'UserData',rinkiniai2);
-        i = [];
-        try i=find(ismember(rinkiniai2,get(handles.popupmenu_drb7_,'UserData'))); catch err; end;
-        if isempty(i); i=find(ismember(rinkiniai2,'paskutinis')); end; if isempty(i); i=1; end;
-        set(handles.popupmenu_drb7_,'Value',i(1));
-        set(handles.popupmenu_drb7_,'Enable','on');
-    else
-        set(handles.popupmenu_drb7,'UserData',{'paskutinis'});
-        set(handles.popupmenu_drb7_,'String',{' '});
-        set(handles.popupmenu_drb7_,'Value',1);
-        set(handles.popupmenu_drb7_,'Enable','off');        
-    end;
-    popupmenu_drb7__Callback(hObject, eventdata, handles);
-else
-    set(handles.popupmenu_drb7_,'Enable','off');
-end;
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 7);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2381,12 +2176,7 @@ function popupmenu_drb7__Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb7_ contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb7_
-str=get(handles.popupmenu_drb7_,'String');
-set(handles.popupmenu_drb7_,'TooltipString',str{...
-    get(handles.popupmenu_drb7_,'Value')});
-dbr=get(handles.popupmenu_drb7,'UserData');
-set(handles.popupmenu_drb7_,'UserData',dbr{...
-    get(handles.popupmenu_drb7_,'Value')});
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 7);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2409,13 +2199,7 @@ function checkbox_drb8_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_drb8
-if and(get(handles.checkbox_drb8, 'Value'), ...
-        strcmp(get(handles.checkbox_drb8, 'Enable'),'on'));
-    set(handles.popupmenu_drb8,'Enable','on');
-else
-    set(handles.popupmenu_drb8,'Enable','off');
-end;
-popupmenu_drb8_Callback(hObject, eventdata, handles);
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 8);
 
 
 % --- Executes on selection change in popupmenu_drb8.
@@ -2426,26 +2210,7 @@ function popupmenu_drb8_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb8 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb8
-if strcmp(get(handles.popupmenu_drb8, 'Enable'),'on');
-    [rinkiniai,rinkiniai2]=Darbeliu_nuostatu_rinkiniai(get(handles.popupmenu_drb8, 'Value'));
-    if ~isempty(rinkiniai);
-        set(handles.popupmenu_drb8_,'String',rinkiniai);
-        set(handles.popupmenu_drb8,'UserData',rinkiniai2);
-        i = [];
-        try i=find(ismember(rinkiniai2,get(handles.popupmenu_drb8_,'UserData'))); catch err; end;
-        if isempty(i); i=find(ismember(rinkiniai2,'paskutinis')); end; if isempty(i); i=1; end;
-        set(handles.popupmenu_drb8_,'Value',i(1));
-        set(handles.popupmenu_drb8_,'Enable','on');
-    else
-        set(handles.popupmenu_drb8,'UserData',{'paskutinis'});
-        set(handles.popupmenu_drb8_,'String',{' '});
-        set(handles.popupmenu_drb8_,'Value',1);
-        set(handles.popupmenu_drb8_,'Enable','off');        
-    end;
-    popupmenu_drb8__Callback(hObject, eventdata, handles);
-else
-    set(handles.popupmenu_drb8_,'Enable','off');
-end;
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 8);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2469,12 +2234,7 @@ function popupmenu_drb8__Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb8_ contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb8_
-str=get(handles.popupmenu_drb8_,'String');
-set(handles.popupmenu_drb8_,'TooltipString',str{...
-    get(handles.popupmenu_drb8_,'Value')});
-dbr=get(handles.popupmenu_drb8,'UserData');
-set(handles.popupmenu_drb8_,'UserData',dbr{...
-    get(handles.popupmenu_drb8_,'Value')});
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 8);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2497,13 +2257,7 @@ function checkbox_drb9_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_drb9
-if and(get(handles.checkbox_drb9, 'Value'), ...
-        strcmp(get(handles.checkbox_drb9, 'Enable'),'on'));
-    set(handles.popupmenu_drb9,'Enable','on');
-else
-    set(handles.popupmenu_drb9,'Enable','off');
-end;
-popupmenu_drb9_Callback(hObject, eventdata, handles);
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 9);
 
 
 % --- Executes on selection change in popupmenu_drb9.
@@ -2514,26 +2268,7 @@ function popupmenu_drb9_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb9 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb9
-if strcmp(get(handles.popupmenu_drb9, 'Enable'),'on');
-    [rinkiniai,rinkiniai2]=Darbeliu_nuostatu_rinkiniai(get(handles.popupmenu_drb9, 'Value'));
-    if ~isempty(rinkiniai);
-        set(handles.popupmenu_drb9_,'String',rinkiniai);
-        set(handles.popupmenu_drb9,'UserData',rinkiniai2);
-        i = [];
-        try i=find(ismember(rinkiniai2,get(handles.popupmenu_drb9_,'UserData'))); catch err; end;
-        if isempty(i); i=find(ismember(rinkiniai2,'paskutinis')); end; if isempty(i); i=1; end;
-        set(handles.popupmenu_drb9_,'Value',i(1));
-        set(handles.popupmenu_drb9_,'Enable','on');
-    else
-        set(handles.popupmenu_drb9,'UserData',{'paskutinis'});
-        set(handles.popupmenu_drb9_,'String',{' '});
-        set(handles.popupmenu_drb9_,'Value',1);
-        set(handles.popupmenu_drb9_,'Enable','off');        
-    end;
-    popupmenu_drb9__Callback(hObject, eventdata, handles);
-else
-    set(handles.popupmenu_drb9_,'Enable','off');
-end;
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 9);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2557,12 +2292,7 @@ function popupmenu_drb9__Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb9_ contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb9_
-str=get(handles.popupmenu_drb9_,'String');
-set(handles.popupmenu_drb9_,'TooltipString',str{...
-    get(handles.popupmenu_drb9_,'Value')});
-dbr=get(handles.popupmenu_drb9,'UserData');
-set(handles.popupmenu_drb9_,'UserData',dbr{...
-    get(handles.popupmenu_drb9_,'Value')});
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 9);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2585,13 +2315,7 @@ function checkbox_drb10_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_drb10
-if and(get(handles.checkbox_drb10, 'Value'), ...
-        strcmp(get(handles.checkbox_drb10, 'Enable'),'on'));
-    set(handles.popupmenu_drb10,'Enable','on');
-else
-    set(handles.popupmenu_drb10,'Enable','off');
-end;
-popupmenu_drb10_Callback(hObject, eventdata, handles);
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 10);
 
 
 % --- Executes on selection change in popupmenu_drb10.
@@ -2602,26 +2326,8 @@ function popupmenu_drb10_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb10 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb10
-if strcmp(get(handles.popupmenu_drb10, 'Enable'),'on');
-    [rinkiniai,rinkiniai2]=Darbeliu_nuostatu_rinkiniai(get(handles.popupmenu_drb10, 'Value'));
-    if ~isempty(rinkiniai);
-        set(handles.popupmenu_drb10_,'String',rinkiniai);
-        set(handles.popupmenu_drb10,'UserData',rinkiniai2);
-        i = [];
-        try i=find(ismember(rinkiniai2,get(handles.popupmenu_drb10_,'UserData'))); catch err; end;
-        if isempty(i); i=find(ismember(rinkiniai2,'paskutinis')); end; if isempty(i); i=1; end;
-        set(handles.popupmenu_drb10_,'Value',i(1));
-        set(handles.popupmenu_drb10_,'Enable','on');
-    else
-        set(handles.popupmenu_drb10,'UserData',{'paskutinis'});
-        set(handles.popupmenu_drb10_,'String',{' '});
-        set(handles.popupmenu_drb10_,'Value',1);
-        set(handles.popupmenu_drb10_,'Enable','off');        
-    end;
-    popupmenu_drb10__Callback(hObject, eventdata, handles);
-else
-    set(handles.popupmenu_drb10_,'Enable','off');
-end;
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 10);
+
 
 % --- Executes during object creation, after setting all properties.
 function popupmenu_drb10_CreateFcn(hObject, eventdata, handles)
@@ -2644,12 +2350,7 @@ function popupmenu_drb10__Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb10_ contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb10_
-str=get(handles.popupmenu_drb10_,'String');
-set(handles.popupmenu_drb10_,'TooltipString',str{...
-    get(handles.popupmenu_drb10_,'Value')});
-dbr=get(handles.popupmenu_drb10,'UserData');
-set(handles.popupmenu_drb10_,'UserData',dbr{...
-    get(handles.popupmenu_drb10_,'Value')});
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 10);
 
 % --- Executes during object creation, after setting all properties.
 function popupmenu_drb10__CreateFcn(hObject, eventdata, handles)
@@ -2662,6 +2363,67 @@ function popupmenu_drb10__CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in checkbox_drb*.
+function virtual_checkbox_drb_Callback(hObject, eventdata, handles, id)
+% hObject    handle to checkbox_drb* (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_drb*
+cbh=eval(['handles.checkbox_drb' num2str(id)]);
+pm=eval(['handles.popupmenu_drb' num2str(id)]);
+aktyvus=and(get(cbh, 'Value'), strcmp(get(cbh, 'Enable'),'on'));
+set(pm,'Enable',fastif(aktyvus,'on','off'));
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, id);
+
+
+% --- Executes on selection change in popupmenu_drb*.
+function virtual_popupmenu_drb_Callback(hObject, eventdata, handles, id)
+% hObject    handle to popupmenu_drb* (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb* contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb*
+pm=eval(['handles.popupmenu_drb' num2str(id)]);
+pm_=eval(['handles.popupmenu_drb' num2str(id) '_']);
+if strcmp(get(pm, 'Enable'),'on');
+    [rinkiniai,rinkiniai2]=Darbeliu_nuostatu_rinkiniai(get(pm, 'Value'));
+    if ~isempty(rinkiniai);
+        set(pm_,'String',rinkiniai);
+        set(pm,'UserData',rinkiniai2);
+        i = [];
+        try i=find(ismember(rinkiniai2,get(pm_,'UserData'))); catch err; end;
+        if isempty(i); i=find(ismember(rinkiniai2,'paskutinis')); end; if isempty(i); i=1; end;
+        set(pm_,'Value',i(1));
+        set(pm_,'Enable','on');
+    else
+        set(pm,'UserData',{'paskutinis'});
+        set(pm_,'String',{' '});
+        set(pm_,'Value',1);
+        set(pm_,'Enable','off');        
+    end;
+    eval(['popupmenu_drb' num2str(id) '__Callback(hObject, eventdata, handles);' ]);
+else
+    set(pm_,'Enable','off');
+end;
+
+
+% --- Executes on selection change in popupmenu_drb*_.
+function virtual_popupmenu_drb__Callback(hObject, eventdata, handles, id)
+% hObject    handle to popupmenu_drb*_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb*_ contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb*_
+pm=eval(['handles.popupmenu_drb' num2str(id)]);
+pm_=eval(['handles.popupmenu_drb' num2str(id) '_']);
+str=get(pm_,'String');  set(pm_,'TooltipString',str{get(pm_,'Value')});
+dbr=get(pm,'UserData'); set(pm_,'UserData',     dbr{get(pm_,'Value')});
+
 
 function [rinkiniai_lokaliz,rinkiniai_orig]=Darbeliu_nuostatu_rinkiniai(darbelio_Nr)
 rinkiniai_lokaliz={};
@@ -2696,9 +2458,6 @@ function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 catch err;
     Pranesk_apie_klaida(err, 'Darbeliu_nuostatu_rinkiniai', darbelio_Nr, 0);
 end;
-
-
-
 
 
 % --- Executes on selection change in popupmenu_patvirt.
