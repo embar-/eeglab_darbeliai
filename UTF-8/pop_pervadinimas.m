@@ -726,8 +726,11 @@ try
     end;
     PASIRINKTI_FAILAI=PASIRINKTI_FAILAI(get(handles.listbox_tikri,'Value'));
     lentele={};
+    sabln=strrep(get(handles.edit4,'String'),'%d','%[0123456789]');
+    sabln=strrep(sabln,'%f','%%f'); sabln=strrep(sabln,'%u','%%u'); sabln=strrep(sabln,'%n','%%n');
+    sabln=strrep(sabln,'%q','%%q'); sabln=strrep(sabln,'%C','%%C'); sabln=strrep(sabln,'%D','%%D');
     for i=1:length(PASIRINKTI_FAILAI);
-        tmp= (textscan(PASIRINKTI_FAILAI{i}, get(handles.edit4,'String'), 'delimiter', get(handles.edit11,'String'))) ;
+        tmp= (textscan(PASIRINKTI_FAILAI{i}, sabln, 'delimiter', get(handles.edit11,'String'))) ;
         %disp([PASIRINKTI_FAILAI{i} '.']);
         lentele(i,1:length(tmp))=cellfun(@(x) konvertavimas_is_narvelio(x), tmp, 'UniformOutput', false);
     end;
