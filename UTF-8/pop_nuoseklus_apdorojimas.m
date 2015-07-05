@@ -3020,29 +3020,30 @@ function edit3_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit3 as text
 %        str2double(get(hObject,'String')) returns contents of edit3 as a double
-x=str2num(get(handles.edit3,'String'));
-senas=get(handles.edit3,'UserData');
+id=handles.edit3;
+x=real(str2num(get(id,'String')));
+senas=get(id,'UserData');
 %disp(x);
 tinka=0;
 if and(length(x) == 1, get(handles.popupmenu9,'Value') < 3 ) ;
   if x > 0 ;
     tinka=1;
-    set(handles.edit3,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
   end;
 elseif and(length(x) == 2, get(handles.popupmenu9,'Value') > 2 ) ;
   if and(0 < x(1), x(1) < x(2));
     tinka=1;
-    set(handles.edit3,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
   end;
 end;
 if tinka;
-    set(handles.edit3,'String',get(handles.edit3,'UserData'));
+    set(id,'String',get(id,'UserData'));
 end;
-set(handles.edit3,'BackgroundColor',[1 1 tinka]);
-%x=str2num(get(handles.edit3,'String'));
-if ~strcmp(senas,get(handles.edit3,'String'));
-    set(handles.edit_filtr1,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(handles.edit3,'UserData')) , '[ ]*', '-')   ]  ) ;
-    set(handles.edit_filtr1_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(handles.edit3,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
+set(id,'BackgroundColor',[1 1 tinka]);
+%x=str2num(get(id,'String'));
+if ~strcmp(senas,get(id,'String'));
+    set(handles.edit_filtr1,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(id,'UserData')) , '[ ]*', '-')   ]  ) ;
+    set(handles.edit_filtr1_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(id,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
 end;
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
@@ -3969,18 +3970,12 @@ function edit19_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit19 as text
 %        str2double(get(hObject,'String')) returns contents of edit19 as a double
-x=str2num(get(handles.edit19,'String'));
-senas=get(handles.edit19,'UserData');
-if length(x) == 1 ;
-    if x > 0 ;
-        set(handles.edit19,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-    end;
-end;
-set(handles.edit19,'String',get(handles.edit19,'UserData'));
-set(handles.edit19,'BackgroundColor',[1 1 1]);
-if ~strcmp(senas,get(handles.edit19,'String'));
-    set(handles.edit_vienoda_trukme,'String',[ '_' num2str(get(handles.edit19,'UserData')) lokaliz('seconds_short') ] );
-    set(handles.edit_vienoda_trukme_,'String',[ lokaliz('_Nuosekl_apdor_default_dir_unify_duration')  ' ' num2str(get(handles.edit19,'UserData')) ' ' lokaliz('seconds_short') ] );
+id=handles.edit19;
+senas=get(id,'UserData');
+virtual_edit_sk_Callback(hObject, eventdata, handles, id, 1, 'x > 0');
+if ~strcmp(senas,get(id,'String'));
+    set(handles.edit_vienoda_trukme,'String',[ '_' num2str(get(id,'UserData')) lokaliz('seconds_short') ] );
+    set(handles.edit_vienoda_trukme_,'String',[ lokaliz('_Nuosekl_apdor_default_dir_unify_duration')  ' ' num2str(get(id,'UserData')) ' ' lokaliz('seconds_short') ] );
 end;
 
 % --- Executes during object creation, after setting all properties.
@@ -4004,14 +3999,7 @@ function edit20_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit20 as text
 %        str2double(get(hObject,'String')) returns contents of edit20 as a double
-x=str2num(get(handles.edit20,'String'));
-if length(x) == 1 ;
-  if x > 0;
-    set(handles.edit20,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-  end;
-end;
-set(handles.edit20,'String',num2str(get(handles.edit20,'UserData')));
-set(handles.edit20,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit20, 1, 'x > 0');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -4035,31 +4023,33 @@ function edit21_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit21 as text
 %        str2double(get(hObject,'String')) returns contents of edit21 as a double
-x=str2num(get(handles.edit21,'String'));
-senas=get(handles.edit21,'UserData');
+id=handles.edit21;
+senas=get(id,'UserData');
+x=real(str2num(get(handles.edit21,'String')));
 %disp(x);
 tinka=0;
 if and(length(x) == 1, get(handles.popupmenu10,'Value') < 3 ) ;
   if x > 0;
     tinka=1;
-    set(handles.edit21,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
   end;
 elseif and(length(x) == 2, get(handles.popupmenu10,'Value') > 2 ) ;
   if and(0 < x(1), x(1) < x(2));
     tinka=1;
-    set(handles.edit21,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
   end;
 end;
 if tinka;
-    set(handles.edit21,'String',get(handles.edit21,'UserData'));
+    set(id,'String',get(id,'UserData'));
 end;
-set(handles.edit21,'BackgroundColor',[1 1 tinka]);
-%x=str2num(get(handles.edit21,'String'));
-if ~strcmp(senas,get(handles.edit21,'String'));
-    set(handles.edit_filtr2,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(handles.edit21,'UserData')) , '[ ]*', '-')   ]  ) ;
-    set(handles.edit_filtr2_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(handles.edit21,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
+set(id,'BackgroundColor',[1 1 tinka]);
+%x=str2num(get(id,'String'));
+if ~strcmp(senas,get(id,'String'));
+    set(handles.edit_filtr2,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(id,'UserData')) , '[ ]*', '-')   ]  ) ;
+    set(handles.edit_filtr2_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(id,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
 end;
 Ar_galima_vykdyti(hObject, eventdata, handles);
+
 
 function edit50_Callback(hObject, eventdata, handles)
 % hObject    handle to edit50 (see GCBO)
@@ -4068,18 +4058,12 @@ function edit50_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit50 as text
 %        str2double(get(hObject,'String')) returns contents of edit50 as a double
-x=str2num(get(handles.edit50,'String'));
-senas=get(handles.edit50,'UserData');
-if length(x) == 1 ;
-  if x > 0;
-    set(handles.edit50,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-  end;
-end;
-set(handles.edit50,'String',num2str(get(handles.edit50,'UserData')));
-set(handles.edit50,'BackgroundColor',[1 1 1]);
-if ~strcmp(senas,get(handles.edit50,'String'));
-    set(handles.edit_filtr_tinklo_,'String',[lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' num2str(get(handles.edit50,'UserData')) ' ' lokaliz('Hz') ]) ;
-    set(handles.edit_filtr_tinklo,'String',[lokaliz('_Nuosekl_apdor_default_file_suffix_filter') num2str(get(handles.edit50,'UserData')) ]) ;
+id=handles.edit50;
+senas=get(id,'UserData');
+virtual_edit_sk_Callback(hObject, eventdata, handles, id, 1, 'x > 0');
+if ~strcmp(senas,get(id,'String'));
+    set(handles.edit_filtr_tinklo_,'String',[lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' num2str(get(id,'UserData')) ' ' lokaliz('Hz') ]) ;
+    set(handles.edit_filtr_tinklo,'String',[lokaliz('_Nuosekl_apdor_default_file_suffix_filter') num2str(get(id,'UserData')) ]) ;
 end;
 
 
@@ -5042,12 +5026,7 @@ function edit_atmesk_kan_auto_slenkstis_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit_atmesk_kan_auto_slenkstis as text
 %        str2double(get(hObject,'String')) returns contents of edit_atmesk_kan_auto_slenkstis as a double
-x=str2num(get(handles.edit_atmesk_kan_auto_slenkstis,'String'));
-if length(x) == 1;
-    set(handles.edit_atmesk_kan_auto_slenkstis,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-end;
-set(handles.edit_atmesk_kan_auto_slenkstis,'String',num2str(get(handles.edit_atmesk_kan_auto_slenkstis,'UserData')));
-set(handles.edit_atmesk_kan_auto_slenkstis,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit_atmesk_kan_auto_slenkstis, 1, 'true');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -5071,14 +5050,7 @@ function edit40_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit40 as text
 %        str2double(get(hObject,'String')) returns contents of edit40 as a double
-x=str2num(get(handles.edit40,'String'));
-if length(x) == 2 ;
-    if and(0 < x(1), x(1) < x(2));
-        set(handles.edit40,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-    end;
-end;
-set(handles.edit40,'String',num2str(get(handles.edit40,'UserData')));
-set(handles.edit40,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit40, 2, 'and(0 < x(1), x(1) < x(2))');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -5231,12 +5203,7 @@ function edit43_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit43 as text
 %        str2double(get(hObject,'String')) returns contents of edit43 as a double
-x=str2num(get(handles.edit43,'String'));
-if length(x) == 1 ;
-    set(handles.edit43,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-end;
-set(handles.edit43,'String',num2str(get(handles.edit43,'UserData')));
-set(handles.edit43,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit43, 1, 'true');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -5260,14 +5227,7 @@ function edit44_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit44 as text
 %        str2double(get(hObject,'String')) returns contents of edit44 as a double
-x=str2num(get(handles.edit44,'String'));
-if length(x) == 2 ;
-    if and(0 < x(1), x(1) < x(2));
-        set(handles.edit44,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-    end;
-end;
-set(handles.edit44,'String',num2str(get(handles.edit44,'UserData')));
-set(handles.edit44,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit44, 2, 'and(0 < x(1), x(1) < x(2))');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -5323,7 +5283,7 @@ function edit_epoch_iv_Callback(hObject, eventdata, handles)
 elementas=handles.edit_epoch_iv;
 set(elementas,'BackgroundColor',[1 1 1]);
 str=get(elementas,'String');
-x=unique(str2num(str));
+x=unique(real(str2num(str)));
 if length(x) > 0 ;
     x_txt=num2str2(x);
     set(elementas,'UserData',regexprep(x_txt, '[ ]*', ' '));
@@ -5378,14 +5338,7 @@ function edit_epoch_t_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit_epoch_t as text
 %        str2double(get(hObject,'String')) returns contents of edit_epoch_t as a double
-x=str2num(get(handles.edit_epoch_t,'String'));
-if length(x) == 2 ;
-    if x(1) < x(2);
-        set(handles.edit_epoch_t,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-    end;
-end;
-set(handles.edit_epoch_t,'String',num2str(get(handles.edit_epoch_t,'UserData')));
-set(handles.edit_epoch_t,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit_epoch_t, 2, 'x(1) < x(2)');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -5409,14 +5362,7 @@ function edit_epoch_b_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit_epoch_b as text
 %        str2double(get(hObject,'String')) returns contents of edit_epoch_b as a double
-x=str2num(get(handles.edit_epoch_b,'String'));
-if length(x) == 2 ;
-    if x(1) < x(2);
-        set(handles.edit_epoch_b,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-    end;
-end;
-set(handles.edit_epoch_b,'String',num2str(get(handles.edit_epoch_b,'UserData')));
-set(handles.edit_epoch_b,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit_epoch_b, 2, 'x(1) < x(2)');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -6065,14 +6011,7 @@ function edit57_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit57 as text
 %        str2double(get(hObject,'String')) returns contents of edit57 as a double
-x=str2num(get(handles.edit57,'String'));
-if length(x) == 1 ;
-  if x > 0;
-    set(handles.edit57,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-  end;
-end;
-set(handles.edit57,'String',num2str(get(handles.edit57,'UserData')));
-set(handles.edit57,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit57, 1, 'x > 0');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -6096,17 +6035,18 @@ function edit58_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit58 as text
 %        str2double(get(hObject,'String')) returns contents of edit58 as a double
-x=str2num(get(handles.edit58,'String'));
+id=handles.edit58;
+x=real(str2num(get(id,'String')));
 if length(x) == 2 ;
     if x(1) < x(2);
-        set(handles.edit58,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+        set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
     end;
 end;
 if length(x) == 1 ;
-    set(handles.edit58,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
 end;
-set(handles.edit58,'String',num2str(get(handles.edit58,'UserData')));
-set(handles.edit58,'BackgroundColor',[1 1 1]);
+set(id,'String',num2str(get(id,'UserData')));
+set(id,'BackgroundColor',[1 1 1]);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -6493,13 +6433,7 @@ function edit59_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit59 as text
 %        str2double(get(hObject,'String')) returns contents of edit59 as a double
-x=str2num(get(handles.edit59,'String'));
-if length(x) == 1 ;
-    set(handles.edit59,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-end;
-set(handles.edit59,'String',num2str(get(handles.edit59,'UserData')));
-set(handles.edit59,'BackgroundColor',[1 1 1]);
-
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit59, 1, 'and(x>1,x==floor(x))');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -6546,6 +6480,20 @@ catch err;
 end;
 popupmenu12_Callback(hObject, eventdata, handles);
 susildyk(hObject, eventdata, handles);
+
+
+function virtual_edit_sk_Callback(hObject, eventdata, handles, id, n, cond)
+if isempty(cond); cond='true'; end;
+x=real(str2num(get(id,'String')));
+if length(x) == n ;
+    if eval(cond);
+        set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    end;
+end;
+set(id,'String',get(id,'UserData'));
+set(id,'BackgroundColor',[1 1 1]);
+disp('+')
+
 
 function parinktis_irasyti(hObject, eventdata, handles, vardas, komentaras)
 reikia_perkurti_meniu=0;
