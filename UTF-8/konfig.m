@@ -110,9 +110,9 @@ end;
 
 set(handles.popupmenu2,'String',{lokaliz('Stable version') ; lokaliz('Trunk version')});
 switch Darbeliai_nuostatos_senos.stabili_versija
-    case 1
-        stabili_versija=1;
     case 0
+        stabili_versija=1;
+    case 1
         stabili_versija=2;
     otherwise
         stabili_versija=3;
