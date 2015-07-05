@@ -6492,7 +6492,6 @@ if length(x) == n ;
 end;
 set(id,'String',get(id,'UserData'));
 set(id,'BackgroundColor',[1 1 1]);
-disp('+')
 
 
 function parinktis_irasyti(hObject, eventdata, handles, vardas, komentaras)
