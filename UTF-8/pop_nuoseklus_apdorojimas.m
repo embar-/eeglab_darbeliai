@@ -625,9 +625,22 @@ if get(handles.edit_failu_filtras2,'BackgroundColor') == [1 1 0];
     %disp('');
     drawnow; return;
 end;
+% Ar pasirinkti darbai
+chb_pav={'rf' 'filtr1' 'filtr2' 'filtr_tinklo' 'kanalu_padetis' 'atrink_kanalus1' ...
+    'atmesk_atkarpas_amp' 'atmesk_atkarpas_dzn' 'atmesk_kan_auto' 'perziureti' ...
+    'MARA' 'ICA' 'atmesk_iki2s' 'vienoda_trukme' 'atrink_kanalus2' 'ASR' 'perziureti_ICA' 'epoch'};
+chb_c=0;
+for i=1:length(chb_pav);
+    chb_c=chb_c + get(eval(['handles.checkbox_' chb_pav{i}]),'Value');
+end;
+if chb_c == 0;
+    %disp('Pasirinkite darbą!');
+    drawnow; return;
+end;
+
+% Vykdyti galima
 set(handles.pushbutton1,'Enable','on');
 drawnow;
-%set(handles.checkbox_epoch_b,'TooltipString', ' ' ) ;
 
 
 function Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N)
@@ -2808,6 +2821,7 @@ else
     set(handles.pushbutton18,'Enable','off');
 end;
 checkbox_rf__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 % --- Executes on button press in checkbox_filtr1.
 function checkbox_filtr1_Callback(hObject, eventdata, handles)
@@ -2831,6 +2845,7 @@ else
     Ar_galima_vykdyti(hObject, eventdata, handles);
 end;
 checkbox_filtr1__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_filtr_tinklo.
@@ -2851,6 +2866,7 @@ else
     set(handles.edit50,'Enable','off');
 end;
 checkbox_filtr_tinklo__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_kanalu_padetis.
@@ -2873,6 +2889,7 @@ else
     set(handles.pushbutton14,'Enable','off');
 end;
 checkbox_kanalu_padetis__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_uzverti_pabaigus.
@@ -3074,6 +3091,30 @@ else
     %set(handles.text8,'Visible','on');
 end;
 checkbox_atrink_kanalus1__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
+
+
+% --- Executes on button press in checkbox_atmesk_atkarpas_amp.
+function checkbox_atmesk_atkarpas_amp_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_atmesk_atkarpas_amp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_atmesk_atkarpas_amp
+if and(get(handles.checkbox_atmesk_atkarpas_amp, 'Value') == 1, ...
+        strcmp(get(handles.checkbox_atmesk_atkarpas_amp, 'Enable'),'on'));
+    set(handles.checkbox_atmesk_atkarpas_amp_,'Enable','on');
+    set(handles.edit_atmesk_atkarpas_amp,'Enable','on');
+    set(handles.edit57,'Enable','on');
+    set(handles.edit58,'Enable','on');
+else
+    set(handles.checkbox_atmesk_atkarpas_amp_,'Enable','off');
+    set(handles.edit_atmesk_atkarpas_amp,'Enable','off');
+    set(handles.edit57,'Enable','off');
+    set(handles.edit58,'Enable','off');
+end;
+checkbox_atmesk_atkarpas_amp__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_atmesk_atkarpas_dzn.
@@ -3096,6 +3137,7 @@ else
     set(handles.edit44,'Enable','off');
 end;
 checkbox_atmesk_atkarpas_dzn__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_atmesk_kan_auto.
@@ -3122,6 +3164,7 @@ else
     set(handles.checkbox41,'Enable','off');
 end;
 checkbox_atmesk_kan_auto__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_perziureti.
@@ -3143,6 +3186,7 @@ else
     set(handles.edit_perziureti,'Enable','off');
 end;
 checkbox_perziureti__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_ICA.
@@ -3167,6 +3211,7 @@ else
     %checkbox_MARA_Callback(hObject, eventdata, handles);
 end;
 checkbox_ICA__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_atmesk_iki2s.
@@ -3187,6 +3232,7 @@ else
     set(handles.edit20,'Enable','off');
 end;
 checkbox_atmesk_iki2s__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_vienoda_trukme.
@@ -3207,6 +3253,7 @@ else
     set(handles.edit19,'Enable','off');
 end;
 checkbox_vienoda_trukme__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_atrink_kanalus2.
@@ -3246,6 +3293,7 @@ else
     set(handles.pushbutton7,'BackgroundColor','remove'); %[0.7 0.7 0.7]);
 end;
 checkbox_atrink_kanalus2__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_ASR.
@@ -3264,6 +3312,7 @@ else
     set(handles.edit_ASR,'Enable','off');
 end;
 checkbox_ASR__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_MARA.
@@ -3284,7 +3333,33 @@ else
     set(handles.popupmenu5,'Enable','off');
 end;
 checkbox_MARA__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
+
+% --- Executes on button press in checkbox_perziureti_ICA.
+function checkbox_perziureti_ICA_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_perziureti_ICA (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_perziureti_ICA
+if and(get(handles.checkbox_perziureti_ICA, 'Value') == 1, ...
+        strcmp(get(handles.checkbox_perziureti_ICA, 'Enable'),'on'));
+    set(handles.checkbox_perziureti_ICA_,'Enable','on');
+    set(handles.edit_perziureti_ICA,'Enable','on');
+    set(handles.checkbox_perziureti_ICA_demesio,'Enable','off');
+    %set(handles.checkbox_perziureti_ICA_demesio,'Enable','inactive');
+    set(handles.popupmenu7,'Enable','on');
+    set(handles.popupmenu8,'Enable','on');
+else
+    set(handles.checkbox_perziureti_ICA_,'Enable','off');
+    set(handles.edit_perziureti_ICA,'Enable','off');
+    set(handles.checkbox_perziureti_ICA_demesio,'Enable','off');
+    set(handles.popupmenu7,'Enable','off');
+    set(handles.popupmenu8,'Enable','off');
+end;
+checkbox_perziureti_ICA__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_filtr2.
@@ -3309,6 +3384,7 @@ else
     Ar_galima_vykdyti(hObject, eventdata, handles);
 end;
 checkbox_filtr2__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_rf_.
@@ -3517,7 +3593,6 @@ else
 end;
 
 
-
 % --- Executes on button press in checkbox_filtr2_.
 function checkbox_filtr2__Callback(hObject, eventdata, handles)
 % hObject    handle to checkbox_filtr2_ (see GCBO)
@@ -3531,8 +3606,6 @@ if and(get(handles.checkbox_filtr2_, 'Value') == 1, ...
 else
     set(handles.edit_filtr2_,'Enable','off');
 end;
-
-
 
 
 function edit_rf_Callback(hObject, eventdata, handles)
@@ -5030,31 +5103,6 @@ function checkbox41_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of checkbox41
 
 
-% --- Executes on button press in checkbox_perziureti_ICA.
-function checkbox_perziureti_ICA_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox_perziureti_ICA (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkbox_perziureti_ICA
-if and(get(handles.checkbox_perziureti_ICA, 'Value') == 1, ...
-        strcmp(get(handles.checkbox_perziureti_ICA, 'Enable'),'on'));
-    set(handles.checkbox_perziureti_ICA_,'Enable','on');
-    set(handles.edit_perziureti_ICA,'Enable','on');
-    set(handles.checkbox_perziureti_ICA_demesio,'Enable','off');
-    %set(handles.checkbox_perziureti_ICA_demesio,'Enable','inactive');
-    set(handles.popupmenu7,'Enable','on');
-    set(handles.popupmenu8,'Enable','on');
-else
-    set(handles.checkbox_perziureti_ICA_,'Enable','off');
-    set(handles.edit_perziureti_ICA,'Enable','off');
-    set(handles.checkbox_perziureti_ICA_demesio,'Enable','off');
-    set(handles.popupmenu7,'Enable','off');
-    set(handles.popupmenu8,'Enable','off');
-end;
-checkbox_perziureti_ICA__Callback(hObject, eventdata, handles);
-
-
 % --- Executes on selection change in popupmenu7.
 function popupmenu7_Callback(hObject, eventdata, handles)
 % hObject    handle to popupmenu7 (see GCBO)
@@ -5518,10 +5566,6 @@ else
 end;
 
 
-
-
-
-
 % --- Executes on button press in checkbox_atrink_kanalus1_.
 function checkbox_atrink_kanalus1__Callback(hObject, eventdata, handles)
 % hObject    handle to checkbox_atrink_kanalus1_ (see GCBO)
@@ -5809,7 +5853,6 @@ set(handles.edit_epoch_,                'String', lokaliz('_Nuosekl_apdor_defaul
 set(handles.edit59,'TooltipString', lokaliz('Number of independent components'));
 
 
-
 % --- Executes on button press in pushbutton13.
 function pushbutton13_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton13 (see GCBO)
@@ -5915,10 +5958,6 @@ end;
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
-
-
-
-
 % --- Executes on selection change in popupmenu12.
 function popupmenu12_Callback(hObject, eventdata, handles)
 % hObject    handle to popupmenu12 (see GCBO)
@@ -5960,9 +5999,6 @@ if f;
 end;
 
 
-
-
-
 function edit_atmesk_atkarpas_amp_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_atmesk_atkarpas_amp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -6000,7 +6036,6 @@ else
 end;
 
 
-
 function edit_atmesk_atkarpas_amp__Callback(hObject, eventdata, handles)
 % hObject    handle to edit_atmesk_atkarpas_amp_ (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -6021,29 +6056,6 @@ function edit_atmesk_atkarpas_amp__CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-% --- Executes on button press in checkbox_atmesk_atkarpas_amp.
-function checkbox_atmesk_atkarpas_amp_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox_atmesk_atkarpas_amp (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkbox_atmesk_atkarpas_amp
-if and(get(handles.checkbox_atmesk_atkarpas_amp, 'Value') == 1, ...
-        strcmp(get(handles.checkbox_atmesk_atkarpas_amp, 'Enable'),'on'));
-    set(handles.checkbox_atmesk_atkarpas_amp_,'Enable','on');
-    set(handles.edit_atmesk_atkarpas_amp,'Enable','on');
-    set(handles.edit57,'Enable','on');
-    set(handles.edit58,'Enable','on');
-else
-    set(handles.checkbox_atmesk_atkarpas_amp_,'Enable','off');
-    set(handles.edit_atmesk_atkarpas_amp,'Enable','off');
-    set(handles.edit57,'Enable','off');
-    set(handles.edit58,'Enable','off');
-end;
-checkbox_atmesk_atkarpas_amp__Callback(hObject, eventdata, handles);
-
 
 
 function edit57_Callback(hObject, eventdata, handles)

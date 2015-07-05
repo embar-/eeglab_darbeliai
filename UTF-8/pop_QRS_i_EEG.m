@@ -543,6 +543,19 @@ end;
 %     return;
 % end;
 
+
+% Ar pasirinkti darbai
+chb_pav={'QRS_aptikimas' 'QRS_korekcija' 'eksp_Rlaikus' 'eksp_RRI' 'trint_EKG'};
+chb_c=0;
+for i=1:length(chb_pav);
+    chb_c=chb_c + get(eval(['handles.checkbox_' chb_pav{i}]),'Value');
+end;
+if chb_c == 0;
+    %disp('Pasirinkite darbą!');
+    drawnow; return;
+end;
+
+% Vykdyti galima
 set(handles.pushbutton1,'Enable','on');
 drawnow;
 
@@ -2509,6 +2522,7 @@ else
     set(handles.edit_QRS_korekcija,'Enable','off');
 end;
 checkbox_QRS_korekcija__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_eksp_RRI.
@@ -2527,6 +2541,7 @@ else
     set(handles.edit_eksp_RRI,'Enable','off');
 end;
 checkbox_eksp_RRI__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_QRS_korekcija_.
@@ -2728,6 +2743,7 @@ else
     set(handles.edit_eksp_Rlaikus,'Enable','off');
 end;
 checkbox_eksp_Rlaikus__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_eksp_Rlaikus_.
