@@ -150,7 +150,7 @@ catch err ;
         rmdir(path_deactivated);
         addpath(path_old);
     catch err; 
-        %disp(err.message);        
+        %disp(err.message);
     end;
     return;
 end;
@@ -158,14 +158,33 @@ end;
 % Jei pavyko parsiųsti, bandyk išpakuoti
 if status == 1 ;
     try
+        subdrs1=subdirs(path_new);
         unzip(filestr,path_new);
         delete(filestr);
+        subdrs2=subdirs(path_new);
+        path_new_sub=subdrs2(find(~ismember(subdrs2,subdrs1)));
+        if length(path_new_sub) ~= 1;
+            path_new_sub=path_new;
+        else            
+            path_new_sub=path_new_sub{1};
+            try
+                fid_vers=fopen(fullfile(path_new_sub,'Darbeliai.versija'));
+                vers=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
+                fclose(fid_vers);
+                path_new_sub_=regexprep(fullfile(path_new,vers),'[ ]+[v]*','');
+                movefile(path_new_sub,path_new_sub_);
+                path_new_sub=path_new_sub_;
+                addpath(path_new_sub);
+            catch err
+                disp(err.message);
+            end;
+        end;
         disp(char(['Parsiuntėme ir įdiegėme papildinį!' [{}] ' ' ]));
         try
            for fpi=1:length(files_to_preserve);
               fp=files_to_preserve{fpi};
               try
-                 copyfile(fullfile(tempdir,fp),fullfile(path_new,fp),'f');
+                 copyfile(fullfile(tempdir,fp),fullfile(path_new_sub,fp),'f');
               catch err;
               end;
            end;
@@ -229,3 +248,9 @@ movefile(fullfile(path_deactivated,'*'), path_old_parrent, 'f') ;
 rmdir(path_deactivated);
 addpath(path_old); % savepath ;
 
+function subdrs=subdirs(directory)
+d=dir(directory);
+d0={d(find([d.isdir])).name};
+subdrs=arrayfun(...
+    @(x) [regexprep(directory,[filesep '$'],'') filesep d0{x}], ...
+    3:length(d0),'UniformOutput', false);
