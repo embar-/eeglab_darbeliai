@@ -114,7 +114,15 @@ disp(' ');
 disp('===================================');
 disp('            PERVADINIMAS           ');
 disp(' ');
+
+%Pabandyk įkelti senąjį kelią
 Kelias_dabar=pwd;
+function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+try
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
+    cd(Darbeliai.keliai.atverimui{1});
+catch err; 
+end;
 try
     tmp_mat=fullfile(tempdir,'tmp.mat');
     load(tmp_mat);
@@ -134,9 +142,14 @@ end;
 %set(handles.pushbutton_v2,'UserData',{});
 
 atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
-KELIAS=pwd;
 % Patikrink kelią duomenų išsaugojimui
 set(handles.edit_siulomi,'String','');
+try
+    k=Darbeliai.keliai.saugojimui{1};
+    if exist(k) == 7 ; set(handles.edit_siulomi,'String',k); end;
+catch err;
+    set(handles.edit2,'String','');
+end;
 edit_siulomi_Callback(hObject, eventdata, handles);
 cd(Kelias_dabar);
 
