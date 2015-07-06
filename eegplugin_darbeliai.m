@@ -305,8 +305,7 @@ if and((exist('atnaujinimas','file') == 2),...
    if status
        convert_file_encoding(filestr, [filestr '~'], 'UTF-8', encoding );
        fid_nvers=fopen([filestr '~']);
-       nauja_versija=fgets(fid_nvers);
-       nauja_versija=nauja_versija(1:end-1);
+       nauja_versija=regexprep(regexprep(fgets(fid_nvers),'[ ]*\n',''),'[ ]*\r','');
        %disp(size(nauja_versija));
        apie_vers_='';
        while ischar(apie_vers_);
