@@ -147,7 +147,6 @@ try
     k=Darbeliai.keliai.saugojimui{1};
     if exist(k) == 7 ; set(handles.edit_siulomi,'String',k); end;
 catch err; 
-    set(handles.edit2,'String','');
 end;
 try set(handles.edit_siulomi,'String',g(1).path);    catch err; end;
 try set(handles.edit_siulomi,'String',g(1).pathout); catch err; end;
