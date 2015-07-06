@@ -162,7 +162,8 @@ cd(Kelias_dabar);
 
 % Patikrink kelią duomenų išsaugojimui
 try
-    set(handles.edit2,'String',Darbeliai.keliai.saugojimui{1});
+    k=Darbeliai.keliai.saugojimui{1};
+    if exist(k) == 7 ; set(handles.edit2,'String',k); end;
 catch err;
     set(handles.edit2,'String','');
 end;
