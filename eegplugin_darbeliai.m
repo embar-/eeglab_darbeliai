@@ -122,8 +122,7 @@ kelias=pwd;
 
 try
    fid_vers=fopen(fullfile(curdir,'Darbeliai.versija'));
-   vers=fgets(fid_vers);
-   vers=vers(1:end-1);
+   vers=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
    fclose(fid_vers); 
 catch err;
   disp(err.message);
