@@ -140,11 +140,11 @@ atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
 cd(Kelias_dabar);
 
 % Patikrink kelią duomenų išsaugojimui
+set(handles.edit2,'String','');
 try
     k=Darbeliai.keliai.saugojimui{1};
     if exist(k) == 7 ; set(handles.edit2,'String',k); end;
 catch err;
-    set(handles.edit2,'String','');
 end;
 try set(handles.edit2,'String',g(1).path);    catch err; end;
 try set(handles.edit2,'String',g(1).pathout); catch err; end;
