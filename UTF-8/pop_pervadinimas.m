@@ -148,7 +148,6 @@ try
     k=Darbeliai.keliai.saugojimui{1};
     if exist(k) == 7 ; set(handles.edit_siulomi,'String',k); end;
 catch err;
-    set(handles.edit2,'String','');
 end;
 edit_siulomi_Callback(hObject, eventdata, handles);
 cd(Kelias_dabar);

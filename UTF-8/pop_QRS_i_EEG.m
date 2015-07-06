@@ -154,11 +154,11 @@ KELIAS=pwd;
 cd(Kelias_dabar);
 
 % Patikrink kelią duomenų išsaugojimui
+set(handles.edit2,'String','');
 try
     k=Darbeliai.keliai.saugojimui{1};
     if exist(k) == 7 ; set(handles.edit2,'String',k); end;
 catch err;
-    set(handles.edit2,'String','');
 end;
 edit2_Callback(hObject, eventdata, handles);
 
