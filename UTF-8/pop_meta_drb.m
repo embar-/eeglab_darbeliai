@@ -1622,7 +1622,7 @@ try
         end;
     end;
 catch err;
-    Pranesk_apie_klaida(err, '', '', 0);
+    %Pranesk_apie_klaida(err, '', '', 0);
 end;
 susildyk(hObject, eventdata, handles);
 
@@ -2458,7 +2458,7 @@ try
             error([lokaliz('Netinkami parametrai')]);
     end;    
 catch err;
-    Pranesk_apie_klaida(err, 'Darbeliu_nuostatu_rinkiniai', darbelio_Nr, 0);
+    %Pranesk_apie_klaida(err, 'Darbeliu_nuostatu_rinkiniai', darbelio_Nr, 0);
 end;
 rinkiniai_lokaliz=rinkiniai_orig;
 i=find(ismember(rinkiniai_orig, 'numatytas' ));
