@@ -17,7 +17,7 @@
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% (C) 2014 Mindaugas Baranauskas
+% (C) 2014-2015 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -108,11 +108,11 @@ catch err;
     %warning(err.message);
 end;
 
-set(handles.popupmenu2,'String',{lokaliz('Stable version') ; lokaliz('Trunk version')});
+set(handles.popupmenu2,'String',{lokaliz('Stable version') ; lokaliz('Trunk version'); lokaliz('Kita')});
 switch Darbeliai_nuostatos_senos.stabili_versija
-    case 0
-        stabili_versija=1;
     case 1
+        stabili_versija=1;
+    case 0
         stabili_versija=2;
     otherwise
         stabili_versija=3;
@@ -123,6 +123,10 @@ set(handles.checkbox1,'Value',Darbeliai_nuostatos_senos.tikrinti_versija);
 set(handles.checkbox2,'Value',Darbeliai_nuostatos_senos.diegti_auto);
 set(handles.checkbox3,'Value',Darbeliai_nuostatos_senos.meniu_ragu);
 set(handles.checkbox3,'UserData',Darbeliai_nuostatos_senos.meniu_ragu);
+set(handles.uipanel1,'UserData',struct(...
+    'pakeista_savita_versija',0,...
+    'url_atnaujinimui',Darbeliai_nuostatos_senos.url_atnaujinimui,...
+    'url_versijai',Darbeliai_nuostatos_senos.url_versijai));
 checkbox1_Callback(hObject, eventdata, handles);
 
 locale_text(hObject, eventdata, handles);
@@ -207,6 +211,7 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+mfilename
 close(mfilename);
 
 % --- Executes on button press in pushbutton3.
@@ -227,21 +232,35 @@ Darbeliai.nuostatos=[];
 
 switch get(handles.popupmenu2,'Value')
     case 1
+        Darbeliai.nuostatos.savita_versija=0;
         Darbeliai.nuostatos.stabili_versija=1;
         Darbeliai.nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/stable.zip' ;
         Darbeliai.nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
     case 2
+        Darbeliai.nuostatos.savita_versija=0;
         Darbeliai.nuostatos.stabili_versija=0;
         Darbeliai.nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/master.zip' ;
         Darbeliai.nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
     otherwise
+        Darbeliai.nuostatos.savita_versija=1;
         Darbeliai.nuostatos.stabili_versija=-1;
-        Darbeliai.nuostatos.url_atnaujinimui='';
-        Darbeliai.nuostatos.url_versijai='';
+        nst=get(handles.uipanel1,'UserData');
+        %if and(~isempty(nst),isstruct(nst));
+        try
+            %Darbeliai.nuostatos.stabili_versija= nst.stabili_versija;
+            Darbeliai.nuostatos.url_atnaujinimui=nst.url_atnaujinimui;
+            Darbeliai.nuostatos.url_versijai=nst.url_versijai;
+        catch err;
+            Pranesk_apie_klaida(err,'konfig','',0);
+            Darbeliai.nuostatos.stabili_versija=-1;
+            Darbeliai.nuostatos.url_atnaujinimui='';
+            Darbeliai.nuostatos.url_versijai='';
+        end;
 end;
 Darbeliai.nuostatos.tikrinti_versija=get(handles.checkbox1,'Value');
 Darbeliai.nuostatos.diegti_auto     =get(handles.checkbox2,'Value');
 Darbeliai.nuostatos.meniu_ragu      =get(handles.checkbox3,'Value');
+Darbeliai.nuostatos.konf_laikas     =datestr(now, 'yyyy-mm-dd_HHMMSS');
 locale_idx=get(handles.popupmenu1,'Value');
 
 if get(handles.checkbox3,'Value') ~= get(handles.checkbox3,'UserData');
@@ -274,10 +293,17 @@ if locale_idx > 1;
 else
     Darbeliai.nuostatos.lokale={ '' ; '' ; '' ; } ;
 end;
-
 save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
+pause(2);
 
-if get(handles.popupmenu2,'Value') ~= get(handles.popupmenu2,'UserData');
+pakeista_savita_versija=0;
+try 
+    s=get(handles.uipanel1,'UserData');
+    pakeista_savita_versija=s.pakeista_savita_versija;
+catch err;
+end;
+if or(get(handles.popupmenu2,'Value') ~= get(handles.popupmenu2,'UserData'),...
+  and(get(handles.popupmenu2,'Value') == 3, pakeista_savita_versija));
     figure1_CloseRequestFcn(hObject, eventdata, handles);
     atnaujinimas(Darbeliai.nuostatos.url_atnaujinimui) ;
     return;
@@ -341,7 +367,7 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: delete(hObject) closes the figure
-delete(hObject);
+delete(handles.figure1);
 
 
 % --- Executes during object deletion, before destroying properties.
@@ -368,7 +394,50 @@ function popupmenu2_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu2 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu2
-
+if get(handles.popupmenu2,'Value') == 3,
+    pakeista_savita_versija=0;
+    try
+        s=get(handles.uipanel1,'UserData');
+        pakeista_savita_versija=s.pakeista_savita_versija;
+    catch err;
+    end;
+    set(handles.pushbutton3,'Enable',fastif(pakeista_savita_versija,'off','on'));
+    drawnow;
+    try
+        drbst=github_darbeliu_versijos;
+        if isempty(drbst); warning('Nerasta kitų versijų') ; return; end;
+%         disp(' ');
+%         disp('- - - - - - - - - - - - - - - - - -');
+%         disp(' ');
+%         msg={drbst.versija_};
+%         disp(sprintf('%s\n',msg{:}));
+%         disp('- - - - - - - - - - - - - - - - - -');
+%         disp(' ');
+        [~,i]=sort({drbst.versija});
+        [s,v]=listdlg('OKString',lokaliz('OK'),'CancelString',lokaliz('Cancel'),...
+            'SelectionMode','single','ListSize',[400 300],...
+            'ListString',{drbst.versija_},...
+            'InitialValue',i(end));
+        if ~v; return; end;
+        drbst_=drbst(s);
+        drbst_.pakeista_savita_versija=1;
+        disp(' ');
+        disp('- - - - - - - - - - - - - - - - - -');
+        disp(drbst_.versija);
+        disp(' ');
+        disp(drbst_.komentaras);
+        disp('- - - - - - - - - - - - - - - - - -');
+        disp(' ');
+        set(handles.popupmenu2,'TooltipString',...
+            sprintf('%s\n \n%s',drbst_.versija_,drbst_.komentaras));
+        set(handles.uipanel1,'UserData',drbst_);
+        set(handles.pushbutton3,'Enable','off');
+    catch err;
+        Pranesk_apie_klaida(err,'Konfig','',0);
+    end;
+else    
+    set(handles.pushbutton3,'Enable','on');
+end;
 
 % --- Executes during object creation, after setting all properties.
 function popupmenu2_CreateFcn(hObject, eventdata, handles)
@@ -390,3 +459,4 @@ function checkbox3_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox3
+
