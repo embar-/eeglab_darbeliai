@@ -318,7 +318,7 @@ if and((exist('atnaujinimas','file') == 2),...
    
    if and(~isempty(nauja_versija),~strcmp(nauja_versija,vers));
       disp([lokaliz('Rasta nauja versija') ': ' nauja_versija]);
-      disp(apie_vers);
+      disp(regexprep(apie_vers,'\r','')); disp(' ');
       if Darbeliai_nuostatos.diegti_auto;
           close([...
               findobj('-regexp','name','EEGLAB*')
