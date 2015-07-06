@@ -138,7 +138,7 @@ if and(~isempty(handles.EKG),...
     % EKGposlinkis Y ašyje
     EKGposlinkis=min(handles.RRI(find(handles.RRI(:)>0)));
     if isempty(EKGposlinkis); EKGposlinkis=0; end;
-    handles.EKG_=mat2gray(handles.EKG)*100-125+EKGposlinkis;
+    handles.EKG_=mat2gray_octave(handles.EKG)*100-125+EKGposlinkis;
     handles.EKG_lin=plot(handles.EKG_laikai,handles.EKG_,'color','r');
     %handles.EKG_lin=get(handles.axes_rri,'Children');
     %try
