@@ -54,7 +54,16 @@
 %            Contributor
 %        (c) 2015, Mindaugas Baranauskas
 %
-function f=statusbar(p,f)
+function f=statusbar(varargin)
+
+if nargin > 0; p=varargin{1};
+else           p=lokaliz('Palaukite!');
+end;
+
+if nargin > 1; f=varargin{2};
+else           f=[];
+end;
+
 persistent visible;
 if nargin < nargout           % get handles
    o='ShowHiddenHandles';
@@ -65,10 +74,10 @@ if nargin < nargout           % get handles
    return;
 end
 curtime=86400*now;
-if nargin & ischar(p)
-   if isequal(p,'on') | isequal(p,'off')
+if and(nargin, ischar(p))
+   if or(isequal(p,'on'), isequal(p,'off'))
       if nargin == 2
-         if check(f)             % show/hide
+         if ~isempty(check(f))    % show/hide
             v=get(f,'Visible');
             set(f,'Visible',p);
          end
@@ -83,7 +92,7 @@ if nargin & ischar(p)
          f=v;
       end
    else
-      if nargin == 2 & check(f)  % reset
+      if and((nargin == 2), check(f));  % reset
          modify(f,'Line','XData',[4 4 4]);
          modify(f,'Rect','Position',[4 54 0.1 22]);
          modify(f,'Done','String','0');
@@ -98,10 +107,16 @@ if nargin & ischar(p)
       set(f,'CloseRequestFcn','set(gcbo,''UserData'',-abs(get(gcbo,''UserData'')));','UserData',[curtime curtime 0]);
    end
    drawnow;
-elseif nargin == 2 & check(f) % update
+elseif and((nargin == 2), ~isempty(check(f))) % update
    t=get(f,'UserData');
    if any(t < 0)              % confirm
-      if p >= 1 | isequal(questdlg({lokaliz('Are you sure to stop the execution now?'),''},lokaliz('Abort requested'),lokaliz('Stop'),lokaliz('Resume'),lokaliz('Resume')),lokaliz('Stop'))
+      if or(p >= 1, isequal(...
+              questdlg({lokaliz('Are you sure to stop the execution now?'),''},...
+                        lokaliz('Abort requested'),...
+                        lokaliz('Stop'),...
+                        lokaliz('Resume'),...
+                        lokaliz('Resume')),...
+                        lokaliz('Stop')))
          delete(f);
          f=[];                % interrupt
          return;
@@ -120,7 +135,7 @@ elseif nargin == 2 & check(f) % update
    %    or
    %     more than 0.4% computed since last refresh
    %
-   if any(t) & (p >= 1 | curtime-t(2) > 1 | p-t(3) > 0.004)
+   if and(any(t), or(p >= 1, or(curtime-t(2) > 1, p-t(3) > 0.004)))
       set(f,'UserData',[t(1) curtime p]);
       t=round(curtime-t(1));
       h=floor(t/60);
@@ -128,7 +143,7 @@ elseif nargin == 2 & check(f) % update
       modify(f,'Rect','Position',[4 54 max(0.1,248*p) 22]);
       modify(f,'Done','String',sprintf('%u',floor(p*100+0.5)));
       modify(f,'Time','String',sprintf('%u:%02u:%02u',[floor(h/60);mod(h,60);mod(t,60)]));
-      if p > 0.05 | t > 60
+      if or(p > 0.05, t > 60)
          t=ceil(t/p-t);
          if t < 1e7
             h=floor(t/60);
@@ -149,7 +164,8 @@ end
 %Check if a given handle is a progress bar.
 %
 function f=check(f)
-if f & ishandle(f(1)) & isequal(get(f(1),'Tag'),'StatusBar')
+if isempty(f); return; end;
+if and(ishandle(f(1)), isequal(get(f(1),'Tag'),'StatusBar'))
    f=f(1);
 else
    f=[];
@@ -159,7 +175,7 @@ end
 %Create the progress bar.
 %
 function f=create(visible)
-if ~nargin | isempty(visible)
+if or(~nargin, isempty(visible))
    visible='on';
 end
 s=[256 80];
@@ -179,7 +195,7 @@ line([4 4 4],[54 54 77],'Color',[0.2 0.2 0.2],'Tag','Line',a);
 a.FontWeight='bold';
 a.Units='pixels';
 a.VerticalAlignment='middle';
-text(136,66,1,'%',a);
+text(136,70,1,'%',a);
 text(16,36,lokaliz('Elapsed time:'),a);
 text(16,20,lokaliz('Remaining:'),a);
 text(200,36,'',a);
@@ -188,7 +204,7 @@ text(200,20,'',a);
 %Information texts
 %
 a.HorizontalAlignment='right';
-text(136,66,1,'0',a,'Tag','Done');
+text(136,70,1,'0',a,'Tag','Done');
 text(198,36,'0:00:00',a,'Tag','Time');
 text(198,20,'0:00:00',a,'Tag','Task');
 
