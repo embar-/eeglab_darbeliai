@@ -1598,7 +1598,8 @@ susaldyk(hObject, eventdata, handles);
 % Įkelti ankstenius nustatymus
 try    
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
+    k=Tikras_Kelias(fullfile(function_dir,'..'));
+    load(fullfile(k,'Darbeliai_config.mat'));   
     esami={Darbeliai.dialogai.pop_meta_dbr.saranka.vardas};
     i=find(ismember(esami,rinkinys));
     Parinktys=Darbeliai.dialogai.pop_meta_dbr.saranka(i).parinktys;
@@ -1621,7 +1622,7 @@ try
         end;
     end;
 catch err;
-    %Pranesk_apie_klaida(err, '', '', 0);
+    Pranesk_apie_klaida(err, '', '', 0);
 end;
 susildyk(hObject, eventdata, handles);
 
@@ -2422,15 +2423,20 @@ function virtual_popupmenu_drb__Callback(hObject, eventdata, handles, id)
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_drb*_
 pm=eval(['handles.popupmenu_drb' num2str(id)]);
 pm_=eval(['handles.popupmenu_drb' num2str(id) '_']);
-str=get(pm_,'String');  set(pm_,'TooltipString',str{get(pm_,'Value')});
-dbr=get(pm,'UserData'); set(pm_,'UserData',     dbr{get(pm_,'Value')});
+str=get(pm_,'String');
+val=get(pm_,'Value');
+if length(str) < val; set(pm_,'Value',1); val= 1; end;
+set(pm_,'TooltipString',str{val});
+dbr=get(pm,'UserData'); 
+set(pm_,'UserData', dbr{val});
 
 
 function [rinkiniai_lokaliz,rinkiniai_orig]=Darbeliu_nuostatu_rinkiniai(darbelio_Nr)
 rinkiniai_orig={'numatytas'}; % Net jei tokio ir dar nėra, jis sukuriamas paleidižiant dialogą
-try
-function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+try    
+    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+    k=Tikras_Kelias(fullfile(function_dir,'..'));
+    load(fullfile(k,'Darbeliai_config.mat'))
     switch darbelio_Nr
         case 1
             rinkiniai_orig={Darbeliai.dialogai.pop_pervadinimas.saranka.vardas};
@@ -2450,12 +2456,15 @@ function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
             disp('darbelio_Nr=');
             disp(darbelio_Nr);
             error([lokaliz('Netinkami parametrai')]);
-    end;
+    end;    
 catch err;
-    %Pranesk_apie_klaida(err, 'Darbeliu_nuostatu_rinkiniai', darbelio_Nr, 0);
+    Pranesk_apie_klaida(err, 'Darbeliu_nuostatu_rinkiniai', darbelio_Nr, 0);
 end;
-rinkiniai_lokaliz(find(ismember(rinkiniai_orig,   'numatytas' )))={lokaliz('Numatytas')};
-rinkiniai_lokaliz(find(ismember(rinkiniai_lokaliz,'paskutinis')))={lokaliz('Paskiausias')};
+rinkiniai_lokaliz=rinkiniai_orig;
+i=find(ismember(rinkiniai_orig, 'numatytas' ));
+if ~isempty(i); rinkiniai_lokaliz(i)={lokaliz('Numatytas')}; end;
+i=find(ismember(rinkiniai_orig, 'paskutinis' ));
+if ~isempty(i); rinkiniai_lokaliz(i)={lokaliz('Paskiausias')}; end;
 
 
 % --- Executes on selection change in popupmenu_patvirt.
