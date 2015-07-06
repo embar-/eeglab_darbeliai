@@ -211,8 +211,10 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-mfilename
-close(mfilename);
+try
+    close(mfilename);
+catch err;
+end;
 
 % --- Executes on button press in pushbutton3.
 function pushbutton3_Callback(hObject, eventdata, handles)
@@ -367,7 +369,10 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: delete(hObject) closes the figure
-delete(handles.figure1);
+try
+    delete(handles.figure1);
+catch err;
+end;
 
 
 % --- Executes during object deletion, before destroying properties.
