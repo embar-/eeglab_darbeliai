@@ -389,8 +389,8 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 function susaldyk(hObject, eventdata, handles)
 %Neleisti spausti Nuostatų meniu!
 a=findall(handles.figure1,'type','uimenu');
-b=a(find(ismember(get(a,'tag'),'Nuostatos'))) ;
-b=[b a(find(ismember(get(a,'tag'),'Darbeliai')))];
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
 set(b,'Enable','off'); drawnow;
 
 set(handles.pushbutton1,'Value',0);
@@ -568,8 +568,8 @@ set(handles.pushbutton2,'Value',0);
 
 % Leisti spausti Nuostatų meniu!
 a=findall(handles.figure1,'type','uimenu');
-b=a(find(ismember(get(a,'tag'),'Nuostatos'))) ;
-b=[b a(find(ismember(get(a,'tag'),'Darbeliai')))];
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
 set(b,'Enable','on'); drawnow;
 
 function Ar_galima_vykdyti(hObject, eventdata, handles)
@@ -740,8 +740,8 @@ end;
 parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 %Neleisti spausti Nuostatų meniu!
 a=findall(handles.figure1,'type','uimenu');
-b=a(find(ismember(get(a,'tag'),'Nuostatos'))) ;
-b=[b a(find(ismember(get(a,'tag'),'Darbeliai')))];
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
 set(b,'Enable','off'); drawnow;
 
 STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
@@ -6649,7 +6649,7 @@ meniu(hObject, eventdata, handles);
 function meniu(hObject, eventdata, handles)
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 delete(findall(handles.figure1,'type','uimenu'));
-handles.meniu_darbeliai = uimenu(handles.figure1,'Label','Darbeliai','Tag','Darbeliai');
+handles.meniu_darbeliai = uimenu(handles.figure1,'Label','Darbeliai','Tag','m_Darbeliai');
 param_prad='darbeliu_param={}; ' ; %rezervas ateičiai
 param_pab ='(darbeliu_param{:}); ';
 uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Pervadinimas su info suvedimu'), ...
@@ -6672,7 +6672,7 @@ yra_isimintu_rinkiniu=0;
 % handles.meniu_veiksmai = uimenu('Label',lokaliz('Veiksmai'),'Tag','Veiksmai');
 % uimenu(handles.meniu_veiksmai,'Label',lokaliz('Execute'),...
 %     'Accelerator','E','Callback',{@pushbutton1_Callback,handles});
-handles.meniu_nuostatos = uimenu(handles.figure1,'Label',lokaliz('Options'),'Tag','Nuostatos');
+handles.meniu_nuostatos = uimenu(handles.figure1,'Label',lokaliz('Options'),'Tag','m_Nuostatos');
 handles.meniu_nuostatos_ikelti = uimenu(handles.meniu_nuostatos,'Label',lokaliz('Ikelti'));
 uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Numatytas'),...
     'Accelerator','R','Callback',{@parinktis_ikelti,handles,'numatytas'});
