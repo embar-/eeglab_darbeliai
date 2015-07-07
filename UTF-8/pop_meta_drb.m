@@ -105,6 +105,11 @@ else    g=[];
 end;
 
 set(handles.figure1,'Name',mfilename);
+set(handles.figure1,'Tag','Darbeliai');
+set(handles.figure1,'Units','pixels');
+set(handles.figure1,'Resize','on');
+pad=get(handles.figure1,'Position');
+set(handles.figure1,'Position',[pad(1) pad(2) max(pad(3),800) max(pad(4),600)]);
 
 %Įsimink prieš funkcijų vykdymą buvusį kelią; netrukus bandysime laikinai pakeisti kelią
 Kelias_dabar=pwd;
