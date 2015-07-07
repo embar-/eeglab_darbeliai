@@ -1,6 +1,9 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.07.07.1
+% ~ Pagerintas suderinamumas su MATLAB R2015a.
+%
 % v2015.07.04.1
 % + Darbelių pop_*.m galima paleisti uždavus parametrus.
 % + Darbų tvarkytuvė (pop_meta_drb.m): tvarkyti Darbelių funkcijų parinkčių

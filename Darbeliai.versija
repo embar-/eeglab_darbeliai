@@ -1,12 +1,4 @@
-Darbeliai v2015.07.04.1
-Darbelių pop_*.m galima paleisti uždavus parametrus.
-Naujame dialoge Darbų tvarkytuvė (pop_meta_drb.m) 
-galima tvarkyti Darbelių funkcijų parinkčių rinkinius
-ir atlikti darbus pereinant per skirtingus Darbelių langus.
-Pagerintas pop_pervadinimas stabilumas.
+Darbeliai v2015.07.07.1
+Pagerintas suderinamumas su MATLAB R2015a.
 
-pop_*.m of Darbeliai accepts parameters for execution.
-New dialog Workflow Master to manage meta-presets 
-of configurations and execute sequences of jobs 
-through multiple dialogs of Darbeliai.
-Enhanced stability of pop_pervadinimas.
+Enhanced compatibility with MATLAB R2015a.
