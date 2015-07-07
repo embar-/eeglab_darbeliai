@@ -1,9 +1,6 @@
 %
 %
-%
-%
-%
-% Šablonas
+% Darbų vykdymas pagal iš anksto aprašytus jų parinkčių rinkinius
 %
 % GUI versija
 %
@@ -44,38 +41,38 @@
 %
 %%
 
-function varargout = pop_naujas(varargin)
-% POP_NAUJAS MATLAB code for pop_naujas.fig
-%      POP_NAUJAS, by itself, creates a new POP_NAUJAS or raises the existing
+function varargout = pop_meta_drb(varargin)
+% POP_META_DRB MATLAB code for pop_meta_drb.fig
+%      POP_META_DRB, by itself, creates a new POP_META_DRB or raises the existing
 %      singleton*.
 %
-%      H = POP_NAUJAS returns the handle to a new POP_NAUJAS or the handle to
+%      H = POP_META_DRB returns the handle to a new POP_META_DRB or the handle to
 %      the existing singleton*.
 %
-%      POP_NAUJAS('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in POP_NAUJAS.M with the given input arguments.
+%      POP_META_DRB('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in POP_META_DRB.M with the given input arguments.
 %
-%      POP_NAUJAS('Property','Value',...) creates a new POP_NAUJAS or raises the
+%      POP_META_DRB('Property','Value',...) creates a new POP_META_DRB or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before pop_naujas_OpeningFcn gets called.  An
+%      applied to the GUI before pop_meta_drb_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to pop_naujas_OpeningFcn via varargin.
+%      stop.  All inputs are passed to pop_meta_drb_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help pop_naujas
+% Edit the above text to modify the response to help pop_meta_drb
 
-% Last Modified by GUIDE v2.5 20-Nov-2014 15:11:57
+% Last Modified by GUIDE v2.5 04-Jul-2015 13:40:18
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
     'gui_Singleton',  gui_Singleton, ...
-    'gui_OpeningFcn', @pop_naujas_OpeningFcn, ...
-    'gui_OutputFcn',  @pop_naujas_OutputFcn, ...
+    'gui_OpeningFcn', @pop_meta_drb_OpeningFcn, ...
+    'gui_OutputFcn',  @pop_meta_drb_OutputFcn, ...
     'gui_LayoutFcn',  [] , ...
     'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -91,13 +88,13 @@ end
 
 
 
-% --- Executes just before pop_naujas is made visible.
-function pop_naujas_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before pop_meta_drb is made visible.
+function pop_meta_drb_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to pop_naujas (see VARARGIN)
+% varargin   command line arguments to pop_meta_drb (see VARARGIN)
 
 if and(nargin > 3, mod(nargin, 2)) ;
     if iscellstr(varargin((1:(nargin-3)/2)*2-1)); 
@@ -112,7 +109,7 @@ set(handles.figure1,'Tag','Darbeliai');
 set(handles.figure1,'Units','pixels');
 set(handles.figure1,'Resize','on');
 pad=get(handles.figure1,'Position');
-set(handles.figure1,'Position',[pad(1) pad(2) max(pad(3),800) max(pad(4),600)]);
+set(handles.figure1,'Position',[pad(1) pad(2) max(pad(3),725) max(pad(4),600)]);
 
 %Įsimink prieš funkcijų vykdymą buvusį kelią; netrukus bandysime laikinai pakeisti kelią
 Kelias_dabar=pwd;
@@ -128,10 +125,10 @@ meniu(hObject, eventdata, handles);
 
 % global STUDY CURRENTSTUDY ALLEEG EEG CURRENTSET PLUGINLIST Rinkmena NaujaRinkmena KELIAS KELIAS_SAUGOJIMUI SaugomoNr;
 
-
+%clc;
 disp(' ');
 disp('===================================');
-disp('           N A U J A S     ');
+disp('      M E T A     D A R B A I      ');
 disp(' ');
 
 %Pabandyk įkelti senąjį kelią
@@ -173,9 +170,6 @@ try set(handles.edit2,'String',g(1).path);    catch err; end;
 try set(handles.edit2,'String',g(1).pathout); catch err; end;
 edit2_Callback(hObject, eventdata, handles);
 
-set(handles.pushbutton_epoch_iv,'UserData',{});
-set(handles.pushbutton14,'UserData',{});
-
 set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
 try set(handles.edit_failu_filtras1,'String',g(1).flt_show); catch err; end;
 try 
@@ -198,16 +192,19 @@ end;
 
 try set(handles.text_atlikta_darbu,'String',num2str(g(1).counter)); catch err; end;
 set(handles.checkbox_uzverti_pabaigus,'UserData',0);
+set(handles.radiobutton6,'Visible','off');
+set(handles.radiobutton7,'Visible','off');
+set(handles.text7,'Visible','off');
 
 tic;
 
-% Choose default command line output for pop_naujas
+% Choose default command line output for pop_meta_drb
 handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes pop_naujas wait for user response (see UIRESUME)
+% UIWAIT makes pop_meta_drb wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
 % Jei nurodyta veiksena
@@ -249,7 +246,7 @@ disp('Einama toliau...');
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = pop_naujas_OutputFcn(hObject, eventdata, handles)
+function varargout = pop_meta_drb_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -349,9 +346,9 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 % Neleisk nieko daryti
 function susaldyk(hObject, eventdata, handles)
 %Neleisti spausti Nuostatų meniu!
-a=findall(handles.figure1,'type','uimenu'); 
-b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ; 
-b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))]; 
+a=findall(handles.figure1,'type','uimenu');
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
 set(b,'Enable','off'); drawnow;
 
 set(handles.pushbutton1,'Value',0);
@@ -365,17 +362,31 @@ set(handles.pushbutton4,'Enable','off');
 set(handles.edit_failu_filtras1,'Enable','off');
 set(handles.edit_failu_filtras2,'Enable','off');
 set(handles.pushbutton6,'Enable','off');
-set(handles.pushbutton_epoch_iv,'Enable','off');
-set(handles.pushbutton14,'Enable','off');
 set(handles.pushbutton_v1,'Enable','off');
 set(handles.pushbutton_v2,'Enable','off');
 set(handles.radiobutton6,'Enable','off');
 set(handles.radiobutton7,'Enable','off');
 
-set(handles.edit51,'Enable','off');
-set(handles.edit_epoch_iv,'Enable','off');
-
-set(handles.edit_command,'Enable','off');
+set(handles.checkbox_drb1,'Enable','off');
+set(handles.checkbox_drb2,'Enable','off');
+set(handles.checkbox_drb3,'Enable','off');
+set(handles.checkbox_drb4,'Enable','off');
+set(handles.checkbox_drb5,'Enable','off');
+set(handles.checkbox_drb6,'Enable','off');
+set(handles.checkbox_drb7,'Enable','off');
+set(handles.checkbox_drb8,'Enable','off');
+set(handles.checkbox_drb9,'Enable','off');
+set(handles.checkbox_drb10,'Enable','off');
+checkbox_drb1_Callback(hObject, eventdata, handles);
+checkbox_drb2_Callback(hObject, eventdata, handles);
+checkbox_drb3_Callback(hObject, eventdata, handles);
+checkbox_drb4_Callback(hObject, eventdata, handles);
+checkbox_drb5_Callback(hObject, eventdata, handles);
+checkbox_drb6_Callback(hObject, eventdata, handles);
+checkbox_drb7_Callback(hObject, eventdata, handles);
+checkbox_drb8_Callback(hObject, eventdata, handles);
+checkbox_drb9_Callback(hObject, eventdata, handles);
+checkbox_drb10_Callback(hObject, eventdata, handles);
 
 set(handles.checkbox_baigti_anksciau,'Value',0);
 set(handles.checkbox_baigti_anksciau,'Visible','on');
@@ -401,18 +412,31 @@ set(handles.pushbutton4,'Enable','on');
 set(handles.edit_failu_filtras1,'Enable','on');
 set(handles.edit_failu_filtras2,'Enable','on');
 set(handles.pushbutton6,'Enable','on');
-set(handles.pushbutton_epoch_iv,'Enable','on');
-set(handles.pushbutton14,'Enable','on');
 set(handles.pushbutton_v1,'Enable','on');
 set(handles.pushbutton_v2,'Enable','on');
 set(handles.radiobutton6,'Enable','on');
 set(handles.radiobutton7,'Enable','on');
 
-
-set(handles.edit51,'Enable','on');
-set(handles.edit_epoch_iv,'Enable','on');
-
-set(handles.edit_command,'Enable','on');
+set(handles.checkbox_drb1,'Enable','on');
+set(handles.checkbox_drb2,'Enable','on');
+set(handles.checkbox_drb3,'Enable','on');
+set(handles.checkbox_drb4,'Enable','on');
+set(handles.checkbox_drb5,'Enable','on');
+set(handles.checkbox_drb6,'Enable','on');
+set(handles.checkbox_drb7,'Enable','on');
+set(handles.checkbox_drb8,'Enable','on');
+set(handles.checkbox_drb9,'Enable','on');
+set(handles.checkbox_drb10,'Enable','on');
+checkbox_drb1_Callback(hObject, eventdata, handles);
+checkbox_drb2_Callback(hObject, eventdata, handles);
+checkbox_drb3_Callback(hObject, eventdata, handles);
+checkbox_drb4_Callback(hObject, eventdata, handles);
+checkbox_drb5_Callback(hObject, eventdata, handles);
+checkbox_drb6_Callback(hObject, eventdata, handles);
+checkbox_drb7_Callback(hObject, eventdata, handles);
+checkbox_drb8_Callback(hObject, eventdata, handles);
+checkbox_drb9_Callback(hObject, eventdata, handles);
+checkbox_drb10_Callback(hObject, eventdata, handles);
 
 uipanel15_SelectionChangeFcn(hObject, eventdata, handles);
 
@@ -432,9 +456,9 @@ set(handles.text_darbas,'String',' ');
 set(handles.pushbutton2,'Value',0);
 
 % Leisti spausti Nuostatų meniu!
-a=findall(handles.figure1,'type','uimenu'); 
-b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ; 
-b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))]; 
+a=findall(handles.figure1,'type','uimenu');
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
 set(b,'Enable','on'); drawnow;
 
 
@@ -463,14 +487,6 @@ end;
 if get(handles.edit_failu_filtras2,'BackgroundColor') == [1 1 0];
     drawnow; return;
 end;
-% if isempty(get(handles.edit_epoch_iv,'UserData'));
-%     set(handles.edit_epoch_iv,'BackgroundColor', [1 1 0]);
-%     return;
-% end;
-% if isempty(get(handles.edit51,'UserData'));
-%     set(handles.edit51,'BackgroundColor', [1 1 0]);
-%     return;
-% end;
 
 set(handles.pushbutton1,'Enable','on');
 drawnow;
@@ -479,7 +495,8 @@ drawnow;
 function Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N)
 
 disp(' ');
-NaujaAntraste=[ num2str(DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.'];
+disp('-----------------------------------');
+NaujaAntraste=[ num2str(DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' meta darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.'];
 disp(NaujaAntraste);
 disp(Darbo_apibudinimas);
 set(handles.text_darbas,'Visible','on');
@@ -505,7 +522,11 @@ if strcmp(get(handles.pushbutton1,'Enable'),'off');
 end;
 
 %
-
+clc
+disp(' ');
+disp('===================================');
+disp('      M E T A     D A R B A I      ');
+disp(' ');
 disp(' ');
 disp('===================================');
 t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
@@ -513,7 +534,7 @@ disp('===================================');
 disp(' ');
 
 
-global STUDY CURRENTSTUDY ALLEEG EEG CURRENTSET Rinkmena NaujaRinkmena KELIAS KELIAS_SAUGOJIMUI SaugomoNr;
+global STUDY CURRENTSTUDY ALLEEG EEG CURRENTSET;
 
 susaldyk(hObject, eventdata, handles);
 set(handles.pushbutton1,'Enable','off');
@@ -575,9 +596,9 @@ end;
 % Užduočių parinkčių įsiminimas
 parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 %Neleisti spausti Nuostatų meniu!
-a=findall(handles.figure1,'type','uimenu'); 
-b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ; 
-b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))]; 
+a=findall(handles.figure1,'type','uimenu');
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
 set(b,'Enable','off'); drawnow;
 
 try 
@@ -594,234 +615,85 @@ STUDY = []; CURRENTSTUDY = 0;
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko
 tic
 
-DarboNr=0;
+DarboNr=str2num(get(handles.text_atlikta_darbu,'String'));
 PaskutinioIssaugotoDarboNr=0;
-Apdoroti_visi_tiriamieji=0;
+Apdoroti_visi_tiriamieji=1;
 sukauptos_klaidos={};
-
-%axes(handles.axes1);
-%datacursormode off;
-
-Epochuoti_pagal_stimulus_=get(handles.pushbutton_epoch_iv,'UserData') ;
-Pasirinkti_kanalai=get(handles.pushbutton14,'UserData');
-if ~isempty(Pasirinkti_kanalai);
-    Reikalingi_kanalai=Pasirinkti_kanalai;
-    Reikalingi_kanalai_sukaupti=Reikalingi_kanalai;
-else
-    Reikalingi_kanalai={}; %Nebus keičiamas darbų eigoje
-    Reikalingi_kanalai_sukaupti={}; % bus keičiamas darbų eigoje
-end;
-ribos=str2num(get(handles.edit51,'String'));%*1000;
-
-[~,ALLEEG_,~]=pop_newset([],[],[]);
-ALLEEG_=setfield(ALLEEG_,'datfile',[]);
-ALLEEG_=setfield(ALLEEG_,'chanlocs2',[]);
-%mūsų papildymas:
-ALLEEG_=setfield(ALLEEG_,'file','');
-%ALLEEG_=setfield(ALLEEG_,'erp_data',[]);
-ALLEEG_=setfield(ALLEEG_,'chans',{});
-
-% ALLEEGTMP nevisai atitiks ALLEEG, nes ALLEEGTMP kuriamas jau atrinkus įvykius, turi 'erp_data'
-ALLEEGTMP=get(handles.listbox1,'UserData');
-if isempty(ALLEEGTMP);
-    %ALLEEGTMP=struct('file',{},'erp_data',{},'times',{},'chanlocs',{});
-    ALLEEGTMP=ALLEEG_;
-end;
-
-legendoje={};
+Sukamas_kelias=KELIAS;
+Sukamos_rinkmn=Pasirinkti_failu_pavadinimai;
 
 %%
 
-for i=1:Pasirinktu_failu_N;
-    Rinkmena=Pasirinkti_failu_pavadinimai{i};
-    [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(KELIAS,Rinkmena));
-    Rinkmena_=[Rinkmena_ galune];
-    KELIAS_=Tikras_Kelias(KELIAS_);
-    NaujaRinkmena=Rinkmena_;
-    disp(sprintf([lokaliz('Opened file') ' %d/%d (%.2f%%) %s'], i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100, Rinkmena));
-    t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
-    SaugomoNr=1+str2num(get(handles.text_atlikta_darbu,'String'));
-    DarboNr=0;
-    DarboPorcijaAtlikta=0;
-    PaskutinioIssaugotoDarboNr=0;
-    PaskRinkmIssaugKelias=KELIAS;
-    
-    %guidata(hObject, handles);
-    
-    % Ikelti
-    Darbo_eigos_busena(handles, lokaliz('Loading data...'), DarboNr, i, Pasirinktu_failu_N);
-    [ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
-    try
-        EEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_);
-        [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
-    catch err;
+for dbr_i=1:10;
+    dbr_id=num2str(dbr_i);
+    if and(and(~isempty(Sukamas_kelias),~isempty(Sukamos_rinkmn)),...
+            get(eval(['handles.checkbox_drb' dbr_id]),'Value')) ;
         try
-            % Importuoti
-            EEG=pop_biosig(fullfile(KELIAS_, Rinkmena_));
+            Darbo_tipo_id=get(eval(['handles.popupmenu_drb' dbr_id]),'Value');
+            Darbo_apibudinimas=get(eval(['handles.popupmenu_drb' dbr_id]),'String');
+            Darbo_apibudinimas=Darbo_apibudinimas{Darbo_tipo_id};
+            preset=get(eval(['handles.popupmenu_drb' dbr_id '_']),'UserData');
+            Darbo_eigos_busena(handles, [lokaliz('Job') ': ' Darbo_apibudinimas], dbr_i, 0, Pasirinktu_failu_N);
+            disp([lokaliz('Job preset') ': ' preset ]); disp(' ');
+            switch Darbo_tipo_id
+                case 1
+                    Kelias_sg=fullfile(KELIAS_SAUGOJIMUI,[num2str(DarboNr+1) ' - ' ]); % lokaliz('Rename')
+                    if exist(Kelias_sg) ~= 7; try mkdir(Kelias_sg); catch err ; Kelias_sg=KELIAS_SAUGOJIMUI; end; end;
+                otherwise
+                    Kelias_sg=KELIAS_SAUGOJIMUI;
+            end;
+            veiksenos={'confirm' 'tryexec' 'forceexec'};
+            veiksena=veiksenos{get(handles.popupmenu_patvirt,'Value')};
+            dbr_param={'files',Sukamos_rinkmn, 'pathin',Sukamas_kelias, 'pathout',Kelias_sg, ...
+                       'preset', preset, 'counter',DarboNr, 'mode',veiksena};
+            %assignin('base', ['dbr_param' dbr_id], dbr_param);
+            switch Darbo_tipo_id
+                case 1
+                    [lng,Sukamas_kelias,Sukamos_rinkmn]=...
+                        pop_pervadinimas(dbr_param{:});
+                    try delete(lng); catch err; end;
+                    DarboNr=DarboNr+1;
+                case 2
+                    [lng,Sukamas_kelias,~,Sukamos_rinkmn,DarboNr]=...
+                        pop_nuoseklus_apdorojimas(dbr_param{:});
+                case 3
+                    [lng,Sukamas_kelias,~,Sukamos_rinkmn,DarboNr]=...
+                        pop_QRS_i_EEG(dbr_param{:});
+                case 4
+                    [lng,Sukamas_kelias,~,Sukamos_rinkmn]=...
+                        pop_Epochavimas_ir_atrinkimas(dbr_param{:});
+                    if isempty(Sukamos_rinkmn); Sukamos_rinkmn={' '}; end;
+                case 5
+                    [lng,Sukamas_kelias,~,Sukamos_rinkmn]=...
+                        pop_ERP_savybes(dbr_param{:});
+                case 6
+                    [lng,Sukamas_kelias,~,Sukamos_rinkmn]=...
+                        pop_eeg_spektrine_galia(dbr_param{:});
+                case 7
+                    [lng,Sukamas_kelias,~,Sukamos_rinkmn,DarboNr]=...
+                        pop_rankinis(dbr_param{:});
+                otherwise
+                    warning(lokaliz('Netinkami parametrai'));
+            end;
+            %drawnow; pause(5);
         catch err;
-            try
-                % Importuoti
-                EEG=pop_fileio(fullfile(KELIAS_, Rinkmena_));
-            catch err;
-                try
-                    % Importuoti
-                    load(fullfile(KELIAS_, Rinkmena_),'-mat');
-                catch err;
-                end;
-            end;
-        end;
-    end;
-    
-    %uiwait(gcf,1);
-    
-    
-    if ~isempty(EEG);
-        
-        EEG = eeg_checkset( EEG );
-        %eeglab redraw;
-        
-        
-        % Darbas
-        Darbo_apibudinimas=[ lokaliz('Darbas') '...'];
-        %if get(handles.checkbox_kanalu_padetis,'Value') == 1 ;
-            DarboNr = DarboNr + 1 ;
-            if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
-                
-                Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-                
-                try
-                    com=get(handles.edit_command,'String');
-                    if iscell(com);
-                        com=sprintf('%s \n',com{:});
-                    end;
-                    
-                    skaiciai=str2num(get(handles.edit51,'String'));
-                    
-                    Pasirinkti_kanalai_yra_Nr=find(ismember({EEG.chanlocs.labels},Pasirinkti_kanalai));
-                    Pasirinkti_kanalai_yra=Pasirinkti_kanalai(find(ismember(Pasirinkti_kanalai,{EEG.chanlocs.labels})));
-                    
-                    Epochuoti_pagal_stimulus_=get(handles.pushbutton_epoch_iv,'UserData') ;
-                    Epochuoti_pagal_stimulus={};
-                    for i_epoch=1:length(Epochuoti_pagal_stimulus_) ;
-                        try
-                            orig_epoch=Epochuoti_pagal_stimulus_{i_epoch}; % teksto eilutėms
-                        catch
-                            orig_epoch=Epochuoti_pagal_stimulus_(i_epoch); % skaičiams
-                        end;
-                        %disp(orig_epoch);disp(isstr(orig_epoch));
-                        if isnumeric(orig_epoch);
-                                Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus num2str(orig_epoch)];
-                        elseif isstr(orig_epoch);
-                            if isstr(EEG.event(1).type);
-                                Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus orig_epoch];
-                            else
-                                Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus num2str(str2num(orig_epoch))];
-                            end;                            
-                        else
-                            warning([lokaliz('Internal error') '. ']);
-                            disp(orig_epoch);
-                        end;
-                    end;
-                    
-                    
-                    EEG=eval2(com,...
-                        EEG,...
-                        KELIAS_,NaujaRinkmena,...
-                        skaiciai,...
-                        Pasirinkti_kanalai,Pasirinkti_kanalai_yra,Pasirinkti_kanalai_yra_Nr,...
-                        Epochuoti_pagal_stimulus,...
-                        handles);
-                    
-                catch err;
-                    Pranesk_apie_klaida(err, lokaliz('Darbas'), NaujaRinkmena);
-                    DarboPorcijaAtlikta=1;
-                    PaskRinkmIssaugKelias='';
-                    EEG.nbchan=0;
-                end;
-                
-                
-                % Išsaugoti
-                %Priesaga=(get(handles.edit_kanalu_padetis,'String')) ;
-                %Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_kanalu_padetis_,'String')) ] ;
-                %[~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                %if get(handles.checkbox_kanalu_padetis_,'Value') == 1 ;
-                %    Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
-                %    PaskutinioIssaugotoDarboNr=DarboNr;
-                %    DarboPorcijaAtlikta = 1;
-                %    SaugomoNr = SaugomoNr +1;
-                %    PaskRinkmIssaugKelias=Tikras_Kelias(fullfile(KELIAS_SAUGOJIMUI,Poaplankis));
-                %else
-                    PaskRinkmIssaugKelias='';
-                %end;
-                
-                if and(get(handles.radiobutton7,'Value') == 1, i == Pasirinktu_failu_N );
-                    set(handles.checkbox_kanalu_padetis,'Value',0);
-                    set(handles.text_atlikta_darbu,'String',num2str(1+str2num(get(handles.text_atlikta_darbu,'String'))));
-                end;
-                
-            end;
-        %end;
-        
-        %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
-        try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err; end;
-               
-        
-        % Išsaugoti
-        if isempty(PaskRinkmIssaugKelias);
-            Poaplankis='.';
-            Priesaga='';
-            Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
-            PaskRinkmIssaugKelias=Tikras_Kelias(fullfile(KELIAS_SAUGOJIMUI,Poaplankis));
-            DarboPorcijaAtlikta = 1;
-        %else   disp('Duomenys jau įrašyti');
+            Pranesk_apie_klaida(err, 'Meta Darbeliai', ' ');
+            DarboPorcijaAtlikta=1;
         end;
         
-        str=(sprintf('%s apdorotas (%d/%d = %3.2f%%)\r\n', NaujaRinkmena, i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100 )) ;
-        %disp(str);
-        
-        if and(~isempty(EEG),DarboPorcijaAtlikta);
-            if EEG.nbchan > 0 ;
-                NaujosRinkmenos=get(handles.listbox2,'String');
-                NaujosRinkmenos{i}=NaujaRinkmena;
-                set(handles.listbox2,'String',NaujosRinkmenos);
-                disp(['+']);
-            end;
-        end;
-        
-    else
-        msgbox(sprintf([lokaliz('Time:') ' %s\n' lokaliz('Path:') ' %s\n' lokaliz('File:') ' %s'], ...
-               t, pwd, Rinkmena),lokaliz('Empty dataset'),'error');
-    end;
-    
-    % Isvalyti atminti
-    %STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
-    %eeglab redraw;
-    
-    if get(handles.radiobutton6,'Value') == 1;
-        tmp_idx=get(handles.listbox1,'Value');
-        if length(tmp_idx) > 1 ;
-            set(handles.listbox1,'Value',tmp_idx(2:end));
-        end;
-        
-        if i == Pasirinktu_failu_N ;
-            Apdoroti_visi_tiriamieji=1;
-        end;
-        
-        %Galbūt naudotojas nori nutraukti anksčiau
         if get(handles.checkbox_baigti_anksciau,'Value') == 1 ;
             break;
         end;
     end;
-    
-    %set(handles.listbox2,'Visible','on');
-    %set(handles.listbox1,'Visible','off');
-    
 end;
-
 
 %% Po darbų
 
 set(handles.text_darbas,'String',' ' );
+set(handles.text_atlikta_darbu,'String',num2str(DarboNr));
+if ~isempty(Sukamos_rinkmn);
+    set(handles.listbox2,'String',Sukamos_rinkmn);
+end;
 drawnow;
 
 if and(Apdoroti_visi_tiriamieji == 1, ...
@@ -831,8 +703,8 @@ if and(Apdoroti_visi_tiriamieji == 1, ...
         ) ...
         );
     
-    if ~isempty(PaskRinkmIssaugKelias);
-        set(handles.edit1,'String',PaskRinkmIssaugKelias);
+    if ~isempty(Sukamas_kelias);
+        set(handles.edit1,'String',Sukamas_kelias);
     end;
 end;
 
@@ -843,10 +715,8 @@ end;
 % ARBA
 %     pirmenybė eiti per darbus, o naudotojas prašo baigti anksčiau
 %
-if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr <  DarboNr ),...
-        and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
-
-    set(handles.text_atlikta_darbu,'String',num2str(SaugomoNr-1));
+if or(~and(get(handles.radiobutton7,'Value') == 1, isempty(Sukamos_rinkmn) ),...
+       and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
     atnaujinti_eeglab=true;
     
     if Apdoroti_visi_tiriamieji == 1;        
@@ -857,7 +727,7 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
             %Pasirinkti_failu_pavadinimai=intersect({visi_failai.name},Pasirinkti_failu_pavadinimai);
             Pasirinkti_failu_pavadinimai2={};
             for f=1:length(Pasirinkti_failu_pavadinimai);
-                [KELIAS__,Rinkmena__,Prievardis__]=fileparts(fullfile(PaskRinkmIssaugKelias,Pasirinkti_failu_pavadinimai{f}));
+                [KELIAS__,Rinkmena__,Prievardis__]=fileparts(fullfile(Sukamas_kelias,Pasirinkti_failu_pavadinimai{f}));
                 Rinkmena__=[Rinkmena__ Prievardis__];
                 if exist(fullfile(KELIAS__,Rinkmena__ ),'file') == 2;
                     Pasirinkti_failu_pavadinimai2{end+1,1}=Pasirinkti_failu_pavadinimai{f};
@@ -913,8 +783,8 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
                 get(handles.checkbox_pabaigus_i_apdorotu_aplanka, 'Value') == 1 ...
                 ) ...
                 );
-            if ~isempty(PaskRinkmIssaugKelias);
-                set(handles.edit1,'String',PaskRinkmIssaugKelias);
+            if ~isempty(Sukamas_kelias);
+                set(handles.edit1,'String',Sukamas_kelias);
             end;
         end;
         set(handles.edit_failu_filtras2,'BackgroundColor','remove');
@@ -935,8 +805,8 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
     
 else
     
-    if ~isempty(PaskRinkmIssaugKelias);
-        set(handles.edit1,'String',PaskRinkmIssaugKelias);
+    if ~isempty(Sukamas_kelias);
+        set(handles.edit1,'String',Sukamas_kelias);
     end;
     set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
     set(handles.edit_failu_filtras2,'Style','pushbutton');
@@ -1437,7 +1307,7 @@ if ~isempty(findobj('-regexp','name',mfilename)) ;
                         error('Darbą nutraukė naudotojas');
                         %    case 'Grįžti į parinktis'
                         %        %error('Darbą nutraukė naudotojas');
-                        %        pop_naujas;
+                        %        pop_meta_drb;
                     case 'Tik užverti langą'
                         delete(hObject);
                         disp('Langą naudotojas užvėrė ');
@@ -1519,94 +1389,6 @@ else
 end;
 
 
-function edit51_Callback(hObject, eventdata, handles)
-% hObject    handle to edit51 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit51 as text
-%        str2double(get(hObject,'String')) returns contents of edit51 as a double
-elementas=handles.edit51;
-x=str2num(get(elementas,'String'));
-if isempty(x);
-    set(elementas,'UserData','');
-else
-    set(elementas,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-end;
-set(elementas,'BackgroundColor',[1 1 1]);
-set(elementas,'String',num2str(get(elementas,'UserData')));
-%edit57_Callback(hObject, eventdata, handles);
-
-% --- Executes during object creation, after setting all properties.
-function edit51_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit51 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-
-function edit_epoch_iv_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_epoch_iv (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit_epoch_iv as text
-%        str2double(get(hObject,'String')) returns contents of edit_epoch_iv as a double
-elementas=handles.edit_epoch_iv;
-set(elementas,'BackgroundColor',[1 1 1]);
-str=get(elementas,'String');
-x=unique(str2num(str));
-if length(x) > 0 ;
-    x_txt=num2str2(x);
-    set(elementas,'UserData',regexprep(x_txt, '[ ]*', ' '));
-    set(handles.pushbutton_epoch_iv,'UserData',...
-        cellfun(@(i) num2str(x(i)), ...
-        num2cell(1:length(x)),...
-        'UniformOutput', false));
-elseif isempty(str);
-    set(elementas,'UserData','');
-    set(handles.pushbutton_epoch_iv,'UserData',{});
-else
-    iv=get(handles.pushbutton_epoch_iv,'UserData');
-    try
-        senas_str=regexprep(sprintf('%s ', iv{:}),' $','');
-        senas_x=str2num(senas_str);
-        if ~isempty(senas_x); senas_str=num2str2(senas_x); end;
-        set(elementas,'UserData',senas_str);
-    catch err;
-        %set(elementas,'UserData',sprintf('%d ', iv));
-    end;        
-    warning(lokaliz('This version allow to select any real events from dataset, but manually you can enter only numbers.'));
-end;
-set(elementas,'String',num2str(get(elementas,'UserData')));
-str=get(elementas,'String');
-set(elementas,'TooltipString',str);
-% if ~isempty(str);
-     set(elementas,'BackgroundColor',[1 1 1]);
-% else
-%     set(elementas,'BackgroundColor',[1 1 0]);
-% end;
-Ar_galima_vykdyti(hObject, eventdata, handles);
-
-% --- Executes during object creation, after setting all properties.
-function edit_epoch_iv_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit_epoch_iv (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 % --- Executes during object creation, after setting all properties.
 function edit_failu_filtras1_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to edit_failu_filtras1 (see GCBO)
@@ -1654,11 +1436,45 @@ end;
 
 
 function lokalizuoti(hObject, eventdata, handles)
+set(handles.popupmenu_patvirt, 'String',{...
+    lokaliz('visada')...
+    lokaliz('kai negalima vykdyti')...
+    lokaliz('niekada');});
+fjos={ ...
+    lokaliz('Pervadinimas su info suvedimu') ...
+    lokaliz('Nuoseklus apdorojimas') ...
+...%lokaliz('EEG + EKG') ...
+    lokaliz('Epochavimas pg. stimulus ir atsakus') ...
+    lokaliz('ERP properties, export...') ...
+    lokaliz('EEG spektras ir galia') ...
+    lokaliz('Custom command') };
+fjos=regexprep(fjos,'[.]+$','');
+set(handles.popupmenu_drb1, 'String',fjos);
+set(handles.popupmenu_drb2, 'String',fjos);
+set(handles.popupmenu_drb3, 'String',fjos);
+set(handles.popupmenu_drb4, 'String',fjos);
+set(handles.popupmenu_drb5, 'String',fjos);
+set(handles.popupmenu_drb6, 'String',fjos);
+set(handles.popupmenu_drb7, 'String',fjos);
+set(handles.popupmenu_drb8, 'String',fjos);
+set(handles.popupmenu_drb9, 'String',fjos);
+set(handles.popupmenu_drb10,'String',fjos);
+set(handles.popupmenu_drb1_, 'String',{''});
+set(handles.popupmenu_drb2_, 'String',{''});
+set(handles.popupmenu_drb3_, 'String',{''});
+set(handles.popupmenu_drb4_, 'String',{''});
+set(handles.popupmenu_drb5_, 'String',{''});
+set(handles.popupmenu_drb6_, 'String',{''});
+set(handles.popupmenu_drb7_, 'String',{''});
+set(handles.popupmenu_drb8_, 'String',{''});
+set(handles.popupmenu_drb9_, 'String',{''});
+set(handles.popupmenu_drb10_, 'String',{''});
+set(handles.text51,'String', lokaliz('Job'));
+set(handles.text52,'String', lokaliz('Job preset'));
+set(handles.text53,'String', lokaliz('Patvirtinti paskiro darbelio parinktis:'));
 set(handles.pushbutton1,'String',lokaliz('Execute'));
 set(handles.pushbutton2,'String',lokaliz('Close'));
 set(handles.pushbutton4,'String',lokaliz('Update'));
-set(handles.pushbutton_epoch_iv,'String',lokaliz('Events...'));
-set(handles.pushbutton14,'String',lokaliz('Channels...'));
 set(handles.radiobutton6,'String',lokaliz('through data'));
 set(handles.radiobutton7,'String',lokaliz('through functions'));
 set(handles.text7,'String', lokaliz('After interim saved job go'));
@@ -1668,227 +1484,13 @@ set(handles.uipanel4,'Title',lokaliz('File filter'));
 set(handles.uipanel5,'Title',lokaliz('Files for work'));
 set(handles.uipanel15,'Title',lokaliz('File loading options'));
 set(handles.uipanel16,'Title',lokaliz('File saving options'));
-set(handles.uipanel17,'Title',lokaliz('Task'));
-set(handles.uipanel18,'Title',lokaliz('Code'));
-set(handles.text24,'String', [lokaliz('Time interval') ' '  lokaliz('(miliseconds_short)') ]);
+set(handles.uipanel17,'Title',lokaliz('Vykdymo parinktys'));
 set(handles.text_failu_filtras1,'String',lokaliz('Show_filenames_filter:'));
 set(handles.text_failu_filtras2,'String',lokaliz('Select_filenames_filter:'));
 set(handles.checkbox_uzverti_pabaigus,'String',lokaliz('Close when complete'));
 set(handles.checkbox_baigti_anksciau,'String',lokaliz('Break work'));
 set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'String',lokaliz('Go to saved files directory when completed'));
 set(handles.checkbox_pabaigus_atverti,'String',lokaliz('Load saved files in EEGLAB when completed'));
-
-% --- Executes on button press in pushbutton_epoch_iv.
-function pushbutton_epoch_iv_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_epoch_iv (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-RINKMENOS=get(handles.listbox1,'String');
-if isempty(RINKMENOS);
-    set(handles.edit1,'BackgroundColor',[1 1 0]);
-    drawnow;
-    return;
-end;
-RINKMENOS=RINKMENOS(get(handles.listbox1,'Value'));
-if isempty(RINKMENOS);
-    set(handles.listbox1,'BackgroundColor',[1 1 0]);    pause(1);
-    set(handles.listbox1,'BackgroundColor',[1 1 1]);    drawnow;
-    return;
-end;
-set(handles.pushbutton_epoch_iv,'Enable','off'); drawnow;
-[~,visi_galimi_ivykiai,bendri_ivykiai]=eeg_ivykiu_sarasas (get(handles.edit1,'String'), RINKMENOS);
-set(handles.pushbutton_epoch_iv,'Enable','on');
-if ismember('boundary',visi_galimi_ivykiai);
-    i=find(ismember(visi_galimi_ivykiai,'boundary')==0);
-    visi_galimi_ivykiai=visi_galimi_ivykiai(i);
-end;
-if ismember('boundary',bendri_ivykiai);
-    i=find(ismember(bendri_ivykiai,'boundary')==0);
-    bendri_ivykiai=bendri_ivykiai(i);
-end;
-if isempty(visi_galimi_ivykiai);
-    warndlg(lokaliz('No events found.'),lokaliz('Selection of events'));
-    return;
-end;
-pateikiami_ivykiai={};
-pradinis_pasirinkimas=[];
-pateikiami_bendri_v=0;
-if ~isempty(bendri_ivykiai);
-    if length(RINKMENOS) == 1;
-        pateikiami_ivykiai={bendri_ivykiai{:}};
-        pateikiami_bendri_v=0;
-        pradinis_pasirinkimas=[1:length(bendri_ivykiai)];
-    else
-        pateikiami_ivykiai={lokaliz('(all common:)') bendri_ivykiai{:} };
-        pateikiami_bendri_v=1;
-        pradinis_pasirinkimas=[2:length(bendri_ivykiai)+1];
-    end;
-end;
-nebendri_idx=find(ismember(visi_galimi_ivykiai,bendri_ivykiai) == 0);
-pateikiami_nebendri_v=0;
-if ~isempty(nebendri_idx);
-    pateikiami_ivykiai={pateikiami_ivykiai{:} lokaliz('(not common:)') visi_galimi_ivykiai{nebendri_idx} };
-    pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_ivykiai);
-    if ~pateikiami_bendri_v;
-        pradinis_pasirinkimas=[(pateikiami_nebendri_v +1) : (length(visi_galimi_ivykiai) + pateikiami_bendri_v + 1 ) ];
-    end;
-end;
-%vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
-senas=get(handles.pushbutton_epoch_iv,'UserData');
-if ~isempty(senas);
-    pradinis_pasirinkimas=find(ismember(pateikiami_ivykiai,senas)==1);
-end;
-if ~iscellstr(pateikiami_ivykiai);
-    warning(lokaliz('unexpected events types.'),lokaliz('Selection of events'));
-    disp(pateikiami_ivykiai);
-    return;
-end;
-pasirinkti_ivykiai_idx=listdlg('ListString', pateikiami_ivykiai,...
-    'SelectionMode','multiple',...
-    'PromptString', lokaliz('Select events:'),...
-    'InitialValue',pradinis_pasirinkimas );
-if isempty(pasirinkti_ivykiai_idx); return ; end;
-pasirinkti_ivykiai={};
-if ismember(pateikiami_bendri_v,pasirinkti_ivykiai_idx);
-    pasirinkti_ivykiai={pasirinkti_ivykiai{:} bendri_ivykiai{:} };
-end;
-if ismember(pateikiami_nebendri_v,pasirinkti_ivykiai_idx);
-    pasirinkti_ivykiai={pasirinkti_ivykiai{:} visi_galimi_ivykiai{nebendri_idx} };
-end;
-pasirinkti_ivykiai_idx_=pasirinkti_ivykiai_idx(find(ismember(pasirinkti_ivykiai_idx, [pateikiami_bendri_v pateikiami_nebendri_v])==0));
-pasirinkti_ivykiai=unique({pasirinkti_ivykiai{:} pateikiami_ivykiai{pasirinkti_ivykiai_idx_}});
-pasirinkti_ivykiai_str=pasirinkti_ivykiai{1};
-for i=2:length(pasirinkti_ivykiai);
-    pasirinkti_ivykiai_str=[pasirinkti_ivykiai_str ' ' pasirinkti_ivykiai{i}];
-end;
-set(handles.pushbutton_epoch_iv,'UserData',pasirinkti_ivykiai);
-set(handles.edit_epoch_iv,'TooltipString',pasirinkti_ivykiai_str);
-set(handles.edit_epoch_iv,'String',pasirinkti_ivykiai_str);
-%set(handles.edit_epoch_iv,'UserData',pasirinkti_ivykiai_str);
-if ~isempty(str2num(pasirinkti_ivykiai_str));
-    edit_epoch_iv_Callback(hObject, eventdata, handles);
-else
-    set(handles.edit_epoch_iv,'BackgroundColor',[1 1 1]);
-end;
-
-% --- Executes on button press in pushbutton14.
-function pushbutton14_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton14 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-RINKMENOS=get(handles.listbox1,'String');
-if isempty(RINKMENOS);
-    set(handles.edit1,'BackgroundColor',[1 1 0]);
-    drawnow;
-    return;
-end;
-RINKMENOS=RINKMENOS(get(handles.listbox1,'Value'));
-if isempty(RINKMENOS);
-    set(handles.listbox1,'BackgroundColor',[1 1 0]);    pause(1);
-    set(handles.listbox1,'BackgroundColor',[1 1 1]);    drawnow;
-    return;
-end;
-set(handles.pushbutton14,'Enable','off'); drawnow;
-[~,visi_galimi_kanalai,bendri_kanalai]=eeg_kanalu_sarasas (get(handles.edit1,'String'), RINKMENOS);
-set(handles.pushbutton14,'Enable','on');
-if isempty(visi_galimi_kanalai);
-    warndlg(lokaliz('No channels found.'),lokaliz('Selection of channels'));
-    return;
-end;
-pateikiami_kanalai={};
-pradinis_pasirinkimas=[];
-pateikiami_bendri_v=0;
-if ~isempty(bendri_kanalai);
-    if length(RINKMENOS) == 1;
-        pateikiami_kanalai={bendri_kanalai{:}};
-        pateikiami_bendri_v=0;
-        pradinis_pasirinkimas=[1:length(bendri_kanalai)];
-    else
-        pateikiami_kanalai={lokaliz('(all common:)') bendri_kanalai{:} };
-        pateikiami_bendri_v=1;
-        pradinis_pasirinkimas=[2:(length(bendri_kanalai)+1)];
-    end;
-end;
-nebendri_idx=find(ismember(visi_galimi_kanalai,bendri_kanalai) == 0);
-pateikiami_nebendri_v=0;
-if ~isempty(nebendri_idx);
-    pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(not common:)') visi_galimi_kanalai{nebendri_idx} };
-    pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_kanalai);
-    if ~pateikiami_bendri_v;
-        pradinis_pasirinkimas=[(pateikiami_nebendri_v +1) : (length(visi_galimi_kanalai) + pateikiami_bendri_v + 1 ) ];
-    end;
-end;
-%vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
-Ankstesni_kanalai=get(handles.text47,'TooltipString');
-if ~isempty(Ankstesni_kanalai);
-    Ankstesni_kanalai=textscan(Ankstesni_kanalai,'%s','delimiter',' ');
-    senas=Ankstesni_kanalai{1};
-    if ~isempty(senas);
-        pradinis_pasirinkimas=find(ismember(pateikiami_kanalai,senas)==1);
-    end;
-end;
-if ~iscellstr(pateikiami_kanalai);
-    warning(lokaliz('unexpected channels types.'),lokaliz('Selection of channels'));
-    disp(pateikiami_kanalai);
-    return;
-end;
-pasirinkti_kanalai_idx=listdlg('ListString', pateikiami_kanalai,...
-    'SelectionMode','multiple',...
-    'PromptString', lokaliz('Select channels:'),...
-    'InitialValue',pradinis_pasirinkimas );
-if isempty(pasirinkti_kanalai_idx); return ; end;
-pasirinkti_kanalai={};
-if ismember(pateikiami_bendri_v,pasirinkti_kanalai_idx);
-    pasirinkti_kanalai={pasirinkti_kanalai{:} bendri_kanalai{:} };
-end;
-if ismember(pateikiami_nebendri_v,pasirinkti_kanalai_idx);
-    pasirinkti_kanalai={pasirinkti_kanalai{:} visi_galimi_kanalai{nebendri_idx} };
-end;
-pasirinkti_kanalai_idx_=pasirinkti_kanalai_idx(find(ismember(pasirinkti_kanalai_idx, [pateikiami_bendri_v pateikiami_nebendri_v])==0));
-pasirinkti_kanalai=unique({pasirinkti_kanalai{:} pateikiami_kanalai{pasirinkti_kanalai_idx_}});
-pasirinkti_kanalai_str=[pasirinkti_kanalai{1}];
-for i=2:length(pasirinkti_kanalai);
-    pasirinkti_kanalai_str=[pasirinkti_kanalai_str ' ' pasirinkti_kanalai{i}];
-end;
-disp([ '''' regexprep(pasirinkti_kanalai_str, ' ', ''' ''') '''' ]);
-if ~isempty(pasirinkti_kanalai_str) ;
-    set(handles.text47,'String',length(pasirinkti_kanalai));
-    set(handles.text47,'TooltipString',pasirinkti_kanalai_str);
-    set(handles.pushbutton14,'BackgroundColor','remove');
-    set(handles.pushbutton14,'UserData',pasirinkti_kanalai);
-else
-    set(handles.text47,'String','?');
-    set(handles.text47,'TooltipString','');
-    set(handles.pushbutton14,'BackgroundColor',[1 1 0]);
-    set(handles.pushbutton14,'UserData',{});
-end;
-
-
-
-
-function edit_command_Callback(hObject, eventdata, handles)
-% hObject    handle to edit_command (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit_command as text
-%        str2double(get(hObject,'String')) returns contents of edit_command as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit_command_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit_command (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
 
 
 % --- Executes on button press in pushbutton_v1.
@@ -2009,10 +1611,11 @@ susaldyk(hObject, eventdata, handles);
 % Įkelti ankstenius nustatymus
 try    
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
-    esami={Darbeliai.dialogai.pop_naujas.saranka.vardas};
+    k=Tikras_Kelias(fullfile(function_dir,'..'));
+    load(fullfile(k,'Darbeliai_config.mat'));   
+    esami={Darbeliai.dialogai.pop_meta_drb.saranka.vardas};
     i=find(ismember(esami,rinkinys));
-    Parinktys=Darbeliai.dialogai.pop_naujas.saranka(i).parinktys;
+    Parinktys=Darbeliai.dialogai.pop_meta_drb.saranka(i).parinktys;
     for i=1:length(Parinktys);
         try
             set(eval(['handles.' Parinktys(i).id ]), ...
@@ -2028,7 +1631,7 @@ try
                     'TooltipString', Parinktys(i).TooltipString );
             end;
         catch err;
-            Pranesk_apie_klaida(err, 'pop_naujas.m', '-', 0);
+            Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
         end;
     end;
 catch err;
@@ -2055,7 +1658,7 @@ end;
 try
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
-    esami={Darbeliai.dialogai.pop_naujas.saranka.vardas};
+    esami={Darbeliai.dialogai.pop_meta_drb.saranka.vardas};
     if and(ismember(vardas,esami),~ismember(vardas,{'numatytas','paskutinis'}));
         ats=questdlg(lokaliz('Perrašyti nuostatų rinkinį?'),lokaliz('Nuostatos jau yra!'),lokaliz('Rewrite'),lokaliz('Cancel'),lokaliz('Cancel'));
         if isempty(ats); return; end;
@@ -2063,13 +1666,19 @@ try
         reikia_perkurti_meniu=1;
     end;
 catch err;
-    %Pranesk_apie_klaida(err, 'pop_naujas.m', '-', 0);
+    %Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
 end;
 
 % Užduočių parinktys
 Parinktys=struct('id','','Value','','UserData','','String_','','String','','TooltipString_','','TooltipString','');
 isimintini_el={'checkbox_uzverti_pabaigus' 'checkbox_pabaigus_atverti' 'checkbox_pabaigus_i_apdorotu_aplanka' ...
-    'pushbutton14' 'pushbutton_epoch_iv' 'radiobutton6' 'radiobutton7' };
+    'checkbox_drb1' 'checkbox_drb2' 'checkbox_drb3' 'checkbox_drb4' 'checkbox_drb5' ...
+    'checkbox_drb6' 'checkbox_drb7' 'checkbox_drb8' 'checkbox_drb9' 'checkbox_drb10' ...
+    'popupmenu_drb1' 'popupmenu_drb2' 'popupmenu_drb3' 'popupmenu_drb4' 'popupmenu_drb5' ...
+    'popupmenu_drb6' 'popupmenu_drb7' 'popupmenu_drb7' 'popupmenu_drb9' 'popupmenu_drb10' ...
+    'popupmenu_drb1_' 'popupmenu_drb2_' 'popupmenu_drb3_' 'popupmenu_drb4_' 'popupmenu_drb5_' ...
+    'popupmenu_drb6_' 'popupmenu_drb7_' 'popupmenu_drb7_' 'popupmenu_drb9_' 'popupmenu_drb10_'...
+    'popupmenu_patvirt' 'radiobutton6' 'radiobutton7' };
 for i=1:length(isimintini_el);
     try
         Parinktys(i).id = isimintini_el{i} ;
@@ -2078,34 +1687,7 @@ for i=1:length(isimintini_el);
         Parinktys(i).String_  = 0;
         Parinktys(i).TooltipString_ = 0;
     catch err;
-        Pranesk_apie_klaida(err, 'pop_naujas.m', '-', 0);
-    end;
-end;
-isimintini_el={ 'edit51' 'edit_command' };
-for i=1:length(isimintini_el);
-    try
-        Parinktys(end+1).id = isimintini_el{i} ;
-        Parinktys(end).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
-        Parinktys(end).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
-        Parinktys(end).String_  = 1;
-        Parinktys(end).String   = get(eval(['handles.' isimintini_el{i}]), 'String');
-        Parinktys(end).TooltipString_ = 0 ;
-    catch err;
-        Pranesk_apie_klaida(err, 'pop_naujas.m', '-', 0);
-    end;
-end;
-isimintini_el={ 'text47' 'edit_epoch_iv' };
-for i=1:length(isimintini_el);
-    try
-        Parinktys(end+1).id = isimintini_el{i} ;
-        Parinktys(end).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
-        Parinktys(end).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
-        Parinktys(end).String_  = 1;
-        Parinktys(end).String   = get(eval(['handles.' isimintini_el{i}]), 'String');
-        Parinktys(end).TooltipString_ = 1;
-        Parinktys(end).TooltipString   = get(eval(['handles.' isimintini_el{i}]), 'TooltipString');
-    catch err;
-        Pranesk_apie_klaida(err, 'pop_naujas.m', '-', 0);
+        Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
     end;
 end;
 
@@ -2118,16 +1700,16 @@ try
 catch err;
     i=1;
 end;
-Darbeliai.dialogai.pop_naujas.saranka(i).vardas    = vardas ;
-Darbeliai.dialogai.pop_naujas.saranka(i).data      = datestr(now,'yyyy-mm-dd HH:MM:SS') ;
-Darbeliai.dialogai.pop_naujas.saranka(i).komentaras= [ komentaras ' ' ] ;
-Darbeliai.dialogai.pop_naujas.saranka(i).parinktys = Parinktys ;
+Darbeliai.dialogai.pop_meta_drb.saranka(i).vardas    = vardas ;
+Darbeliai.dialogai.pop_meta_drb.saranka(i).data      = datestr(now,'yyyy-mm-dd HH:MM:SS') ;
+Darbeliai.dialogai.pop_meta_drb.saranka(i).komentaras= [ komentaras ' ' ] ;
+Darbeliai.dialogai.pop_meta_drb.saranka(i).parinktys = Parinktys ;
 
 % Įrašymas
 try
     save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
 catch err;
-    %Pranesk_apie_klaida(err, 'pop_naujas.m', '-', 0);
+    %Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
 end;
 if reikia_perkurti_meniu; meniu(hObject, eventdata, handles); end;
 
@@ -2135,13 +1717,13 @@ function parinktis_trinti(hObject, eventdata, handles)
 try
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
-    esami={Darbeliai.dialogai.pop_naujas.saranka.vardas};
+    esami={Darbeliai.dialogai.pop_meta_drb.saranka.vardas};
     esami_N=length(esami);
     esami_nr=find(~ismember(esami,{'numatytas','paskutinis'}));
     esami=esami(esami_nr);
     if isempty(esami); return; end;
 catch err;
-    %Pranesk_apie_klaida(err, 'pop_naujas.m', '-', 0);
+    %Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
     return;
 end;
 pasirinkti=listdlg('ListString', esami,...
@@ -2151,14 +1733,14 @@ pasirinkti=listdlg('ListString', esami,...
     'OKString',lokaliz('Trinti'),...
     'CancelString',lokaliz('Cancel'));
 if isempty(pasirinkti); return; end;
-Darbeliai.dialogai.pop_naujas.saranka= ...
-    Darbeliai.dialogai.pop_naujas.saranka(...
+Darbeliai.dialogai.pop_meta_drb.saranka= ...
+    Darbeliai.dialogai.pop_meta_drb.saranka(...
     setdiff([1:esami_N], esami_nr(pasirinkti)));
 % Įrašymas
 try
     save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
 catch err;
-    Pranesk_apie_klaida(err, 'pop_naujas.m', '-', 0);
+    Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
 end;
 meniu(hObject, eventdata, handles);
 
@@ -2172,8 +1754,8 @@ uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Pervadinimas su info suvedimu
         'Separator','off', 'Callback', [param_prad 'pop_pervadinimas' param_pab ] );
 uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Nuoseklus apdorojimas'), ...
         'Separator','off', 'Callback', [param_prad 'pop_nuoseklus_apdorojimas' param_pab ] );
-uimenu( handles.meniu_darbeliai, 'Label', lokaliz('EEG + EKG'), ...
-        'Separator','off', 'Callback', [param_prad 'pop_QRS_i_EEG' param_pab ] );
+%uimenu( handles.meniu_darbeliai, 'Label', lokaliz('EEG + EKG'), ...
+%        'Separator','off', 'Callback', [param_prad 'pop_QRS_i_EEG' param_pab ] );
 uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Epochavimas pg. stimulus ir atsakus'), ...
         'Separator','off', 'Callback', [param_prad 'pop_Epochavimas_ir_atrinkimas' param_pab ] );
 uimenu( handles.meniu_darbeliai, 'Label', lokaliz('ERP properties, export...'), ...
@@ -2182,7 +1764,7 @@ uimenu( handles.meniu_darbeliai, 'Label', [ lokaliz('EEG spektras ir galia') '..
         'Separator','off', 'Callback', [param_prad 'pop_eeg_spektrine_galia' param_pab ] );
 uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Custom command') , ...
         'Separator','off', 'Callback', [param_prad 'pop_rankinis' param_pab ] );
-uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Meta darbeliai...') , ...
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Meta darbeliai...') , 'Enable', 'off', ...
         'Separator','on',  'Callback', [param_prad 'pop_meta_drb' param_pab ] );
 yra_isimintu_rinkiniu=0;
 handles.meniu_nuostatos = uimenu(handles.figure1,'Label',lokaliz('Options'),'Tag','m_Nuostatos');
@@ -2190,15 +1772,15 @@ handles.meniu_nuostatos_ikelti = uimenu(handles.meniu_nuostatos,'Label',lokaliz(
 uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Numatytas'),'Accelerator','R','Callback',{@parinktis_ikelti,handles,'numatytas'});
 try
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
-    par_pav={ Darbeliai.dialogai.pop_naujas.saranka.vardas };
+    par_pav={ Darbeliai.dialogai.pop_meta_drb.saranka.vardas };
     if ismember('paskutinis',par_pav);
         uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Paskiausias'),'Separator','off',...
             'Accelerator','0','Callback',{@parinktis_ikelti,handles,'paskutinis'});
     end;
     ids=find(~ismember(par_pav,{'numatytas','paskutinis'}));
     par_pav=par_pav(ids);
-    par_dat={ Darbeliai.dialogai.pop_naujas.saranka.data };       par_dat=par_dat(ids);
-    par_kom={ Darbeliai.dialogai.pop_naujas.saranka.komentaras }; par_kom=par_kom(ids);
+    par_dat={ Darbeliai.dialogai.pop_meta_drb.saranka.data };       par_dat=par_dat(ids);
+    par_kom={ Darbeliai.dialogai.pop_meta_drb.saranka.komentaras }; par_kom=par_kom(ids);
     if ~isempty(par_pav); yra_isimintu_rinkiniu=1 ; end; 
     for i=1:length(par_pav);
         try
@@ -2209,11 +1791,11 @@ try
             'Accelerator',fastif(i<10, num2str(i), ''),...
             'Callback',{@parinktis_ikelti,handles,par_pav{i}});
         catch err0;
-            Pranesk_apie_klaida(err0, 'pop_naujas.m', '-', 0);
+            Pranesk_apie_klaida(err0, 'pop_meta_drb.m', '-', 0);
         end;
     end;
 catch err;
-    %Pranesk_apie_klaida(err, 'pop_naujas.m', '-', 0);
+    %Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
 end;
 %handles.meniu_nuostatos_irasyti = uimenu(handles.meniu_nuostatos,'Label','Įrašyti');
 %uimenu(handles.meniu_nuostatos_irasyti,'Label','Kaip paskutines','Callback',{@parinktis_irasyti,handles,'paskutinis',''});
@@ -2228,18 +1810,720 @@ try
     vers=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
     fclose(fid_vers); 
 catch err;
-end;[lokaliz('Apie') ' ' vers]
+end;
 handles.meniu_apie = uimenu(handles.figure1,'Label',lokaliz('Pagalba'));
 if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
     uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
     uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H', 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.1.%20Bendryb%C4%97s'',''-browser'') ;'  );
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.8.%20Darb%C5%B3%20tvarkytuv%C4%97'',''-browser'') ;'  );
 else
     uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
     uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H', 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.%20Usage'',''-browser'') ;'  );
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.8.%20Workflow%20Master'',''-browser'') ;'  );
 end;
+
+
+% --- Executes on button press in checkbox_drb1.
+function checkbox_drb1_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_drb1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_drb1
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 1);
+
+
+% --- Executes on selection change in popupmenu_drb1.
+function popupmenu_drb1_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb1 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb1
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 1);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu_drb1_.
+function popupmenu_drb1__Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb1_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb1_ contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb1_
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 1);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb1__CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb1_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkbox_drb2.
+function checkbox_drb2_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_drb2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_drb2
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 2);
+
+
+% --- Executes on selection change in popupmenu_drb2.
+function popupmenu_drb2_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb2 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb2
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 2);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu_drb2_.
+function popupmenu_drb2__Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb2_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb2_ contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb2_
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 2);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb2__CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb2_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkbox_drb3.
+function checkbox_drb3_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_drb3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_drb3
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 3);
+
+
+% --- Executes on selection change in popupmenu_drb3.
+function popupmenu_drb3_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb3 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb3
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 3);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb3_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu_drb3_.
+function popupmenu_drb3__Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb3_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb3_ contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb3_
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 3);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb3__CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb3_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkbox_drb4.
+function checkbox_drb4_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_drb4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_drb4
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 4);
+
+
+% --- Executes on selection change in popupmenu_drb4.
+function popupmenu_drb4_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb4 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb4
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 4);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb4_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu_drb4_.
+function popupmenu_drb4__Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb4_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb4_ contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb4_
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 4);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb4__CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb4_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkbox_drb5.
+function checkbox_drb5_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_drb5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_drb5
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 5);
+
+
+% --- Executes on selection change in popupmenu_drb5.
+function popupmenu_drb5_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb5 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb5
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 5);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb5_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu_drb5_.
+function popupmenu_drb5__Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb5_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb5_ contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb5_
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 5);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb5__CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb5_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkbox_drb6.
+function checkbox_drb6_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_drb6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_drb6
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 6);
+
+
+% --- Executes on selection change in popupmenu_drb6.
+function popupmenu_drb6_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb6 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb6
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 6);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb6_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu_drb6_.
+function popupmenu_drb6__Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb6_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb6_ contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb6_
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 6);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb6__CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb6_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkbox_drb7.
+function checkbox_drb7_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_drb7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_drb7
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 7);
+
+
+% --- Executes on selection change in popupmenu_drb7.
+function popupmenu_drb7_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb7 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb7
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 7);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb7_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu_drb7_.
+function popupmenu_drb7__Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb7_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb7_ contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb7_
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 7);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb7__CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb7_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkbox_drb8.
+function checkbox_drb8_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_drb8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_drb8
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 8);
+
+
+% --- Executes on selection change in popupmenu_drb8.
+function popupmenu_drb8_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb8 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb8
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 8);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb8_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu_drb8_.
+function popupmenu_drb8__Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb8_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb8_ contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb8_
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 8);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb8__CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb8_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkbox_drb9.
+function checkbox_drb9_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_drb9 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_drb9
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 9);
+
+
+% --- Executes on selection change in popupmenu_drb9.
+function popupmenu_drb9_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb9 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb9 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb9
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 9);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb9_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb9 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu_drb9_.
+function popupmenu_drb9__Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb9_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb9_ contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb9_
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 9);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb9__CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb9_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkbox_drb10.
+function checkbox_drb10_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_drb10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_drb10
+virtual_checkbox_drb_Callback(hObject, eventdata, handles, 10);
+
+
+% --- Executes on selection change in popupmenu_drb10.
+function popupmenu_drb10_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb10 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb10
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, 10);
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb10_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu_drb10_.
+function popupmenu_drb10__Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb10_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb10_ contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb10_
+virtual_popupmenu_drb__Callback(hObject, eventdata, handles, 10);
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_drb10__CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_drb10_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkbox_drb*.
+function virtual_checkbox_drb_Callback(hObject, eventdata, handles, id)
+% hObject    handle to checkbox_drb* (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_drb*
+cbh=eval(['handles.checkbox_drb' num2str(id)]);
+pm=eval(['handles.popupmenu_drb' num2str(id)]);
+aktyvus=and(get(cbh, 'Value'), strcmp(get(cbh, 'Enable'),'on'));
+set(pm,'Enable',fastif(aktyvus,'on','off'));
+virtual_popupmenu_drb_Callback(hObject, eventdata, handles, id);
+
+
+% --- Executes on selection change in popupmenu_drb*.
+function virtual_popupmenu_drb_Callback(hObject, eventdata, handles, id)
+% hObject    handle to popupmenu_drb* (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb* contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb*
+pm=eval(['handles.popupmenu_drb' num2str(id)]);
+pm_=eval(['handles.popupmenu_drb' num2str(id) '_']);
+if strcmp(get(pm, 'Enable'),'on');
+    [rinkiniai,rinkiniai2]=Darbeliu_nuostatu_rinkiniai(get(pm, 'Value'));
+    if ~isempty(rinkiniai);
+        set(pm_,'String',rinkiniai);
+        set(pm,'UserData',rinkiniai2);
+        i = [];
+        try i=find(ismember(rinkiniai2,get(pm_,'UserData'))); catch err; end;
+        if isempty(i); i=find(ismember(rinkiniai2,'paskutinis')); end; if isempty(i); i=1; end;
+        set(pm_,'Value',i(1));
+        set(pm_,'Enable','on');
+    else
+        set(pm,'UserData',{'paskutinis'});
+        set(pm_,'String',{' '});
+        set(pm_,'Value',1);
+        set(pm_,'Enable','off');        
+    end;
+    eval(['popupmenu_drb' num2str(id) '__Callback(hObject, eventdata, handles);' ]);
+else
+    set(pm_,'Enable','off');
+end;
+
+
+% --- Executes on selection change in popupmenu_drb*_.
+function virtual_popupmenu_drb__Callback(hObject, eventdata, handles, id)
+% hObject    handle to popupmenu_drb*_ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_drb*_ contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_drb*_
+pm=eval(['handles.popupmenu_drb' num2str(id)]);
+pm_=eval(['handles.popupmenu_drb' num2str(id) '_']);
+str=get(pm_,'String');
+val=get(pm_,'Value');
+if length(str) < val; set(pm_,'Value',1); val= 1; end;
+set(pm_,'TooltipString',str{val});
+dbr=get(pm,'UserData'); 
+set(pm_,'UserData', dbr{val});
+
+
+function [rinkiniai_lokaliz,rinkiniai_orig]=Darbeliu_nuostatu_rinkiniai(darbelio_Nr)
+rinkiniai_orig={'numatytas'}; % Net jei tokio ir dar nėra, jis sukuriamas paleidižiant dialogą
+try    
+    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+    k=Tikras_Kelias(fullfile(function_dir,'..'));
+    load(fullfile(k,'Darbeliai_config.mat'))
+    switch darbelio_Nr
+        case 1
+            rinkiniai_orig={Darbeliai.dialogai.pop_pervadinimas.saranka.vardas};
+        case 2
+            rinkiniai_orig={Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.vardas};
+%        case 3
+%            rinkiniai_orig={Darbeliai.dialogai.pop_QRS_i_EEG.saranka.vardas};
+        case 3
+            rinkiniai_orig={Darbeliai.dialogai.pop_Epochavimas_ir_atrinkimas.saranka.vardas};
+        case 4
+            rinkiniai_orig={Darbeliai.dialogai.pop_ERP_savybes.saranka.vardas};
+        case 5
+            rinkiniai_orig={Darbeliai.dialogai.pop_eeg_spektrine_galia.saranka.vardas};
+        case 6
+            rinkiniai_orig={Darbeliai.dialogai.pop_rankinis.saranka.vardas};
+        otherwise
+            disp('darbelio_Nr=');
+            disp(darbelio_Nr);
+            error([lokaliz('Netinkami parametrai')]);
+    end;    
+catch err;
+    %Pranesk_apie_klaida(err, 'Darbeliu_nuostatu_rinkiniai', darbelio_Nr, 0);
+end;
+rinkiniai_lokaliz=rinkiniai_orig;
+i=find(ismember(rinkiniai_orig, 'numatytas' ));
+if ~isempty(i); rinkiniai_lokaliz(i)={lokaliz('Numatytas')}; end;
+i=find(ismember(rinkiniai_orig, 'paskutinis' ));
+if ~isempty(i); rinkiniai_lokaliz(i)={lokaliz('Paskiausias')}; end;
+
+
+% --- Executes on selection change in popupmenu_patvirt.
+function popupmenu_patvirt_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_patvirt (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_patvirt contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_patvirt
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_patvirt_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_patvirt (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

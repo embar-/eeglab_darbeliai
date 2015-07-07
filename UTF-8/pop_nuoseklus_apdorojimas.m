@@ -1,7 +1,7 @@
 %
 %
 %
-% (C) 2014 Mindaugas Baranauskas
+% (C) 2014-2015 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -90,11 +90,23 @@ function pop_nuoseklus_apdorojimas_OpeningFcn(hObject, eventdata, handles, varar
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to pop_nuoseklus_apdorojimas (see VARARGIN)
-tic;
 
-% global STUDY CURRENTSTUDY ALLEEG EEG CURRENTSET PLUGINLIST Rinkmena NaujaRinkmena KELIAS KELIAS_SAUGOJIMUI SaugomoNr;
+if and(nargin > 3, mod(nargin, 2)) ;
+    if iscellstr(varargin((1:(nargin-3)/2)*2-1)); 
+        g = struct(varargin{:});
+    else  warning(lokaliz('Netinkami parametrai'));
+        g=[];     end;
+else    g=[];
+end;
 
 set(handles.figure1,'Name',mfilename);
+set(handles.figure1,'Tag','Darbeliai');
+set(handles.figure1,'Units','pixels');
+set(handles.figure1,'Resize','on');
+pad=get(handles.figure1,'Position');
+set(handles.figure1,'Position',[pad(1) pad(2) max(pad(3),800) max(pad(4),600)]);
+
+tic;
 
 lokalizuoti(hObject, eventdata, handles);
 meniu(hObject, eventdata, handles);
@@ -113,23 +125,20 @@ try
     cd(Darbeliai.keliai.atverimui{1});
 catch err;
 end;
+
+% Pabandyk nustatyti kelią pagal parametrus
+try set(handles.edit1,'String',g(1).path);   catch err; end;
+try set(handles.edit1,'String',g(1).pathin); catch err; end;
+% Pabandyk parinkti rinkmenas pagal parametrus
 try
-    tmp_mat=fullfile(tempdir,'tmp.mat');
-    load(tmp_mat);
-    %disp(g);
-    cd(g.path{1});
-    if ~isempty(g.files);
-        set(handles.listbox2,'String',g.files);
-        %set(handles.edit_failu_filtras2,'Style','pushbutton');
+    if ~isempty({g.files});
+        set(handles.listbox2,'String',{g.files});
+        set(handles.edit_failu_filtras2,'Style','edit'); % 'pushbutton'
         edit_failu_filtras2_ButtonDownFcn(hObject, eventdata, handles);
     end;
-    delete(tmp_mat);
 catch err;
-    %warning(err.message);
 end;
 
-KELIAS=pwd;
-set(handles.edit1,'String',KELIAS);
 set(handles.pushbutton_v1,'UserData',{});
 set(handles.pushbutton_v2,'UserData',{});
 atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
@@ -142,8 +151,9 @@ try
     if exist(k) == 7 ; set(handles.edit2,'String',k); end;
 catch err;
 end;
+try set(handles.edit2,'String',g(1).path);    catch err; end;
+try set(handles.edit2,'String',g(1).pathout); catch err; end;
 edit2_Callback(hObject, eventdata, handles);
-%cd(KELIAS);
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 
@@ -173,7 +183,16 @@ set(handles.checkbox_perziureti_ICA,'Value',0);
 set(handles.checkbox_epoch,'Value',0);
 
 % Numatytosios reikšmės
-set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf')
+set(    handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
+try set(handles.edit_failu_filtras1,'String',g(1).flt_show); catch err; end;
+try 
+    if ~isempty(g(1).flt_slct);    
+        set(handles.edit_failu_filtras2,'Style','pushbutton'); % 'edit'
+        edit_failu_filtras2_ButtonDownFcn(hObject, eventdata, handles);
+        set(handles.edit_failu_filtras2,'String',g(1).flt_slct);
+    end
+catch err; 
+end;
 set(handles.edit_epoch_iv,'String','');
 
 set(handles.text_apdorotini_kanalai,'String',lokaliz('all'));
@@ -214,9 +233,15 @@ end;
 set(handles.popupmenu12,'String',siulomi_kanalu_padeciu_failai);
 
 parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
+try 
+    parinktis_ikelti(hObject, eventdata, handles, g(1).preset); 
+catch err; 
+    popupmenu12_Callback(hObject, eventdata, handles);
+    susildyk(hObject, eventdata, handles);
+end;
 
-popupmenu12_Callback(hObject, eventdata, handles);
-susildyk(hObject, eventdata, handles);
+try set(handles.text_atlikta_darbu,'String',num2str(g(1).counter)); catch err; end;
+set(handles.checkbox_uzverti_pabaigus,'UserData',0);
 
 tic;
 
@@ -228,6 +253,32 @@ guidata(hObject, handles);
 
 % UIWAIT makes pop_nuoseklus_apdorojimas wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
+
+% Jei nurodyta veiksena
+try
+    agv=strcmp(get(handles.pushbutton1,'Enable'),'on');
+    if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'}),...
+      and(ismember(g(1).mode,{'tryforce'}),agv));
+        set(handles.checkbox_uzverti_pabaigus,'Enable','off');
+    end;
+    if ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec' 'e' 'exec' 't' 'try' 'tryexec' 'tryforce' 'c' 'confirm'});
+        set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'Enable','off');
+        set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'Value',1);
+        set(handles.checkbox_uzverti_pabaigus,'UserData',1);
+        set(handles.checkbox_uzverti_pabaigus,'Value',1);
+        %set(handles.checkbox_pabaigus_atverti,'Value',0);
+    end;
+    if or(ismember(g(1).mode,{'c' 'confirm'}),...
+      and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),~agv)    );
+        uiwait(handles.figure1); % UIRESUME bus įvykdžius užduotis
+    end;
+    if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec' 'e' 'exec'}),...
+      and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),agv));
+        pushbutton1_Callback(hObject, eventdata, handles);
+    end;
+catch err;
+end;
+
 
 function Palauk()
 f = warndlg(sprintf(lokaliz('Can we go to next job?')), lokaliz('Attention!'));
@@ -247,7 +298,28 @@ function varargout = pop_nuoseklus_apdorojimas_OutputFcn(hObject, eventdata, han
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+try
+    varargout{1} = handles.output;
+    varargout{2} = get(handles.edit1,'String'); % kelias
+    varargout{3} = get(handles.listbox2,'String'); % rinkmenos    
+    varargout{4} = varargout{3}(find(cellfun(@exist,fullfile(varargout{2},varargout{3}))==2)); % esamos rinkmenos
+    varargout{5} = str2num(get(handles.text_atlikta_darbu,'String')); % skaitliukas
+catch err;
+    varargout{1} = [];
+    varargout{2} = '';
+    varargout{3} = {};
+    varargout{4} = {};
+    varargout{5} = [];
+end;
+
+% Užverti langą, jei nurodyta parinktyse
+try    
+    if and( get(handles.checkbox_uzverti_pabaigus,'UserData'),...
+            get(handles.checkbox_uzverti_pabaigus,'Value'));
+        delete(handles.figure1);
+    end;
+catch err;
+end;
 
 
 % Atnaujink rodoma kelia
@@ -322,8 +394,9 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 function susaldyk(hObject, eventdata, handles)
 %Neleisti spausti Nuostatų meniu!
 a=findall(handles.figure1,'type','uimenu');
-a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ;
-set(a,'Enable','off'); drawnow;
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
+set(b,'Enable','off'); drawnow;
 
 set(handles.pushbutton1,'Value',0);
 set(handles.listbox1,'Enable','inactive');
@@ -491,15 +564,18 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 set(handles.checkbox_baigti_anksciau,'Visible','off');
 
 %Vidinis atliktų darbų skaitliukas
-set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
-    get(handles.edit2,'String'))));
+% set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
+%    get(handles.edit2,'String'))));
 
 %set(handles.uipanel6,'Title', ['Duomenų apdorojimo funkcijos']);
 set(handles.text_darbas,'String',' ');
 set(handles.pushbutton2,'Value',0);
 
 % Leisti spausti Nuostatų meniu!
-a=findall(handles.figure1,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','on');
+a=findall(handles.figure1,'type','uimenu');
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
+set(b,'Enable','on'); drawnow;
 
 function Ar_galima_vykdyti(hObject, eventdata, handles)
 
@@ -559,9 +635,22 @@ if get(handles.edit_failu_filtras2,'BackgroundColor') == [1 1 0];
     %disp('');
     drawnow; return;
 end;
+% Ar pasirinkti darbai
+chb_pav={'rf' 'filtr1' 'filtr2' 'filtr_tinklo' 'kanalu_padetis' 'atrink_kanalus1' ...
+    'atmesk_atkarpas_amp' 'atmesk_atkarpas_dzn' 'atmesk_kan_auto' 'perziureti' ...
+    'MARA' 'ICA' 'atmesk_iki2s' 'vienoda_trukme' 'atrink_kanalus2' 'ASR' 'perziureti_ICA' 'epoch'};
+chb_c=0;
+for i=1:length(chb_pav);
+    chb_c=chb_c + get(eval(['handles.checkbox_' chb_pav{i}]),'Value');
+end;
+if chb_c == 0;
+    %disp('Pasirinkite darbą!');
+    drawnow; return;
+end;
+
+% Vykdyti galima
 set(handles.pushbutton1,'Enable','on');
 drawnow;
-%set(handles.checkbox_epoch_b,'TooltipString', ' ' ) ;
 
 
 function Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N)
@@ -655,7 +744,10 @@ end;
 % Užduočių parinkčių įsiminimas
 parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 %Neleisti spausti Nuostatų meniu!
-a=findall(gcf,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','off'); drawnow;
+a=findall(handles.figure1,'type','uimenu');
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
+set(b,'Enable','off'); drawnow;
 
 STUDY = []; CURRENTSTUDY = 0; %ALLEEG = []; EEG=[]; CURRENTSET=[];
 %[ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
@@ -2336,10 +2428,6 @@ for i=1:Pasirinktu_failu_N;
     STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
     %eeglab redraw;
 
-    %uiwait ;
-    %uiresume;
-
-
     if get(handles.radiobutton6,'Value') == 1;
         tmp_idx=get(handles.listbox1,'Value');
         if length(tmp_idx) > 1 ;
@@ -2385,9 +2473,11 @@ end;
 %     pirmenybė eiti per darbus, o naudotojas prašo baigti anksčiau
 %
 if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr <  DarboNr ),...
-        and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
-        set(handles.uipanel6,'Title', lokaliz('Data processing functions'));
-    atnaujinti_eeglab=true;
+       and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
+   
+   set(handles.uipanel6,'Title', lokaliz('Data processing functions'));
+   set(handles.text_atlikta_darbu,'String',num2str(SaugomoNr-1));
+   atnaujinti_eeglab=true;
 
     if Apdoroti_visi_tiriamieji == 1;
         if get(handles.checkbox_pabaigus_atverti,'Value') == 1;
@@ -2448,8 +2538,9 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
         fclose(fid);
     end;
 
-
-    if get(handles.checkbox_uzverti_pabaigus,'Value') == 1;
+    
+    if and(~get(handles.checkbox_uzverti_pabaigus,'UserData'),...
+            get(handles.checkbox_uzverti_pabaigus,'Value'));
         delete(handles.figure1);
     else
         if and(Apdoroti_visi_tiriamieji == 1, ...
@@ -2469,6 +2560,7 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
         atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
         atnaujink_rodomus_failus(hObject, eventdata, handles);
         susildyk(hObject, eventdata, handles);
+        uiresume(handles.figure1);
     end;
 
 
@@ -2742,6 +2834,7 @@ else
     set(handles.pushbutton18,'Enable','off');
 end;
 checkbox_rf__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 % --- Executes on button press in checkbox_filtr1.
 function checkbox_filtr1_Callback(hObject, eventdata, handles)
@@ -2765,6 +2858,7 @@ else
     Ar_galima_vykdyti(hObject, eventdata, handles);
 end;
 checkbox_filtr1__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_filtr_tinklo.
@@ -2785,6 +2879,7 @@ else
     set(handles.edit50,'Enable','off');
 end;
 checkbox_filtr_tinklo__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_kanalu_padetis.
@@ -2807,6 +2902,7 @@ else
     set(handles.pushbutton14,'Enable','off');
 end;
 checkbox_kanalu_padetis__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_uzverti_pabaigus.
@@ -2937,29 +3033,30 @@ function edit3_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit3 as text
 %        str2double(get(hObject,'String')) returns contents of edit3 as a double
-x=str2num(get(handles.edit3,'String'));
-senas=get(handles.edit3,'UserData');
+id=handles.edit3;
+x=real(str2num(get(id,'String')));
+senas=get(id,'UserData');
 %disp(x);
 tinka=0;
 if and(length(x) == 1, get(handles.popupmenu9,'Value') < 3 ) ;
   if x > 0 ;
     tinka=1;
-    set(handles.edit3,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
   end;
 elseif and(length(x) == 2, get(handles.popupmenu9,'Value') > 2 ) ;
   if and(0 < x(1), x(1) < x(2));
     tinka=1;
-    set(handles.edit3,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
   end;
 end;
 if tinka;
-    set(handles.edit3,'String',get(handles.edit3,'UserData'));
+    set(id,'String',get(id,'UserData'));
 end;
-set(handles.edit3,'BackgroundColor',[1 1 tinka]);
-%x=str2num(get(handles.edit3,'String'));
-if ~strcmp(senas,get(handles.edit3,'String'));
-    set(handles.edit_filtr1,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(handles.edit3,'UserData')) , '[ ]*', '-')   ]  ) ;
-    set(handles.edit_filtr1_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(handles.edit3,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
+set(id,'BackgroundColor',[1 1 tinka]);
+%x=str2num(get(id,'String'));
+if ~strcmp(senas,get(id,'String'));
+    set(handles.edit_filtr1,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(id,'UserData')) , '[ ]*', '-')   ]  ) ;
+    set(handles.edit_filtr1_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(id,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
 end;
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
@@ -3008,6 +3105,30 @@ else
     %set(handles.text8,'Visible','on');
 end;
 checkbox_atrink_kanalus1__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
+
+
+% --- Executes on button press in checkbox_atmesk_atkarpas_amp.
+function checkbox_atmesk_atkarpas_amp_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_atmesk_atkarpas_amp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_atmesk_atkarpas_amp
+if and(get(handles.checkbox_atmesk_atkarpas_amp, 'Value') == 1, ...
+        strcmp(get(handles.checkbox_atmesk_atkarpas_amp, 'Enable'),'on'));
+    set(handles.checkbox_atmesk_atkarpas_amp_,'Enable','on');
+    set(handles.edit_atmesk_atkarpas_amp,'Enable','on');
+    set(handles.edit57,'Enable','on');
+    set(handles.edit58,'Enable','on');
+else
+    set(handles.checkbox_atmesk_atkarpas_amp_,'Enable','off');
+    set(handles.edit_atmesk_atkarpas_amp,'Enable','off');
+    set(handles.edit57,'Enable','off');
+    set(handles.edit58,'Enable','off');
+end;
+checkbox_atmesk_atkarpas_amp__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_atmesk_atkarpas_dzn.
@@ -3030,6 +3151,7 @@ else
     set(handles.edit44,'Enable','off');
 end;
 checkbox_atmesk_atkarpas_dzn__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_atmesk_kan_auto.
@@ -3056,6 +3178,7 @@ else
     set(handles.checkbox41,'Enable','off');
 end;
 checkbox_atmesk_kan_auto__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_perziureti.
@@ -3077,6 +3200,7 @@ else
     set(handles.edit_perziureti,'Enable','off');
 end;
 checkbox_perziureti__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_ICA.
@@ -3101,6 +3225,7 @@ else
     %checkbox_MARA_Callback(hObject, eventdata, handles);
 end;
 checkbox_ICA__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_atmesk_iki2s.
@@ -3121,6 +3246,7 @@ else
     set(handles.edit20,'Enable','off');
 end;
 checkbox_atmesk_iki2s__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_vienoda_trukme.
@@ -3141,6 +3267,7 @@ else
     set(handles.edit19,'Enable','off');
 end;
 checkbox_vienoda_trukme__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_atrink_kanalus2.
@@ -3180,6 +3307,7 @@ else
     set(handles.pushbutton7,'BackgroundColor','remove'); %[0.7 0.7 0.7]);
 end;
 checkbox_atrink_kanalus2__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_ASR.
@@ -3198,6 +3326,7 @@ else
     set(handles.edit_ASR,'Enable','off');
 end;
 checkbox_ASR__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_MARA.
@@ -3218,7 +3347,33 @@ else
     set(handles.popupmenu5,'Enable','off');
 end;
 checkbox_MARA__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
+
+% --- Executes on button press in checkbox_perziureti_ICA.
+function checkbox_perziureti_ICA_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_perziureti_ICA (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_perziureti_ICA
+if and(get(handles.checkbox_perziureti_ICA, 'Value') == 1, ...
+        strcmp(get(handles.checkbox_perziureti_ICA, 'Enable'),'on'));
+    set(handles.checkbox_perziureti_ICA_,'Enable','on');
+    set(handles.edit_perziureti_ICA,'Enable','on');
+    set(handles.checkbox_perziureti_ICA_demesio,'Enable','off');
+    %set(handles.checkbox_perziureti_ICA_demesio,'Enable','inactive');
+    set(handles.popupmenu7,'Enable','on');
+    set(handles.popupmenu8,'Enable','on');
+else
+    set(handles.checkbox_perziureti_ICA_,'Enable','off');
+    set(handles.edit_perziureti_ICA,'Enable','off');
+    set(handles.checkbox_perziureti_ICA_demesio,'Enable','off');
+    set(handles.popupmenu7,'Enable','off');
+    set(handles.popupmenu8,'Enable','off');
+end;
+checkbox_perziureti_ICA__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_filtr2.
@@ -3243,6 +3398,7 @@ else
     Ar_galima_vykdyti(hObject, eventdata, handles);
 end;
 checkbox_filtr2__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_rf_.
@@ -3451,7 +3607,6 @@ else
 end;
 
 
-
 % --- Executes on button press in checkbox_filtr2_.
 function checkbox_filtr2__Callback(hObject, eventdata, handles)
 % hObject    handle to checkbox_filtr2_ (see GCBO)
@@ -3465,8 +3620,6 @@ if and(get(handles.checkbox_filtr2_, 'Value') == 1, ...
 else
     set(handles.edit_filtr2_,'Enable','off');
 end;
-
-
 
 
 function edit_rf_Callback(hObject, eventdata, handles)
@@ -3830,18 +3983,12 @@ function edit19_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit19 as text
 %        str2double(get(hObject,'String')) returns contents of edit19 as a double
-x=str2num(get(handles.edit19,'String'));
-senas=get(handles.edit19,'UserData');
-if length(x) == 1 ;
-    if x > 0 ;
-        set(handles.edit19,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-    end;
-end;
-set(handles.edit19,'String',get(handles.edit19,'UserData'));
-set(handles.edit19,'BackgroundColor',[1 1 1]);
-if ~strcmp(senas,get(handles.edit19,'String'));
-    set(handles.edit_vienoda_trukme,'String',[ '_' num2str(get(handles.edit19,'UserData')) lokaliz('seconds_short') ] );
-    set(handles.edit_vienoda_trukme_,'String',[ lokaliz('_Nuosekl_apdor_default_dir_unify_duration')  ' ' num2str(get(handles.edit19,'UserData')) ' ' lokaliz('seconds_short') ] );
+id=handles.edit19;
+senas=get(id,'UserData');
+virtual_edit_sk_Callback(hObject, eventdata, handles, id, 1, 'x > 0');
+if ~strcmp(senas,get(id,'String'));
+    set(handles.edit_vienoda_trukme,'String',[ '_' num2str(get(id,'UserData')) lokaliz('seconds_short') ] );
+    set(handles.edit_vienoda_trukme_,'String',[ lokaliz('_Nuosekl_apdor_default_dir_unify_duration')  ' ' num2str(get(id,'UserData')) ' ' lokaliz('seconds_short') ] );
 end;
 
 % --- Executes during object creation, after setting all properties.
@@ -3865,14 +4012,7 @@ function edit20_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit20 as text
 %        str2double(get(hObject,'String')) returns contents of edit20 as a double
-x=str2num(get(handles.edit20,'String'));
-if length(x) == 1 ;
-  if x > 0;
-    set(handles.edit20,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-  end;
-end;
-set(handles.edit20,'String',num2str(get(handles.edit20,'UserData')));
-set(handles.edit20,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit20, 1, 'x > 0');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -3896,31 +4036,33 @@ function edit21_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit21 as text
 %        str2double(get(hObject,'String')) returns contents of edit21 as a double
-x=str2num(get(handles.edit21,'String'));
-senas=get(handles.edit21,'UserData');
+id=handles.edit21;
+senas=get(id,'UserData');
+x=real(str2num(get(handles.edit21,'String')));
 %disp(x);
 tinka=0;
 if and(length(x) == 1, get(handles.popupmenu10,'Value') < 3 ) ;
   if x > 0;
     tinka=1;
-    set(handles.edit21,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
   end;
 elseif and(length(x) == 2, get(handles.popupmenu10,'Value') > 2 ) ;
   if and(0 < x(1), x(1) < x(2));
     tinka=1;
-    set(handles.edit21,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
   end;
 end;
 if tinka;
-    set(handles.edit21,'String',get(handles.edit21,'UserData'));
+    set(id,'String',get(id,'UserData'));
 end;
-set(handles.edit21,'BackgroundColor',[1 1 tinka]);
-%x=str2num(get(handles.edit21,'String'));
-if ~strcmp(senas,get(handles.edit21,'String'));
-    set(handles.edit_filtr2,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(handles.edit21,'UserData')) , '[ ]*', '-')   ]  ) ;
-    set(handles.edit_filtr2_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(handles.edit21,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
+set(id,'BackgroundColor',[1 1 tinka]);
+%x=str2num(get(id,'String'));
+if ~strcmp(senas,get(id,'String'));
+    set(handles.edit_filtr2,'String', [ lokaliz('_Nuosekl_apdor_default_file_suffix_filter') regexprep(  num2str(get(id,'UserData')) , '[ ]*', '-')   ]  ) ;
+    set(handles.edit_filtr2_,'String', [ lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' regexprep(  num2str(get(id,'UserData')) , '[ ]*', '-') ' ' lokaliz('Hz') ]) ;
 end;
 Ar_galima_vykdyti(hObject, eventdata, handles);
+
 
 function edit50_Callback(hObject, eventdata, handles)
 % hObject    handle to edit50 (see GCBO)
@@ -3929,18 +4071,12 @@ function edit50_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit50 as text
 %        str2double(get(hObject,'String')) returns contents of edit50 as a double
-x=str2num(get(handles.edit50,'String'));
-senas=get(handles.edit50,'UserData');
-if length(x) == 1 ;
-  if x > 0;
-    set(handles.edit50,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-  end;
-end;
-set(handles.edit50,'String',num2str(get(handles.edit50,'UserData')));
-set(handles.edit50,'BackgroundColor',[1 1 1]);
-if ~strcmp(senas,get(handles.edit50,'String'));
-    set(handles.edit_filtr_tinklo_,'String',[lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' num2str(get(handles.edit50,'UserData')) ' ' lokaliz('Hz') ]) ;
-    set(handles.edit_filtr_tinklo,'String',[lokaliz('_Nuosekl_apdor_default_file_suffix_filter') num2str(get(handles.edit50,'UserData')) ]) ;
+id=handles.edit50;
+senas=get(id,'UserData');
+virtual_edit_sk_Callback(hObject, eventdata, handles, id, 1, 'x > 0');
+if ~strcmp(senas,get(id,'String'));
+    set(handles.edit_filtr_tinklo_,'String',[lokaliz('_Nuosekl_apdor_default_dir_filter') ' ' num2str(get(id,'UserData')) ' ' lokaliz('Hz') ]) ;
+    set(handles.edit_filtr_tinklo,'String',[lokaliz('_Nuosekl_apdor_default_file_suffix_filter') num2str(get(id,'UserData')) ]) ;
 end;
 
 
@@ -4741,6 +4877,7 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 disp(' ');
 %
 disp('Naudotojas priverstinai uždaro langą!');
+try
 if ~isempty(findobj('-regexp','name','nuoseklus_apdorojimas')) ;
     if and(strcmp(get(handles.checkbox_baigti_anksciau,'Visible'),'on'), ...
             and(get(handles.checkbox_baigti_anksciau,'Value') == 0, ...
@@ -4748,13 +4885,11 @@ if ~isempty(findobj('-regexp','name','nuoseklus_apdorojimas')) ;
         set(handles.checkbox_baigti_anksciau,'Value',1);
         %set(handles.checkbox_baigti_anksciau,'Visible','on');
         checkbox_baigti_anksciau_Callback(hObject, eventdata, handles);
+    elseif strcmp(get(handles.pushbutton4,'Enable'),'on') ;        
+        delete(handles.figure1);
     else
-        %if get(handles.pushbutton1,'Value') == 1 ;
-
-        % delete(hObject);
-        % error('Darbą nutraukė naudotojas');
-
-        %else
+        %error('Darbą nutraukė naudotojas');
+        
         button1 = questdlg(lokaliz('Quit function help') , ...
             lokaliz('Quit function'), ...
             lokaliz('Close window'), lokaliz('Allow change options'), lokaliz('Continue as is'), ...
@@ -4804,6 +4939,8 @@ if ~isempty(findobj('-regexp','name','nuoseklus_apdorojimas')) ;
         end;
         %end;
     end;
+end;
+catch err;
 end;
 
 
@@ -4903,12 +5040,7 @@ function edit_atmesk_kan_auto_slenkstis_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit_atmesk_kan_auto_slenkstis as text
 %        str2double(get(hObject,'String')) returns contents of edit_atmesk_kan_auto_slenkstis as a double
-x=str2num(get(handles.edit_atmesk_kan_auto_slenkstis,'String'));
-if length(x) == 1;
-    set(handles.edit_atmesk_kan_auto_slenkstis,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-end;
-set(handles.edit_atmesk_kan_auto_slenkstis,'String',num2str(get(handles.edit_atmesk_kan_auto_slenkstis,'UserData')));
-set(handles.edit_atmesk_kan_auto_slenkstis,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit_atmesk_kan_auto_slenkstis, 1, 'true');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -4932,14 +5064,7 @@ function edit40_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit40 as text
 %        str2double(get(hObject,'String')) returns contents of edit40 as a double
-x=str2num(get(handles.edit40,'String'));
-if length(x) == 2 ;
-    if and(0 < x(1), x(1) < x(2));
-        set(handles.edit40,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-    end;
-end;
-set(handles.edit40,'String',num2str(get(handles.edit40,'UserData')));
-set(handles.edit40,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit40, 2, 'and(0 < x(1), x(1) < x(2))');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -4962,31 +5087,6 @@ function checkbox41_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox41
-
-
-% --- Executes on button press in checkbox_perziureti_ICA.
-function checkbox_perziureti_ICA_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox_perziureti_ICA (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkbox_perziureti_ICA
-if and(get(handles.checkbox_perziureti_ICA, 'Value') == 1, ...
-        strcmp(get(handles.checkbox_perziureti_ICA, 'Enable'),'on'));
-    set(handles.checkbox_perziureti_ICA_,'Enable','on');
-    set(handles.edit_perziureti_ICA,'Enable','on');
-    set(handles.checkbox_perziureti_ICA_demesio,'Enable','off');
-    %set(handles.checkbox_perziureti_ICA_demesio,'Enable','inactive');
-    set(handles.popupmenu7,'Enable','on');
-    set(handles.popupmenu8,'Enable','on');
-else
-    set(handles.checkbox_perziureti_ICA_,'Enable','off');
-    set(handles.edit_perziureti_ICA,'Enable','off');
-    set(handles.checkbox_perziureti_ICA_demesio,'Enable','off');
-    set(handles.popupmenu7,'Enable','off');
-    set(handles.popupmenu8,'Enable','off');
-end;
-checkbox_perziureti_ICA__Callback(hObject, eventdata, handles);
 
 
 % --- Executes on selection change in popupmenu7.
@@ -5117,12 +5217,7 @@ function edit43_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit43 as text
 %        str2double(get(hObject,'String')) returns contents of edit43 as a double
-x=str2num(get(handles.edit43,'String'));
-if length(x) == 1 ;
-    set(handles.edit43,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-end;
-set(handles.edit43,'String',num2str(get(handles.edit43,'UserData')));
-set(handles.edit43,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit43, 1, 'true');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -5146,14 +5241,7 @@ function edit44_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit44 as text
 %        str2double(get(hObject,'String')) returns contents of edit44 as a double
-x=str2num(get(handles.edit44,'String'));
-if length(x) == 2 ;
-    if and(0 < x(1), x(1) < x(2));
-        set(handles.edit44,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-    end;
-end;
-set(handles.edit44,'String',num2str(get(handles.edit44,'UserData')));
-set(handles.edit44,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit44, 2, 'and(0 < x(1), x(1) < x(2))');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -5209,7 +5297,7 @@ function edit_epoch_iv_Callback(hObject, eventdata, handles)
 elementas=handles.edit_epoch_iv;
 set(elementas,'BackgroundColor',[1 1 1]);
 str=get(elementas,'String');
-x=unique(str2num(str));
+x=unique(real(str2num(str)));
 if length(x) > 0 ;
     x_txt=num2str2(x);
     set(elementas,'UserData',regexprep(x_txt, '[ ]*', ' '));
@@ -5264,14 +5352,7 @@ function edit_epoch_t_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit_epoch_t as text
 %        str2double(get(hObject,'String')) returns contents of edit_epoch_t as a double
-x=str2num(get(handles.edit_epoch_t,'String'));
-if length(x) == 2 ;
-    if x(1) < x(2);
-        set(handles.edit_epoch_t,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-    end;
-end;
-set(handles.edit_epoch_t,'String',num2str(get(handles.edit_epoch_t,'UserData')));
-set(handles.edit_epoch_t,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit_epoch_t, 2, 'x(1) < x(2)');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -5295,14 +5376,7 @@ function edit_epoch_b_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit_epoch_b as text
 %        str2double(get(hObject,'String')) returns contents of edit_epoch_b as a double
-x=str2num(get(handles.edit_epoch_b,'String'));
-if length(x) == 2 ;
-    if x(1) < x(2);
-        set(handles.edit_epoch_b,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-    end;
-end;
-set(handles.edit_epoch_b,'String',num2str(get(handles.edit_epoch_b,'UserData')));
-set(handles.edit_epoch_b,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit_epoch_b, 2, 'x(1) < x(2)');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -5450,10 +5524,6 @@ else
         end;
     end;
 end;
-
-
-
-
 
 
 % --- Executes on button press in checkbox_atrink_kanalus1_.
@@ -5743,7 +5813,6 @@ set(handles.edit_epoch_,                'String', lokaliz('_Nuosekl_apdor_defaul
 set(handles.edit59,'TooltipString', lokaliz('Number of independent components'));
 
 
-
 % --- Executes on button press in pushbutton13.
 function pushbutton13_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton13 (see GCBO)
@@ -5849,10 +5918,6 @@ end;
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
-
-
-
-
 % --- Executes on selection change in popupmenu12.
 function popupmenu12_Callback(hObject, eventdata, handles)
 % hObject    handle to popupmenu12 (see GCBO)
@@ -5894,9 +5959,6 @@ if f;
 end;
 
 
-
-
-
 function edit_atmesk_atkarpas_amp_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_atmesk_atkarpas_amp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -5934,7 +5996,6 @@ else
 end;
 
 
-
 function edit_atmesk_atkarpas_amp__Callback(hObject, eventdata, handles)
 % hObject    handle to edit_atmesk_atkarpas_amp_ (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -5957,29 +6018,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in checkbox_atmesk_atkarpas_amp.
-function checkbox_atmesk_atkarpas_amp_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox_atmesk_atkarpas_amp (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkbox_atmesk_atkarpas_amp
-if and(get(handles.checkbox_atmesk_atkarpas_amp, 'Value') == 1, ...
-        strcmp(get(handles.checkbox_atmesk_atkarpas_amp, 'Enable'),'on'));
-    set(handles.checkbox_atmesk_atkarpas_amp_,'Enable','on');
-    set(handles.edit_atmesk_atkarpas_amp,'Enable','on');
-    set(handles.edit57,'Enable','on');
-    set(handles.edit58,'Enable','on');
-else
-    set(handles.checkbox_atmesk_atkarpas_amp_,'Enable','off');
-    set(handles.edit_atmesk_atkarpas_amp,'Enable','off');
-    set(handles.edit57,'Enable','off');
-    set(handles.edit58,'Enable','off');
-end;
-checkbox_atmesk_atkarpas_amp__Callback(hObject, eventdata, handles);
-
-
-
 function edit57_Callback(hObject, eventdata, handles)
 % hObject    handle to edit57 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -5987,14 +6025,7 @@ function edit57_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit57 as text
 %        str2double(get(hObject,'String')) returns contents of edit57 as a double
-x=str2num(get(handles.edit57,'String'));
-if length(x) == 1 ;
-  if x > 0;
-    set(handles.edit57,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-  end;
-end;
-set(handles.edit57,'String',num2str(get(handles.edit57,'UserData')));
-set(handles.edit57,'BackgroundColor',[1 1 1]);
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit57, 1, 'x > 0');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -6018,17 +6049,18 @@ function edit58_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit58 as text
 %        str2double(get(hObject,'String')) returns contents of edit58 as a double
-x=str2num(get(handles.edit58,'String'));
+id=handles.edit58;
+x=real(str2num(get(id,'String')));
 if length(x) == 2 ;
     if x(1) < x(2);
-        set(handles.edit58,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+        set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
     end;
 end;
 if length(x) == 1 ;
-    set(handles.edit58,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
 end;
-set(handles.edit58,'String',num2str(get(handles.edit58,'UserData')));
-set(handles.edit58,'BackgroundColor',[1 1 1]);
+set(id,'String',num2str(get(id,'UserData')));
+set(id,'BackgroundColor',[1 1 1]);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -6415,13 +6447,7 @@ function edit59_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit59 as text
 %        str2double(get(hObject,'String')) returns contents of edit59 as a double
-x=str2num(get(handles.edit59,'String'));
-if length(x) == 1 ;
-    set(handles.edit59,'UserData',regexprep(num2str(x), '[ ]*', ' '));
-end;
-set(handles.edit59,'String',num2str(get(handles.edit59,'UserData')));
-set(handles.edit59,'BackgroundColor',[1 1 1]);
-
+virtual_edit_sk_Callback(hObject, eventdata, handles, handles.edit59, 1, 'and(x>1,x==floor(x))');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -6468,6 +6494,19 @@ catch err;
 end;
 popupmenu12_Callback(hObject, eventdata, handles);
 susildyk(hObject, eventdata, handles);
+
+
+function virtual_edit_sk_Callback(hObject, eventdata, handles, id, n, cond)
+if isempty(cond); cond='true'; end;
+x=real(str2num(get(id,'String')));
+if length(x) == n ;
+    if eval(cond);
+        set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
+    end;
+end;
+set(id,'String',get(id,'UserData'));
+set(id,'BackgroundColor',[1 1 1]);
+
 
 function parinktis_irasyti(hObject, eventdata, handles, vardas, komentaras)
 reikia_perkurti_meniu=0;
@@ -6613,17 +6652,36 @@ end;
 meniu(hObject, eventdata, handles);
 
 function meniu(hObject, eventdata, handles)
+function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 delete(findall(handles.figure1,'type','uimenu'));
+handles.meniu_darbeliai = uimenu(handles.figure1,'Label','Darbeliai','Tag','m_Darbeliai');
+param_prad='darbeliu_param={}; ' ; %rezervas ateičiai
+param_pab ='(darbeliu_param{:}); ';
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Pervadinimas su info suvedimu'), ...
+        'Separator','off', 'Callback', [param_prad 'pop_pervadinimas' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Nuoseklus apdorojimas'), 'Enable', 'off', ...
+        'Separator','off', 'Callback', [param_prad 'pop_nuoseklus_apdorojimas' param_pab ] );
+%uimenu( handles.meniu_darbeliai, 'Label', lokaliz('EEG + EKG'), ...
+%        'Separator','off', 'Callback', [param_prad 'pop_QRS_i_EEG' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Epochavimas pg. stimulus ir atsakus'), ...
+        'Separator','off', 'Callback', [param_prad 'pop_Epochavimas_ir_atrinkimas' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('ERP properties, export...'), ...
+        'Separator','off', 'Callback', [param_prad 'pop_ERP_savybes' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', [ lokaliz('EEG spektras ir galia') '...' ], ...
+        'Separator','off', 'Callback', [param_prad 'pop_eeg_spektrine_galia' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Custom command') , ...
+        'Separator','off', 'Callback', [param_prad 'pop_rankinis' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Meta darbeliai...') , ...
+        'Separator','on',  'Callback', [param_prad 'pop_meta_drb' param_pab ] );
 yra_isimintu_rinkiniu=0;
 % handles.meniu_veiksmai = uimenu('Label',lokaliz('Veiksmai'),'Tag','Veiksmai');
 % uimenu(handles.meniu_veiksmai,'Label',lokaliz('Execute'),...
 %     'Accelerator','E','Callback',{@pushbutton1_Callback,handles});
-handles.meniu_nuostatos = uimenu(handles.figure1,'Label',lokaliz('Nuostatos'),'Tag','Nuostatos');
+handles.meniu_nuostatos = uimenu(handles.figure1,'Label',lokaliz('Options'),'Tag','m_Nuostatos');
 handles.meniu_nuostatos_ikelti = uimenu(handles.meniu_nuostatos,'Label',lokaliz('Ikelti'));
 uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Numatytas'),...
     'Accelerator','R','Callback',{@parinktis_ikelti,handles,'numatytas'});
 try
-    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
     par_pav={ Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.vardas };
     if ismember('paskutinis',par_pav);
@@ -6657,17 +6715,24 @@ uimenu(handles.meniu_nuostatos,'Label',lokaliz('Saugoti...'),...
 uimenu(handles.meniu_nuostatos,'Label',lokaliz('Trinti...'),...
     'Enable',fastif(yra_isimintu_rinkiniu==1,'on','off'),'Callback',{@parinktis_trinti,handles});
 
+vers='Darbeliai';
+try
+    fid_vers=fopen(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai.versija'));
+    vers=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
+    fclose(fid_vers); 
+catch err;
+end;
 handles.meniu_apie = uimenu(handles.figure1,'Label',lokaliz('Pagalba'));
 if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
-    uimenu( handles.meniu_apie, 'Label', 'Darbeliai...', 'callback', ...
+    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
-    uimenu( handles.meniu_apie, 'Label', lokaliz('Nuoseklus apdorojimas'),  ...
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'),  ...
         'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.3.%20Nuoseklus%20apdorojimas'',''-browser'') ;'  );
 else
-    uimenu( handles.meniu_apie, 'Label', 'Darbeliai...', 'callback', ...
+    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
-    uimenu( handles.meniu_apie, 'Label', lokaliz('Nuoseklus apdorojimas'), ...
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H','callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.3.%20Serial%20processing'',''-browser'') ;'  );
 end;

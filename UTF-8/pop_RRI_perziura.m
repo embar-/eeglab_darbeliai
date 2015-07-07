@@ -138,7 +138,7 @@ if and(~isempty(handles.EKG),...
     % EKGposlinkis Y ašyje
     EKGposlinkis=min(handles.RRI(find(handles.RRI(:)>0)));
     if isempty(EKGposlinkis); EKGposlinkis=0; end;
-    handles.EKG_=mat2gray(handles.EKG)*100-125+EKGposlinkis;
+    handles.EKG_=mat2gray_octave(handles.EKG)*100-125+EKGposlinkis;
     handles.EKG_lin=plot(handles.EKG_laikai,handles.EKG_,'color','r');
     %handles.EKG_lin=get(handles.axes_rri,'Children');
     %try
@@ -161,7 +161,7 @@ else
     set(handles.checkbox_ekg,'Visible','off');
     handles.EKG_lin=[];
     handles.EKG_tsk=[];
-    
+
 end;
 
 % RRI grafikas
@@ -197,11 +197,11 @@ try
     %error(' ');
     if get(handles.checkbox_ekg,'Value'); xlangas=30 ; else xlangas=300 ; end;
     handles.scrollHandles = scrollplot2('Axis','XY','MinX',0,...
-        'WindowSizeX',min(xlangas,max(handles.Laikai))  ,...  
+        'WindowSizeX',min(xlangas,max(handles.Laikai))  ,...
         'MaxY', min(1500,30+max(handles.RRI))  , ...
         'WindowSizeY', max(300,...
             min(1500,50+max(handles.RRI)) - ...
-            max(0,min(handles.RRI(find(handles.RRI > 0)))-80) )) ;  
+            max(0,min(handles.RRI(find(handles.RRI > 0)))-80) )) ;
     ax=get(handles.scrollHandles,'ParentAxesHandle');
     scrl=get(handles.scrollHandles,'ScrollPatchHandle');
 catch err;
@@ -393,7 +393,7 @@ if iscell(RRI_);
         r=(r1+r2+r3)/3; % NaN + 1 = NaN
         try
         RRI__(i,1)=r;
-        catch err;        
+        catch err;
             r
             Pranesk_apie_klaida(err);
             pause(5);
@@ -401,27 +401,27 @@ if iscell(RRI_);
             rethrow(err);
         end;
     end;
-    
+
 else
     RRI__=RRI_;
 end;
 
 if length(RRI__)>1;
-    
+
     idx=find(~isnan(RRI__));
     %Laikai3=Laikai__([1 ; idx]);
     Laikai3=Laikai__(idx);
     RRI___=[0 ; 1000 * diff(Laikai3)];
-    
+
     %if handles.veiksena ;
     if ~get(handles.checkbox_rri,'Value');
-        
+
         Laikai=Laikai3;
         RRI=RRI___;
     else
-        
+
         if length(RRI___)>1;
-            
+
             Laikai=[Laikai3(1) ; ( Laikai3(1)*2 + Laikai3(2))/3  ];
             RRI=[RRI___(1) ; NaN ];
             for i=2:length(RRI___);
@@ -429,30 +429,30 @@ if length(RRI__)>1;
                 if RRI___(i) > nejungti(1);
                     Laikai(end+1)=(Laikai3(i-1)+2*Laikai3(i))/3;
                     RRI(end+1)=NaN;
-                    
+
                     Laikai(end+1)=Laikai3(i);
                     RRI(end+1)=0;
-                    
+
                     if ~(i==length(RRI___));
                         Laikai(end+1)=(Laikai3(i)*2+Laikai3(i+1))/3;
                         RRI(end+1)=NaN;
                     end;
-                    
+
                 else
                     Laikai(end+1)=Laikai3(i);
                     RRI(end+1)=RRI___(i);
                 end;
             end;
-            
+
         else
             %warning('QRS?');
             Laikai=Laikai__;
             RRI=RRI__;
         end;
-        
-        
+
+
     end;
-    
+
 else
     warning('QRS?');
     Laikai=Laikai__;
@@ -474,11 +474,11 @@ if and(~isempty(handles.EKG),get(handles.checkbox_ekg,'Value'));
         Pranesk_apie_klaida(err,'','',0);
         %warning(err.message);
     end;
-    
+
     handles.EKG_R=0.1^20*(RRI')-25+EKGposlinkis;
     set(handles.EKG_tsk,'XData',Laikai');
     set(handles.EKG_tsk,'YData',handles.EKG_R);
-        
+
 else
     set(handles.EKG_lin,'XData',[0]);
     set(handles.EKG_lin,'YData',[NaN]);
@@ -529,7 +529,7 @@ switch ck
         lim_nj=[lim_nj - lim_plt lim_nj];
         set(handles.axes_rri,'YLim',lim_nj);
     case 'downarrow'
-        %disp('v');        
+        %disp('v');
         lim_dbr=get(handles.axes_rri,'YLim');
         lim_max=get(handles.scrollHandles(2),'YLim');
         lim_plt=(lim_dbr(2)-lim_dbr(1));
@@ -582,7 +582,7 @@ switch ck
         lim_nj=lim_max(2) + lim_plt * 0.2;
         lim_nj=[lim_nj - lim_plt lim_nj];
         set(handles.axes_rri,'XLim',lim_nj);
-    case {'subtract','hyphen'}        
+    case {'subtract','hyphen'}
         lim_dbr=get(handles.axes_rri,'XLim');
         lim_max=get(handles.scrollHandles(1),'XLim');
         lim_plt=(lim_dbr(2)-lim_dbr(1));
@@ -590,7 +590,7 @@ switch ck
         lim_nj2=min(lim_dbr(2) + lim_plt * 0.125, lim_max(2) + lim_plt * 0.2);
         lim_nj=[lim_nj1 lim_nj2];
         set(handles.axes_rri,'XLim',lim_nj);
-    case 'add'        
+    case 'add'
         lim_dbr=get(handles.axes_rri,'XLim');
         lim_max=get(handles.scrollHandles(1),'XLim');
         lim_plt=(lim_dbr(2)-lim_dbr(1));
@@ -609,7 +609,7 @@ function figure1_WindowScrollWheelFcn(hObject, eventdata, handles)
 modifiers = get(gcf,'currentModifier');
 try
 if ismember('control',modifiers);
-    if eventdata.VerticalScrollCount > 0;     
+    if eventdata.VerticalScrollCount > 0;
         lim_dbr=get(handles.axes_rri,'XLim');
         lim_max=get(handles.scrollHandles(1),'XLim');
         lim_plt=(lim_dbr(2)-lim_dbr(1));
@@ -650,7 +650,7 @@ guidata(hObject, handles);
 function salinti_pazymetuosius1(hObject, eventdata, handles)
 
         pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
-        
+
         %hB = findobj(handles.figure1,'-property','BrushData');
         %disp(intersect(hB,[handles.RRI_lin handles.RRI_tsk handles.EKG_tsk]));
         objektai=[handles.RRI_lin handles.RRI_tsk handles.EKG_tsk];
@@ -668,8 +668,8 @@ function salinti_pazymetuosius1(hObject, eventdata, handles)
                 set(objektai(y),'YData',RRI');
             catch
             end;
-        end;       
-        
+        end;
+
         pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
 
 
@@ -733,9 +733,9 @@ try
 catch err;
     warning(err.message);
     w=warndlg(err.message);
-    uiwait(w);    
+    uiwait(w);
     set(handles.axes_rri,'UserData',SeniLaikai);
-    pushbutton_atstatyti_Callback(hObject, eventdata, handles);    
+    pushbutton_atstatyti_Callback(hObject, eventdata, handles);
     guidata(hObject, handles);
 end;
 susildyk(hObject, eventdata, handles);
@@ -769,11 +769,11 @@ try
 catch err;
     warning(err.message);
     w=warndlg(err.message);
-    uiwait(w);    
+    uiwait(w);
     set(handles.axes_rri,'UserData',SeniLaikai);
     handles.EKG=Senas_EKG;
     handles.EKG_laikai=Senas_EKG_;
-    pushbutton_atstatyti_Callback(hObject, eventdata, handles);    
+    pushbutton_atstatyti_Callback(hObject, eventdata, handles);
     guidata(hObject, handles);
 end;
 susildyk(hObject, eventdata, handles);
@@ -1002,7 +1002,7 @@ try
     catch err;
         KanaloNr=0;
     end;
-    
+
     if isempty(Labchart_data.com);
         blokas=1;
     else
@@ -1011,7 +1011,7 @@ try
             blokas=1;
         end;
     end;
-    
+
     Bloku_N=size(Labchart_data.samplerate,2);
     if Bloku_N > 1;
         bloku_sar=cellfun(@(i) [num2str(i) ' - ' ...
@@ -1027,7 +1027,7 @@ try
             'OKString',lokaliz('OK'),...
             'CancelString',lokaliz('Cancel'));
     end;
-    
+
     if KanaloNr
         handles.EKG=[Labchart_data.data(Labchart_data.datastart(KanaloNr,blokas):Labchart_data.dataend(KanaloNr,blokas))]';
         handles.EKG_laikai=[...
@@ -1039,14 +1039,14 @@ try
         handles.EKG=[];
         handles.EKG_laikai=[];
     end;
-    
+
 %     if strcmp(get(handles.checkbox_ekg,'Visible'),'off');
 %         set(handles.checkbox_ekg,'Visible','on');
 %         handles.EKG_lin=plot(1,NaN,'color','r'); %handles.EKG_lin=plot(handles.EKG_laikai,handles.EKG_,'color','r');
 %         handles.EKG_tsk=plot(1,NaN,'o','color','g'); %handles.EKG_tsk=plot(handles.Laikai,handles.EKG_R,'o','color','g');
 %         brush(handles.figure1,'on');
 %     end;
-    
+
     if isempty(Labchart_data.com);
         LabChart_key='';
     else
@@ -1076,9 +1076,9 @@ try
                 LabChart_key='';
         end;
     end;
-    
+
     Laikai=[];
-    
+
     if isempty(LabChart_key);
         try
             Aptikti_EKG_QRS_Callback2(hObject, eventdata, handles);
@@ -1088,10 +1088,10 @@ try
             set(handles.axes_rri,'UserData',Laikai);
         end;
     else
-        
+
         for icomMain = [intersect(...
                 find(Labchart_data.com(:,2)==blokas),...
-                find(Labchart_data.com(:,4)==2))]' ; 
+                find(Labchart_data.com(:,4)==2))]' ;
             comtextMark = Labchart_data.com(icomMain, 5);
             comtextMark = Labchart_data.comtext(comtextMark,:);
             comtextMark = deblank(comtextMark);
@@ -1105,33 +1105,33 @@ try
                 Laikelis=Labchart_data.com(icomMain,3) * ...
                     ( 1000 / Labchart_data.tickrate(blokas) )  ; % * g.Labchart_laiko_daugiklis ;
                 Laikai=[Laikai; Laikelis];
-                
+
             end ;
         end ;
-        
+
         if isempty(Laikai);
             Laikai=[[1 NaN 100]*1000]';
         end;
         set(handles.axes_rri,'UserData',Laikai);
     end;
-    
-            
+
+
     dabartines_fig=findobj(handles.figure1);
     delete(dabartines_fig(find(ismember(dabartines_fig,handles.pradines_fig)==0)));
     set(handles.axes_rri,'Position',handles.axes_rri_padetis);
-    
+
     handles=pirmieji_grafikai(hObject, eventdata, handles);
     brush(handles.figure1,'on');
-    
+
     pushbutton_atstatyti_Callback(hObject, eventdata, handles);
     guidata(hObject, handles);
 catch err;
     Pranesk_apie_klaida(err, 'Importuoti_LabChartMAT', f, 0);
     %warning(err.message);
     %w=warndlg(err.message);
-    %uiwait(w);    
+    %uiwait(w);
     set(handles.axes_rri,'UserData',SeniLaikai);
-    pushbutton_atstatyti_Callback(hObject, eventdata, handles);    
+    pushbutton_atstatyti_Callback(hObject, eventdata, handles);
     guidata(hObject, handles);
 end;
 susildyk(hObject, eventdata, handles);
@@ -1170,11 +1170,11 @@ try
     catch err;
         KanaloNr=0;
     end;
-    
+
     bloku=regexp(acq_data.markers.szText,'^Segment .*');
     bloku=find(arrayfun(@(i) ~isempty(bloku{i}), 1:length(bloku)));
     Bloku_N=length(bloku);
-    if Bloku_N > 1;        
+    if Bloku_N > 1;
         bloku_sar=acq_data.markers.szText(bloku);
         blokas=find(ismember(bloku,find(acq_data.markers.fSelected,1)));
         if isempty(blokas); blokas=1; end;
@@ -1188,7 +1188,7 @@ try
     else
         blokas=1;
     end;
-    
+
     if KanaloNr
         nuo=acq_data.markers.lSample(bloku(blokas))+1;
         if bloku(blokas) < bloku(end);
@@ -1205,29 +1205,29 @@ try
     %    handles.EKG=[];
     %    handles.EKG_laikai=[];
     end;
-            
+
     try
         Aptikti_EKG_QRS_Callback2(hObject, eventdata, handles);
     catch err;
         Pranesk_apie_klaida(err, 'EKG QRS aptikimas', f, 0);
     end;
-                
+
     dabartines_fig=findobj(handles.figure1);
     delete(dabartines_fig(find(ismember(dabartines_fig,handles.pradines_fig)==0)));
     set(handles.axes_rri,'Position',handles.axes_rri_padetis);
-    
+
     handles=pirmieji_grafikai(hObject, eventdata, handles);
     brush(handles.figure1,'on');
-    
+
     pushbutton_atstatyti_Callback(hObject, eventdata, handles);
     guidata(hObject, handles);
 catch err;
     Pranesk_apie_klaida(err, 'Importuoti_LabChartMAT', f, 0);
     %warning(err.message);
     %w=warndlg(err.message);
-    %uiwait(w);    
+    %uiwait(w);
     set(handles.axes_rri,'UserData',SeniLaikai);
-    pushbutton_atstatyti_Callback(hObject, eventdata, handles);    
+    pushbutton_atstatyti_Callback(hObject, eventdata, handles);
     guidata(hObject, handles);
 end;
 susildyk(hObject, eventdata, handles);
@@ -1278,12 +1278,12 @@ statusbar('on',f);
 %     end;
 %     if isempty(statusbar(p,f));
 %         break;
-%     end;    
+%     end;
 p=0;
 statusbar(p,f);
 try
 [RR_idx]=QRS_detekt(handles.EKG,sampling_rate,mode);
-catch err;    
+catch err;
     if ishandle(f)
         delete(f);
     end;

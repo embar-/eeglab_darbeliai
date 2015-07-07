@@ -8,7 +8,7 @@
 % GUI versija
 %
 %
-% (C) 2014 Mindaugas Baranauskas
+% (C) 2014-2015 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -99,7 +99,20 @@ function pop_QRS_i_EEG_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to pop_QRS_i_EEG (see VARARGIN)
 
+if and(nargin > 3, mod(nargin, 2)) ;
+    if iscellstr(varargin((1:(nargin-3)/2)*2-1)); 
+        g = struct(varargin{:});
+    else  warning(lokaliz('Netinkami parametrai'));
+        g=[];     end;
+else    g=[];
+end;
+
 set(handles.figure1,'Name',mfilename);
+set(handles.figure1,'Tag','Darbeliai');
+set(handles.figure1,'Units','pixels');
+set(handles.figure1,'Resize','on');
+pad=get(handles.figure1,'Position');
+set(handles.figure1,'Position',[pad(1) pad(2) max(pad(3),725) max(pad(4),600)]);
 
 %Įsimink prieš funkcijų vykdymą buvusį kelią; netrukus bandysime laikinai pakeisti kelią
 Kelias_dabar=pwd;
@@ -128,17 +141,17 @@ try
     cd(Darbeliai.keliai.atverimui{1});
 catch err; 
 end;
+
+% Pabandyk nustatyti kelią pagal parametrus
+try set(handles.edit1,'String',g(1).path);   catch err; end;
+try set(handles.edit1,'String',g(1).pathin); catch err; end;
+% Pabandyk parinkti rinkmenas pagal parametrus
 try
-    tmp_mat=fullfile(tempdir,'tmp.mat');
-    load(tmp_mat);
-    %disp(g);
-    cd(g.path{1});
-    if ~isempty(g.files);
-        set(handles.listbox2,'String',g.files);
-        %set(handles.edit_failu_filtras2,'Style','pushbutton');
+    if ~isempty({g.files});
+        set(handles.listbox2,'String',{g.files});
+        set(handles.edit_failu_filtras2,'Style','edit'); % 'pushbutton'
         edit_failu_filtras2_ButtonDownFcn(hObject, eventdata, handles);
     end;
-    delete(tmp_mat);
 catch err;
 end;
 
@@ -147,8 +160,6 @@ set(handles.pushbutton_v2,'UserData',{});
 set(handles.pushbutton_v3,'UserData',{});
 
 atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
-
-KELIAS=pwd;
 
 % Sugrįžk į kelią prieš šios funkcijos atvėrimą
 cd(Kelias_dabar);
@@ -160,13 +171,31 @@ try
     if exist(k) == 7 ; set(handles.edit2,'String',k); end;
 catch err;
 end;
+try set(handles.edit2,'String',g(1).path);    catch err; end;
+try set(handles.edit2,'String',g(1).pathout); catch err; end;
 edit2_Callback(hObject, eventdata, handles);
 
 set(handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
+try set(handles.edit_failu_filtras1,'String',g(1).flt_show); catch err; end;
+try 
+    if ~isempty(g(1).flt_slct);    
+        set(handles.edit_failu_filtras2,'Style','pushbutton'); % 'edit'
+        edit_failu_filtras2_ButtonDownFcn(hObject, eventdata, handles);
+        set(handles.edit_failu_filtras2,'String',g(1).flt_slct);
+    end
+catch err; 
+end;
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
-susildyk(hObject, eventdata, handles);
+try 
+    parinktis_ikelti(hObject, eventdata, handles, g(1).preset); 
+catch err; 
+    susildyk(hObject, eventdata, handles);
+end;
+
+try set(handles.text_atlikta_darbu,'String',num2str(g(1).counter)); catch err; end;
+set(handles.checkbox_uzverti_pabaigus,'UserData',0);
 
 tic;
 
@@ -179,9 +208,30 @@ guidata(hObject, handles);
 % UIWAIT makes pop_QRS_i_EEG wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
-
-
-
+% Jei nurodyta veiksena
+try
+    agv=strcmp(get(handles.pushbutton1,'Enable'),'on');
+    if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'}),...
+      and(ismember(g(1).mode,{'tryforce'}),agv));
+        set(handles.checkbox_uzverti_pabaigus,'Enable','off');
+    end;
+    if ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec' 'e' 'exec' 't' 'try' 'tryexec' 'tryforce' 'c' 'confirm'});
+        set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'Enable','off');
+        set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'Value',1);
+        set(handles.checkbox_uzverti_pabaigus,'UserData',1);
+        set(handles.checkbox_uzverti_pabaigus,'Value',1);
+        %set(handles.checkbox_pabaigus_atverti,'Value',0);
+    end;
+    if or(ismember(g(1).mode,{'c' 'confirm'}),...
+      and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),~agv)    );
+        uiwait(handles.figure1); % UIRESUME bus įvykdžius užduotis
+    end;
+    if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec' 'e' 'exec'}),...
+      and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),agv));
+        pushbutton1_Callback(hObject, eventdata, handles);
+    end;
+catch err;
+end;
 
 
 % --- Outputs from this function are returned to the command line.
@@ -192,8 +242,28 @@ function varargout = pop_QRS_i_EEG_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+try
+    varargout{1} = handles.output;
+    varargout{2} = get(handles.edit1,'String'); % kelias
+    varargout{3} = get(handles.listbox2,'String'); % rinkmenos    
+    varargout{4} = varargout{3}(find(cellfun(@exist,fullfile(varargout{2},varargout{3}))==2)); % esamos rinkmenos
+    varargout{5} = str2num(get(handles.text_atlikta_darbu,'String')); % skaitliukas
+catch err;
+    varargout{1} = [];
+    varargout{2} = '';
+    varargout{3} = {};
+    varargout{4} = {};
+    varargout{5} = [];
+end;
 
+% Užverti langą, jei nurodyta parinktyse
+try    
+    if and( get(handles.checkbox_uzverti_pabaigus,'UserData'),...
+            get(handles.checkbox_uzverti_pabaigus,'Value'));
+        delete(handles.figure1);
+    end;
+catch err;
+end;
 
 
 
@@ -210,7 +280,7 @@ set(handles.uipanel23,'Title',lokaliz('Suffix and subdirectory'));
 set(handles.text19,'String', lokaliz('# of done jobs for subdir names'));
 set(handles.uipanel15,'Title',lokaliz('File loading options'));
 set(handles.uipanel16,'Title',lokaliz('File saving options'));
-set(handles.uipanel17,'Title',' ');
+set(handles.uipanel17,'Title',lokaliz('Vykdymo parinktys'));
 set(handles.uipanel18,'Title',' ');
 set(handles.radiobutton6,'String',lokaliz('through data'));
 set(handles.radiobutton7,'String',lokaliz('through functions'));
@@ -328,9 +398,10 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 % Neleisk nieko daryti
 function susaldyk(hObject, eventdata, handles)
 %Neleisti spausti Nuostatų meniu!
-a=findall(handles.figure1,'type','uimenu'); 
-a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; 
-set(a,'Enable','off'); drawnow;
+a=findall(handles.figure1,'type','uimenu');
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
+set(b,'Enable','off'); drawnow;
 
 set(handles.pushbutton1,'Value',0);
 set(handles.listbox1,'Enable','inactive');
@@ -426,20 +497,24 @@ set(handles.checkbox_baigti_anksciau,'Visible','off');
 set(handles.checkbox_pabaigus_atverti,'Visible','on');
 
 %Vidinis atliktų darbų skaitliukas
-set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
-   get(handles.edit2, 'String'))));
+% set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(...
+%   get(handles.edit2, 'String'))));
 
 set(handles.text_darbas,'Visible','off');
 set(handles.text_darbas,'String',' ');
 set(handles.pushbutton2,'Value',0);
 
 % Leisti spausti Nuostatų meniu!
-a=findall(handles.figure1,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','on'); 
+a=findall(handles.figure1,'type','uimenu');
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
+set(b,'Enable','on'); drawnow;
 
 
 function Ar_galima_vykdyti(hObject, eventdata, handles)
 
 set(handles.pushbutton1,'Enable','off');
+set(handles.pushbutton_kanal,'BackgroundColor','remove');
 if isempty(get(handles.listbox1,'String'));
     drawnow; return;
 end;
@@ -462,6 +537,13 @@ end;
 if get(handles.edit_failu_filtras2,'BackgroundColor') == [1 1 0];
     drawnow; return;
 end;
+if and(isempty(get(handles.text_kanal,'TooltipString')), or(...
+    and(get(handles.checkbox_QRS_aptikimas,'Value'), ...
+       get(handles.popupmenu_QRS_saltinis,'Value') == 1), ...
+        get(handles.checkbox_trint_EKG,'Value')));
+    set(handles.pushbutton_kanal,'BackgroundColor',[1 1 0]);
+    drawnow; return;
+end;
 % if isempty(get(handles.edit_ivykiai,'UserData'));
 %     set(handles.edit_ivykiai,'BackgroundColor', [1 1 0]);
 %     return;
@@ -471,6 +553,19 @@ end;
 %     return;
 % end;
 
+
+% Ar pasirinkti darbai
+chb_pav={'QRS_aptikimas' 'QRS_korekcija' 'eksp_Rlaikus' 'eksp_RRI' 'trint_EKG'};
+chb_c=0;
+for i=1:length(chb_pav);
+    chb_c=chb_c + get(eval(['handles.checkbox_' chb_pav{i}]),'Value');
+end;
+if chb_c == 0;
+    %disp('Pasirinkite darbą!');
+    drawnow; return;
+end;
+
+% Vykdyti galima
 set(handles.pushbutton1,'Enable','on');
 drawnow;
 
@@ -574,7 +669,10 @@ end;
 % Užduočių parinkčių įsiminimas
 parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 %Neleisti spausti Nuostatų meniu!
-a=findall(gcf,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','off'); drawnow;
+a=findall(handles.figure1,'type','uimenu');
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
+set(b,'Enable','off'); drawnow;
 
 try 
     EEGLAB_senieji_kintamieji.EEG         =EEG;
@@ -688,7 +786,7 @@ for i=1:Pasirinktu_failu_N;
                             QRS_algoritmas=get(handles.popupmenu_QRS_algoritmas,'Value');
                             Reikalingas_kanalas=get(handles.text_kanal,'TooltipString');
                             if isempty(Reikalingas_kanalas);
-                                error('Kanalas?');
+                                error([lokaliz('Channel') '?' ]);
                             end;
                             EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1);
                             EEG=QRS_is_EEG(EEG,EKG_kanalas,QRS_ivykis,QRS_algoritmas,0);
@@ -1224,6 +1322,8 @@ end;
 %
 if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr <  DarboNr ),...
         and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
+    
+    set(handles.text_atlikta_darbu,'String',num2str(SaugomoNr-1));
     atnaujinti_eeglab=true;
     
     if Apdoroti_visi_tiriamieji == 1;        
@@ -1281,7 +1381,8 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
     end;
     
     
-    if get(handles.checkbox_uzverti_pabaigus,'Value') == 1;
+    if and(~get(handles.checkbox_uzverti_pabaigus,'UserData'),...
+            get(handles.checkbox_uzverti_pabaigus,'Value'));
         delete(handles.figure1);
     else
         if and(Apdoroti_visi_tiriamieji == 1, ...
@@ -1297,11 +1398,10 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
         set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
         set(handles.edit_failu_filtras2,'Style','pushbutton');
         set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
-        %if ~strcmp(char(mfilename),'pop_QRS_i_EEG');
         atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
         atnaujink_rodomus_failus(hObject, eventdata, handles);
-        %end;
         susildyk(hObject, eventdata, handles);
+        uiresume(handles.figure1);
     end;
     
     
@@ -1769,6 +1869,7 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % Hint: delete(hObject) closes the figure
 disp(' ');
 disp('Naudotojas priverstinai uždaro langą!');
+try
 if ~isempty(findobj('-regexp','name',mfilename)) ;
     if and(strcmp(get(handles.checkbox_baigti_anksciau,'Visible'),'on'), ...
             and(get(handles.checkbox_baigti_anksciau,'Value') == 0, ...
@@ -1776,13 +1877,11 @@ if ~isempty(findobj('-regexp','name',mfilename)) ;
         set(handles.checkbox_baigti_anksciau,'Value',1);
         %set(handles.checkbox_baigti_anksciau,'Visible','on');
         checkbox_baigti_anksciau_Callback(hObject, eventdata, handles);
+    elseif strcmp(get(handles.pushbutton4,'Enable'),'on') ;        
+        delete(handles.figure1);
     else
-        %if get(handles.pushbutton1,'Value') == 1 ;
+        %error('Darbą nutraukė naudotojas');
         
-        % delete(hObject);
-        % error('Darbą nutraukė naudotojas');
-        
-        %else
         button1 = questdlg(lokaliz('Quit function help') , ...
             lokaliz('Quit function'), ...
             lokaliz('Close window'), lokaliz('Allow change options'), lokaliz('Continue as is'), ...
@@ -1834,6 +1933,8 @@ if ~isempty(findobj('-regexp','name',mfilename)) ;
         end;
         %end;
     end;
+end;
+catch err;
 end;
 
 
@@ -2260,6 +2361,7 @@ else
     set(handles.pushbutton_kanal,'BackgroundColor',[1 1 0]);
 end;
 
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 
@@ -2325,6 +2427,7 @@ else
     set(handles.edit_trint_EKG,'Enable','off');
 end;
 checkbox_trint_EKG__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 
@@ -2415,6 +2518,7 @@ else
 end;
 checkbox_QRS_aptikimas__Callback(hObject, eventdata, handles);
 popupmenu_QRS_saltinis_Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 % --- Executes on button press in checkbox_QRS_korekcija.
 function checkbox_QRS_korekcija_Callback(hObject, eventdata, handles)
@@ -2432,6 +2536,7 @@ else
     set(handles.edit_QRS_korekcija,'Enable','off');
 end;
 checkbox_QRS_korekcija__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_eksp_RRI.
@@ -2450,6 +2555,7 @@ else
     set(handles.edit_eksp_RRI,'Enable','off');
 end;
 checkbox_eksp_RRI__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_QRS_korekcija_.
@@ -2651,6 +2757,7 @@ else
     set(handles.edit_eksp_Rlaikus,'Enable','off');
 end;
 checkbox_eksp_Rlaikus__Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes on button press in checkbox_eksp_Rlaikus_.
@@ -3263,13 +3370,32 @@ end;
 meniu(hObject, eventdata, handles);
 
 function meniu(hObject, eventdata, handles)
+function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 delete(findall(handles.figure1,'type','uimenu'));
+handles.meniu_darbeliai = uimenu(handles.figure1,'Label','Darbeliai','Tag','m_Darbeliai');
+param_prad='darbeliu_param={}; ' ; %rezervas ateičiai
+param_pab ='(darbeliu_param{:}); ';
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Pervadinimas su info suvedimu'), ...
+        'Separator','off', 'Callback', [param_prad 'pop_pervadinimas' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Nuoseklus apdorojimas'), ...
+        'Separator','off', 'Callback', [param_prad 'pop_nuoseklus_apdorojimas' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('EEG + EKG'), 'Enable', 'off', ...
+        'Separator','off', 'Callback', [param_prad 'pop_QRS_i_EEG' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Epochavimas pg. stimulus ir atsakus'), ...
+        'Separator','off', 'Callback', [param_prad 'pop_Epochavimas_ir_atrinkimas' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('ERP properties, export...'), ...
+        'Separator','off', 'Callback', [param_prad 'pop_ERP_savybes' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', [ lokaliz('EEG spektras ir galia') '...' ], ...
+        'Separator','off', 'Callback', [param_prad 'pop_eeg_spektrine_galia' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Custom command') , ...
+        'Separator','off', 'Callback', [param_prad 'pop_rankinis' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Meta darbeliai...') , ...
+        'Separator','on',  'Callback', [param_prad 'pop_meta_drb' param_pab ] );
 yra_isimintu_rinkiniu=0;
-handles.meniu_nuostatos = uimenu(handles.figure1,'Label',lokaliz('Nuostatos'),'Tag','Nuostatos');
+handles.meniu_nuostatos = uimenu(handles.figure1,'Label',lokaliz('Options'),'Tag','m_Nuostatos');
 handles.meniu_nuostatos_ikelti = uimenu(handles.meniu_nuostatos,'Label',lokaliz('Ikelti'));
 uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Numatytas'),'Accelerator','R','Callback',{@parinktis_ikelti,handles,'numatytas'});
 try
-    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
     par_pav={ Darbeliai.dialogai.pop_QRS_i_EEG.saranka.vardas };
     if ismember('paskutinis',par_pav);
@@ -3303,17 +3429,24 @@ uimenu(handles.meniu_nuostatos,'Label',lokaliz('Saugoti...'),...
 uimenu(handles.meniu_nuostatos,'Label',lokaliz('Trinti...'),...
     'Enable',fastif(yra_isimintu_rinkiniu==1,'on','off'),'Callback',{@parinktis_trinti,handles});
 
+vers='Darbeliai';
+try
+    fid_vers=fopen(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai.versija'));
+    vers=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
+    fclose(fid_vers); 
+catch err;
+end;
 handles.meniu_apie = uimenu(handles.figure1,'Label',lokaliz('Pagalba'));
 if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
-    uimenu( handles.meniu_apie, 'Label', 'Darbeliai...', 'callback', ...
+    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
-%     uimenu( handles.meniu_apie, 'Label', lokaliz('EEG + EKG'), ...
-%         'Accelerator','H', 'callback', ...
-%         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.7.%20Savos%20komandos%20vykdymas'',''-browser'') ;'  );
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
+        'Accelerator','H', 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.1.%20Bendryb%C4%97s'',''-browser'') ;'  );
 else
-    uimenu( handles.meniu_apie, 'Label', 'Darbeliai...', 'callback', ...
+    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
-%     uimenu( handles.meniu_apie, 'Label', lokaliz('EEG + EKG'), ...
-%         'Accelerator','H', 'callback', ...
-%         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.7.%20Custom%20command'',''-browser'') ;'  );
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
+        'Accelerator','H', 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.%20Usage'',''-browser'') ;'  );
 end;

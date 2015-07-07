@@ -8,7 +8,7 @@
 % GUI versija
 %
 %
-% (C) 2014 Mindaugas Baranauskas
+% (C) 2014-2015 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -99,8 +99,20 @@ function pop_ERP_savybes_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to pop_ERP_savybes (see VARARGIN)
 
+if and(nargin > 3, mod(nargin, 2)) ;
+    if iscellstr(varargin((1:(nargin-3)/2)*2-1)); 
+        g = struct(varargin{:});
+    else  warning(lokaliz('Netinkami parametrai'));
+        g=[];     end;
+else    g=[];
+end;
 
 set(handles.figure1,'Name',mfilename);
+set(handles.figure1,'Tag','Darbeliai');
+set(handles.figure1,'Units','pixels');
+set(handles.figure1,'Resize','on');
+pad=get(handles.figure1,'Position');
+set(handles.figure1,'Position',[pad(1) pad(2) max(pad(3),800) max(pad(4),600)]);
 
 %Įsimink prieš funkcijų vykdymą buvusį kelią; netrukus bandysime laikinai pakeisti kelią
 Kelias_dabar=pwd;
@@ -129,17 +141,17 @@ try
     cd(Darbeliai.keliai.atverimui{1});
 catch err; 
 end;
+
+% Pabandyk nustatyti kelią pagal parametrus
+try set(handles.edit1,'String',g(1).path);   catch err; end;
+try set(handles.edit1,'String',g(1).pathin); catch err; end;
+% Pabandyk parinkti rinkmenas pagal parametrus
 try
-    tmp_mat=fullfile(tempdir,'tmp.mat');
-    load(tmp_mat);
-    %disp(g);
-    cd(g.path{1});
-    if ~isempty(g.files);
-        set(handles.listbox2,'String',g.files);
-        %set(handles.edit_failu_filtras2,'Style','pushbutton');
+    if ~isempty({g.files});
+        set(handles.listbox2,'String',{g.files});
+        set(handles.edit_failu_filtras2,'Style','edit'); % 'pushbutton'
         edit_failu_filtras2_ButtonDownFcn(hObject, eventdata, handles);
     end;
-    delete(tmp_mat);
 catch err;
 end;
 
@@ -148,8 +160,6 @@ set(handles.pushbutton_v1,'UserData',{});
 set(handles.pushbutton_v2,'UserData',{});
 
 atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
-
-KELIAS=pwd;
 
 % Sugrįžk į kelią prieš šios funkcijos atvėrimą
 cd(Kelias_dabar);
@@ -161,9 +171,20 @@ try
     if exist(k) == 7 ; set(handles.edit2,'String',k); end;
 catch err;
 end;
+try set(handles.edit2,'String',g(1).path);    catch err; end;
+try set(handles.edit2,'String',g(1).pathout); catch err; end;
 edit2_Callback(hObject, eventdata, handles);
 
 set(handles.edit_failu_filtras1,'String','*.set');
+try set(handles.edit_failu_filtras1,'String',g(1).flt_show); catch err; end;
+try 
+    if ~isempty(g(1).flt_slct);    
+        set(handles.edit_failu_filtras2,'Style','pushbutton'); % 'edit'
+        edit_failu_filtras2_ButtonDownFcn(hObject, eventdata, handles);
+        set(handles.edit_failu_filtras2,'String',g(1).flt_slct);
+    end
+catch err; 
+end;
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 
@@ -198,7 +219,13 @@ set(handles.pushbutton14,'UserData',{});
 set(handles.pushbutton15,'UserData',{});
 
 parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
-susildyk(hObject, eventdata, handles);
+try 
+    parinktis_ikelti(hObject, eventdata, handles, g(1).preset); 
+catch err; 
+    susildyk(hObject, eventdata, handles);
+end;
+
+set(handles.checkbox_uzverti_pabaigus,'UserData',0);
 
 tic;
 
@@ -210,6 +237,29 @@ guidata(hObject, handles);
 
 % UIWAIT makes pop_ERP_savybes wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
+
+% Jei nurodyta veiksena
+try
+    agv=strcmp(get(handles.pushbutton1,'Enable'),'on');
+    if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'}),...
+      and(ismember(g(1).mode,{'tryforce'}),agv));
+        set(handles.checkbox_uzverti_pabaigus,'Enable','off');
+    end;
+    if ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec' 'e' 'exec' 't' 'try' 'tryexec' 'tryforce' 'c' 'confirm'});
+        set(handles.checkbox_uzverti_pabaigus,'UserData',1);
+        set(handles.checkbox_uzverti_pabaigus,'Value',1);
+        %set(handles.checkbox_pabaigus_atverti,'Value',0);
+    end;
+    if or(ismember(g(1).mode,{'c' 'confirm'}),...
+      and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),~agv)    );
+        uiwait(handles.figure1); % UIRESUME bus įvykdžius užduotis
+    end;
+    if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec' 'e' 'exec'}),...
+      and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),agv));
+        pushbutton1_Callback(hObject, eventdata, handles);
+    end;
+catch err;
+end;
 
 
 function Palauk()
@@ -232,7 +282,28 @@ function varargout = pop_ERP_savybes_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+try
+    varargout{1} = handles.output;
+    varargout{2} = get(handles.edit1,'String'); % kelias
+    varargout{3} = get(handles.listbox2,'String'); % rinkmenos    
+    varargout{4} = varargout{3}(find(cellfun(@exist,fullfile(varargout{2},varargout{3}))==2)); % esamos rinkmenos
+    %varargout{5} = str2num(get(handles.text_atlikta_darbu,'String')); % skaitliukas
+catch err;
+    varargout{1} = [];
+    varargout{2} = '';
+    varargout{3} = {};
+    varargout{4} = {};
+    %varargout{5} = [];
+end;
+
+% Užverti langą, jei nurodyta parinktyse
+try    
+    if and( get(handles.checkbox_uzverti_pabaigus,'UserData'),...
+            get(handles.checkbox_uzverti_pabaigus,'Value'));
+        delete(handles.figure1);
+    end;
+catch err;
+end;
 
 
 % Atnaujink rodoma kelia
@@ -304,9 +375,10 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 % Neleisk nieko daryti
 function susaldyk(hObject, eventdata, handles)
 %Neleisti spausti Nuostatų meniu!
-a=findall(handles.figure1,'type','uimenu'); 
-a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; 
-set(a,'Enable','off'); drawnow;
+a=findall(handles.figure1,'type','uimenu');
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
+set(b,'Enable','off'); drawnow;
 
 set(handles.pushbutton1,'Value',0);
 set(handles.listbox1,'Enable','inactive');
@@ -453,14 +525,17 @@ set(handles.checkbox_pabaigus_atverti,'Visible','on');
 set(handles.checkbox57,'Enable','on'); %Peržiūra
 
 %Vidinis atliktų darbų skaitliukas
-set(handles.text_atlikta_darbu,'String',num2str(0));
+% set(handles.text_atlikta_darbu,'String',num2str(0));
 
 set(handles.text_darbas,'Visible','off');
 set(handles.text_darbas,'String',' ');
 set(handles.pushbutton2,'Value',0);
 
 % Leisti spausti Nuostatų meniu!
-a=findall(handles.figure1,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','on'); 
+a=findall(handles.figure1,'type','uimenu');
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
+set(b,'Enable','on'); drawnow;
 
 
 function Ar_galima_vykdyti(hObject, eventdata, handles)
@@ -644,7 +719,10 @@ end;
 % Užduočių parinkčių įsiminimas
 parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 %Neleisti spausti Nuostatų meniu!
-a=findall(gcf,'type','uimenu'); a=a(find(ismember(get(a,'tag'),'Nuostatos'))) ; set(a,'Enable','off'); drawnow;
+a=findall(handles.figure1,'type','uimenu');
+b=a(find(ismember(get(a,'tag'),'m_Nuostatos'))) ;
+b=[b a(find(ismember(get(a,'tag'),'m_Darbeliai')))];
+set(b,'Enable','off'); drawnow;
 
 %STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
 %[ALLEEG EEG CURRENTSET ALLCOM] = eeglab ;
@@ -1346,7 +1424,8 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
     end;
     
     
-    if get(handles.checkbox_uzverti_pabaigus,'Value') == 1;
+    if and(~get(handles.checkbox_uzverti_pabaigus,'UserData'),...
+            get(handles.checkbox_uzverti_pabaigus,'Value'));
         delete(handles.figure1);
     else
         if and(Apdoroti_visi_tiriamieji == 1, ...
@@ -1363,11 +1442,10 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
         set(handles.edit_failu_filtras2,'Style','pushbutton');
         set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
         set(handles.checkbox57,'Value',0);
-        %if ~strcmp(char(mfilename),'pop_ERP_savybes');
-            atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
-            atnaujink_rodomus_failus(hObject, eventdata, handles);
-        %end;
+        atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
+        atnaujink_rodomus_failus(hObject, eventdata, handles);
         susildyk(hObject, eventdata, handles);
+        uiresume(handles.figure1);
     end;
     
     
@@ -1905,6 +1983,7 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % Hint: delete(hObject) closes the figure
 disp(' ');
 disp('Naudotojas priverstinai uždaro langą!');
+try
 if ~isempty(findobj('-regexp','name',mfilename)) ;
     if and(strcmp(get(handles.checkbox_baigti_anksciau,'Visible'),'on'), ...
             and(get(handles.checkbox_baigti_anksciau,'Value') == 0, ...
@@ -1912,13 +1991,11 @@ if ~isempty(findobj('-regexp','name',mfilename)) ;
         set(handles.checkbox_baigti_anksciau,'Value',1);
         %set(handles.checkbox_baigti_anksciau,'Visible','on');
         checkbox_baigti_anksciau_Callback(hObject, eventdata, handles);
+    elseif strcmp(get(handles.pushbutton4,'Enable'),'on') ;        
+        delete(handles.figure1);
     else
-        %if get(handles.pushbutton1,'Value') == 1 ;
+        %error('Darbą nutraukė naudotojas');
         
-        % delete(hObject);
-        % error('Darbą nutraukė naudotojas');
-        
-        %else
         button1 = questdlg(lokaliz('Quit function help') , ...
             lokaliz('Quit function'), ...
             lokaliz('Close window'), lokaliz('Allow change options'), lokaliz('Continue as is'), ...
@@ -1970,6 +2047,8 @@ if ~isempty(findobj('-regexp','name',mfilename)) ;
         end;
         %end;
     end;
+end;
+catch err;
 end;
 
 
@@ -2070,7 +2149,7 @@ if length(x) == 2 ;
         set(elementas,'BackgroundColor',[1 1 1]);
         %set(handles.slider3,'Min',xmin);
         %set(handles.slider3,'Max',xmax-1000*(x(2)-x(1)));
-        set(handles.slider3,'Value',x(1)*1000);
+        slider_val=max(min(x(1),get(handles.slider3,'Max')),get(handles.slider3,'Min'));
     end;
 end;
 if isempty(x);
@@ -3641,11 +3720,14 @@ try
             %ribos=1000*ribos;
             %plot(mast*[ribos(1) ribos(1)],[ymin_ ymax_],'--', mast*[ribos(2) ribos(2)], [ymin_ ymax_],'--','Color',[0.5 0.5 0.5]);
             plot([ribos(1) ribos(1)],[ymin_ ymax_],'--', [ribos(2) ribos(2)], [ymin_ ymax_],'--','Color',[0.5 0.5 0.5]);
-            set(handles.slider3,'Min',round(xmin-1));
-            set(handles.slider3,'Max',2+round(xmax-(ribos(2)-ribos(1))));
-            slider_val=max(min(ribos(1),get(handles.slider3,'Max')),get(handles.slider3,'Min'));
+            SliderMin=round(xmin-1);
+            SliderMax=2+round(xmax-(ribos(2)-ribos(1)));
+            slider_val=max(min(ribos(1),SliderMax),SliderMin);
             set(handles.slider3,'Value',slider_val);
-            set(handles.slider3,'SliderStep',[0.01 0.01*round(100*(ribos(2)-ribos(1))/(xmax-xmin-(ribos(2)-ribos(1))))]);
+            set(handles.slider3,'Min',SliderMin);
+            set(handles.slider3,'Max',SliderMax);
+            SliderStep2=0.01*round(100*(ribos(2)-ribos(1))/(xmax-xmin-(ribos(2)-ribos(1))));
+            set(handles.slider3,'SliderStep',[0.01 max(0.01,SliderStep2)]);
             set(handles.slider3,'Visible','on');
             set(handles.slider3,'Enable','on');
             %ribos=0.001*ribos;            
@@ -3687,13 +3769,13 @@ try
         legend('off');
     end;
     if mast==1;
-        xlabel([lokaliz('Time') ', ' lokaliz('miliseconds_short') ]);
+        xlabel([lokaliz('Time') ', ' lokaliz('miliseconds_short') ], 'FontSize',10);
     elseif mast==0.001;
-        xlabel([lokaliz('Time') ', ' lokaliz('seconds_short') ]);
+        xlabel([lokaliz('Time') ', ' lokaliz('seconds_short') ], 'FontSize',10);
     else
-        xlabel([lokaliz('Time')]);
+        xlabel([lokaliz('Time')], 'FontSize',10);
     end;
-    ylabel([lokaliz('Amplitude') ', ' lokaliz('microV') ]);
+    ylabel([lokaliz('Amplitude') ', ' lokaliz('microV') ], 'FontSize',10);
     grid on;
     set(handles.axes1, 'Visible', 'on');
 
@@ -3959,19 +4041,39 @@ function axes1_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to axes1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-h2 = figure; 
-fnc=get(handles.axes1,'ButtonDownFcn');
-poz=get(handles.axes1,'Position');
-uni=get(handles.axes1,'units');
-set(handles.axes1,'ButtonDownFcn','');
-set(handles.axes1,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
-nauj=copyobj(handles.axes1, h2);
-datacursormode on;
-set(handles.axes1,'ButtonDownFcn',fnc);
-set(handles.axes1,'units',uni);
-set(handles.axes1,'Position',poz);
-axes(nauj);
-legenda(hObject, eventdata, handles);
+h2 = figure;
+try
+    fn=[tempname '.fig'];
+    try
+        hgsave(handles.axes1,fn);
+    catch err;
+        disp(err.message)
+        savefig(handles.axes1,fn);
+    end;
+    a2=openfig(fn);
+    set(a2,'Parent',h2);
+    set(a2,'ButtonDownFcn','');
+    set(a2,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
+    figure(h2);
+    datacursormode on;
+    try delete(fn); catch err; end;
+catch err;
+    delete(h2);
+    h2 = figure;
+    disp(err.message)
+    fnc=get(handles.axes1,'ButtonDownFcn');
+    poz=get(handles.axes1,'Position');
+    uni=get(handles.axes1,'units');
+    set(handles.axes1,'ButtonDownFcn','');
+    set(handles.axes1,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
+    nauj=copyobj(handles.axes1, h2);
+    datacursormode on;
+    set(handles.axes1,'ButtonDownFcn',fnc);
+    set(handles.axes1,'units',uni);
+    set(handles.axes1,'Position',poz);
+    axes(nauj);
+    legenda(hObject, eventdata, handles);
+end;
 
 
 % --- Executes on selection change in popupmenu11.
@@ -4179,13 +4281,32 @@ end;
 meniu(hObject, eventdata, handles);
 
 function meniu(hObject, eventdata, handles)
+function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 delete(findall(handles.figure1,'type','uimenu'));
+handles.meniu_darbeliai = uimenu(handles.figure1,'Label','Darbeliai','Tag','m_Darbeliai');
+param_prad='darbeliu_param={}; ' ; %rezervas ateičiai
+param_pab ='(darbeliu_param{:}); ';
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Pervadinimas su info suvedimu'), ...
+        'Separator','off', 'Callback', [param_prad 'pop_pervadinimas' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Nuoseklus apdorojimas'), ...
+        'Separator','off', 'Callback', [param_prad 'pop_nuoseklus_apdorojimas' param_pab ] );
+%uimenu( handles.meniu_darbeliai, 'Label', lokaliz('EEG + EKG'), ...
+%        'Separator','off', 'Callback', [param_prad 'pop_QRS_i_EEG' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Epochavimas pg. stimulus ir atsakus'), ...
+        'Separator','off', 'Callback', [param_prad 'pop_Epochavimas_ir_atrinkimas' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('ERP properties, export...'), 'Enable', 'off', ...
+        'Separator','off', 'Callback', [param_prad 'pop_ERP_savybes' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', [ lokaliz('EEG spektras ir galia') '...' ], ...
+        'Separator','off', 'Callback', [param_prad 'pop_eeg_spektrine_galia' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Custom command') , ...
+        'Separator','off', 'Callback', [param_prad 'pop_rankinis' param_pab ] );
+uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Meta darbeliai...') , ...
+        'Separator','on',  'Callback', [param_prad 'pop_meta_drb' param_pab ] );
 yra_isimintu_rinkiniu=0;
-handles.meniu_nuostatos = uimenu(handles.figure1,'Label',lokaliz('Nuostatos'),'Tag','Nuostatos');
+handles.meniu_nuostatos = uimenu(handles.figure1,'Label',lokaliz('Options'),'Tag','m_Nuostatos');
 handles.meniu_nuostatos_ikelti = uimenu(handles.meniu_nuostatos,'Label',lokaliz('Ikelti'));
 uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Numatytas'),'Accelerator','R','Callback',{@parinktis_ikelti,handles,'numatytas'});
 try
-    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
     par_pav={ Darbeliai.dialogai.pop_ERP_savybes.saranka.vardas };
     if ismember('paskutinis',par_pav);
@@ -4219,17 +4340,24 @@ uimenu(handles.meniu_nuostatos,'Label',lokaliz('Saugoti...'),...
 uimenu(handles.meniu_nuostatos,'Label',lokaliz('Trinti...'),...
     'Enable',fastif(yra_isimintu_rinkiniu==1,'on','off'),'Callback',{@parinktis_trinti,handles});
 
+vers='Darbeliai';
+try
+    fid_vers=fopen(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai.versija'));
+    vers=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
+    fclose(fid_vers); 
+catch err;
+end;
 handles.meniu_apie = uimenu(handles.figure1,'Label',lokaliz('Pagalba'));
 if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
-    uimenu( handles.meniu_apie, 'Label', 'Darbeliai...', 'callback', ...
+    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
-    uimenu( handles.meniu_apie, 'Label', lokaliz('ERP properties, export...'), ...
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.5.%20S%C4%AESP%20savyb%C4%97s%20ir%20eksportas'',''-browser'') ;'  );
 else
-    uimenu( handles.meniu_apie, 'Label', 'Darbeliai...', 'callback', ...
+    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
-    uimenu( handles.meniu_apie, 'Label', lokaliz('ERP properties, export...'), ...
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.5.%20ERP%20properties%20and%20export'',''-browser'') ;'  );
 end;
