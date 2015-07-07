@@ -61,6 +61,8 @@
 function atnaujinimas(varargin)
 % Pagrindinė funkcija
 
+% Būtinai uždaryk Darbelių langus
+close(findobj('tag', 'EEGLAB'));
 
 % mfilename_folder=regexprep(mfilename('fullpath'),[ mfilename '$'],'');
 % if ~strcmp(mfilename_folder,tempdir);
