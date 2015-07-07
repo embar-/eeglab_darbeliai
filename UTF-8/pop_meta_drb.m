@@ -656,20 +656,20 @@ for dbr_i=1:10;
                 case 2
                     [lng,Sukamas_kelias,~,Sukamos_rinkmn,DarboNr]=...
                         pop_nuoseklus_apdorojimas(dbr_param{:});
+                %case 3
+                %    [lng,Sukamas_kelias,~,Sukamos_rinkmn,DarboNr]=...
+                %        pop_QRS_i_EEG(dbr_param{:});
                 case 3
-                    [lng,Sukamas_kelias,~,Sukamos_rinkmn,DarboNr]=...
-                        pop_QRS_i_EEG(dbr_param{:});
-                case 4
                     [lng,Sukamas_kelias,~,Sukamos_rinkmn]=...
                         pop_Epochavimas_ir_atrinkimas(dbr_param{:});
                     if isempty(Sukamos_rinkmn); Sukamos_rinkmn={' '}; end;
-                case 5
+                case 4
                     [lng,Sukamas_kelias,~,Sukamos_rinkmn]=...
                         pop_ERP_savybes(dbr_param{:});
-                case 6
+                case 5
                     [lng,Sukamas_kelias,~,Sukamos_rinkmn]=...
                         pop_eeg_spektrine_galia(dbr_param{:});
-                case 7
+                case 6
                     [lng,Sukamas_kelias,~,Sukamos_rinkmn,DarboNr]=...
                         pop_rankinis(dbr_param{:});
                 otherwise
