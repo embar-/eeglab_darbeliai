@@ -1872,14 +1872,14 @@ try
     cla;
     
     if get(handles.radiobutton_spektras,'Value');
-        ylabel('log_{10}(\muV^{2}/Hz)');
+        ylabel('log_{10}(\muV^{2}/Hz)','FontSize',10);
         set(handles.axes1,'XLim',str2num(get(handles.edit51,'String')));
         set(handles.axes1,'XTickMode', 'auto');
         set(handles.axes1,'XTickLabelMode', 'auto');
         %set(handles.axes1,'XTick',[0 10 20 30 40 50 60]);
         %set(handles.axes1,'XTickLabel',{'0' '10' '20' '30' '40' '50' '    60, Hz'});
         tmp_lab=get(handles.axes1,'XTickLabel');
-        tmp_lab=[ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab(end,:) ' Hz' ]} ] ;
+        tmp_lab=[ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab{end,:} ' Hz' ]} ] ;
         set(handles.axes1,'XTickLabel', tmp_lab);
         hold('on');
         TMP_SPEKTR=nan(DUOMENYS.VISU.KANALU_N * DUOMENYS.VISU.Tiriamuju_N, size(DUOMENYS.VISU.DAZNIAI,1));
@@ -1895,7 +1895,7 @@ try
     end;
     
     if get(handles.radiobutton_galia_absol,'Value');
-        ylabel('\muV^{2}');
+        ylabel('\muV^{2}','FontSize',10);
         hold('on');
         if (DUOMENYS.VISU.Dazniu_sriciu_N > 1 );
             set(handles.axes1,'XLim',[1.5 DUOMENYS.VISU.Dazniu_sriciu_N + 0.5]);
@@ -2232,19 +2232,38 @@ function axes1_ButtonDownFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 h2 = figure;
-fnc=get(handles.axes1,'ButtonDownFcn');
-poz=get(handles.axes1,'Position');
-uni=get(handles.axes1,'units');
-set(handles.axes1,'ButtonDownFcn','');
-set(handles.axes1,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
-nauj=copyobj(handles.axes1, h2);
-datacursormode on;
-set(handles.axes1,'ButtonDownFcn',fnc);
-set(handles.axes1,'units',uni);
-set(handles.axes1,'Position',poz);
-axes(nauj);
-legenda(hObject, eventdata, handles);
-
+try
+    fn=tempname;
+    try
+        hgsave(handles.axes1,fn);
+    catch err;
+        disp(err.message)
+        savefig(handles.axes1,fn);
+    end;%h2 = figure;
+    a2=openfig(fn);
+    set(a2,'Parent',h2);
+    set(a2,'ButtonDownFcn','');
+    set(a2,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
+    figure(h2);
+    datacursormode on;
+    try delete(fn); catch err; end;
+catch err;
+    delete(h2);
+    h2 = figure;
+    disp(err.message)
+    fnc=get(handles.axes1,'ButtonDownFcn');
+    poz=get(handles.axes1,'Position');
+    uni=get(handles.axes1,'units');
+    set(handles.axes1,'ButtonDownFcn','');
+    set(handles.axes1,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
+    nauj=copyobj(handles.axes1, h2);
+    datacursormode on;
+    set(handles.axes1,'ButtonDownFcn',fnc);
+    set(handles.axes1,'units',uni);
+    set(handles.axes1,'Position',poz);
+    axes(nauj);
+    legenda(hObject, eventdata, handles);
+end;
 
 % --- Executes on button press in checkbox79.
 function checkbox79_Callback(hObject, eventdata, handles)

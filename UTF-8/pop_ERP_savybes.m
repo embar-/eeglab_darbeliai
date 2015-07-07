@@ -3766,13 +3766,13 @@ try
         legend('off');
     end;
     if mast==1;
-        xlabel([lokaliz('Time') ', ' lokaliz('miliseconds_short') ]);
+        xlabel([lokaliz('Time') ', ' lokaliz('miliseconds_short') ], 'FontSize',10);
     elseif mast==0.001;
-        xlabel([lokaliz('Time') ', ' lokaliz('seconds_short') ]);
+        xlabel([lokaliz('Time') ', ' lokaliz('seconds_short') ], 'FontSize',10);
     else
-        xlabel([lokaliz('Time')]);
+        xlabel([lokaliz('Time')], 'FontSize',10);
     end;
-    ylabel([lokaliz('Amplitude') ', ' lokaliz('microV') ]);
+    ylabel([lokaliz('Amplitude') ', ' lokaliz('microV') ], 'FontSize',10);
     grid on;
     set(handles.axes1, 'Visible', 'on');
 
@@ -4038,19 +4038,39 @@ function axes1_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to axes1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-h2 = figure; 
-fnc=get(handles.axes1,'ButtonDownFcn');
-poz=get(handles.axes1,'Position');
-uni=get(handles.axes1,'units');
-set(handles.axes1,'ButtonDownFcn','');
-set(handles.axes1,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
-nauj=copyobj(handles.axes1, h2);
-datacursormode on;
-set(handles.axes1,'ButtonDownFcn',fnc);
-set(handles.axes1,'units',uni);
-set(handles.axes1,'Position',poz);
-axes(nauj);
-legenda(hObject, eventdata, handles);
+h2 = figure;
+try
+    fn=tempname;
+    try
+        hgsave(handles.axes1,fn);
+    catch err;
+        disp(err.message)
+        savefig(handles.axes1,fn);
+    end;%h2 = figure;
+    a2=openfig(fn);
+    set(a2,'Parent',h2);
+    set(a2,'ButtonDownFcn','');
+    set(a2,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
+    figure(h2);
+    datacursormode on;
+    try delete(fn); catch err; end;
+catch err;
+    delete(h2);
+    h2 = figure;
+    disp(err.message)
+    fnc=get(handles.axes1,'ButtonDownFcn');
+    poz=get(handles.axes1,'Position');
+    uni=get(handles.axes1,'units');
+    set(handles.axes1,'ButtonDownFcn','');
+    set(handles.axes1,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
+    nauj=copyobj(handles.axes1, h2);
+    datacursormode on;
+    set(handles.axes1,'ButtonDownFcn',fnc);
+    set(handles.axes1,'units',uni);
+    set(handles.axes1,'Position',poz);
+    axes(nauj);
+    legenda(hObject, eventdata, handles);
+end;
 
 
 % --- Executes on selection change in popupmenu11.
