@@ -2149,7 +2149,7 @@ if length(x) == 2 ;
         set(elementas,'BackgroundColor',[1 1 1]);
         %set(handles.slider3,'Min',xmin);
         %set(handles.slider3,'Max',xmax-1000*(x(2)-x(1)));
-        set(handles.slider3,'Value',x(1)*1000);
+        slider_val=max(min(x(1),get(handles.slider3,'Max')),get(handles.slider3,'Min'));
     end;
 end;
 if isempty(x);
@@ -3720,11 +3720,14 @@ try
             %ribos=1000*ribos;
             %plot(mast*[ribos(1) ribos(1)],[ymin_ ymax_],'--', mast*[ribos(2) ribos(2)], [ymin_ ymax_],'--','Color',[0.5 0.5 0.5]);
             plot([ribos(1) ribos(1)],[ymin_ ymax_],'--', [ribos(2) ribos(2)], [ymin_ ymax_],'--','Color',[0.5 0.5 0.5]);
-            set(handles.slider3,'Min',round(xmin-1));
-            set(handles.slider3,'Max',2+round(xmax-(ribos(2)-ribos(1))));
-            slider_val=max(min(ribos(1),get(handles.slider3,'Max')),get(handles.slider3,'Min'));
+            SliderMin=round(xmin-1);
+            SliderMax=2+round(xmax-(ribos(2)-ribos(1)));
+            slider_val=max(min(ribos(1),SliderMax),SliderMin);
             set(handles.slider3,'Value',slider_val);
-            set(handles.slider3,'SliderStep',[0.01 0.01*round(100*(ribos(2)-ribos(1))/(xmax-xmin-(ribos(2)-ribos(1))))]);
+            set(handles.slider3,'Min',SliderMin);
+            set(handles.slider3,'Max',SliderMax);
+            SliderStep2=0.01*round(100*(ribos(2)-ribos(1))/(xmax-xmin-(ribos(2)-ribos(1))));
+            set(handles.slider3,'SliderStep',[0.01 max(0.01,SliderStep2)]);
             set(handles.slider3,'Visible','on');
             set(handles.slider3,'Enable','on');
             %ribos=0.001*ribos;            
@@ -4040,13 +4043,13 @@ function axes1_ButtonDownFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h2 = figure;
 try
-    fn=tempname;
+    fn=[tempname '.fig'];
     try
         hgsave(handles.axes1,fn);
     catch err;
         disp(err.message)
         savefig(handles.axes1,fn);
-    end;%h2 = figure;
+    end;
     a2=openfig(fn);
     set(a2,'Parent',h2);
     set(a2,'ButtonDownFcn','');

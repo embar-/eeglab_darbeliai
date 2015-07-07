@@ -2233,13 +2233,13 @@ function axes1_ButtonDownFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 h2 = figure;
 try
-    fn=tempname;
+    fn=[tempname '.fig'];
     try
         hgsave(handles.axes1,fn);
     catch err;
         disp(err.message)
         savefig(handles.axes1,fn);
-    end;%h2 = figure;
+    end;
     a2=openfig(fn);
     set(a2,'Parent',h2);
     set(a2,'ButtonDownFcn','');
