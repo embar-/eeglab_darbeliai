@@ -62,7 +62,14 @@ function atnaujinimas(varargin)
 % Pagrindinė funkcija
 
 % Būtinai uždaryk Darbelių langus
-close(findobj('tag', 'EEGLAB'));
+close(findobj('tag', 'Darbeliai')); drawnow;
+if ~isempty(findobj('tag', 'Darbeliai'));
+    close(findobj('tag', 'Darbeliai')); drawnow;
+end;
+if ~isempty(findobj('tag', 'Darbeliai'));
+    warning('Darbeliai atverti!');
+return;
+end;
 
 % mfilename_folder=regexprep(mfilename('fullpath'),[ mfilename '$'],'');
 % if ~strcmp(mfilename_folder,tempdir);
