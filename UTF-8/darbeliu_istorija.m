@@ -1,6 +1,13 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.07.07.1
+% ~ Pagerintas suderinamumas su MATLAB R2015a.
+% + Darbelių pop_*.m galima paleisti uždavus parametrus.
+% + Darbų tvarkytuvė (pop_meta_drb.m): tvarkyti Darbelių funkcijų parinkčių
+%   rinkinius ir atlikti darbus pereinant per skirtingus Darbelių langus.
+% ~ Pagerintas pop_pervadinimas stabilumas.
+%
 % v2015.06.28.1
 % + Papildyti EEG.history pakeitus EEG.
 % ~ Ištaisytas EEGLAB nenulūs į EEGLAB neįkėlus 
