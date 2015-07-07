@@ -80,13 +80,13 @@ function konfig_OpeningFcn(hObject, eventdata, handles, varargin)
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 Darbeliai_nuostatos_senos.lokale={ '' ; '' ; '' ; } ;
 if (exist('atnaujinimas','file') == 2) ;
-    Darbeliai_nuostatos_senos.tikrinti_versija=1;
+    Darbeliai_nuostatos_senos.tikrinti_versija=0;
     Darbeliai_nuostatos_senos.diegti_auto=0;
 else    
     Darbeliai_nuostatos_senos.tikrinti_versija=0;
     Darbeliai_nuostatos_senos.diegti_auto=0;  
 end;
-Darbeliai_nuostatos_senos.meniu_ragu=1;
+Darbeliai_nuostatos_senos.meniu_ragu=0;
 try
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));    
     Darbeliai_nuostatos_senos.lokale           = Darbeliai.nuostatos.lokale;
