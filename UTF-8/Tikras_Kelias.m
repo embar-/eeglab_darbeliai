@@ -1,4 +1,4 @@
-function [varargout] = Tikras_Kelias(kelias_tikrinimui)
+function kelias = Tikras_Kelias(kelias_tikrinimui)
 %
 % Ši programa yra laisva. Jūs galite ją platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
@@ -40,9 +40,7 @@ function [varargout] = Tikras_Kelias(kelias_tikrinimui)
 kelias_dabar=pwd;
 try
     cd(kelias_tikrinimui);
-catch err;
-    %disp('Klaida tikrinant kelią:')
-    %disp(err.message);
+catch
 end;
-varargout{1}=pwd;
+kelias=pwd;
 cd(kelias_dabar);

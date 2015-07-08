@@ -1,5 +1,5 @@
-function [galimi_ivykiai,visi_galimi_ivykiai,bendri_ivykiai,ar_patikrintos_visos_rinkmenos]=...
-    eeg_ivykiu_sarasas (KELIAS, RINKMENOS)
+function [trukmiu_intervalai,persidengiantis_intervalas,maziausia_trukme,ar_patikrintos_visos_rinkmenos]=...
+    eeg_trukmiu_sarasas (KELIAS, RINKMENOS)
 %
 % Ši programa yra laisva. Jūs galite ją platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
@@ -32,14 +32,14 @@ function [galimi_ivykiai,visi_galimi_ivykiai,bendri_ivykiai,ar_patikrintos_visos
 % Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 %
 %%
-% (C) 2014 Mindaugas Baranauskas
+% (C) 2015 Mindaugas Baranauskas
 %%
 
 tici=tic;
 
-galimi_ivykiai={};
-visi_galimi_ivykiai={};
-bendri_ivykiai={};
+trukmiu_intervalai=NaN(length(RINKMENOS),2);
+persidengiantis_intervalas=[NaN NaN];
+maziausia_trukme=NaN;
 ar_patikrintos_visos_rinkmenos=true;
 
 prad_kelias=pwd;
@@ -62,7 +62,6 @@ end;
 
 if isempty(RINKMENOS); return; end;
 
-
 f=statusbar(lokaliz('Palaukite!'));
 statusbar('off',f);
 
@@ -75,27 +74,14 @@ for i=1:length(RINKMENOS);
         TMPEEG=[];
         TMPEEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_,'loadmode','info');
         if ~isempty(TMPEEG);
-            ivykiai={TMPEEG.event.type};
-            if iscellstr(ivykiai);
-                galimi_ivykiai{i,1}=unique(ivykiai);
-            else
-                ivykiai=[ivykiai{:}];
-                if isnumeric(ivykiai);
-                    warning([Rinkmena ': ' lokaliz('events are in numeric format.')]);
-                    %warndlg({Rinkmena lokaliz('events are in numeric format.')},mfilename);
-                    ivykiai=unique(ivykiai);
-                    ivykiai=cellfun(@(i) {num2str(ivykiai(i))}, num2cell([1:length(ivykiai)]));
-                    galimi_ivykiai{i,1}=ivykiai;
-                else
-                    disp(' ');
-                    warning([Rinkmena ': ' lokaliz('unexpected events types.')]);
-                    %warndlg({Rinkmena lokaliz('unexpected events types.')},mfilename);
-                    disp(ivykiai);
-                    galimi_ivykiai{i,1}={};
-                end;
-            end;
+            intervalas=[TMPEEG.xmin TMPEEG.xmax];
+            trukmiu_intervalai(i,:)=intervalas;
+            persidengiantis_intervalas=[...
+                max(persidengiantis_intervalas(1), intervalas(1)), ...
+                min(persidengiantis_intervalas(2), intervalas(2))];
+            maziausia_trukme=...
+                min(maziausia_trukme,intervalas(2)-intervalas(1));
         end;
-
     catch err;
         ar_patikrintos_visos_rinkmenos=false;
         warning(err.message);
@@ -111,17 +97,6 @@ for i=1:length(RINKMENOS);
         break;
     end;
 
-end;
-
-% bent vienoje rinkmenoje rastas
-visi_galimi_ivykiai=unique([galimi_ivykiai{:}]);
-
-%tik bendri visoms rinkmenoms
-if ~isempty(galimi_ivykiai);
-    bendri_ivykiai=galimi_ivykiai{1};
-end;
-for i=2:length(galimi_ivykiai);
-    bendri_ivykiai=intersect(bendri_ivykiai,galimi_ivykiai{i});
 end;
 
 if ishandle(f)
