@@ -1,6 +1,13 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.07.09.1
+% ~ EEG_spektr_galia.m tinkamai suteikia kanalų etiketes.
+% ~ pop_eeg_spektrine_galia.m galios peržiūroje naudoja įvairesnes 
+%   spalvas kanalams ir įvairesnius simbolius rinkmenoms žymėti,
+%   o spektro peržiūroje – įvairesnes spalvas linijoms.
+% + pop_ERP_savybes.m peržiūroje naudoja įvairesnes spalvas linijoms.
+% 
 % v2015.07.07.1
 % ~ Pagerintas suderinamumas su MATLAB R2015a.
 % + Darbelių pop_*.m galima paleisti uždavus parametrus.
