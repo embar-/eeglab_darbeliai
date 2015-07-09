@@ -314,10 +314,14 @@ for i=1:NumberOfFiles ;
         end;
 
         %try
+        
+        DUOMENYS.FAILO(i).KANALAI=DUOMENYS.VISU.NORIMI_KANALAI; %{EEG.chanlocs.labels}
+        [~,Kanalu_sukeisti_id]=ismember(DUOMENYS.VISU.NORIMI_KANALAI,{EEG.chanlocs.labels});
+        
         spectopo_daznis=[1 2 4 8 16 32 64 128 256 512 1024];
         spectopo_daznis=spectopo_daznis(max(find(spectopo_daznis <= (EEG.srate/2) == 1)));
 
-        [DUOMENYS.FAILO(i).SPEKTRAS.dB,DUOMENYS.FAILO(i).DAZNIAI]= ...
+        [DUOMENYS.FAILO(i).SPEKTRAS.dB(Kanalu_sukeisti_id,:),DUOMENYS.FAILO(i).DAZNIAI]= ...
             pop_spectopo(EEG, 1, [EEG.times(1) EEG.times(end)], 'EEG',...
             'percent',100,...
             'freqrange',[0 EEG.srate/2],...
@@ -325,6 +329,7 @@ for i=1:NumberOfFiles ;
             'winsize',EEG.srate*DUOMENYS.VISU.lango_ilgis_sekundemis,...
             'nfft',EEG.srate*DUOMENYS.VISU.fft_tasku_herce,...
             'plot',AR_GRAFIKAS );
+        
         % 0.1*[0:(10*floor(EEG.srate/2))]
         %             'freqfac',10,...
         %         catch err;
@@ -349,7 +354,6 @@ for i=1:NumberOfFiles ;
 
 
         DUOMENYS.FAILO(i).SPEKTRAS.absol=10.^(DUOMENYS.FAILO(i).SPEKTRAS.dB/10);
-        DUOMENYS.FAILO(i).KANALAI=DUOMENYS.VISU.NORIMI_KANALAI;
         DUOMENYS.FAILO(i).pavad=File;
         if analizuoti_pavadinima
             % Pakeitus DUOMENYS.VISU.Pavadinimo_schema ar duomenų aplanką, teks
