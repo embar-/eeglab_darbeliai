@@ -1909,11 +1909,10 @@ try
         %set(handles.axes1,'XTickLabel',{'0' '10' '20' '30' '40' '50' '    60, Hz'});
         tmp_lab=get(handles.axes1,'XTickLabel');
         try
-            tmp_lab=[ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab(end,:) ' Hz' ]} ] ; % MATLAB R2014a
+            set(handles.axes1,'XTickLabel', [ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab(end,:) ' Hz' ]} ]); % MATLAB R2014a
         catch err;
-            tmp_lab=[ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab{end,:} ' Hz' ]} ] ; % MATLAB R2015a
+            set(handles.axes1,'XTickLabel', [ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab{end,:} ' Hz' ]} ]); % MATLAB R2015a
         end;
-        set(handles.axes1,'XTickLabel', tmp_lab);
         hold('on');
         TMP_SPEKTR=nan(DUOMENYS.VISU.KANALU_N * DUOMENYS.VISU.Tiriamuju_N, size(DUOMENYS.VISU.DAZNIAI,1));
         for k=1:DUOMENYS.VISU.KANALU_N;
@@ -1989,8 +1988,8 @@ try
             set(handles.axes1,'XTickLabel',DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(1));
             plot(2,DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{1,1}(:),'o');
         end;
-        for k=1:DUOMENYS.VISU.KANALU_N;
-            for i=1:DUOMENYS.VISU.Tiriamuju_N;
+        for i=1:DUOMENYS.VISU.Tiriamuju_N;
+            for k=1:DUOMENYS.VISU.KANALU_N;
                 l=size(legendoje,1);
                 legendoje{l+1,1}=regexprep(DUOMENYS.VISU.failai{i},'.set$','');
                 legendoje{l+1,2}=DUOMENYS.VISU.KANALAI{k};
