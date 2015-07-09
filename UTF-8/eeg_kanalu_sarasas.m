@@ -1,6 +1,6 @@
-function [galimi_kanalai,visi_galimi_kanalai,bendri_kanalai]=...
+function [galimi_kanalai,visi_galimi_kanalai,bendri_kanalai,ar_patikrintos_visos_rinkmenos]=...
     eeg_kanalu_sarasas (KELIAS, RINKMENOS)
-%   
+%
 % Ši programa yra laisva. Jūs galite ją platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
 % Viešosios licencijos sąlygomis: 2 licencijos versija, arba (savo
@@ -40,6 +40,7 @@ tici=tic;
 galimi_kanalai={};
 visi_galimi_kanalai={};
 bendri_kanalai={};
+ar_patikrintos_visos_rinkmenos=true;
 
 prad_kelias=pwd;
 try
@@ -63,7 +64,6 @@ if isempty(RINKMENOS); return; end;
 
 f=statusbar(lokaliz('Palaukite!'));
 statusbar('off',f);
-
 for i=1:length(RINKMENOS);
     try
         Rinkmena=RINKMENOS{i};
@@ -98,10 +98,11 @@ for i=1:length(RINKMENOS);
             end;
         end;
     catch err;
+        ar_patikrintos_visos_rinkmenos=false;
         warning(err.message);
     end;
-    
-    
+
+
     % statusbar
     tok=toc(tici);
     p=i/length(RINKMENOS);
@@ -111,7 +112,7 @@ for i=1:length(RINKMENOS);
     if isempty(statusbar(p,f));
         break;
     end;
-    
+
 end;
 
 % bent vienoje rinkmenoje rastas
@@ -129,11 +130,3 @@ if ishandle(f)
     delete(f);
 end;
 
-function [varargout] = Tikras_Kelias(kelias_tikrinimui)
-kelias_dabar=pwd;
-try
-    cd(kelias_tikrinimui);
-catch err;
-end;
-varargout{1}=pwd;
-cd(kelias_dabar);
