@@ -209,6 +209,7 @@ guidata(hObject, handles);
 
 % Jei nurodyta veiksena
 try
+  if ~isempty(g(1).mode);
     agv=strcmp(get(handles.pushbutton1,'Enable'),'on');
     if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'}),...
       and(ismember(g(1).mode,{'tryforce'}),agv));
@@ -229,6 +230,7 @@ try
       and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),agv));
         pushbutton1_Callback(hObject, eventdata, handles);
     end;
+  end;
 catch err;
 end;
 
@@ -2217,17 +2219,20 @@ catch err;
 end;[lokaliz('Apie') ' ' vers]
 handles.meniu_apie = uimenu(handles.figure1,'Label',lokaliz('Pagalba'));
 if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
-    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
     uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.1.%20Bendryb%C4%97s'',''-browser'') ;'  );
-else
     uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
+else
     uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.%20Usage'',''-browser'') ;'  );
+    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
+end;
+if exist('atnaujinimas','file') == 2;
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Check for updates'), 'separator','on', 'Callback', 'pop_atnaujinimas ;'  );    
 end;
 
 

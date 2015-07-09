@@ -209,6 +209,7 @@ guidata(hObject, handles);
 
 % Jei nurodyta veiksena
 try
+  if ~isempty(g(1).mode);
     agv=strcmp(get(handles.pushbutton1,'Enable'),'on');
     if agv; agv=Ar_galima_vykdyti2(hObject, eventdata, handles); end;
     if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'}),...
@@ -228,6 +229,7 @@ try
       and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),agv));
         pushbutton1_Callback(hObject, eventdata, handles);
     end;
+  end;
 catch err;
 end;
 
@@ -532,8 +534,8 @@ end;
 if min_trukme < fft_lango_ilgis_sekundemis;    
     warning([lokaliz('FFT window length') ' (' num2str(fft_lango_ilgis_sekundemis) ...
         ') > EEG.xmax - EEG.xmin (' num2str(min_trukme) ')' ]);
-    set(handles.edit_fft_langas,'Backgroundcolor',[1 1 0]) ; drawnow; pause(1);
-    set(handles.edit_fft_langas,'Backgroundcolor','remove'); drawnow;
+    set(handles.edit_fft_langas,'Backgroundcolor',[1 1 0]); drawnow; pause(1);
+    set(handles.edit_fft_langas,'Backgroundcolor',[1 1 1]); drawnow;
     return;
 end;
 if isempty(Pasirinkti_kanalai); Galima=true; return; end;
@@ -547,8 +549,7 @@ if isempty(find(ismember(Pasirinkti_kanalai,visi_galimi_kanalai)));
 else
     Galima=true;
 end;
-if (EEG.xmax - EEG.xmin) < DUOMENYS.VISU.lango_ilgis_sekundemis ;
-end;
+
 
 function Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N)
 
@@ -1863,10 +1864,15 @@ else
     Reikalingi_kanalai_sukaupti={}; % bus keičiamas darbų eigoje
 end;
 
-try
+legendoje={};
+simboliai='*o^v<>dspx';
+colormap('colorcube');   spalvos1=colormap;
+spalvos1=spalvos1([1:63],:);
+colormap('lines'); spalvos2=colormap; spalvos2=spalvos2(1:7,:);
+spalvos=[spalvos2; spalvos1];
+colormap('default');
     
-    legendoje={};
-    
+try    
     naudotojo_lentele=[[{lokaliz('visa')} ...
         num2cell(str2num(get(handles.edit51,'String')))];...
         get(handles.uitable1,'Data')];
@@ -1902,7 +1908,11 @@ try
         %set(handles.axes1,'XTick',[0 10 20 30 40 50 60]);
         %set(handles.axes1,'XTickLabel',{'0' '10' '20' '30' '40' '50' '    60, Hz'});
         tmp_lab=get(handles.axes1,'XTickLabel');
-        tmp_lab=[ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab{end,:} ' Hz' ]} ] ;
+        try
+            tmp_lab=[ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab(end,:) ' Hz' ]} ] ; % MATLAB R2014a
+        catch err;
+            tmp_lab=[ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab{end,:} ' Hz' ]} ] ; % MATLAB R2015a
+        end;
         set(handles.axes1,'XTickLabel', tmp_lab);
         hold('on');
         TMP_SPEKTR=nan(DUOMENYS.VISU.KANALU_N * DUOMENYS.VISU.Tiriamuju_N, size(DUOMENYS.VISU.DAZNIAI,1));
@@ -1914,7 +1924,9 @@ try
                 TMP_SPEKTR((k-1)*DUOMENYS.VISU.Tiriamuju_N + i,:)=log10(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{i,1}(k,:));
             end;
         end;
-        plot(DUOMENYS.VISU.DAZNIAI,TMP_SPEKTR);
+        for i=1:size(TMP_SPEKTR,1);
+            plot(DUOMENYS.VISU.DAZNIAI,TMP_SPEKTR(i,:),'color',spalvos(1+mod(i-1,length(spalvos)),:));
+        end;
     end;
     
     if get(handles.radiobutton_galia_absol,'Value');
@@ -1926,9 +1938,15 @@ try
             set(handles.axes1,'XTickLabel',DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(2:end));
             for i=2:DUOMENYS.VISU.Dazniu_sriciu_N;
                 for j=1:DUOMENYS.VISU.Tiriamuju_N;
-                    %plot(i,DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,1}(j,:),'o');
+                    simb=simboliai(1+mod(j,length(simboliai)));
+                    for k=1:DUOMENYS.VISU.KANALU_N;
+                        splv=fastif(DUOMENYS.VISU.KANALU_N == 1, ...
+                            spalvos(1+mod(j-1,length(spalvos)),:), ...
+                            spalvos(1+mod(k-1,length(spalvos)),:));
+                        plot(i,DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,1}(j,k),...
+                            'LineStyle','none','Color',splv,'Marker',simb);
+                    end;
                 end;
-                plot(i,DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,1}(:),'o');
             end;
             
         else
@@ -1937,8 +1955,8 @@ try
             set(handles.axes1,'XTickLabel',DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(1));
             plot(2,DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{1,1}(:),'o');
         end;
-        for k=1:DUOMENYS.VISU.KANALU_N;
-            for i=1:DUOMENYS.VISU.Tiriamuju_N;
+        for i=1:DUOMENYS.VISU.Tiriamuju_N;
+            for k=1:DUOMENYS.VISU.KANALU_N;
                 l=size(legendoje,1);
                 legendoje{l+1,1}=regexprep(DUOMENYS.VISU.failai{i},'.set$','');
                 legendoje{l+1,2}=DUOMENYS.VISU.KANALAI{k};
@@ -1955,9 +1973,15 @@ try
             set(handles.axes1,'XTickLabel',DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(2:end));
             for i=2:DUOMENYS.VISU.Dazniu_sriciu_N;
                 for j=1:DUOMENYS.VISU.Tiriamuju_N;
-                    %plot(i,DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{i,1}(j,:),'o');
+                    simb=simboliai(1+mod(j,length(simboliai)));
+                    for k=1:DUOMENYS.VISU.KANALU_N;
+                        splv=fastif(DUOMENYS.VISU.KANALU_N == 1, ...
+                            spalvos(1+mod(j-1,length(spalvos)),:), ...
+                            spalvos(1+mod(k-1,length(spalvos)),:));
+                        plot(i,DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{i,1}(j,k),...
+                            'LineStyle','none','Color',splv,'Marker',simb);
+                    end;
                 end;
-                plot(i,DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{i,1}(:),'o');
             end;
         else            
             set(handles.axes1,'XLim',[1.5 2.5]);
@@ -1975,7 +1999,7 @@ try
     end;
     
     set(handles.axes1, 'UserData', size(legendoje,1)); 
-    if size(legendoje,1) > 1;
+    if size(legendoje,1) > 0;
         %disp(legendoje);
         skirtingu_failu=length(unique(legendoje(:,1)'));
         skirtingu_kanalu=length(unique(legendoje(:,2)'));
@@ -2580,17 +2604,20 @@ catch err;
 end;
 handles.meniu_apie = uimenu(handles.figure1,'Label',lokaliz('Pagalba'));
 if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
-    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
     uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.6.%20Spektrin%C4%97%20galia'',''-browser'') ;'  );
-else
     uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
+else
     uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.6.%20Spectral%20power'',''-browser'') ;'  );
+    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
+end;
+if exist('atnaujinimas','file') == 2;
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Check for updates'), 'separator','on', 'Callback', 'pop_atnaujinimas ;'  );    
 end;
 
 

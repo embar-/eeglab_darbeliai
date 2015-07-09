@@ -237,6 +237,7 @@ guidata(hObject, handles);
 
 % Jei nurodyta veiksena
 try
+  if ~isempty(g(1).mode);
     agv=strcmp(get(handles.pushbutton1,'Enable'),'on');
     if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'}),...
       and(ismember(g(1).mode,{'tryforce'}),agv));
@@ -255,6 +256,7 @@ try
       and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),agv));
         pushbutton1_Callback(hObject, eventdata, handles);
     end;
+  end;
 catch err;
 end;
 
@@ -3661,6 +3663,13 @@ try
     % Išvalyti seną paveikslą
     axes(handles.axes1);
     cla;
+    linijos={'-' '--' '-.'};
+    colormap('colorcube');   spalvos1=colormap;
+    spalvos1=spalvos1([1:63],:);
+    colormap('lines'); spalvos2=colormap; spalvos2=spalvos2(1:7,:);
+    spalvos=[spalvos2; spalvos1];
+    colormap(spalvos);
+    %colormap('default');
     if ~isempty(ALLEEG_(1).file);
         set(handles.axes1, 'UserData', size(legendoje,1)); 
         xmin=min(min([ALLEEG_.times])); 
@@ -3680,8 +3689,17 @@ try
             %end;
             %%tmp_times=arrayfun(@(x) mast*ALLEEG_(x).times,1:size(ALLEEG_,1), 'UniformOutput', false);
             %viskas={tmp.times ; ALLEEG_.erp_data};
-            viskas={ALLEEG_.times ; ALLEEG_.erp_data};
-            plot(viskas{:});
+            %viskas={ALLEEG_.times ; ALLEEG_.erp_data};
+            %plot(viskas{:});
+            lni=1; spi=0;
+            for i=1:length(ALLEEG_);
+                for j=1:size(ALLEEG_(i).erp_data,1);
+                    spi=1+mod(spi,length(spalvos));
+                    splv=spalvos(spi,:);
+                    plot(ALLEEG_(i).times, ALLEEG_(i).erp_data(j,:), 'LineStyle',linijos{lni},'color',splv);
+                end;
+                %lni=1+mod(lni,length(linijos));
+            end;
         %end;
         if size(legendoje,1)==1;
             %plot(mast*[ERP_savyb.pusplocio_x],[ERP_savyb.pusplocio_y],'*','Color','g');
@@ -3689,7 +3707,7 @@ try
             %plot(mast*[ERP_savyb.min_x],[ERP_savyb.min_y],'+','Color',[1 0.5 0]);
             plot([ERP_savyb.pusplocio_x],[ERP_savyb.pusplocio_y],'*','Color','g');
             plot([ERP_savyb.max_x],[ERP_savyb.max_y],'+','Color',[1 0 0.6]);
-            plot([ERP_savyb.min_x],[ERP_savyb.min_y],'+','Color',[1 0.5 0]);
+            plot([ERP_savyb.min_x],[ERP_savyb.min_y],'+','Color',[1 0.6 0]);
             legend({lokaliz('ERP') lokaliz('half_area') lokaliz('maximum_short') lokaliz('minimum_short')},'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
             set(handles.axes1, 'UserData', 4);
         else
@@ -4344,17 +4362,20 @@ catch err;
 end;
 handles.meniu_apie = uimenu(handles.figure1,'Label',lokaliz('Pagalba'));
 if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
-    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
     uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.5.%20S%C4%AESP%20savyb%C4%97s%20ir%20eksportas'',''-browser'') ;'  );
-else
     uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
+else
     uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.5.%20ERP%20properties%20and%20export'',''-browser'') ;'  );
+    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
+end;
+if exist('atnaujinimas','file') == 2;
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Check for updates'), 'separator','on', 'Callback', 'pop_atnaujinimas ;'  );    
 end;
 
 

@@ -256,6 +256,7 @@ guidata(hObject, handles);
 
 % Jei nurodyta veiksena
 try
+  if ~isempty(g(1).mode);
     agv=strcmp(get(handles.pushbutton1,'Enable'),'on');
     if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'}),...
       and(ismember(g(1).mode,{'tryforce'}),agv));
@@ -276,6 +277,7 @@ try
       and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),agv));
         pushbutton1_Callback(hObject, eventdata, handles);
     end;
+  end;
 catch err;
 end;
 
@@ -4890,12 +4892,10 @@ if ~isempty(findobj('-regexp','name','nuoseklus_apdorojimas')) ;
 
         switch button1
             case lokaliz('Close window')
-                				
-				button2 = 'Tik užverti langą';
-				
-				
-				% Neklausti
-				if 1 < 0 ;
+               button2 = 'Tik užverti langą';
+               
+               % Neklausti
+               if 1 < 0 ;
                   button2 = questdlg(['Jei per klaidą nuspaudėte užvėrimo mygtuką, ' ...
                     'spauskite „Tęsti kaip buvo“. ' ...
                     'Jei spausite „Tik užverti langą“, gali sutrikti šios ' ...
@@ -4904,8 +4904,8 @@ if ~isempty(findobj('-regexp','name','nuoseklus_apdorojimas')) ;
                     'Darbų stabdymas', ...
                     'Užveriant generuoti klaidą', 'Tik užverti langą', lokaliz('Continue as is'), ...
                     'Tik užverti langą');
-				end;
-				
+                end;
+                
                 switch button2
                     case 'Užveriant generuoti klaidą'
                         delete(hObject);
@@ -6716,17 +6716,20 @@ catch err;
 end;
 handles.meniu_apie = uimenu(handles.figure1,'Label',lokaliz('Pagalba'));
 if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
-    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
     uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'),  ...
         'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.3.%20Nuoseklus%20apdorojimas'',''-browser'') ;'  );
-else
     uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
+else
     uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H','callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.3.%20Serial%20processing'',''-browser'') ;'  );
+    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
+end;
+if exist('atnaujinimas','file') == 2;
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Check for updates'), 'separator','on', 'Callback', 'pop_atnaujinimas ;'  );    
 end;
 
 

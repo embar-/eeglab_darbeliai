@@ -206,6 +206,7 @@ guidata(hObject, handles);
 
 % Jei nurodyta veiksena
 try
+  if ~isempty(g(1).mode);
     agv=strcmp(get(handles.pushbutton1,'Enable'),'on');
     if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'}),...
       and(ismember(g(1).mode,{'tryforce'}),agv));
@@ -226,6 +227,7 @@ try
       and(ismember(g(1).mode,{'t' 'try' 'tryexec' 'tryforce'}),agv));
         pushbutton1_Callback(hObject, eventdata, handles);
     end;
+  end;
 catch err;
 end;
 
@@ -723,7 +725,7 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, isempty(Sukamos_rinkmn) ),...
                 try
                     disp(' ');
                     disp('Įkelsime į EEGLAB:');
-                    disp([ '[' PaskRinkmIssaugKelias ']' ] );
+                    disp([ '[' Sukamas_kelias ']' ] );
                     for f=1:Pasirinktu_failu_N;
                         disp(Pasirinkti_failu_pavadinimai2{f,1});
                     end;
@@ -1795,17 +1797,20 @@ catch err;
 end;
 handles.meniu_apie = uimenu(handles.figure1,'Label',lokaliz('Pagalba'));
 if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
-    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
     uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.8.%20Darb%C5%B3%20tvarkytuv%C4%97'',''-browser'') ;'  );
-else
     uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
+else
     uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
         'Accelerator','H', 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.8.%20Workflow%20Master'',''-browser'') ;'  );
+    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
+        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
+end;
+if exist('atnaujinimas','file') == 2;
+    uimenu( handles.meniu_apie, 'Label', lokaliz('Check for updates'), 'separator','on', 'Callback', 'pop_atnaujinimas ;'  );    
 end;
 
 function nukreipimas_i_kita_darba(hObject, eventdata, handles, darbas)
