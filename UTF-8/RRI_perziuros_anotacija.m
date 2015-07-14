@@ -104,8 +104,8 @@ function anotObj=RRI_perziuros_anotacija_prideti(hFig,cAx)
     %poz=getPos(cAx,'pixels'); %plotis=diff(get(cAx,'XLim')); aukstis=diff(get(cAx,'YLim')); ratioX=poz(3)/plotis; ratioY=poz(4)/aukstis
     ratio_data=get(cAx,'DataAspectRatio');
     %ratio_plot=get(cAx,'PlotBoxAspectRatio');
-    koefX=getappdata(cAx,'ratioXkoef');
-    koefY=getappdata(cAx,'ratioYkoef');
+    koefX=getappdata(cAx,'koefX');
+    koefY=getappdata(cAx,'koefY');
     hFigCP=getCurrentPoint(hFig,'pixels');
     axesCP=getCurrentPoint(cAx, 'pixels');
     if isempty(koefX) || isempty(koefY) || koefX == Inf || koefY == Inf ;
@@ -129,13 +129,13 @@ function anotObj=RRI_perziuros_anotacija_prideti(hFig,cAx)
             if (poslXekr > 100) && (poslXasy > 0) && ( isempty(koefX) || koefX == Inf ) ;
                 koefX = poslXekr / poslXasy * ratio_data(1) ;%/ ratio_plot(1)
                 if koefX == Inf; koefX=[];
-                else setappdata(cAx,'ratioXkoef',koefX);
+                else setappdata(cAx,'koefX',koefX);
                 end;
             end;
             if (poslYekr > 100) && (poslYasy > 0) && ( isempty(koefY) || koefY == Inf ) ;
                 koefY = poslYekr / poslYasy * ratio_data(2) ;%/ ratio_plot(2)
                 if koefY == Inf;  koefY=[];
-                else setappdata(cAx,'ratioYkoef',koefY);
+                else setappdata(cAx,'koefY',koefY);
                 end;
             end;
             if isempty(koefX) || isempty(koefY);
@@ -143,8 +143,8 @@ function anotObj=RRI_perziuros_anotacija_prideti(hFig,cAx)
             %else disp(ratio_data);
             end;
         else %disp('~');
-            setappdata(cAx,'ratioXkoef', []);
-            setappdata(cAx,'ratioYkoef', []);
+            setappdata(cAx,'koefX', []);
+            setappdata(cAx,'koefY', []);
             setappdata(cAx,'ratio_data', ratio_data);
             setappdata(cAx, 'PelesPozAsyje', PelesPozAsyje2);
             setappdata(cAx, 'PelesPozFigur', PelesPozFigur2);

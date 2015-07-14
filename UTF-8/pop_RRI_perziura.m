@@ -70,7 +70,7 @@ function varargout = pop_RRI_perziura(varargin)
 
 % Edit the above text to modify the response to help pop_RRI_perziura
 
-% Last Modified by GUIDE v2.5 10-Jul-2015 19:59:17
+% Last Modified by GUIDE v2.5 14-Jul-2015 19:59:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -334,11 +334,11 @@ catch err;
     %warning(err.message);
     %old_unit=get(handles.pushbutton_atstatyti, 'Units');
     %set(hFig, 'Units','pixels');
-    set(handles.pushbutton_atstatyti,'Units','pixels');
-    set(handles.axes_rri,'Units','pixels');  
-    p1=get(handles.pushbutton_atstatyti,'Position');
-    p2=get(handles.axes_rri,'Position');
-    set(handles.axes_rri,'Position',[p2(1) p1(2)+p1(4)+2 p2(3) p2(2)+p2(4)-(p1(2)+p1(4)+2)]);
+%     set(handles.pushbutton_atstatyti,'Units','pixels');
+%     set(handles.axes_rri,'Units','pixels');  
+%     p1=get(handles.pushbutton_atstatyti,'Position');
+%     p2=get(handles.axes_rri,'Position');
+%     set(handles.axes_rri,'Position',[p2(1) p1(2)+p1(4)+2 p2(3) p2(2)+p2(4)-(p1(2)+p1(4)+2)]);
 end;
 
 % Anotacija
@@ -348,6 +348,7 @@ RRI_perziuros_anotacija('slepti'); % paslepti
 
 % Kosmetika
 set(handles.axes_rri,'YGrid','on','Xgrid','on','TickDir','out'); 
+figure1_ResizeFcn(hObject, eventdata, handles);
 
 % Užbaigimas
 handles.t=0; % Pakutinio atnaujinimo laikas
@@ -773,6 +774,7 @@ end;
 set(handles.pushbutton_atnaujinti,'UserData',1);
 try delete(findobj(handles.figure1,'Tag','naujasR')); catch err; end;
 susildyk(hObject, eventdata, handles);
+figure1_ResizeFcn(hObject, eventdata, handles);
 guidata(hObject, handles);
 refreshdata(handles.figure1,'caller');
 guidata(hObject, handles);
@@ -2022,3 +2024,41 @@ setappdata(handles.axes_rri,'update_fnc',get(handles.pushbutton_atnaujinti,'Call
 brush(handles.figure1,'on');
 set(handles.figure1,'Pointer','crosshair');
 
+
+% --- Executes when figure1 is resized.
+function figure1_ResizeFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    set(handles.figure1,'Units','pixels');
+    set(handles.axes_rri,'Units','pixels');  
+    set(handles.text6,'Units','pixels');
+    set(handles.text7,'Units','pixels');
+    set(handles.checkbox_ekg,'Units','pixels');
+    set(handles.pushbutton_atstatyti,'Units','pixels');
+    set(handles.pushbutton_atnaujinti,'Units','pixels');
+    set(handles.pushbutton_OK,'Units','pixels');
+    
+    p0=get(handles.figure1,'Position');    
+    set(handles.figure1,'Position',[p0(1:2) max(850,p0(3)) max(480,p0(4)) ]) 
+    guidata(hObject, handles);
+    drawnow;
+    p0=get(handles.figure1,'Position');
+    
+    plt=0.8*(p0(3)-80);
+    auk=0.8*(p0(4)-90);
+    xgl=p0(3)-0.11*plt-60;
+    set(handles.axes_rri,'Position',[80 65+p0(4)/5 plt auk]);
+    set(handles.text6,   'Position',[0 0 p0(3) 52]);
+    set(handles.text7,   'Position',[p0(3)-150 0 170 150]);
+    set(handles.checkbox_ekg,         'Position',[xgl 132 100 20]);
+    set(handles.pushbutton_atstatyti, 'Position',[xgl 92  100 30]);
+    set(handles.pushbutton_atnaujinti,'Position',[xgl 52  100 30]);
+    set(handles.pushbutton_OK,        'Position',[xgl 12  100 30]);
+    
+    % RRI_perziuros_anotacija atnaujins koeficientus
+    setappdata(handles.axes_rri,'koefY',[]); 
+    setappdata(handles.axes_rri,'koefX',[]);
+
+ 
