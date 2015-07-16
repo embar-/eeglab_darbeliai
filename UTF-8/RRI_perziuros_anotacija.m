@@ -76,10 +76,12 @@ function anotObj=RRI_perziuros_anotacija_prideti(hFig,cAx)
 
 
 
-    anotObj=findall(hFig,'Type','textbox','Tag','Anot');
+    anotObj=findall(hFig,'Tag','Anot'); % 'Type','textbox',
+    if length(anotObj) ~= 1; try delete(anotObj); catch; end; anotObj=[]; end;
     if isempty(anotObj);
         try anotObj=getappdata(hFig,'anotObj'); catch; end;
     end;
+    if length(anotObj) ~= 1; try delete(anotObj); catch; end; anotObj=[]; end;
     
     % Rekomenduojama > MATLAB R2015a
     V= version('-release') ; 
@@ -184,7 +186,7 @@ function anotObj=RRI_perziuros_anotacija_prideti(hFig,cAx)
             
             % Grąžinti seną žymeklį
             try dat(ci).b=get(c,'BrushData');
-            catch err; Pranesk_apie_klaida(err,mfilename,'',0);
+            catch %err; Pranesk_apie_klaida(err,mfilename,'',0);
                 try datamanager.enableBrushing(c); catch; end;
                 dat(ci).b=zeros(size(dat(ci).x));
             end;
@@ -242,7 +244,10 @@ function anotObj=RRI_perziuros_anotacija_prideti(hFig,cAx)
     end;
     
     % Užbaigimas
-    set(anotObj, 'Units','pixels','Position',[hFigCP + [20 -20] 150 -50],'Visible','on','UserData',tic,'String',str); 
+    rodyti=getappdata(hFig,'anotRod');
+    if ~isequal(rodyti,0);
+        set(anotObj, 'Units','pixels','Position',[hFigCP + [20 -20] 150 -50],'Visible','on','UserData',tic,'String',str);
+    end;
     refreshdata(hFig,'caller');
     drawnow;
 

@@ -871,7 +871,7 @@ function mouseMoveCallback(varargin)
         
         overObcj=hittest;
         cAx=get(hFig,'currentAxes');
-        anotObj=findall(hFig,'Type','textbox','Tag','Anot');
+        %anotObj=findall(hFig,'Type','textbox','Tag','Anot');
         if or(isequal(overObcj,cAx),is_family(overObcj,cAx)); % over main axis or over its child
             if and(isempty(hMode),~strcmp(get(findall(cAx,'-property','Tag'),'Tag'),'scrollAx'));
                 fja1=get(cAx,'ButtonDownFcn');
@@ -879,23 +879,25 @@ function mouseMoveCallback(varargin)
                 if or(isempty(fja1),~isempty(branot)) ; 
                     fja0=''; try fja0=getappdata(cAx,'originalButtonDownFcn'); catch;  end;
                     set(cAx,'ButtonDownFcn',fja0);
-                    brush(hFig,'on');
+                    fjaM=getappdata(cAx,'MouseInMainAxesFnc_BrushModeCont');
+                    try feval(fjaM{:}); catch; end;
                 else
-                    set(hFig,'Pointer','arrow');
-                    try feval(getappdata(cAx,'MouseAnotAddFnc')); catch; end;
+                    fjaM=getappdata(cAx,'MouseInMainAxesFnc');
+                    try feval(fjaM{:}); catch; end;
                 end;
             else
-                try set(anotObj,'Visible','off'); catch; end;
+                fjaM=getappdata(cAx,'MouseOutMainAxesFnc');
+                try feval(fjaM{:}); catch; end;
             end;
         else
-            if ~isempty(hMode); 
-                if ~ismember(get(findall(overObcj,'-property','Tag'),'Tag'),{'Brushing' 'Anot'}); % disp('.'); get(overObcj,'Tag')
-                    brush(hFig,'off');
+            if ~isempty(hMode);
+                if strcmp(get(hMode,'name'),'Exploration.Brushing'); 
+                    fjaM=getappdata(cAx,'MouseOutMainAxesFnc_BrushMode');
+                    try feval(fjaM{:}); catch; end;
                 end;
             end;
-            if ~isequal(hittest,anotObj);
-                try set(anotObj,'Visible','off'); catch; end;
-            end
+            fjaM=getappdata(cAx,'MouseOutMainAxesFnc');
+            try feval(fjaM{:}); catch; end;
         end;
         
         % If mouse pointer is not currently over any scroll axes
@@ -966,7 +968,7 @@ function mouseMoveCallback(varargin)
         end
     catch err;
         % Never mind...
-        % disp(lasterr);
+        % warning(lasterr);
     end
     rmappdataIfExists(hFig,'scrollBar_inProgress');
 
