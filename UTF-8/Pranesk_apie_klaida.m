@@ -1,5 +1,5 @@
-function Pranesk_apie_klaida(varargin)
-% Pranesk_apie_klaida(err, Darbelis, Rinkmena, dialogas)
+function h=Pranesk_apie_klaida(varargin)
+% h=Pranesk_apie_klaida(err, Darbelis, Rinkmena, dialogas)
 %
 %
 % Ši programa yra laisva. Jūs galite ją platinti ir/arba modifikuoti
@@ -40,7 +40,7 @@ function Pranesk_apie_klaida(varargin)
 if nargin > 0 ;
     err = varargin{1};
 else
-    err = lasterror ;
+    err = lasterror ;%#ok
 end;
 
 if nargin > 1 ;
@@ -61,10 +61,16 @@ else
     dialogas = 1 ;
 end;
 
+if nargin > 4 ;
+    laukti  = varargin{5};
+else
+    laukti  = 0 ;
+end;
+
 %assignin('base', 'err', err)
 disp(' ');
 
-
+h=[];
 t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
 msg=sprintf('%s\n\n%s\n',err.identifier, err.message); 
 for i=1:(length(err.stack)-1); 
@@ -82,27 +88,35 @@ s=warning('off','backtrace');
 warning(msg);
 
 if strcmp('MATLAB:binder:loadFailure',err.identifier);
-   warning('<a href="matlab:web http://stackoverflow.com/questions/19268293/matlab-error-cannot-open-with-static-tls -browser">http://stackoverflow.com/questions/19268293/matlab-error-cannot-open-with-static-tls</a>');
+   warning(['<a href="matlab:web http://stackoverflow.com/questions/19268293/matlab-error-cannot-open-with-static-tls -browser">' ...
+            'http://stackoverflow.com/questions/19268293/matlab-error-cannot-open-with-static-tls</a> ' ...
+            fullfile(matlabroot,'toolbox','local','startup.m')  ...
+            ' webutils.htmlrenderer(''basic''); ' ]);
    
-   restart_dlg=errordlg([ lokaliz('You must restart MATLAB because of internal error.') ...
+   h=errordlg([ lokaliz('You must restart MATLAB because of internal error.') ...
        ' http://stackoverflow.com/questions/19268293/matlab-error-cannot-open-with-static-tls' ], ...
        'MATLAB','replace') ;
-   set(restart_dlg,'DeleteFcn', 'exit');
-   %set(allchild(restart_dlg),'Callback', 'exit');   
+   set(h,'DeleteFcn', 'exit');
+   %set(allchild(h),'Callback', 'exit');   
+   waitfor(h); h=[];
    
    error(lokaliz('You must restart MATLAB because of internal error.'));
 end;
 
-s=warning(s.state,'backtrace');
+warning(s.state,'backtrace');
 
 
 if ~dialogas ;
     return;
 end;
 
-msg2=strrep(regexprep(err.message,'<a href=[^<>]*>','"'),'</a>','"');
-msgbox(sprintf(['%s\n\n' ...
+msg2=strrep(regexprep(err.message,'<a href="[^<]*">','"'),'</a>','"');
+h=msgbox(sprintf(['%s\n\n' ...
     lokaliz('Time:') ' %s\n' ...
     lokaliz('Darbelis:') ' %s\n' ...
     lokaliz('Failas:') ' %s'], ...
     msg2, t, Darbelis, Rinkmena),err.identifier,'error');
+    
+if laukti;
+   waitfor(h); h=[];
+end;
