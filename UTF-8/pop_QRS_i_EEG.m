@@ -934,7 +934,7 @@ for i=1:Pasirinktu_failu_N;
                     
                     if ~isempty(EEG.trials);
                         if EEG.trials > 1;
-                            error('Epoch!!!');
+                            error(lokaliz('Here you can not use epoched data!'));
                         end;
                     end;
                     
@@ -942,7 +942,14 @@ for i=1:Pasirinktu_failu_N;
                     EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1);
                     
                     QRS_ivykis=get(handles.edit_QRS_ivykis,'String');
-                    tipas_ir_latencija=[{EEG.event.type}',{EEG.event.latency}'];
+                    ivykiai0={EEG.event.type};
+                    if ~iscellstr(ivykiai0);
+                        ivykiai0=arrayfun(@(i) num2str(i), [1:length(ivykiai0)], 'UniformOutput', false);
+                    end;
+                    tipas_ir_latencija=[ivykiai0',{EEG.event.latency}'];
+                    if isempty(tipas_ir_latencija); error(lokaliz('No events found.')); end;
+                    
+                    if ~ismember(num2str(QRS_ivykis),tipas_ir_latencija(:,1)); error([lokaliz('No selected events found in selected files.') ' ' QRS_ivykis] ); end;
                     rodykles=find(ismember(tipas_ir_latencija(:,1),QRS_ivykis)==1) ;
                     tik_R_idx=cell2mat(tipas_ir_latencija(rodykles,2)) ;
                     %size(tik_R_idx)
