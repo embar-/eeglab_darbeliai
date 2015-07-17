@@ -130,7 +130,11 @@ fff= 1./(ff_op * (yh(le:le+ms15))');
 
 l=length(fff);
 
-fff1=smooth(fff);
+if ~isempty(which('smooth'));
+    fff1=smooth(fff);
+else
+    fff1=smooth2(fff);
+end;
 
 fff(1:length(fff)-2)= fff1(3:length(fff));
 

@@ -253,7 +253,8 @@ function hScroll = addScrollPlot(hAx,axName)
         colStr  = 'XColor';  % =axis line to hide
         rotation = 90;
     end
-    hScroll = axes('units',axUnits, 'Parent',get(hAx,'Parent'), 'position',newScrollPos, 'visible',axVis, scaleStr,get(hAx,scaleStr), dirStr,get(hAx,dirStr), 'NextPlot','add', 'Box','off', specialStr{:}, 'FontSize',7, 'Tag','scrollAx', 'UserData',axName, 'DeleteFcn',@deleteScrollAx);
+    hScroll = axes('units',axUnits, 'Parent',get(hAx,'Parent'), 'position',newScrollPos, 'visible',axVis, scaleStr,get(hAx,scaleStr), dirStr,get(hAx,dirStr), 'NextPlot','add', 'Box','off',...
+        specialStr{:}, 'FontSize',7, 'Tag','scrollAx', 'UserData',axName, 'DeleteFcn',@deleteScrollAx,'ButtonDownFcn',@mouseDownCallback);
     GRAY = 0.8 * [1,1,1];
     try
         bgColor = get(get(hAx,'parent'),'Color');
@@ -330,7 +331,7 @@ function hScroll = addScrollPlot(hAx,axName)
     xlim = get(hScroll, 'XLim');
     ylim = get(hScroll, 'YLim');
     hPatch = patch(xlim([1,1,2,2]), ylim([1,2,2,1]), 'b', 'FaceAlpha',.15, 'EdgeColor','w', 'EdgeAlpha',.15, 'ButtonDownFcn',@mouseDownCallback, 'tag','scrollPatch', 'userdata',axName);  %Note: FaceAlpha causes an OpenGL warning in Matlab 6
-    commonProps = {'Parent',hScroll, 'LineWidth',3, 'ButtonDownFcn',@mouseDownCallback, 'tag','scrollBar'};
+    commonProps = {'Parent',hScroll, 'LineWidth',3, 'ButtonDownFcn',@mouseDownCallback, 'tag','scrollBar', 'userdata',axName};
     smallDelta = 0.01 * diff(lim);  % don't use eps
     if strcmpi(axName,'x')
         hBars(1) = plot(xlim([1,1]), ylim, '-b', commonProps{:});
@@ -352,7 +353,7 @@ function hScroll = addScrollPlot(hAx,axName)
     msg = {'drag blue side-bars to zoom', 'drag central patch to pan'};
     xText = getCenterCoord(hScroll, 'x');
     yText = getCenterCoord(hScroll, 'y');
-    hText = text(xText,yText,msg, 'Color','r', 'Rotation',rotation, 'HorizontalAlignment','center', 'FontSize',9, 'FontWeight','bold', 'EraseMode','xor', 'HitTest','off', 'tag','scrollHelp');  %#ok ret val used for debug
+    %hText = text(xText,yText,msg, 'Color','r', 'Rotation',rotation, 'HorizontalAlignment','center', 'FontSize',9, 'FontWeight','bold', 'EraseMode','xor', 'HitTest','off', 'tag','scrollHelp');  %#ok ret val used for debug
     hMenu = uicontextmenu;
     set(hScroll, 'UIContextMenu',hMenu);
     uimenu(hMenu, 'Label',msg{1}, 'Callback',@moveCursor, 'UserData',hBars(2));
@@ -615,7 +616,7 @@ function processArgs(pvPairs,hScroll)
 
             end  % switch paramName
         end  % loop pvPairs
-    catch
+    catch %err;
         if ~isempty(paramName),  paramName = [' ''' paramName ''''];  end
         myError('YMA:scrollplot:invalidHandle',['Error setting scrollplot property' paramName ':' char(10) lasterr]);
     end
@@ -663,11 +664,11 @@ function mouseOutsidePatch(hFig,inDragMode,hAx)  %#ok Hax is unused
         % On second thought, it should always be 'arrow' since zoom/pan etc. are disabled within hScroll
         %if ~isempty(hAx)
             % Only modify this within hScroll (outside the patch area) - not in other axes
-            set(hFig, 'Pointer','arrow');
+            %set(hFig, 'Pointer','arrow');
         %end
         oldPointer = getappdata(hFig, 'scrollplot_oldPointer');
         if ~isempty(oldPointer)
-            %set(hFig, oldPointer{:});  % see comment above
+            set(hFig, oldPointer{:});  % see comment above
             drawnow;
             rmappdataIfExists(hFig, 'scrollplot_oldPointer');
             if isappdata(hFig, 'scrollplot_mouseUpPointer')
@@ -695,13 +696,19 @@ function mouseOutsidePatch(hFig,inDragMode,hAx)  %#ok Hax is unused
         end
     catch
         % never mind...
-        disp(lasterr);
+        % disp(lasterr);
     end
 %end  % outsideScrollCleanup  %#ok for Matlab 6 compatibility
 
 %% Mouse movement within the scroll patch area
 function mouseWithinPatch(hFig,inDragMode,hAx,scrollPatch,cx,isOverBar)
     try
+        % Dissable modes if any
+        if ~isempty(get(hFig,'ModeManager'));
+            brush(hFig,'off'); datacursormode(hFig,'off'); %set(hFig,'ModeManager','');
+            set(hFig,'Pointer','arrow');
+        end;
+        
         % Separate actions for X,Y scrolling
         axName = get(hAx, 'userdata');
         if strcmpi(axName,'x')
@@ -738,7 +745,6 @@ function mouseWithinPatch(hFig,inDragMode,hAx,scrollPatch,cx,isOverBar)
 
         % If this is a drag movement (i.e., mouse button is clicked)
         if inDragMode
-
             % Act according to the dragged object
             if isempty(scrollPatch)
                 scrollPatch = findobj(hAx, 'tag','scrollPatch');
@@ -776,9 +782,7 @@ function mouseWithinPatch(hFig,inDragMode,hAx,scrollPatch,cx,isOverBar)
                     set(scrollBars(2), dataStr,newLimits([2,2]));
                     setappdata(hFig, 'scrollplot_originalLimits', newLimits);
                     setappdata(hFig, 'scrollplot_originalX', cx);
-                    if deltaX ~= 0
-                        delete(findall(0,'tag','scrollHelp'));
-                    end
+                    %if deltaX ~= 0; delete(findall(0,'tag','scrollHelp')); end
                 end
             elseif (scrollBarIdx == 1)  % left/bottom bar drag
                 set(scrollBars(scrollBarIdx), dataStr,[cx,cx]);
@@ -831,7 +835,7 @@ function mouseWithinPatch(hFig,inDragMode,hAx,scrollPatch,cx,isOverBar)
         drawnow;
     catch
         % never mind...
-        disp(lasterr);
+        % disp(lasterr);
     end
 %end  % mouseWithinPatch  %#ok for Matlab 6 compatibility
 
@@ -848,7 +852,8 @@ function mouseMoveCallback(varargin)
         % Get the figure's current axes
         hFig = gcbf;
         %hFig = gcf;
-        if isempty(hFig) | ~ishandle(hFig),  return;  end  %#ok just in case..
+        if or(isempty(hFig), ~ishandle(hFig)),  return;  end  % #ok just in case..
+        
         %hAx = get(hFig,'currentAxes');
         hAx = getCurrentScrollAx(hFig);
         inDragMode = isappdata(hFig, 'scrollplot_clickedBarIdx');
@@ -863,24 +868,43 @@ function mouseMoveCallback(varargin)
         catch
             % Never mind - either an old Matlab (no mode managers) or no mode currently active
         end
-
+        
+        overObcj=hittest;
+        cAx=get(hFig,'currentAxes');
+        %anotObj=findall(hFig,'Type','textbox','Tag','Anot');
+        if or(isequal(overObcj,cAx),is_family(overObcj,cAx)); % over main axis or over its child
+            if and(isempty(hMode),~strcmp(get(findall(cAx,'-property','Tag'),'Tag'),'scrollAx'));
+                fja1=get(cAx,'ButtonDownFcn');
+                branot=findall(get(findall(hFig,'Type','Annotationpane','Tag','scribeOverlay'),'Children'),'-not','Tag','Anot');
+                if or(isempty(fja1),~isempty(branot)) ; 
+                    fja0=''; try fja0=getappdata(cAx,'originalButtonDownFcn'); catch;  end;
+                    set(cAx,'ButtonDownFcn',fja0);
+                    fjaM=getappdata(cAx,'MouseInMainAxesFnc_BrushModeCont');
+                    try feval(fjaM{:}); catch; end;
+                else
+                    fjaM=getappdata(cAx,'MouseInMainAxesFnc');
+                    try feval(fjaM{:}); catch; end;
+                end;
+            else
+                fjaM=getappdata(cAx,'MouseOutMainAxesFnc');
+                try feval(fjaM{:}); catch; end;
+            end;
+        else
+            if ~isempty(hMode);
+                if strcmp(get(hMode,'name'),'Exploration.Brushing'); 
+                    fjaM=getappdata(cAx,'MouseOutMainAxesFnc_BrushMode');
+                    try feval(fjaM{:}); catch; end;
+                end;
+            end;
+            fjaM=getappdata(cAx,'MouseOutMainAxesFnc');
+            try feval(fjaM{:}); catch; end;
+        end;
+        
         % If mouse pointer is not currently over any scroll axes
         if isempty(hAx) %& ~inDragMode  %#ok for Matlab 6 compatibility
             % Perform cleanup
             mouseOutsidePatch(hFig,inDragMode,hAx);
-            try  
-                if isempty(hMode) ; 
-                    if ismember(hittest,findall(hFig,'type','axes'));
-                        brush(hFig,'on');
-                    end;
-%                     disp(hittest);
-%                     disp(get(hFig,'currentAxes'));
-%                     disp(findall(hFig,'type','axes'));
-                end; 
-            catch ; 
-            end;
         else
-            try  if ~isempty(hMode) ; brush(hFig,'off'); end; catch ; end;
             % Check whether the curser is over any side bar
             scrollPatch = findobj(hAx, 'tag','scrollPatch');
             isOverBar = 0;
@@ -928,7 +952,7 @@ function mouseMoveCallback(varargin)
             setappdata(hFig,'scrollBar_inProgress',1);
 
             % If we're within the scroll patch area
-            if ~isempty(scrollPatch) | inDragMode  %#ok for Matlab 6 compatibility
+            if ~isempty(scrollPatch) || inDragMode  % #ok for Matlab 6 compatibility
                 mouseWithinPatch(hFig,inDragMode,hAx,scrollPatch,cx,isOverBar);
             else
                 % Perform cleanup
@@ -942,9 +966,9 @@ function mouseMoveCallback(varargin)
         catch
             % Never mind...
         end
-    catch
+    catch err;
         % Never mind...
-        disp(lasterr);
+        % warning(lasterr);
     end
     rmappdataIfExists(hFig,'scrollBar_inProgress');
 
@@ -958,6 +982,8 @@ function mouseMoveCallback(varargin)
 
 %% Mouse click down callback function
 function mouseDownCallback(varargin)
+
+    try set(findall(hFig,'Type','textbox','Tag','Anot'),'Visible','off'); catch ; end;
     try
         % Modify the cursor shape (close hand)
         hFig = gcbf;  %varargin{3};
@@ -1016,12 +1042,13 @@ function mouseDownCallback(varargin)
                 set(scrollBars(2), dataStr,barsXs(1)*[1,1]);
             end
         end
+                
         setappdata(hFig, 'scrollplot_clickedBarIdx',scrollBarIdx);
         setappdata(hFig, 'scrollplot_originalX',cx);
         setappdata(hFig, 'scrollplot_originalLimits',barXs);
     catch
         % Never mind...
-        disp(lasterr);
+        % warning(lasterr.message);
     end
 %end  % mouseDownCallback  %#ok for Matlab 6 compatibility
 
@@ -1055,7 +1082,7 @@ function mouseUpCallback(varargin)
         end
     catch
         % Never mind...
-        disp(lasterr);
+        % disp(lasterr);
     end
 %end  % mouseUpCallback  %#ok for Matlab 6 compatibility
 
@@ -1106,7 +1133,7 @@ function hAx = getCurrentScrollAx(hFig)
         hAx = hAx(min(1:end));  % ensure we return no more than asingle hAx!
     catch
         % never mind...
-        disp(lasterr);
+        % disp(lasterr);
     end
 %end  % getCurrentScrollAx  %#ok for Matlab 6 compatibility
 
@@ -1151,7 +1178,7 @@ function setOnce(hndl,propName,propValue)
 function parentAxesChanged(schemaProp, eventData, hFig, hAx, hScrollPatch, hScrollBars, propName)  %#ok - first 2 are unused
     try
         if isempty(hFig) | ~ishandle(hFig),  return;  end  %#ok just in case..
-        newPropVal = get(hAx,propName);
+        newPropVal = get(hAx,propName);        
         hScroll = get(hScrollPatch, 'Parent');
         axName  = get(hScroll, 'userdata');
         if isappdata(hFig,'scrollBar_inProgress')
@@ -1200,7 +1227,7 @@ function parentAxesChanged(schemaProp, eventData, hFig, hAx, hScrollPatch, hScro
         end
     catch
         % never mind...
-        disp(lasterr);
+        % disp(lasterr);
     end
 %end  % parentAxesChanged  %#ok for Matlab 6 compatibility
 
@@ -1213,7 +1240,7 @@ function shouldModeBeInactive = shouldModeBeInactiveFcn(hObj, eventData)  %#ok -
         shouldModeBeInactive = ~isempty(hScrollAx);
     catch
         % never mind...
-        disp(lasterr);
+        % disp(lasterr);
     end
 %end  % shouldModeBeActiveFcn  %#ok for Matlab 6 compatibility
 
@@ -1247,6 +1274,7 @@ function T = axis2Screen(ax)
     % Loop all the way up the hierarchy to the root
     % Note: this fixes a bug in Matlab 7's moveptr implementation
     parent = get(ax,'Parent');
+    %if isequal(parent,gcf); parent=gca; end;
     while ~isempty(parent)
         % Transform norm. axis coord -> parent coord.
         if isequal(parent,0)
@@ -1314,7 +1342,7 @@ function moveCursor(varargin)
         drawnow;
     catch
         % Never mind...
-        disp(lasterr);
+        % disp(lasterr);
     end
 %end  % moveCursor  %#ok for Matlab 6 compatibility
 
@@ -1385,6 +1413,16 @@ function updateParentPos(schemaProp, eventData, hScroll,scrollVisibility)  %#ok 
         % Never mind...
     end
 %end  % updateParentPos  %#ok for Matlab 6 compatibility
+
+function in_family=is_family(objChild,objParent)
+par=get(objChild,'parent');
+if isequal(par,objParent);
+    in_family=true;
+elseif isequal(par,groot) || isempty(par);
+    in_family=false;
+else
+    in_family=is_family(par,objParent);
+end;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  TODO  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % - maybe add a blue diamond or a visual handle in center of side-bars?

@@ -1,4 +1,4 @@
-% ar_apversta=ekg_apversta(EKG,Hz) 
+% ar_apversta=ekg_apversta(EKG,Hz,fig) 
 % Hz - sampling rate
 %
 % (C) 2015 Mindaugas Baranauskas
