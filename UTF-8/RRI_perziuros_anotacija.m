@@ -68,7 +68,7 @@ try
             anotObj=RRI_perziuros_anotacija_prideti(hFig,cAx);
     end;
 catch err;
-    %Pranesk_apie_klaida(err,mfilename,'',0);
+    Pranesk_apie_klaida(err,mfilename,'',0);
 end;
 
 
@@ -103,61 +103,14 @@ function anotObj=RRI_perziuros_anotacija_prideti(hFig,cAx)
     setappdata(hFig,'anotObj',anotObj);
     
     % Susižinoti ekrano parametrus
-    %poz=getPos(cAx,'pixels'); %plotis=diff(get(cAx,'XLim')); aukstis=diff(get(cAx,'YLim')); ratioX=poz(3)/plotis; ratioY=poz(4)/aukstis
-    ratio_data=get(cAx,'DataAspectRatio');
-    %ratio_plot=get(cAx,'PlotBoxAspectRatio');
-    koefX=getappdata(cAx,'koefX');
-    koefY=getappdata(cAx,'koefY');
+    disp('-')
+    poz=getPos(cAx,'pixels'); 
+    plotis=diff(get(cAx,'XLim')); 
+    aukstis=diff(get(cAx,'YLim')); 
+    ratioX=poz(3)/plotis;
+    ratioY=poz(4)/aukstis;
     hFigCP=getCurrentPoint(hFig,'pixels');
     axesCP=getCurrentPoint(cAx, 'pixels');
-    if isempty(koefX) || isempty(koefY) || koefX == Inf || koefY == Inf ;
-        PelesPozFigur2=getCurrentPoint(hFig,'pixels');
-        PelesPozAsyje2=getCurrentPoint(cAx, 'pixels'); PelesPozAsyje2=PelesPozAsyje2(1,1:2) ;
-        if ((axesCP(1,1) - PelesPozAsyje2(1,1))^2 + (axesCP(1,2) - PelesPozAsyje2(1,2))^2) > 0 ;
-            disp('!');
-            return; % pelė intensyviai judinama
-        end;
-        ratio_data2=getappdata(cAx,'ratio_data');
-        PelesPozAsyje1 =getappdata(cAx, 'PelesPozAsyje');
-        PelesPozFigur1 =getappdata(cAx, 'PelesPozFigur');
-        LangoPozEkrane1=getappdata(hFig,'LangoPozEkrane');
-        LangoPozEkrane2=get(hFig,'position');
-        LangoVntEkrane1=getappdata(hFig,'LangoVntEkrane');
-        LangoVntEkrane2=get(hFig,'units');
-        if isequal(LangoVntEkrane1,LangoVntEkrane2) && isequal(LangoPozEkrane1,LangoPozEkrane2) && isequal(ratio_data,ratio_data2) ;            
-            poslXasy=abs(PelesPozAsyje1(1,1)-PelesPozAsyje2(1,1)); poslXekr=abs(PelesPozFigur1(1)-PelesPozFigur2(1));
-            poslYasy=abs(PelesPozAsyje1(1,2)-PelesPozAsyje2(1,2)); poslYekr=abs(PelesPozFigur1(2)-PelesPozFigur2(2));
-            %disp([poslXasy poslYasy; poslXekr poslYekr]);
-            if (poslXekr > 100) && (poslXasy > 0) && ( isempty(koefX) || koefX == Inf ) ;
-                koefX = poslXekr / poslXasy * ratio_data(1) ;%/ ratio_plot(1)
-                if koefX == Inf; koefX=[];
-                else setappdata(cAx,'koefX',koefX);
-                end;
-            end;
-            if (poslYekr > 100) && (poslYasy > 0) && ( isempty(koefY) || koefY == Inf ) ;
-                koefY = poslYekr / poslYasy * ratio_data(2) ;%/ ratio_plot(2)
-                if koefY == Inf;  koefY=[];
-                else setappdata(cAx,'koefY',koefY);
-                end;
-            end;
-            if isempty(koefX) || isempty(koefY);
-                return; % ratioXkoef=320; ratioYkoef=320;
-            %else disp(ratio_data);
-            end;
-        else %disp('~');
-            setappdata(cAx,'koefX', []);
-            setappdata(cAx,'koefY', []);
-            setappdata(cAx,'ratio_data', ratio_data);
-            setappdata(cAx, 'PelesPozAsyje', PelesPozAsyje2);
-            setappdata(cAx, 'PelesPozFigur', PelesPozFigur2);
-            setappdata(hFig,'LangoPozEkrane',LangoPozEkrane2);
-            setappdata(hFig,'LangoVntEkrane',LangoVntEkrane2);
-            anotObj=RRI_perziuros_anotacija_prideti(hFig,cAx);
-            return; % ratioXkoef=320; ratioYkoef=320;
-        end;
-    end;
-    ratioX=koefX/ratio_data(1); % *ratio_plot(1)
-    ratioY=koefY/ratio_data(2); % *ratio_plot(2)
     point_h=[]; point_hi=[]; point_i=[] ; point_x=[]; point_y=[]; point_d=Inf;
     
     % Numatytas tekstas, jei nebūtų nubraižytų taškų
@@ -258,4 +211,10 @@ set(hObj,'Units',units);
 try    cp=get(hObj,'CurrentPoint');
 catch; cp=get(hObj,'PointerLocation');
 end;
+set(hObj,'Units',oldu);
+
+function poz=getPos(hObj,units)
+oldu=get(hObj,'Units');
+set(hObj,'Units',units);
+poz=get(hObj,'Position');
 set(hObj,'Units',oldu);
