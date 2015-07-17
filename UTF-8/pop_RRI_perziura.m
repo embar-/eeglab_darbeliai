@@ -969,7 +969,7 @@ handles.t=tic;
 guidata(handles.figure1, handles);
 refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
-assignin('base','handles',handles);
+%assignin('base','handles',handles);
 figure(handles.figure1);
 anotacijos_atnaujinimas(hObject, eventdata, handles);
 %set(handles.figure1,'pointer',Peliukas);
@@ -1761,7 +1761,10 @@ try
         catch err; Pranesk_apie_klaida(err, 'EKG QRS aptikimas', f, 0);
         end;
     else
-        Laikai=[EEG.event(find(ismember(ivykiai,{ivyk_QRS}))).latency]' .* 1000 ./ EEG.srate; % milisekundėmis
+        tik_R_idx=find(ismember(ivykiai,{ivyk_QRS}));
+        %Laikai=[EEG.event(tik_R_idx).latency]' .* 1000 ./ EEG.srate; % milisekundėmis - netikslus, esant 1024 diskr.dažniui, 1 ms daugiau pateikia
+        tik_R_t_idx=[EEG.event(tik_R_idx).latency];
+        Laikai=[EEG.times(tik_R_t_idx)]'; % tikslus pagal EEGLAB
         %if size(Laikai,2) > 1; Laikai=[Laikai]'; end;
         set(handles.axes_rri,'UserData',Laikai);
     end;
@@ -2313,7 +2316,7 @@ if isempty(R_laikai);
 else
     if nargin > 3; exp_tipas=varargin{1}; else exp_tipas=''; end;
     if isempty(exp_tipas);
-        exp_tipai={'R-R intervalai' 'QRS laikai'};
+        exp_tipai={'R-R intervalai' 'QRS laikai' ' '};
         exp_tipas=listdlg(...
             'ListString',exp_tipai,...
             'SelectionMode','single',...
@@ -2327,18 +2330,42 @@ else
     end;
     switch exp_tipas
         case {1 'RRI'}
-            d=RRI;      t='%.0f'; g='*.dat';
+            g='*.dat'; d=RRI;      t='%.0f'; 
         case {2 'RRI_laikai' 'RRI laikai' 'QRS_laikai' 'QRS laikai' 'laikai'}
-            d=R_laikai; t='%.3f'; g='*.txt';
+            g='*.txt'; d=R_laikai; t='%.3f'; 
+        case {3 'EEGLAB'}
+            if ~get(handles.checkbox_ekg,'Value'); 
+                susildyk(hObject, eventdata, handles); return; 
+            end;
+            g='*.set'; 
         otherwise
             warning('Netinkama veiksena');
-            return;
-    end;    
+            susildyk(hObject, eventdata, handles); return;
+    end;
     [f,p]=uiputfile({g; '*.*' ;});
     susildyk(hObject, eventdata, handles);
     if or(isempty(f),f==0) ; return ; end;
     try
-    dlmwrite(fullfile(p,f), num2cell(d), 'precision',t, 'newline', 'pc') ;
+        switch exp_tipas
+            case {1 'RRI' ...
+                  2 'RRI_laikai' 'RRI laikai' 'QRS_laikai' 'QRS laikai' 'laikai'}
+                dlmwrite(fullfile(p,f), num2cell(d), 'precision',t, 'newline', 'pc') ;
+            case {3 'EEGLAB'}
+                [ALLEEG, EEG] = pop_newset([],[],[]);
+                EEG.chanlocs.labels='EKG';
+                EEG.data=handles.EKG';
+                EEG.times=1000*handles.EKG_laikai';
+                EEG.xmin=min(handles.EKG_laikai);
+                EEG.xmax=max(handles.EKG_laikai);
+                EEG.nbchan=1;
+                EEG.srate=handles.EKG_Hz;
+                ivykiai(1:length(R_laikai))={'R'};
+                EEG.event=struct('type',ivykiai,...
+                    'latency',num2cell(0.001*handles.EKG_Hz*R_laikai'),...
+                    'urevent',num2cell(1:length(R_laikai)));
+                EEG = eeg_checkset(EEG);
+                pop_newset(ALLEEG, EEG, 0, 'setname', f, 'savenew', fullfile(p,f));
+        end;
     catch err;
         Pranesk_apie_klaida(err,mfilename,f,1,1);
     end;
@@ -2521,7 +2548,6 @@ guidata(handles.figure1, handles);
 
 
 function paseno=istorijos_tikrinimas2(istorija, istorijosNr, RRI, Laikai, Nejungti)
-istorijosNr
 if istorijosNr > length(istorija);
     paseno=1; return;
 end;
