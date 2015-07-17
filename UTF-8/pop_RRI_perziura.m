@@ -631,7 +631,7 @@ disp(lokaliz('User closes window...'));
 button = questdlg(lokaliz('Return QRS times?'),lokaliz('Closing'),lokaliz('Yes'),lokaliz('No'),lokaliz('Cancel'),lokaliz('Yes'));
 switch button
     case lokaliz('No')
-        delete(hObject);
+        delete(handles.figure1);
     case lokaliz('Yes')
         pushbutton_OK_Callback(hObject, eventdata, handles);
     otherwise
