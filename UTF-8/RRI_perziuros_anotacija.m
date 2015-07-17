@@ -103,7 +103,6 @@ function anotObj=RRI_perziuros_anotacija_prideti(hFig,cAx)
     setappdata(hFig,'anotObj',anotObj);
     
     % Susižinoti ekrano parametrus
-    disp('-')
     poz=getPos(cAx,'pixels'); 
     plotis=diff(get(cAx,'XLim')); 
     aukstis=diff(get(cAx,'YLim')); 
