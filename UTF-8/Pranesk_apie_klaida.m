@@ -50,7 +50,7 @@ else
 end;
 
 if nargin > 2 ;
-    Rinkmena = varargin{2};
+    Rinkmena = varargin{3};
 else
     Rinkmena = '?' ;
 end;
