@@ -299,7 +299,9 @@ for i=1:NumberOfFiles ;
 
             try
                 % DUOMENYS.FAILO(i).SPEKTRAS.dB yra laikinas
-                [DUOMENYS.FAILO(i).SPEKTRAS.dB,DUOMENYS.FAILO(i).DAZNIAI]= ...
+                DUOMENYS.FAILO(i).KANALAI=DUOMENYS.VISU.NORIMI_KANALAI;
+                [~,Kanalu_sukeisti_id]=ismember(DUOMENYS.VISU.NORIMI_KANALAI,{EEG.chanlocs.labels});
+                [DUOMENYS.FAILO(i).SPEKTRAS.dB(Kanalu_sukeisti_id,:),DUOMENYS.FAILO(i).DAZNIAI]= ...
                     pop_spectopo(EEG, 1, [EEG.times(1) EEG.times(end)], 'EEG',...
                     'percent',100,...
                     'freqrange',[0 EEG.srate/2],...
@@ -331,7 +333,6 @@ for i=1:NumberOfFiles ;
 
                 % pažingsninėje versijoje DUOMENYS.FAILO(i).SPEKTRAS.absol laikinas kintamasis
                 DUOMENYS.FAILO(i).SPEKTRAS.absol=10.^(DUOMENYS.FAILO(i).SPEKTRAS.dB/10);
-                DUOMENYS.FAILO(i).KANALAI=DUOMENYS.VISU.NORIMI_KANALAI;
                 DUOMENYS.FAILO(i).pavad=File;
                 if analizuoti_pavadinima
                     msg='Pažingsniniame variante neleistinas parametras analizuoti_pavadinima=1 !';
