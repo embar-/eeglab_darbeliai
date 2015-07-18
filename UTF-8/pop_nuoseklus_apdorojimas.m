@@ -793,31 +793,7 @@ for i=1:Pasirinktu_failu_N;
 
     % Ikelti
     [ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
-    try
-        EEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_);
-        [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
-    catch err;
-        try
-            % Importuoti
-            EEG=pop_biosig(fullfile(KELIAS_, Rinkmena_));
-            EEG=eegh( ['pop_biosig(' fullfile(KELIAS_, Rinkmena_) ')' ], EEG);
-        catch err;
-            try
-                % Importuoti
-                EEG=pop_fileio(fullfile(KELIAS_, Rinkmena_));
-                EEG=eegh( ['pop_fileio(' fullfile(KELIAS_, Rinkmena_) ')' ], EEG);
-            catch err;
-                try
-                    % Importuoti
-                    load(fullfile(KELIAS_, Rinkmena_),'-mat');
-                catch err;
-                end;
-            end;
-        end;
-    end;
-
-    %uiwait(gcf,1);
-
+    EEG = eeg_ikelk(KELIAS_,Rinkmena_);
 
     if ~isempty(EEG);
 

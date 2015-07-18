@@ -250,26 +250,7 @@ for i=1:NumberOfFiles ;
         % Importuoti
         EEG=pop_fileio([PathName File]);
     else
-        try
-            EEG = pop_loadset('filename',File,'filepath',PathName);
-            [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
-        catch err;
-          try
-              % Importuoti
-              EEG=pop_biosig(fullfile(PathName,File));
-          catch err;
-            try
-                % Importuoti
-                EEG=pop_fileio(fullfile(PathName,File));
-            catch err;
-                try
-                    % Importuoti
-                    load(fullfile(PathName, Rinkmena),'-mat');
-                catch err;
-                end;
-            end;
-          end;
-        end;
+        EEG = eeg_ikelk(PathName,File);
     end;
     
     visi_galimi_ivykiai=unique({EEG.event.type});
