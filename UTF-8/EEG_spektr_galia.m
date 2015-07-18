@@ -260,26 +260,7 @@ for i=1:NumberOfFiles ;
         % Importuoti
         EEG=pop_fileio(fullfile(KELIAS_,Rinkmena_));
     else
-        try
-            EEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_);
-            [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
-        catch err;
-            try
-                % Importuoti
-                EEG=pop_biosig(fullfile(KELIAS_, Rinkmena_));
-            catch err;
-                try
-                    % Importuoti
-                    EEG=pop_fileio(fullfile(KELIAS_, Rinkmena_));
-                catch err;
-                    try
-                        % Importuoti
-                        load(fullfile(KELIAS_, Rinkmena_),'-mat');
-                    catch err;
-                    end;
-                end;
-            end;
-        end;
+        EEG = eeg_ikelk(KELIAS_,Rinkmena_);
     end;
 
     try
