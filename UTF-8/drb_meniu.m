@@ -57,54 +57,74 @@ switch lower(meniu)
         drb_meniu_apie(     hObject, eventdata, handles, darbas, varargin(3:end));
 end
 
-function drb_meniu_darbeliai(hObject, eventdata, handles, darbas, varargin)
+function drb_meniu_darbeliai(hObject, eventdata, handles, darbas, varargin) %#ok
 %% Darbeliai
 delete(findall(handles.figure1,'type','uimenu'));
 handles.meniu_darbeliai = uimenu(handles.figure1,'Label','Darbeliai','Tag','m_Darbeliai');
 
 uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Pervadinimas su info suvedimu'),  'tag','pop_pervadinimas', ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles,                'pop_pervadinimas'});
+        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, darbas,        'pop_pervadinimas'});
 uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Nuoseklus apdorojimas'),          'tag','pop_nuoseklus_apdorojimas', ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles,                'pop_nuoseklus_apdorojimas'});
+        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, darbas,        'pop_nuoseklus_apdorojimas'});
 uimenu( handles.meniu_darbeliai, 'Label', lokaliz('EEG + EKG'),                      'tag','pop_QRS_i_EEG', ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles,                'pop_QRS_i_EEG'});
+        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, darbas,        'pop_QRS_i_EEG'});
 uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Epochavimas pg. stimulus ir atsakus'),'tag','pop_Epochavimas_ir_atrinkimas', ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles,                    'pop_Epochavimas_ir_atrinkimas'});
+        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, darbas,            'pop_Epochavimas_ir_atrinkimas'});
 uimenu( handles.meniu_darbeliai, 'Label', lokaliz('ERP properties, export...'),      'tag','pop_ERP_savybes', ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles,                'pop_ERP_savybes'});
+        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, darbas,        'pop_ERP_savybes'});
 uimenu( handles.meniu_darbeliai, 'Label', [ lokaliz('EEG spektras ir galia') '...' ],'tag','pop_eeg_spektrine_galia', ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles,                'pop_eeg_spektrine_galia'});
+        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, darbas,        'pop_eeg_spektrine_galia'});
 uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Custom command') ,                'tag','pop_rankinis', ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles,                'pop_rankinis'});
+        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, darbas,        'pop_rankinis'});
 uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Meta darbeliai...') ,             'tag','pop_meta_drb', ...
-        'Separator','on',  'Callback', {@nukreipimas_i_kita_darba, handles,                'pop_meta_drb'});
+        'Separator','on',  'Callback', {@nukreipimas_i_kita_darba, handles, darbas,        'pop_meta_drb'});
 set(findobj(handles.meniu_darbeliai,'Tag',darbas),'Enable','off')
 
 
-function nukreipimas_i_kita_darba(hObject, eventdata, handles, darbas)
+function nukreipimas_i_kita_darba(hObject, eventdata, handles, aktyvus_darbas, naujas_darbas) %#ok
 %%
-switch darbas
+switch aktyvus_darbas
+    case {'pop_pervadinimas'}
+        pathin   = get(handles.edit_tikri,'String');
+        pathout  = get(handles.edit_siulomi,'String');
+       %flt_show = get(handles.edit_failu_filtras1,'String');
+        flt_slct = get(handles.edit_filtras,'String');
+        files_sh = get(handles.text_tikri,'String');
+        files_sN = get(handles.text_tikri,'Value');
+        if ~isempty(files_sN) && ~isequal(files_sN,0);
+            files_sl = files_sh(files_sN);
+            ar_filtr = strcmp(get(handles.edit_filtras,'Style'),'edit');
+        else
+            ar_filtr = 1;
+        end;
+        darbeliu_param={ 'pathin',pathin, 'pathout',pathout };
     otherwise
         pathin   = get(handles.edit1,'String');
         pathout  = get(handles.edit2,'String');
         flt_show = get(handles.edit_failu_filtras1,'String');
         flt_slct = get(handles.edit_failu_filtras2,'String');
         files_sh = get(handles.listbox1,'String');
-        files_sl = files_sh(get(handles.listbox1,'Value'));
+        files_sN = get(handles.listbox1,'Value');
+        files_sl = files_sh(files_sN);
+        if ~isempty(files_sN) && ~isequal(files_sN,0);
+            files_sl = files_sh(files_sN);
+            ar_filtr = strcmp(get(handles.edit_failu_filtras2,'Style'),'edit');
+        else
+            ar_filtr = 1;
+        end;
+        darbeliu_param={ 'pathin',pathin, 'pathout',pathout ,'flt_show',flt_show };
 end;
 
-darbeliu_param={ 'pathin',pathin, 'pathout',pathout ,'flt_show',flt_show };
-
-if strcmp(get(handles.edit_failu_filtras2,'Style'),'edit');
+if ar_filtr;
     darbeliu_param=[darbeliu_param {'flt_slct',flt_slct}]; %#ok
 else
     darbeliu_param=[darbeliu_param {'files',files_sl}]; %#ok
 end;
+darbeliu_param
+eval([ naujas_darbas '(darbeliu_param{:}); ']);
 
-eval([ darbas '(darbeliu_param{:}); ']);
 
-
-function drb_meniu_apie(hObject, eventdata, handles, darbas, varargin)
+function drb_meniu_apie(hObject, eventdata, handles, darbas, varargin) %#ok
 %% Apie
 lt=strcmp(char(java.util.Locale.getDefault()),'lt_LT');
 if lt; url1='https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT';
@@ -169,7 +189,7 @@ if exist('atnaujinimas','file') == 2;
 end;
 
 
-function drb_meniu_parinktys(hObject, eventdata, handles, darbas, varargin)
+function drb_meniu_parinktys(hObject, eventdata, handles, darbas, varargin) %#ok
 %% Parinktys
 yra_isimintu_rinkiniu=0;
 handles.meniu_nuostatos = uimenu(handles.figure1,'Label',lokaliz('Options'),'Tag','m_Nuostatos');
@@ -178,19 +198,20 @@ uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Numatytas'),'Accelerator'
 try
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
-    par_pav={ Darbeliai.dialogai.pop_QRS_i_EEG.saranka.vardas };
+    eval([ 'saranka=Darbeliai.dialogai.' darbas '.saranka;' ]);
+    par_pav={ saranka.vardas };
     if ismember('paskutinis',par_pav);
         uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Paskiausias'),'Separator','off',...
             'Accelerator','0','Callback',{@nukreipimas_gui1, handles, 'drb_parinktys', 'ikelti',darbas,'paskutinis'});
     end;
     ids=find(~ismember(par_pav,{'numatytas','paskutinis'}));
     par_pav=par_pav(ids);
-    par_dat={ Darbeliai.dialogai.pop_QRS_i_EEG.saranka.data };       par_dat=par_dat(ids);
-    par_kom={ Darbeliai.dialogai.pop_QRS_i_EEG.saranka.komentaras }; par_kom=par_kom(ids);
+    par_dat={ saranka.data };       par_dat=par_dat(ids);
+    par_kom={ saranka.komentaras }; par_kom=par_kom(ids);
     if ~isempty(par_pav); yra_isimintu_rinkiniu=1 ; end; 
     for i=1:length(par_pav);
         try
-        el=uimenu(handles.meniu_nuostatos_ikelti,...
+        uimenu(handles.meniu_nuostatos_ikelti,...
             'Label', ['<html><font size="-2" color="#ADD8E6">' par_dat{i} '</font> ' ...
             par_pav{i} ' <br><font size="-2" color="#ADD8E6">' par_kom{i} '</font></html>'],...
             'Separator',fastif(i==1,'on','off'),...
@@ -212,23 +233,23 @@ uimenu(handles.meniu_nuostatos, 'Label', [lokaliz('Nuostatos') ' (kalba/language
         'separator','on', 'callback', 'konfig; '  );
 
 
-function nukreipimas_gui1(hObject, eventdata, handles, varargin)
+function nukreipimas_gui1(hObject, eventdata, handles, varargin) %#ok
 pars='';
 for i=5:nargin;
     j=num2str(i-3);
     eval([ 'par' j '=varargin{' j '};' ]);
-    pars=[pars ', par' j ];
+    pars=[pars ', par' j ]; %#ok
 end;
 com=[ varargin{1} '(hObject, eventdata, handles' pars ');' ];
 eval( com );
 
 
-function nukreipimas_gui2(hObject, eventdata, handles, varargin)
+function nukreipimas_gui2(hObject, eventdata, handles, varargin) %#ok
 pars='';
 for i=5:nargin;
     j=num2str(i-3);
     eval([ 'par' j '=varargin{' j '};' ]);
-    pars=[pars 'par' j ', ' ];
+    pars=[pars 'par' j ', ' ]; %#ok
 end;
 com=[ varargin{1} '(' pars 'hObject, eventdata, handles);' ];
 eval( com );

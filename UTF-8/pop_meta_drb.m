@@ -126,7 +126,7 @@ end;
 tic;
 
 lokalizuoti(hObject, eventdata, handles);
-meniu(hObject, eventdata, handles);
+drb_meniu(hObject, eventdata, handles, 'visas', mfilename);
 
 %Pabandyk įkelti senąjį kelią
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
@@ -182,7 +182,7 @@ atnaujink_rodomus_failus(hObject, eventdata, handles);
 
 parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
 try 
-    parinktis_ikelti(hObject, eventdata, handles, g(1).preset); 
+    drb_parinktys(hObject, eventdata, handles, 'ikelti', mfilename, g(1).preset); 
 catch err; 
     susildyk(hObject, eventdata, handles);
 end;
@@ -1584,78 +1584,18 @@ set(handles.pushbutton_v2,'UserData',...
 set(handles.text_atlikta_darbu, 'String', num2str(max_pakatalogio_nr(k)));
 set(handles.edit2,'BackgroundColor',[1 1 1]);
 
-function EEG=eval2(com,EEG, KELIAS_,NaujaRinkmena,laiko_intervalas,...
-                        Pasirinkti_kanalai,Pasirinkti_kanalai_yra,Pasirinkti_kanalai_yra_Nr,...
-                        Epochuoti_pagal_stimulus,...
-                        handles)
-eval(com);
 
-function parinktis_ikelti(hObject, eventdata, handles, rinkinys)
-susaldyk(hObject, eventdata, handles);
-% Įkelti ankstenius nustatymus
-try    
-    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-    k=Tikras_Kelias(fullfile(function_dir,'..'));
-    load(fullfile(k,'Darbeliai_config.mat'));   
-    esami={Darbeliai.dialogai.pop_meta_drb.saranka.vardas};
-    i=find(ismember(esami,rinkinys));
-    Parinktys=Darbeliai.dialogai.pop_meta_drb.saranka(i).parinktys;
-    for i=1:length(Parinktys);
-        try
-            set(eval(['handles.' Parinktys(i).id ]), ...
-                'Value',         Parinktys(i).Value );
-            set(eval(['handles.' Parinktys(i).id ]), ...
-                'UserData',      Parinktys(i).UserData );
-            if Parinktys(i).String_ ;
-                set(eval(['handles.' Parinktys(i).id ]), ...
-                    'String',        Parinktys(i).String );
-            end;
-            if Parinktys(i).TooltipString_ ;
-                set(eval(['handles.' Parinktys(i).id ]), ...
-                    'TooltipString', Parinktys(i).TooltipString );
-            end;
-        catch err;
-            Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
-        end;
-    end;
-catch err;
-    %Pranesk_apie_klaida(err, '', '', 0);
+function parinktis_irasyti(hObject, eventdata, handles, varargin)
+if nargin > 3; vardas=varargin{1};
+else           vardas='';
 end;
-susildyk(hObject, eventdata, handles);
+if nargin > 4; komentaras=varargin{2};
+else           komentaras='';
+end;
+isimintini=struct('nariai','','raktai','');
 
-function parinktis_irasyti(hObject, eventdata, handles, vardas, komentaras)
-reikia_perkurti_meniu=0;
-if isempty(vardas); 
-    a=inputdlg({lokaliz('Pavadinimas:'),lokaliz('Komentaras:')}); 
-    if isempty(a); return; end;
-    if iscell(a);
-        if isempty(a{1});
-            vardas='paskutinis';
-            komentaras='';
-        else
-            vardas=a{1};
-            komentaras=a{2};
-        end;
-    end;
-end;
-    
-try
-    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
-    esami={Darbeliai.dialogai.pop_meta_drb.saranka.vardas};
-    if and(ismember(vardas,esami),~ismember(vardas,{'numatytas','paskutinis'}));
-        ats=questdlg(lokaliz('Perrašyti nuostatų rinkinį?'),lokaliz('Nuostatos jau yra!'),lokaliz('Rewrite'),lokaliz('Cancel'),lokaliz('Cancel'));
-        if isempty(ats); return; end;
-        if ~strcmp(ats,lokaliz('Rewrite')); return; end;
-        reikia_perkurti_meniu=1;
-    end;
-catch err;
-    %Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
-end;
-
-% Užduočių parinktys
-Parinktys=struct('id','','Value','','UserData','','String_','','String','','TooltipString_','','TooltipString','');
-isimintini_el={'checkbox_uzverti_pabaigus' 'checkbox_pabaigus_atverti' 'checkbox_pabaigus_i_apdorotu_aplanka' ...
+isimintini(1).raktai={'Value' 'UserData'};
+isimintini(1).nariai={'checkbox_uzverti_pabaigus' 'checkbox_pabaigus_atverti' 'checkbox_pabaigus_i_apdorotu_aplanka' ...
     'checkbox_drb1' 'checkbox_drb2' 'checkbox_drb3' 'checkbox_drb4' 'checkbox_drb5' ...
     'checkbox_drb6' 'checkbox_drb7' 'checkbox_drb8' 'checkbox_drb9' 'checkbox_drb10' ...
     'popupmenu_drb1' 'popupmenu_drb2' 'popupmenu_drb3' 'popupmenu_drb4' 'popupmenu_drb5' ...
@@ -1663,166 +1603,8 @@ isimintini_el={'checkbox_uzverti_pabaigus' 'checkbox_pabaigus_atverti' 'checkbox
     'popupmenu_drb1_' 'popupmenu_drb2_' 'popupmenu_drb3_' 'popupmenu_drb4_' 'popupmenu_drb5_' ...
     'popupmenu_drb6_' 'popupmenu_drb7_' 'popupmenu_drb7_' 'popupmenu_drb9_' 'popupmenu_drb10_'...
     'popupmenu_patvirt' 'radiobutton6' 'radiobutton7' };
-for i=1:length(isimintini_el);
-    try
-        Parinktys(i).id = isimintini_el{i} ;
-        Parinktys(i).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
-        Parinktys(i).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
-        Parinktys(i).String_  = 0;
-        Parinktys(i).TooltipString_ = 0;
-    catch err;
-        Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
-    end;
-end;
+drb_parinktys(hObject, eventdata, handles, 'irasyti', mfilename, vardas, komentaras, isimintini);
 
-try
-    i=find(ismember(esami,vardas));
-    if isempty(i);
-        i=length(esami)+1; 
-        reikia_perkurti_meniu=1;
-    end;
-catch err;
-    i=1;
-end;
-Darbeliai.dialogai.pop_meta_drb.saranka(i).vardas    = vardas ;
-Darbeliai.dialogai.pop_meta_drb.saranka(i).data      = datestr(now,'yyyy-mm-dd HH:MM:SS') ;
-Darbeliai.dialogai.pop_meta_drb.saranka(i).komentaras= [ komentaras ' ' ] ;
-Darbeliai.dialogai.pop_meta_drb.saranka(i).parinktys = Parinktys ;
-
-% Įrašymas
-try
-    save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
-catch err;
-    %Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
-end;
-if reikia_perkurti_meniu; meniu(hObject, eventdata, handles); end;
-
-function parinktis_trinti(hObject, eventdata, handles)
-try
-    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
-    esami={Darbeliai.dialogai.pop_meta_drb.saranka.vardas};
-    esami_N=length(esami);
-    esami_nr=find(~ismember(esami,{'numatytas','paskutinis'}));
-    esami=esami(esami_nr);
-    if isempty(esami); return; end;
-catch err;
-    %Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
-    return;
-end;
-pasirinkti=listdlg('ListString', esami,...
-    'SelectionMode','multiple',...
-    'PromptString', lokaliz('Trinti:'),...
-    'InitialValue',length(esami),...
-    'OKString',lokaliz('Trinti'),...
-    'CancelString',lokaliz('Cancel'));
-if isempty(pasirinkti); return; end;
-Darbeliai.dialogai.pop_meta_drb.saranka= ...
-    Darbeliai.dialogai.pop_meta_drb.saranka(...
-    setdiff([1:esami_N], esami_nr(pasirinkti)));
-% Įrašymas
-try
-    save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
-catch err;
-    Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
-end;
-meniu(hObject, eventdata, handles);
-
-function meniu(hObject, eventdata, handles)
-function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-delete(findall(handles.figure1,'type','uimenu'));
-handles.meniu_darbeliai = uimenu(handles.figure1,'Label','Darbeliai','Tag','m_Darbeliai');
-uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Pervadinimas su info suvedimu'), ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, 'pop_pervadinimas'});
-uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Nuoseklus apdorojimas'), ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, 'pop_nuoseklus_apdorojimas'});
-uimenu( handles.meniu_darbeliai, 'Label', lokaliz('EEG + EKG'), ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, 'pop_QRS_i_EEG'});
-uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Epochavimas pg. stimulus ir atsakus'), ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, 'pop_Epochavimas_ir_atrinkimas'});
-uimenu( handles.meniu_darbeliai, 'Label', lokaliz('ERP properties, export...'), ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, 'pop_ERP_savybes'});
-uimenu( handles.meniu_darbeliai, 'Label', [ lokaliz('EEG spektras ir galia') '...' ], ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, 'pop_eeg_spektrine_galia'});
-uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Custom command') , ...
-        'Separator','off', 'Callback', {@nukreipimas_i_kita_darba, handles, 'pop_rankinis'});
-uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Meta darbeliai...') , 'Enable', 'off', ...
-        'Separator','on',  'Callback', {@nukreipimas_i_kita_darba, handles, 'pop_meta_drb'});
-yra_isimintu_rinkiniu=0;
-handles.meniu_nuostatos = uimenu(handles.figure1,'Label',lokaliz('Options'),'Tag','m_Nuostatos');
-handles.meniu_nuostatos_ikelti = uimenu(handles.meniu_nuostatos,'Label',lokaliz('Ikelti'));
-uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Numatytas'),'Accelerator','R','Callback',{@parinktis_ikelti,handles,'numatytas'});
-try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
-    par_pav={ Darbeliai.dialogai.pop_meta_drb.saranka.vardas };
-    if ismember('paskutinis',par_pav);
-        uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Paskiausias'),'Separator','off',...
-            'Accelerator','0','Callback',{@parinktis_ikelti,handles,'paskutinis'});
-    end;
-    ids=find(~ismember(par_pav,{'numatytas','paskutinis'}));
-    par_pav=par_pav(ids);
-    par_dat={ Darbeliai.dialogai.pop_meta_drb.saranka.data };       par_dat=par_dat(ids);
-    par_kom={ Darbeliai.dialogai.pop_meta_drb.saranka.komentaras }; par_kom=par_kom(ids);
-    if ~isempty(par_pav); yra_isimintu_rinkiniu=1 ; end; 
-    for i=1:length(par_pav);
-        try
-        el=uimenu(handles.meniu_nuostatos_ikelti,...
-            'Label', ['<html><font size="-2" color="#ADD8E6">' par_dat{i} '</font> ' ...
-            par_pav{i} ' <br><font size="-2" color="#ADD8E6">' par_kom{i} '</font></html>'],...
-            'Separator',fastif(i==1,'on','off'),...
-            'Accelerator',fastif(i<10, num2str(i), ''),...
-            'Callback',{@parinktis_ikelti,handles,par_pav{i}});
-        catch err0;
-            Pranesk_apie_klaida(err0, 'pop_meta_drb.m', '-', 0);
-        end;
-    end;
-catch err;
-    %Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
-end;
-%handles.meniu_nuostatos_irasyti = uimenu(handles.meniu_nuostatos,'Label','Įrašyti');
-%uimenu(handles.meniu_nuostatos_irasyti,'Label','Kaip paskutines','Callback',{@parinktis_irasyti,handles,'paskutinis',''});
-uimenu(handles.meniu_nuostatos,'Label',lokaliz('Saugoti...'),...
-    'Accelerator','S','Callback',{@parinktis_irasyti,handles,'',''});
-uimenu(handles.meniu_nuostatos,'Label',lokaliz('Trinti...'),...
-    'Enable',fastif(yra_isimintu_rinkiniu==1,'on','off'),'Callback',{@parinktis_trinti,handles});
-uimenu(handles.meniu_nuostatos, 'Label', [lokaliz('Nuostatos') ' (kalba/language)'], ...
-        'separator','on', 'callback', 'konfig ;'  );
-
-vers='Darbeliai';
-try
-    fid_vers=fopen(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai.versija'));
-    vers=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
-    fclose(fid_vers); 
-catch err;
-end;
-handles.meniu_apie = uimenu(handles.figure1,'Label',lokaliz('Pagalba'));
-if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
-    uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
-        'Accelerator','H', 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.8.%20Darb%C5%B3%20tvarkytuv%C4%97'',''-browser'') ;'  );
-    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
-else
-    uimenu( handles.meniu_apie, 'Label', lokaliz('Apie dialogo langa'), ...
-        'Accelerator','H', 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/3.8.%20Workflow%20Master'',''-browser'') ;'  );
-    uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
-        'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
-end;
-if exist('atnaujinimas','file') == 2;
-    uimenu( handles.meniu_apie, 'Label', lokaliz('Check for updates'), 'separator','on', 'Callback', 'pop_atnaujinimas ;'  );    
-end;
-
-function nukreipimas_i_kita_darba(hObject, eventdata, handles, darbas)
-V = version('-release') ;
-darbeliu_param={'pathin',get(handles.edit1,'String'),'pathout',get(handles.edit2,'String'),'flt_show',get(handles.edit_failu_filtras1,'String')};
-if strcmp(get(handles.edit_failu_filtras2,'Style'),'edit');
-    darbeliu_param=[darbeliu_param {'flt_slct',get(handles.edit_failu_filtras2,'String')}];
-else
-    d=get(handles.listbox1,'String');
-    darbeliu_param=[darbeliu_param {'files',d(get(handles.listbox1,'Value'))}];
-end;
-eval([ darbas '(darbeliu_param{:}); ']);
 
 %%
 

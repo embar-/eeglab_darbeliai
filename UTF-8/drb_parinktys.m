@@ -62,28 +62,42 @@ try
     eval([ 'saranka=Darbeliai.dialogai.' darbas '.saranka;' ]);
     esami={saranka.vardas}; 
     i=find(ismember(esami,rinkinys));
-    Parinktys=saranka(i).parinktys; 
+    Parinktys=saranka(i).parinktys;
+    Laukai1=fieldnames(Parinktys);
+    Laukai2=unique(regexprep(setdiff(Laukai1,{'id'}),'_$',''));
     for j=1:length(Parinktys);
-        try
-            set(eval(['handles.' Parinktys(j).id ]), ...
-                'Value',         Parinktys(j).Value );
-            set(eval(['handles.' Parinktys(j).id ]), ...
-                'UserData',      Parinktys(j).UserData );
-            if Parinktys(j).String_ ;
-                set(eval(['handles.' Parinktys(j).id ]), ...
-                    'String',        Parinktys(j).String );
+        for l=1:length(Laukai2);
+            Laukas=Laukai2{l};
+            try 
+                skirti=0;
+                if ismember([Laukas '_'], Laukai1);
+                    try eval([ 'skirti=Parinktys(j).' Laukas '_;' ]); catch; end;
+                elseif ismember(Laukas, {'Value' 'UserData'}); % suderinamumui su Darbeliais <= 2015.07.18
+                    skirti=1; 
+                end;
+                if skirti;
+                    eval([ 'rksm=Parinktys(j).' Laukas ';' ]);
+                    set(eval(['handles.' Parinktys(j).id ]), Laukas, rksm);
+                end;
+            catch err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
+                disp([ Parinktys(j).id ': ' Laukas ]); 
             end;
-            if Parinktys(j).TooltipString_ ;
-                set(eval(['handles.' Parinktys(j).id ]), ...
-                    'TooltipString', Parinktys(j).TooltipString );
-            end;
-        catch err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
         end;
     end;
 catch err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
 end;
 drawnow;
 guidata(hObject, handles);
+switch darbas
+    case {'pop_pervadinimas'}
+        try eval([ darbas '(''edit4_Callback'',hObject, eventdata, handles);' ]) ; catch; end;
+    case {'pop_nuoseklus_apdorojimas'}
+        try eval([ darbas '(''popupmenu12_Callback'',hObject, eventdata, handles);' ]) ; catch; end;
+    case {'pop_eeg_spektrine_galia'}
+        try eval([ darbas '(''checkbox_perziura_Callback'',hObject, eventdata, handles);' ]) ; catch; end;
+    case {'pop_ERP_savybes'}
+        try eval([ darbas '(''ERP_perziura'',hObject, eventdata, handles);' ]) ; catch; end;
+end;
 try eval([ darbas '(''susildyk'',hObject, eventdata, handles);' ]) ; catch; end;
 
 
@@ -97,7 +111,7 @@ try
     esami_nr=find(~ismember(esami,{'numatytas','paskutinis'}));
     esami=esami(esami_nr);
     if isempty(esami); return; end;
-catch %err; Pranesk_apie_klaida(err, 'pop_QRS_i_EEG.m', '-', 0);
+catch %err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
     return;
 end;
 if nargin > 5; trintini_rinkiniai = varargin{1};
@@ -161,7 +175,8 @@ catch err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm, 0);
 end;
 
 % Užduočių parinktys
-Parinktys=struct('id','','Value','','UserData','','String_','','String','','TooltipString_','','TooltipString','');
+Parinktys=struct('id','','Value_','','Value','','UserData_','','UserData','','String_','','String','',...
+    'TooltipString_','','TooltipString','','Data_','','Data','','ColumnName_','','ColumnName','');
 j=1;
 for b=1:length(isimintini);
     isimintini_raktai=lower(isimintini(b).raktai);
@@ -171,11 +186,17 @@ for b=1:length(isimintini);
             Parinktys(j).id = isimintini_nariai{i} ; 
             
             if ismember({'value'}, isimintini_raktai);
+                Parinktys(j).Value_  = 1;
                 Parinktys(j).Value    = get(eval(['handles.' isimintini_nariai{i}]), 'Value');
+            else
+                Parinktys(j).Value_  = 0;
             end;
             
             if ismember({'userdata'}, isimintini_raktai);
+                Parinktys(j).UserData_  = 1;
                 Parinktys(j).UserData = get(eval(['handles.' isimintini_nariai{i}]), 'UserData');
+            else
+                Parinktys(j).UserData_  = 0;
             end;
             
             if ismember({'string'}, isimintini_raktai);
@@ -190,6 +211,20 @@ for b=1:length(isimintini);
                 Parinktys(j).TooltipString   = get(eval(['handles.' isimintini_nariai{i}]), 'TooltipString');
             else
                 Parinktys(j).TooltipString_ = 0;
+            end;
+            
+            if ismember({'data'}, isimintini_raktai);
+                Parinktys(j).Data_  = 1;
+                Parinktys(j).Data = get(eval(['handles.' isimintini_nariai{i}]), 'Data');
+            else
+                Parinktys(j).Data_  = 0;
+            end;
+            
+            if ismember({'columnname'}, isimintini_raktai);
+                Parinktys(j).ColumnName_  = 1;
+                Parinktys(j).ColumnName = get(eval(['handles.' isimintini_nariai{i}]), 'ColumnName');
+            else
+                Parinktys(j).ColumnName_  = 0;
             end;
             
             j=j+1;
