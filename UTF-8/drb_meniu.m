@@ -114,13 +114,11 @@ switch aktyvus_darbas
         end;
         darbeliu_param={ 'pathin',pathin, 'pathout',pathout ,'flt_show',flt_show };
 end;
-
 if ar_filtr;
     darbeliu_param=[darbeliu_param {'flt_slct',flt_slct}]; %#ok
 else
     darbeliu_param=[darbeliu_param {'files',files_sl}]; %#ok
 end;
-darbeliu_param
 eval([ naujas_darbas '(darbeliu_param{:}); ']);
 
 
