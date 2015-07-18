@@ -253,7 +253,7 @@ h61 = uimenu( 'Parent',handles.m_Eiti, 'Callback',@(hObject,eventdata)pop_RRI_pe
 % prie tolesnio pažymėto
 h62 = uimenu( 'Parent',handles.m_Eiti, 'Callback',@(hObject,eventdata)pop_RRI_perziura('eiti_pazym_tolyn_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Label','Prie tolesnio pažymėto', 'Tag','eiti_pazym_tolyn');
 
-
+function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 vers='Darbeliai';
 try
     fid_vers=fopen(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai.versija'));
