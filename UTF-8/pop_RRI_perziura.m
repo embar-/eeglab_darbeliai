@@ -307,6 +307,8 @@ handles.fig_brush=brush(handles.figure1);
 handles.axes_rri_padetis=get(handles.axes_rri,'Position');
 set(handles.axes_rri,'ButtonDownFcn',@(hObject,eventdata)pop_RRI_perziura('axes_rri_ButtonDownFcn',hObject,eventdata,guidata(hObject)));
 setappdata(handles.axes_rri,'originalButtonDownFcn',get(handles.axes_rri,'ButtonDownFcn'));
+setappdata(handles.figure1,'ButtonDownFcnX','pop_RRI_perziura(''optimalus_rodymasx'',gcbf,[],guidata(gcbf),cx,diff(barXs))');
+setappdata(handles.figure1,'ButtonDownFcnY','pop_RRI_perziura(''optimalus_rodymasy'',gcbf,[],guidata(gcbf),cx,diff(barXs))');
 handles.pradines_fig=findobj(handles.figure1);
 setappdata(handles.figure1,'istorija',struct('RRI','','Laikai','','Nejungti',''));
 setappdata(handles.figure1,'istorijosNr',0);
@@ -750,8 +752,20 @@ set([handles.RRI_lin handles.RRI_tsk],'Visible','on');
 edit_ribos_Callback(hObject, eventdata, handles);
 
 
-function optimalus_rodymasy(hObject, eventdata, handles)
+function optimalus_rodymasy(hObject, eventdata, handles, varargin)
 % Y ašyje
+dbr=[];
+if nargin > 3;   dbr=varargin{1}; end;
+if isempty(dbr); dbr=950; end;
+if nargin > 4; 
+    plt=varargin{2};
+    if plt <= 0; plt=diff(get(handles.axes_rri,'YLim')); end;
+    dbr=min(dbr, 1540-plt/2);
+    nymin=max(-40, dbr - plt/2);
+    nymax=nymin+plt;
+    set(handles.axes_rri,'YLim',[nymin nymax]);
+    return;
+end;
 RRI=get(handles.RRI_tsk,'YData');
 RRI_galiojantys=RRI(find(RRI(:)>0));
 if get(handles.checkbox_ekg,'Value'); xlangas=130 ; else xlangas=30 ; end;
@@ -772,7 +786,7 @@ end;
 function optimalus_rodymasx(hObject, eventdata, handles, varargin)
 %X ašyje
 dbr=[];
-if nargin > 3; dbr=varargin{1}; end;
+if nargin > 3;   dbr=varargin{1}; end;
 if isempty(dbr); dbr=mean(get(handles.axes_rri,'XLim')); end;
 if nargin > 4; plt=varargin{2};
 else           plt=30; % Optimalus plotis

@@ -1009,6 +1009,7 @@ function mouseDownCallback(varargin)
         scrollBarIdx = [];
         scrollPatch = findobj(hAx, 'tag','scrollPatch');
         if ~isempty(scrollPatch)
+            
             scrollPatch = scrollPatch(1);
             dataStr = [axName 'Data'];
             barXs = unique(get(scrollPatch,dataStr));
@@ -1027,7 +1028,16 @@ function mouseDownCallback(varargin)
             end
             inTest = abs(cx-barXs)<fuzz; %(barXs-fuzz < cx) & (cx < barXs+fuzz);
             scrollBarIdx = find(inTest);
-            scrollBarIdx = scrollBarIdx(min(1:end));  %#ok - find(x,1) is unsupported on Matlab 6!
+            scrollBarIdx = scrollBarIdx(min(1:end)); % find(x,1) is unsupported on Matlab 6!
+            
+            if (cx < min(barXs) - fuzz) || (cx > max(barXs) - fuzz);
+                if strcmpi(axName,'x')
+                    try eval(getappdata(hFig,'ButtonDownFcnX')); catch err; disp(err.message); end;
+                else
+                    try eval(getappdata(hFig,'ButtonDownFcnY')); catch err; disp(err.message); end;
+                end
+            end;
+            
             if strcmpi(get(hAx,[axName 'Scale']), 'log')
                 cx = 10^cx;       % used below
                 barXs = 10.^barXs; % used below
@@ -1043,12 +1053,16 @@ function mouseDownCallback(varargin)
             end
         end
                 
+        cx
+        barXs
+        fuzz
+        
         setappdata(hFig, 'scrollplot_clickedBarIdx',scrollBarIdx);
         setappdata(hFig, 'scrollplot_originalX',cx);
         setappdata(hFig, 'scrollplot_originalLimits',barXs);
     catch
         % Never mind...
-        % warning(lasterr.message);
+         warning(lasterr);
     end
 %end  % mouseDownCallback  %#ok for Matlab 6 compatibility
 
