@@ -918,6 +918,9 @@ for i=1:Pasirinktu_failu_N;
                     
                     Reikalingas_kanalas=get(handles.text_kanal,'TooltipString');
                     EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1);
+                    if isempty(EKG_kanalas); % nors nenurodytas kanalas, vis tiek ieškoti 'EKG'
+                        EKG_kanalas=find(ismember({EEG.chanlocs.labels},'EKG')==1);
+                    end;
                     
                     QRS_ivykis=get(handles.edit_QRS_ivykis,'String');
                     ivykiai0={EEG.event.type};
@@ -928,24 +931,28 @@ for i=1:Pasirinktu_failu_N;
                     if isempty(tipas_ir_latencija); error(lokaliz('No events found.')); end;
                     
                     if ~ismember(num2str(QRS_ivykis),tipas_ir_latencija(:,1)); error([lokaliz('No selected events found in selected files.') ' ' QRS_ivykis] ); end;
-                    rodykles=find(ismember(tipas_ir_latencija(:,1),QRS_ivykis)==1) ;
+                    rodykles=ismember(tipas_ir_latencija(:,1),QRS_ivykis) ;
                     tik_R_idx=cell2mat(tipas_ir_latencija(rodykles,2)) ;
+                    kiti_idx=cell2mat(tipas_ir_latencija(~rodykles,2)) ;
+                    kiti_kod=tipas_ir_latencija(~rodykles,1) ;
                     %size(tik_R_idx)
-                    R_laikai=[EEG.times(tik_R_idx)]';
+                    R_laikai   =[EEG.times(tik_R_idx)]';
+                    kiti_laikai=[EEG.times(kiti_idx)]' ;
                     
                     if isempty(R_laikai);
                         error('QRS?');
                     end;
                     
+                    
                     % Atverti dialogą RRI redagavimui
                     if isempty(EKG_kanalas);
-                        laikai=num2cell(pop_RRI_perziura(R_laikai,1));
+                        laikai=num2cell(pop_RRI_perziura(R_laikai,1,[],[], kiti_laikai * 0.001 , kiti_kod));
                     else
-                        laikai=num2cell(pop_RRI_perziura(R_laikai,1,[EEG.data(EKG_kanalas,:)]',EEG.times' * 0.001));
+                        laikai=num2cell(pop_RRI_perziura(R_laikai,1, [EEG.data(EKG_kanalas,:)]', EEG.times' * 0.001, kiti_laikai * 0.001 , kiti_kod ));
                     end;
                     
                     if isempty(laikai);
-                        error('QRS?');
+                        error(lokaliz('Programa negavo QRS'));
                     end;
                     
                     ivykiai(1:length(laikai),1)={QRS_ivykis};

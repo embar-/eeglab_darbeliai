@@ -125,37 +125,41 @@ if nargin < 6 ;
     handles.EKG_laikai=[];
 else
     handles.EKG=varargin{3};
-    if nargin < 7 ;
-        handles.EKG_laikai=EKG_Hz_klausti;
-    else        
-        handles.EKG_laikai=varargin{4};
-    end;
-    if isequal(size(handles.EKG_laikai),[1 1]);
-        handles.EKG_Hz=handles.EKG_laikai;
-        handles.EKG_laikai=(1:length(handles.EKG)) / handles.EKG_laikai;
+    if isempty(handles.EKG);
+        handles.EKG_laikai=[];
     else
-        handles.EKG_Hz=(length(handles.EKG_laikai)-1) / (handles.EKG_laikai(end)-handles.EKG_laikai(1));
-    end;
-    if ekg_apversta(handles.EKG,handles.EKG_Hz,0); handles.EKG=-handles.EKG; end;
-    if size(handles.EKG_laikai,2) > 1; handles.EKG_laikai=handles.EKG_laikai' ; end;
-    if median(diff(handles.EKG_laikai(:))) >= 100;
-        handles.EKG_laikai=handles.EKG_laikai*0.001;
-    end;
-    if isempty(Pradiniai_laikai);
-        try axes(handles.axes_rri); cla;
-            set(handles.axes_rri,'Visible','off');
-            Aptikti_EKG_QRS_Callback2(hObject, eventdata, handles);
-            set(handles.axes_rri,'Visible','on');
-            Pradiniai_laikai=get(handles.axes_rri,'UserData');
-        catch err;
-            Pranesk_apie_klaida(err,mfilename);
-        end
+        if nargin < 7 ;
+            handles.EKG_laikai=EKG_Hz_klausti;
+        else
+            handles.EKG_laikai=varargin{4};
+        end;
+        if isequal(size(handles.EKG_laikai),[1 1]);
+            handles.EKG_Hz=handles.EKG_laikai;
+            handles.EKG_laikai=(1:length(handles.EKG)) / handles.EKG_laikai;
+        else
+            handles.EKG_Hz=(length(handles.EKG_laikai)-1) / (handles.EKG_laikai(end)-handles.EKG_laikai(1));
+        end;
+        if ekg_apversta(handles.EKG,handles.EKG_Hz,0); handles.EKG=-handles.EKG; end;
+        if size(handles.EKG_laikai,2) > 1; handles.EKG_laikai=handles.EKG_laikai' ; end;
+        if median(diff(handles.EKG_laikai(:))) >= 100;
+            handles.EKG_laikai=handles.EKG_laikai*0.001;
+        end;
+        if isempty(Pradiniai_laikai);
+            try axes(handles.axes_rri); cla;
+                set(handles.axes_rri,'Visible','off');
+                Aptikti_EKG_QRS_Callback2(hObject, eventdata, handles);
+                set(handles.axes_rri,'Visible','on');
+                Pradiniai_laikai=get(handles.axes_rri,'UserData');
+            catch err;
+                Pranesk_apie_klaida(err,mfilename);
+            end
+        end;
     end;
 end;
 if nargin > 7 ; handles.zmkl_lks=varargin{5};
 else            handles.zmkl_lks=[];
 end;
-if nargin > 8 ; handles.zmkl_pvd=varargin{6};
+if nargin > 8 ; handles.zmkl_pvd=varargin{6}; 
 else           %handles.zmkl_pvd={}; 
     handles.zmkl_pvd(1:length(handles.zmkl_lks))={' '};    
 end;
