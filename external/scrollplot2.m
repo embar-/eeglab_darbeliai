@@ -1052,10 +1052,6 @@ function mouseDownCallback(varargin)
                 set(scrollBars(2), dataStr,barsXs(1)*[1,1]);
             end
         end
-                
-        cx
-        barXs
-        fuzz
         
         setappdata(hFig, 'scrollplot_clickedBarIdx',scrollBarIdx);
         setappdata(hFig, 'scrollplot_originalX',cx);
