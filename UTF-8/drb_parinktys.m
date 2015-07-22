@@ -244,10 +244,20 @@ catch
     i=1;
 end;
 
+% Darbelių versija
+vers='Darbeliai';
+try
+    fid_vers=fopen(fullfile(fileparts(konfig_rinkm),'Darbeliai.versija'));
+    vers=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
+    fclose(fid_vers); 
+catch
+end;
+
 saranka(i).vardas    = vardas ;
 saranka(i).data      = datestr(now,'yyyy-mm-dd HH:MM:SS') ;
 saranka(i).komentaras= [ komentaras ' ' ] ;
 saranka(i).parinktys = Parinktys ;
+saranka(i).versija   = vers ;
 eval(['Darbeliai.dialogai.' darbas '.saranka=saranka; ']);
 
 % Įrašymas
