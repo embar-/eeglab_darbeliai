@@ -321,7 +321,6 @@ if and((exist('atnaujinimas','file') == 2),...
       disp([lokaliz('Rasta nauja versija') ': ' nauja_versija]);
       url_atnaujinimui=Darbeliai_nuostatos.url_atnaujinimui;
       
-      
       % Jei sutampa rasta versija su paskiausia per GIT isleista versija, naudoti pastaraja
       try git_latest=github_darbeliu_versijos(1);
           [filestr,status] = urlwrite(git_latest.url_versijai,fullfile(tempdir,'Darbeliai_versija2.txt'));
