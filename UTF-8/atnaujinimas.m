@@ -81,6 +81,11 @@ end;
 % url_alt='https://www.dropbox.com/sh/mpt7uwlrhsu55n4/AAB-XzFkhDjXlCIKxDF6H1VPa/Darbeliai.zip?dl=1';
 % url_alt='https://github.com/embar-/eeglab_darbeliai/archive/master.zip' ;
 url_alt='https://github.com/embar-/eeglab_darbeliai/archive/master.zip' ;
+try git_latest=github_darbeliu_versijos(1);
+    url_alt=git_latest.url_atnaujinimui;
+catch
+end;
+
 url='';
 if nargin > 0;     url=varargin{1}; end;
 if isempty(url);

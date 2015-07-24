@@ -300,7 +300,7 @@ if and((exist('atnaujinimas','file') == 2),...
    
    if Darbeliai_nuostatos.tikrinti_versija ;
       disp([main_menu_name ': ' lokaliz('Checking for updates...')]);
-      [filestr,status] = urlwrite(Darbeliai_nuostatos.url_versijai,fullfile(tempdir,'Darbeliai_versija.txt'));
+      [filestr,status] = urlwrite(Darbeliai_nuostatos.url_versijai,fullfile(tempdir,'Darbeliai_versija1.txt'));
    end;
    if status
        convert_file_encoding(filestr, [filestr '~'], 'UTF-8', encoding );
@@ -313,19 +313,40 @@ if and((exist('atnaujinimas','file') == 2),...
            apie_vers_ = fgets(fid_vers);
        end;
        fclose(fid_nvers); 
-       try delete(filestr); catch err; end;
-       try delete([filestr '~']); catch err; end;
+       try delete(filestr); catch; end;
+       try delete([filestr '~']); catch; end;
    end;	
    
    if and(~isempty(nauja_versija),~strcmp(nauja_versija,vers));
       disp([lokaliz('Rasta nauja versija') ': ' nauja_versija]);
+      url_atnaujinimui=Darbeliai_nuostatos.url_atnaujinimui;
+      
+      % Jei sutampa rasta versija su paskiausia per GIT išleista versija, naudoti pastarąją
+      try git_latest=github_darbeliu_versijos(1);
+          [filestr,status] = urlwrite(git_latest.url_versijai,fullfile(tempdir,'Darbeliai_versija2.txt'));
+          if status;
+              convert_file_encoding(filestr, [filestr '~'], 'UTF-8', encoding );
+              fid_nvers=fopen([filestr '~']);
+              nauja_versija2=regexprep(regexprep(fgets(fid_nvers),'[ ]*\n',''),'[ ]*\r','');
+              fclose(fid_nvers);
+              try delete(filestr); catch; end;
+              try delete([filestr '~']); catch; end;
+              if strcmp(nauja_versija,nauja_versija2) ...
+                 && isequal(Darbeliai_nuostatos.stabili_versija,git_latest.stabili_versija);
+                  url_atnaujinimui=git_latest.url_atnaujinimui;
+                  %apie_vers=git_latest.komentaras;
+              end;
+          end;
+      catch
+      end;
+      
       disp(regexprep(apie_vers,'\r','')); disp(' ');
       if Darbeliai_nuostatos.diegti_auto;
           close([...
               findobj('-regexp','name','EEGLAB*')
               findobj('-regexp','name','konfig')]);
           clear functions;
-          atnaujinimas(Darbeliai_nuostatos.url_atnaujinimui) ;
+          atnaujinimas(url_atnaujinimui) ;
           disp(' ');
           warning(lokaliz('Please ignore error afer EEGLAB error plugin update.'));
           figure;
