@@ -101,7 +101,7 @@ else     file_to_identify='eegplugin_darbeliai.m';
 end;
 
 if nargin > 3;     files_to_preserve=varargin{4};
-else     files_to_preserve={'Darbeliai_config.mat'};
+else     files_to_preserve={'Darbeliai_config.mat' 'Darbeliai_config.mat~' 'Darbeliai_config.mat~~'};
 end;
 
 
