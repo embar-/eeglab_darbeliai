@@ -1,6 +1,9 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.07.24.1
+% ~ Stabilesnis paleidimas ir atnaujinimas.
+%
 % v2015.07.09.1
 % ~ EEG_spektr_galia.m tinkamai suteikia kanalų etiketes.
 % ~ pop_eeg_spektrine_galia.m galios peržiūroje naudoja įvairesnes 
