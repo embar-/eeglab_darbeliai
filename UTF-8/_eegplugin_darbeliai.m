@@ -130,10 +130,12 @@ end;
 clear('lokaliz');
 
 % Pabandyti perkelti kitas šios programėlės versijas kitur
+wb=warning('off','MATLAB:rmpath:DirNotFound');
 rmpath(curdir);
 if strcmp(curdir(1:(end-1)),pwd); cd('..') ; end;
 rehash;
 path_deactivated=[fileparts(which('eeglab')) filesep 'deactivatedplugins' filesep ];
+rmpath(genpath(path_deactivated));
 [dublik,~,~]=fileparts(which(mfilename));
 while ~isempty(dublik);
     rmpath(dublik);
@@ -141,6 +143,7 @@ while ~isempty(dublik);
     movefile(dublik,path_deactivated,'f');
     [dublik,~,~]=fileparts(which(mfilename));
 end;
+warning(wb.state,'MATLAB:rmpath:DirNotFound');
 addpath(curdir);
 addpath(genpath(fullfile(curdir, 'fig')));
 addpath(genpath(fullfile(curdir, 'external')));
