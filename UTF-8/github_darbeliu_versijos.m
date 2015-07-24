@@ -1,4 +1,4 @@
-function [drbst,s,gitst]=github_darbeliu_versijos
+function [drbst,s,gitst]=github_darbeliu_versijos(varargin)
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -24,8 +24,11 @@ function [drbst,s,gitst]=github_darbeliu_versijos
 
 %%
 
+if nargin > 0; naujausia=varargin{1};
+else           naujausia=0;
+end;
 drbst=struct('versija','','url_versijai','','url_atnaujinimui','','komentaras','');
-[s,gitst]=github_releases('embar-','eeglab_darbeliai','application/zip');
+[s,gitst]=github_releases('embar-','eeglab_darbeliai','application/zip',naujausia);
 for i=1:length(s);
     switch s(i).branch
         case {'stable'}
@@ -52,10 +55,14 @@ for i=1:length(s);
         num2str(s(i).downloads));
 end;
 
-function [s,gitst]=github_releases(user,repo,archive)
+function [s,gitst]=github_releases(user, repo, archive, latest)
 s=struct('tag','','branch','','binname','','bin_url','','downloads','',...
     'created','','publish','','comment','');
-git_rsp=urlread(['https://api.github.com/repos/' user '/' repo '/releases']);
+git_url=['https://api.github.com/repos/' user '/' repo '/releases'];
+if latest;
+    git_url=[ git_url '/latest' ];
+end;
+git_rsp=urlread(git_url);
 gitst  =json2matlab(git_rsp);
 if isempty(gitst);
     return;
