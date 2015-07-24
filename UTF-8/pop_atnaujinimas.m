@@ -96,6 +96,7 @@ curdir=[curdir filesep];
 config_file='Darbeliai_config.mat';
 Darbeliai_nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/stable.zip';
 Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
+Darbeliai_nuostatos.stabili_versija=1;
 
 % Unix - UTF-8
 V= version('-release') ;
@@ -116,7 +117,8 @@ end;
 try
    load(fullfile(curdir_parrent,config_file));
    Darbeliai_nuostatos.url_atnaujinimui=Darbeliai.nuostatos.url_atnaujinimui;
-   Darbeliai_nuostatos.url_versijai=Darbeliai.nuostatos.url_versijai;
+   Darbeliai_nuostatos.url_versijai    =Darbeliai.nuostatos.url_versijai;
+   Darbeliai_nuostatos.stabili_versija =Darbeliai.nuostatos.stabili_versija;
 catch err;
    %disp(err.message);
 end;
@@ -127,8 +129,7 @@ if length(varargin) > 1 ;
 else
     try
         fid_vers=fopen(fullfile(Tikras_Kelias(fullfile(curdir,'..')),'Darbeliai.versija'));
-        vers=fgets(fid_vers);
-        sena_versija=vers(1:end-1);
+        sena_versija=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
         fclose(fid_vers);
     catch err;
         disp(err.message);
@@ -153,8 +154,7 @@ else
    if status
        convert_file_encoding(filestr, [filestr '~'], 'UTF-8', encoding );
        fid_nvers=fopen([filestr '~']);
-       nauja_versija=fgets(fid_nvers);
-	   nauja_versija=nauja_versija(1:end-1);
+       nauja_versija=regexprep(regexprep(fgets(fid_nvers),'[ ]*\n',''),'[ ]*\r','');
        %disp(size(nauja_versija));
        apie_vers_='';
        while ischar(apie_vers_);
@@ -171,21 +171,44 @@ if isempty(nauja_versija);
     set(handles.pushbutton1,'Visible','off');
     set(handles.pushbutton2,'BackgroundColor',[0.7 0.7 1]);
     set(handles.pushbutton2,'FontWeight','bold');
-elseif strcmp(sena_versija,nauja_versija)
-    Tekstas=[ Tekstas ; [lokaliz('You use latest version.') ' ' lokaliz('Update anyway?') ]];
-    set(handles.pushbutton1,'BackgroundColor','remove');
-    set(handles.pushbutton1,'FontWeight','normal');
-    set(handles.pushbutton1,'Visible','on');
-    set(handles.pushbutton2,'BackgroundColor',[0.7 0.7 1]);
-    set(handles.pushbutton2,'FontWeight','bold');
 else
-    Tekstas=[ Tekstas ; lokaliz('Rasta nauja versija') ': ' ; nauja_versija ; {' '} ; apie_vers ];
-    Tekstas=[ Tekstas ; ' ' ; lokaliz('Ar norite pabandyti atnaujinti?') ];
-    set(handles.pushbutton2,'BackgroundColor','remove');
-    set(handles.pushbutton2,'FontWeight','normal');
-    set(handles.pushbutton1,'Visible','on');
-    set(handles.pushbutton1,'BackgroundColor',[0.7 0.7 1]);
-    set(handles.pushbutton1,'FontWeight','bold');
+    
+    % Jei sutampa rasta versija su paskiausia per GIT išleista versija, naudoti pastarąją
+    try git_latest=github_darbeliu_versijos(1);
+        [filestr,status] = urlwrite(git_latest.url_versijai,fullfile(tempdir,'Darbeliai_versija2.txt'));
+        if status;
+            convert_file_encoding(filestr, [filestr '~'], 'UTF-8', encoding );
+            fid_nvers=fopen([filestr '~']);
+            nauja_versija2=regexprep(regexprep(fgets(fid_nvers),'[ ]*\n',''),'[ ]*\r','');
+            fclose(fid_nvers);
+            try delete(filestr); catch; end;
+            try delete([filestr '~']); catch; end;
+            if strcmp(nauja_versija,nauja_versija2) ...
+                    && isequal(Darbeliai_nuostatos.stabili_versija,git_latest.stabili_versija);
+                setappdata(handles.figure1,'url_atnaujinimui',git_latest.url_atnaujinimui);
+                %apie_vers=git_latest.komentaras;
+            end;
+        end;
+    catch
+    end;
+    
+    if strcmp(sena_versija,nauja_versija)
+        Tekstas=[ Tekstas ; [lokaliz('You use latest version.') ' ' lokaliz('Update anyway?') ]];
+        set(handles.pushbutton1,'BackgroundColor','remove');
+        set(handles.pushbutton1,'FontWeight','normal');
+        set(handles.pushbutton1,'Visible','on');
+        set(handles.pushbutton2,'BackgroundColor',[0.7 0.7 1]);
+        set(handles.pushbutton2,'FontWeight','bold');
+    else
+        Tekstas=[ Tekstas ; lokaliz('Rasta nauja versija') ': ' ; nauja_versija ; {' '} ; apie_vers ];
+        Tekstas=[ Tekstas ; ' ' ; lokaliz('Ar norite pabandyti atnaujinti?') ];
+        set(handles.pushbutton2,'BackgroundColor','remove');
+        set(handles.pushbutton2,'FontWeight','normal');
+        set(handles.pushbutton1,'Visible','on');
+        set(handles.pushbutton1,'BackgroundColor',[0.7 0.7 1]);
+        set(handles.pushbutton1,'FontWeight','bold');
+    end;
+    
 end;
 
 set(handles.text1,'String',Tekstas);
