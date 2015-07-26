@@ -1,4 +1,4 @@
-function reikia_perkurti_meniu=drb_parinktys(hObject, eventdata, handles, veiskmas, darbas, varargin)
+function drb_parinktys(hObject, eventdata, handles, veiskmas, darbas, varargin)
 % drb_parinktis_ikelti - „Darbelių“ langų parinkčių įkėlimas
 %
 % (C) 2015 Mindaugas Baranauskas
@@ -51,11 +51,15 @@ switch lower(veiskmas)
         drb_parinktis_trinti(hObject, eventdata, handles, konfig_rinkm, darbas, varargin{:});
     case {'irasyti'}
         drb_parinktis_irasyti(hObject, eventdata, handles, konfig_rinkm, darbas, rinkinys, varargin{2:end});
+    case {'eksportuoti'}
+        drb_parinktis_eksportuoti(hObject, eventdata, handles, konfig_rinkm, darbas, varargin);
 end;
 
 
-function drb_parinktis_ikelti(hObject, eventdata, handles, konfig_rinkm, darbas, rinkinys, varargin)
+function drb_parinktis_ikelti(hObject, eventdata, handles, konfig_rinkm, darbas, rinkinys, varargin) %#ok
 %% Įkelti
+versija_par='';
+versija_plg='';
 try eval([ darbas '(''susaldyk'',hObject, eventdata, handles);' ]) ; catch; end;
 try
     load(konfig_rinkm);   
@@ -63,6 +67,8 @@ try
     esami={saranka.vardas}; 
     i=find(ismember(esami,rinkinys));
     Parinktys=saranka(i).parinktys;
+    try versija_par=saranka(i).versija;
+    catch; end;
     Laukai1=fieldnames(Parinktys);
     Laukai2=unique(regexprep(setdiff(Laukai1,{'id'}),'_$',''));
     for j=1:length(Parinktys);
@@ -86,7 +92,6 @@ try
     end;
 catch err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
 end;
-drawnow;
 guidata(hObject, handles);
 switch darbas
     case {'pop_pervadinimas'}
@@ -97,8 +102,41 @@ switch darbas
         try eval([ darbas '(''checkbox_perziura_Callback'',hObject, eventdata, handles);' ]) ; catch; end;
     case {'pop_ERP_savybes'}
         try eval([ darbas '(''ERP_perziura'',hObject, eventdata, handles);' ]) ; catch; end;
+    case {'pop_meta_drb'}
+        versija_plg='Darbeliai v2015.07.26';
 end;
 try eval([ darbas '(''susildyk'',hObject, eventdata, handles);' ]) ; catch; end;
+if ar_senesne_versija(versija_par,versija_plg);
+    warndlg({lokaliz('Senos parinktys:') rinkinys ' ' ...
+        lokaliz('Patariame is naujo issaugoti ka tik ikeltas parinktis!')},...
+        lokaliz('Galimai pasenusios parinktys'));
+end;
+
+
+function [senesne]=ar_senesne_versija(versija1,versija2)
+% Ar versija1 < versija2
+if       isempty(versija1);
+    if   isempty(versija2);
+         senesne=0; return;
+    else senesne=1; return;
+    end;
+end;
+versija1=versija1(ismember(versija1,'1234567890.')); versija1=textscan(strrep(versija1,'.',' '),'%d','delimiter',' '); versija1=versija1{1};
+versija2=versija2(ismember(versija2,'1234567890.')); versija2=textscan(strrep(versija2,'.',' '),'%d','delimiter',' '); versija2=versija2{1};
+if isequal(versija1,versija2);
+    senesne=0; return;
+end;
+for i=1:min(length(versija1),length(versija2));
+    if     versija1(i) < versija2(i);
+        senesne=1; return;
+    elseif versija1(i) > versija2(i);
+        senesne=0; return;
+    end;
+end;
+if length(versija1) < length(versija2);
+    senesne=1; return;
+end;
+senesne=0;
 
 
 function drb_parinktis_trinti(hObject, eventdata, handles, konfig_rinkm, darbas, varargin)
@@ -143,7 +181,7 @@ drb_meniu(hObject, eventdata, handles, 'visas', darbas);
 
 
 function drb_parinktis_irasyti(hObject, eventdata, handles, konfig_rinkm, darbas, vardas, komentaras, isimintini)
-%%
+%% Įrašyti
 reikia_perkurti_meniu=0;
 if isempty(vardas); 
     a=inputdlg({lokaliz('Pavadinimas:'),lokaliz('Komentaras:')}); 
@@ -158,19 +196,19 @@ if isempty(vardas);
         end;
     end;
 end;
-    
+
 try
     load(konfig_rinkm);
     eval([ 'saranka=Darbeliai.dialogai.' darbas '.saranka;' ]);
     esami={saranka.vardas}; %#ok
     if and(ismember(vardas,esami),~ismember(vardas,{'numatytas','paskutinis'}));
-        ats=questdlg(lokaliz('Perrašyti nuostatų rinkinį?'),...
+        ats=questdlg(lokaliz('Perrasyti nuostatu rinkini?'),...
             lokaliz('Nuostatos jau yra!'),lokaliz('Rewrite'),lokaliz('Cancel'),lokaliz('Cancel'));
         if isempty(ats); return; end;
         if ~strcmp(ats,lokaliz('Rewrite')); return; end;
         reikia_perkurti_meniu=1;
     end;
-catch err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm, 0);
+catch %err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm, 0);
     saranka=struct;
 end;
 
@@ -271,3 +309,238 @@ end;
 if reikia_perkurti_meniu;
     drb_meniu(hObject, eventdata, handles, 'visas', darbas);
 end;
+
+
+function [vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(pradinis_vardas, pradinis_komentaras, saranka1, saranka2, neklausti)
+%% Dialogas parinkčių rinkinio pavadinimui įvesti
+% sąranka2 nurodoma eksportuojant kaip aptiktoji
+vardas='';
+komentaras='';
+pavyko=0;
+if isempty(saranka2);
+    draudziami_vardai=setdiff({saranka1.vardas}, {'numatytas','paskutinis'});
+else
+    draudziami_vardai=[{saranka2.vardas} {'' ' '}];
+end;
+if neklausti;
+    a={pradinis_vardas pradinis_komentaras};
+else
+    a=inputdlg({lokaliz('Pavadinimas:'),lokaliz('Komentaras:')},lokaliz('Options'),1,...
+        {pradinis_vardas pradinis_komentaras});
+end;
+if ~isempty(a) && iscell(a);
+    if ismember(a{1},draudziami_vardai);
+        klsm=sprintf('%s\n\n', lokaliz('Parinkciu rinkinys jau yra!'));
+        if isempty(saranka2);
+            persidengia_i1=find(ismember({saranka1.vardas},a{1}));
+            persidengia_i1=persidengia_i1(1);
+            klsm=[klsm sprintf('%s\n%s\n%s', ...
+                lokaliz('Aptiktos parinktys:'), saranka1(persidengia_i1).data, saranka1(persidengia_i1).vardas, saranka1(persidengia_i1).komentaras)];
+        else
+            persidengia_i1=find(ismember({saranka1.vardas},pradinis_vardas));
+            persidengia_i2=find(ismember({saranka2.vardas},a{1}));
+            persidengia_i2=persidengia_i2(1);
+            if isempty(persidengia_i1);
+              klsm=[klsm sprintf('%s\n%s\n%s\n%s', ...
+                lokaliz('Aptiktos parinktys:'), saranka2(persidengia_i2).data, saranka2(persidengia_i2).vardas, saranka2(persidengia_i2).komentaras)];
+            else
+              persidengia_i1=persidengia_i1(1);
+              klsm=[klsm sprintf('%s\n%s\n%s\n%s\n\n%s\n%s\n%s\n%s', ...
+                lokaliz('Siulomos parinktys:'), saranka1(persidengia_i1).data, saranka1(persidengia_i1).vardas, saranka1(persidengia_i1).komentaras,...
+                lokaliz('Aptiktos parinktys:'), saranka2(persidengia_i2).data, saranka2(persidengia_i2).vardas, saranka2(persidengia_i2).komentaras)];
+            end;
+        end;
+        klsm=[klsm sprintf('\n\n%s', lokaliz('Perrasyti parinkciu rinkini?'))];
+        mgtk={lokaliz('Yes'), lokaliz('Rename'), lokaliz('No'),lokaliz('Rename')};
+        ats=questdlg(klsm, lokaliz('Parinkciu rinkinys jau yra!'), mgtk{:});
+        switch ats
+            case {lokaliz('Rename')}
+                if isempty(saranka2);
+                    [vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(a{1}, a{2}, saranka1, saranka2, 0);
+                else
+                    [vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(pradinis_vardas, pradinis_komentaras, saranka1, saranka2, 0);
+                end;
+            case {lokaliz('Yes')}
+                vardas=a{1};
+                komentaras=a{2};
+                pavyko=2;
+        end;
+    else
+        vardas=a{1};
+        komentaras=a{2};
+        pavyko=1;
+    end;
+end;
+
+
+function drb_parinktis_eksportuoti(hObject, eventdata, handles, konfig_rinkm, darbas, varargin) 
+%% Eksportuoti
+try
+g=struct(varargin{:}); % rinkiniai, eksp_rinkm, papildyti
+catch %err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
+end;
+
+try
+    load(konfig_rinkm,'-mat');
+    eval([ 'saranka=Darbeliai.dialogai.' darbas '.saranka;' ]);
+    esami={saranka.vardas}; %#ok
+    if isempty(esami{1}); error(lokaliz('(empty)')); end;
+catch err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm, 0);
+    try error(lokaliz('Nera ko eksportuoti.')); 
+    catch err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm);
+    end;
+    return;
+end;
+pasirinkti=[];
+try pasirinkti=find(ismember(esami,{g.rinkiniai})); catch; end;
+if isempty(pasirinkti);
+    pasirinkti=listdlg('ListString', lokalizuok_rinkinius(esami),...
+        'SelectionMode','multiple',...
+        'PromptString', lokaliz('Eksportuoti'),...
+        'InitialValue',length(esami),...
+        'OKString',lokaliz('Eksportuoti'),...
+        'CancelString',lokaliz('Cancel'));
+end;
+if isempty(pasirinkti); return; end;
+vardas=esami(pasirinkti);
+saranka=saranka(pasirinkti);
+
+eksp_rinkm='';
+try eksp_rinkm=g.eksp_rinkm; catch; end;
+if isempty(eksp_rinkm);
+    [eksp_rinkm,eksp_kel]=uiputfile({'*.drbk';'*.mat'},lokaliz('Eksportuoti'),...
+        [ 'Darbeliai (' darbas ')'  sprintf(' -- %s', vardas{:}) '.drbk' ]);
+    if isempty(eksp_rinkm); return; end;
+    if isequal(eksp_rinkm,0); return; end;
+    eksp_rinkm=fullfile(eksp_kel,eksp_rinkm);
+end;
+
+Darbeliai=struct; %#ok
+
+if exist(eksp_rinkm, 'file') == 2;
+    klsm=sprintf('%s\n%s', lokaliz('Rinkmena jau yra!'), lokaliz('Pabandyti papildyti rinkmena?'));
+    mgtk={lokaliz('Yes'), lokaliz('No'), lokaliz('Cancel'),lokaliz('Yes')};
+    papildyti=[];
+    try papildyti=g.papildyti; catch; end;
+    if isempty(papildyti);
+        ats=questdlg(klsm, lokaliz('Rinkmena jau yra!'), mgtk{:});
+        switch ats
+            case lokaliz('Yes')
+                papildyti=1;
+            case lokaliz('No')
+                papildyti=0;
+            otherwise
+                return;
+        end;
+    end;
+else papildyti=0;
+end;
+
+if papildyti;
+    try
+        load(eksp_rinkm,'-mat');
+        try    eval([ 'saranka2=Darbeliai.dialogai.' darbas '.saranka;' ]);
+        catch; saranka2=struct('vardas',''); saranka2=saranka2([]);
+        end;
+        esami2={saranka2.vardas};
+        persidengia_i2v=find(ismember(esami2,vardas));
+        for persidengia_i2=persidengia_i2v;
+            persidengia_i1_=ismember(vardas,esami2(persidengia_i2));
+            persidengia_i1=find(persidengia_i1_); persidengia_i1=persidengia_i1(1);
+            
+            [vardas2, komentaras2, pavyko]=parinkciu_rinkinio_uzvadinimas(...
+                saranka(persidengia_i1).vardas, saranka(persidengia_i1).komentaras, saranka, saranka2, 1);
+            
+            if (pavyko == 2) && ~strcmp(saranka(persidengia_i1).vardas, vardas2) ; % perrašyta ir pervadinta
+                persidengia_i2v=unique([persidengia_i2v find(ismember(esami2,{vardas2}))]);
+                pavyko=1;
+            end;
+            if pavyko < 2; % neleista perrašyti: atšaukta arba pervadinta;
+                persidengia_i2v=setdiff(persidengia_i2v, persidengia_i2);
+                if pavyko; % pervadinta
+                    saranka(persidengia_i1).vardas=vardas2;
+                    saranka(persidengia_i1).komentaras=komentaras2;
+                else % atšaukta
+                    saranka=saranka(~persidengia_i1_);
+                end;
+            end;
+        end;
+        
+        if length(persidengia_i2v) == length(saranka2);
+            eval([ 'Darbeliai.dialogai.' darbas '.saranka=saranka;' ]);
+        else
+            saranka2=saranka2(setdiff(1:length(saranka2),persidengia_i2v)); % ištrint persidengiančius
+            saranka2_N=length(saranka2);
+            % pridėti papildomus
+            laukai=fieldnames(saranka);
+            for i=1:length(saranka);
+                for l=1:length(laukai); laukas=laukai{l};
+                    saranka2(saranka2_N+i).(laukas)=saranka(i).(laukas);
+                end;
+            end;
+            eval([ 'Darbeliai.dialogai.' darbas '.saranka=saranka2;' ]);
+        end;
+    catch err; Pranesk_apie_klaida(err, mfilename, eksp_rinkm, 0);
+        klsm=sprintf('%s.\n%s', lokaliz('Nepavyko papildyti'), lokaliz('Perrasyti rinkmena?'));
+        mgtk={lokaliz('Yes'), lokaliz('No'), lokaliz('No')};
+        ats=questdlg(klsm, lokaliz('Nepavyko papildyti'), mgtk{:});
+        if strcmp(ats,lokaliz('Yes'));
+            eval([ 'Darbeliai.dialogai.' darbas '.saranka=saranka;' ]);
+        else
+            return;
+        end;
+    end;
+else
+    eval([ 'Darbeliai.dialogai.' darbas '.saranka=saranka;' ]);
+end;
+            
+% Įrašyti
+try   save(eksp_rinkm,'Darbeliai');
+catch err; Pranesk_apie_klaida(err, darbas, eksp_rinkm, 0);
+end;
+
+switch darbas
+    case {'pop_meta_drb'}
+        sar={};
+        for i=1:length(saranka);
+            for dbr_i=1:10; dbr_id=num2str(dbr_i);
+                try ci=ismember({saranka(i).parinktys.id}, {['checkbox_drb' dbr_id]});
+                    if saranka(i).parinktys(ci).Value;
+                        d=find(ismember({saranka(i).parinktys.id}, {['popupmenu_drb' dbr_id]}));
+                        p=find(ismember({saranka(i).parinktys.id}, {['popupmenu_drb' dbr_id '_']}));
+                        if length(d) >= 1 && length(p) >= 1; % buvo klaida pop_meta_drb, kai 2x septintus darbus įrašė ir neįrašė aštuntų
+                            d=d(1); p=p(1); 
+                            drb=saranka(i).parinktys(d).TooltipString;
+                            prk=saranka(i).parinktys(p).TooltipString;
+                            if ~isempty(drb) && ~isempty(prk);
+                                sar=[sar; {drb prk}]; %#ok
+                            end;
+                        end;
+                    end;
+                catch %err; Pranesk_apie_klaida(err, num2str(i), dbr_id, 0);
+                end;
+            end;
+        end;
+        if ~isempty(sar);
+            disp(' '); disp(lokaliz('Eksportuoti priklausomybes?')); disp(sar); disp(' '); 
+            mgtk={lokaliz('Yes'), lokaliz('No'), lokaliz('Yes')};
+            ats=questdlg(lokaliz('Eksportuoti priklausomybes?'), lokaliz('Eksportuoti priklausomybes?'), mgtk{:});
+            if strcmp(ats,lokaliz('Yes'));
+                drbs=unique(sar(:,1));
+                for d=1:length(drbs); drb=drbs{d};
+                    prks=unique(sar(ismember(sar(:,1),{drb}),2));
+                    drb_parinktis_eksportuoti(hObject, eventdata, handles, konfig_rinkm, drb, ...
+                        'rinkiniai', prks, 'eksp_rinkm', eksp_rinkm, 'papildyti', 1);
+                end;
+            end;
+        end;
+end;
+
+
+function [rinkiniai_lokaliz]=lokalizuok_rinkinius(rinkiniai_orig)
+rinkiniai_lokaliz=rinkiniai_orig;
+i=find(ismember(rinkiniai_orig, 'numatytas' ));
+if ~isempty(i); rinkiniai_lokaliz(i)={lokaliz('Numatytas')}; end;
+i=find(ismember(rinkiniai_orig, 'paskutinis' ));
+if ~isempty(i); rinkiniai_lokaliz(i)={lokaliz('Paskiausias')}; end;
+
