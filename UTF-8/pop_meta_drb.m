@@ -126,12 +126,14 @@ end;
 tic;
 
 lokalizuoti(hObject, eventdata, handles);
+atstatyk_darbu_id(hObject, eventdata, handles, 1:10);
 meniu(hObject, eventdata, handles);
 
 %Pabandyk įkelti senąjį kelią
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+    setappdata(handles.figure1, 'Darbeliai_config', Darbeliai);
     cd(Darbeliai.keliai.atverimui{1});
 catch err; 
 end;
@@ -609,19 +611,20 @@ Sukamos_rinkmn=Pasirinkti_failu_pavadinimai;
 
 %%
 
-for dbr_i=1:10;
+for dbr_i=1:10; 
     dbr_id=num2str(dbr_i);
     if and(and(~isempty(Sukamas_kelias),~isempty(Sukamos_rinkmn)),...
             get(eval(['handles.checkbox_drb' dbr_id]),'Value')) ;
         try
-            Darbo_tipo_id=get(eval(['handles.popupmenu_drb' dbr_id]),'Value');
+            Darbo_tipo_nr=get(eval(['handles.popupmenu_drb' dbr_id]),'Value');
+            Darbo_tipo_id=get(eval(['handles.popupmenu_drb' dbr_id]),'TooltipString');
             Darbo_apibudinimas=get(eval(['handles.popupmenu_drb' dbr_id]),'String');
-            Darbo_apibudinimas=Darbo_apibudinimas{Darbo_tipo_id};
-            preset=get(eval(['handles.popupmenu_drb' dbr_id '_']),'UserData');
+            Darbo_apibudinimas=Darbo_apibudinimas{Darbo_tipo_nr};
+            preset=get(eval(['handles.popupmenu_drb' dbr_id '_']),'TooltipString');
             Darbo_eigos_busena(handles, [lokaliz('Job') ': ' Darbo_apibudinimas], dbr_i, 0, Pasirinktu_failu_N);
             disp([lokaliz('Job preset') ': ' preset ]); disp(' ');
             switch Darbo_tipo_id
-                case 1
+                case {'pop_pervadinimas'}
                     Kelias_sg=fullfile(KELIAS_SAUGOJIMUI,[num2str(DarboNr+1) ' - ' ]); % lokaliz('Rename')
                     if exist(Kelias_sg) ~= 7; try mkdir(Kelias_sg); catch err ; Kelias_sg=KELIAS_SAUGOJIMUI; end; end;
                 otherwise
@@ -633,28 +636,28 @@ for dbr_i=1:10;
                        'preset', preset, 'counter',DarboNr, 'mode',veiksena};
             %assignin('base', ['dbr_param' dbr_id], dbr_param);
             switch Darbo_tipo_id
-                case 1
+                case {'pop_pervadinimas'}
                     [lng,Sukamas_kelias,Sukamos_rinkmn]=...
                         pop_pervadinimas(dbr_param{:});
                     try delete(lng); catch err; end;
                     DarboNr=DarboNr+1;
-                case 2
+                case {'pop_nuoseklus_apdorojimas'}
                     [lng,Sukamas_kelias,~,Sukamos_rinkmn,DarboNr]=...
                         pop_nuoseklus_apdorojimas(dbr_param{:});
-                %case 3
-                %    [lng,Sukamas_kelias,~,Sukamos_rinkmn,DarboNr]=...
-                %        pop_QRS_i_EEG(dbr_param{:});
-                case 4-1
+                case {'pop_QRS_i_EEG'}
+                    [lng,Sukamas_kelias,~,Sukamos_rinkmn,DarboNr]=...
+                        pop_QRS_i_EEG(dbr_param{:});
+                case {'pop_Epochavimas_ir_atrinkimas'}
                     [lng,Sukamas_kelias,~,Sukamos_rinkmn]=...
                         pop_Epochavimas_ir_atrinkimas(dbr_param{:});
                     if isempty(Sukamos_rinkmn); Sukamos_rinkmn={' '}; end;
-                case 5-1
+                case {'pop_ERP_savybes'}
                     [lng,Sukamas_kelias,~,Sukamos_rinkmn]=...
                         pop_ERP_savybes(dbr_param{:});
-                case 6-1
+                case {'pop_eeg_spektrine_galia'}
                     [lng,Sukamas_kelias,~,Sukamos_rinkmn]=...
                         pop_eeg_spektrine_galia(dbr_param{:});
-                case 7-1
+                case {'pop_rankinis'}
                     [lng,Sukamas_kelias,~,Sukamos_rinkmn,DarboNr]=...
                         pop_rankinis(dbr_param{:});
                 otherwise
@@ -1419,6 +1422,19 @@ if(strcmp (key , 'return'));
 end;
 
 
+function atstatyk_darbu_id(hObject, eventdata, handles, id)
+popdrb={'pop_pervadinimas' ...
+        'pop_nuoseklus_apdorojimas' ...
+    ...%'pop_QRS_i_EEG' ...
+        'pop_Epochavimas_ir_atrinkimas' ...
+        'pop_ERP_savybes' ...
+        'pop_eeg_spektrine_galia' ...
+        'pop_rankinis'}; %#ok
+for i=id;
+    eval(['set(handles.popupmenu_drb' num2str(i) ', ''UserData'',popdrb); ']);
+end;
+
+
 function lokalizuoti(hObject, eventdata, handles)
 set(handles.popupmenu_patvirt, 'String',{...
     lokaliz('visada')...
@@ -1658,10 +1674,6 @@ Parinktys=struct('id','','Value','','UserData','','String_','','String','','Tool
 isimintini_el={'checkbox_uzverti_pabaigus' 'checkbox_pabaigus_atverti' 'checkbox_pabaigus_i_apdorotu_aplanka' ...
     'checkbox_drb1' 'checkbox_drb2' 'checkbox_drb3' 'checkbox_drb4' 'checkbox_drb5' ...
     'checkbox_drb6' 'checkbox_drb7' 'checkbox_drb8' 'checkbox_drb9' 'checkbox_drb10' ...
-    'popupmenu_drb1' 'popupmenu_drb2' 'popupmenu_drb3' 'popupmenu_drb4' 'popupmenu_drb5' ...
-    'popupmenu_drb6' 'popupmenu_drb7' 'popupmenu_drb8' 'popupmenu_drb9' 'popupmenu_drb10' ...
-    'popupmenu_drb1_' 'popupmenu_drb2_' 'popupmenu_drb3_' 'popupmenu_drb4_' 'popupmenu_drb5_' ...
-    'popupmenu_drb6_' 'popupmenu_drb7_' 'popupmenu_drb8_' 'popupmenu_drb9_' 'popupmenu_drb10_'...
     'popupmenu_patvirt' 'radiobutton6' 'radiobutton7' };
 for i=1:length(isimintini_el);
     try
@@ -1670,6 +1682,24 @@ for i=1:length(isimintini_el);
         Parinktys(i).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
         Parinktys(i).String_  = 0;
         Parinktys(i).TooltipString_ = 0;
+    catch err;
+        Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
+    end;
+end;
+
+isimintini_el={...
+    'popupmenu_drb1' 'popupmenu_drb2' 'popupmenu_drb3' 'popupmenu_drb4' 'popupmenu_drb5' ...
+    'popupmenu_drb6' 'popupmenu_drb7' 'popupmenu_drb8' 'popupmenu_drb9' 'popupmenu_drb10' ...
+    'popupmenu_drb1_' 'popupmenu_drb2_' 'popupmenu_drb3_' 'popupmenu_drb4_' 'popupmenu_drb5_' ...
+    'popupmenu_drb6_' 'popupmenu_drb7_' 'popupmenu_drb8_' 'popupmenu_drb9_' 'popupmenu_drb10_'};
+for i=1:length(isimintini_el);
+    try
+        Parinktys(end+1).id = isimintini_el{i} ;
+        Parinktys(end).Value    = get(eval(['handles.' isimintini_el{i}]), 'Value');
+        Parinktys(end).UserData = get(eval(['handles.' isimintini_el{i}]), 'UserData');
+        Parinktys(end).String_  = 0;
+        Parinktys(end).TooltipString_ = 1;
+        Parinktys(end).TooltipString  = get(eval(['handles.' isimintini_el{i}]), 'TooltipString');
     catch err;
         Pranesk_apie_klaida(err, 'pop_meta_drb.m', '-', 0);
     end;
@@ -1688,6 +1718,7 @@ Darbeliai.dialogai.pop_meta_drb.saranka(i).vardas    = vardas ;
 Darbeliai.dialogai.pop_meta_drb.saranka(i).data      = datestr(now,'yyyy-mm-dd HH:MM:SS') ;
 Darbeliai.dialogai.pop_meta_drb.saranka(i).komentaras= [ komentaras ' ' ] ;
 Darbeliai.dialogai.pop_meta_drb.saranka(i).parinktys = Parinktys ;
+Darbeliai.dialogai.pop_meta_drb.saranka(i).versija   = 'Darbeliai v2015.07.26' ;
 
 % Įrašymas
 try
@@ -2072,79 +2103,85 @@ end
 
 % --- Executes on button press in checkbox_drb*.
 function virtual_checkbox_drb_Callback(hObject, eventdata, handles, id)
-cbh=eval(['handles.checkbox_drb' num2str(id)]);
-pm=eval(['handles.popupmenu_drb' num2str(id)]);
+eval(['cbh=handles.checkbox_drb' num2str(id) ' ; ']);
+eval(['pm=handles.popupmenu_drb' num2str(id) ' ; ']);
 aktyvus=and(get(cbh, 'Value'), strcmp(get(cbh, 'Enable'),'on'));
 set(pm,'Enable',fastif(aktyvus,'on','off'));
+pmTS=get(pm, 'TooltipString');
+pmUD=get(pm, 'UserData');
+if ~isempty(pmTS) && iscellstr(pmUD);
+    n=find(ismember(pmUD, pmTS));
+    if ~isempty(n); set(pm, 'Value', n(1)); end;
+end;
 virtual_popupmenu_drb_Callback(hObject, eventdata, handles, id);
 
 
 % --- Executes on selection change in popupmenu_drb*.
 function virtual_popupmenu_drb_Callback(hObject, eventdata, handles, id)
-pm=eval(['handles.popupmenu_drb' num2str(id)]);
-pm_=eval(['handles.popupmenu_drb' num2str(id) '_']);
-if strcmp(get(pm, 'Enable'),'on');
-    [rinkiniai,rinkiniai2]=Darbeliu_nuostatu_rinkiniai(get(pm, 'Value'));
-    if ~isempty(rinkiniai);
-        set(pm_,'String',rinkiniai);
-        set(pm,'UserData',rinkiniai2);
-        i = [];
-        try i=find(ismember(rinkiniai2,get(pm_,'UserData'))); catch err; end;
-        if isempty(i); i=find(ismember(rinkiniai2,'paskutinis')); end; if isempty(i); i=1; end;
-        set(pm_,'Value',i(1));
-        set(pm_,'Enable','on');
-    else
-        set(pm,'UserData',{'paskutinis'});
-        set(pm_,'String',{' '});
-        set(pm_,'Value',1);
-        set(pm_,'Enable','off');        
+eval(['pm=handles.popupmenu_drb' num2str(id) ' ; ']);
+eval(['pm_=handles.popupmenu_drb' num2str(id) '_ ; ']);
+pm_Enable=get(pm, 'Enable');
+darbai=get(pm, 'UserData');
+darbo_nr=get(pm, 'Value');
+
+% suderinamumas su pirmuoju pop_meta_drb parinkčių valdymu
+try if length(darbai) ~= length(get(pm, 'String'))...
+    || ischar(get(pm_,'UserData'));
+        atstatyk_darbu_id(hObject, eventdata, handles, id);
+        darbai=get(pm, 'UserData');
+        tstr = get(pm_,'UserData');
+        if ~ischar(tstr); tstr=''; end;
+        set(pm_,'TooltipString',tstr);
+        if darbo_nr > 2;
+            Darbeliai=getappdata(handles.figure1, 'Darbeliai_config');
+            if Darbeliai.nuostatos.stabili_versija;
+                set(pm, 'Value',darbo_nr+1); % 3 = QRS į EEG
+            end;
+        end;
     end;
-    eval(['popupmenu_drb' num2str(id) '__Callback(hObject, eventdata, handles);' ]);
-else
-    set(pm_,'Enable','off');
+catch err; Pranesk_apie_klaida(err, 'virtual_popupmenu_drb_Callback', id, 0);
 end;
+
+darbas=darbai{get(pm, 'Value')};
+set(pm,'TooltipString',darbas);
+[rinkiniai_lok,rinkiniai_orig]=Darbeliu_nuostatu_rinkiniai(darbas);
+
+if ~isempty(rinkiniai_lok);
+    set(pm_,'String',rinkiniai_lok);
+    set(pm_,'UserData',rinkiniai_orig);
+    i = [];
+    try i=find(ismember(rinkiniai_orig,get(pm_,'TooltipString'))); catch; end;
+    if isempty(i); i=find(ismember(rinkiniai_orig,'paskutinis')); end; if isempty(i); i=1; end;
+    set(pm_,'Value',i(1));
+else
+    set(pm_,'TooltipString',{'paskutinis'});
+    set(pm_,'String',{' '});
+    set(pm_,'Value',1);
+    pm_Enable='off';
+end;
+set(pm_,'Enable',pm_Enable);
+eval(['popupmenu_drb' num2str(id) '__Callback(hObject, eventdata, handles);' ]);
 
 
 % --- Executes on selection change in popupmenu_drb*_.
 function virtual_popupmenu_drb__Callback(hObject, eventdata, handles, id)
-pm=eval(['handles.popupmenu_drb' num2str(id)]);
-pm_=eval(['handles.popupmenu_drb' num2str(id) '_']);
+eval(['pm_=handles.popupmenu_drb' num2str(id) '_ ; ']);
 str=get(pm_,'String');
 val=get(pm_,'Value');
 if length(str) < val; set(pm_,'Value',1); val= 1; end;
-set(pm_,'TooltipString',str{val});
-dbr=get(pm,'UserData'); 
-set(pm_,'UserData', dbr{val});
+dbr=get(pm_,'UserData');
+set(pm_,'TooltipString',dbr{val});
 
 
-function [rinkiniai_lokaliz,rinkiniai_orig]=Darbeliu_nuostatu_rinkiniai(darbelio_Nr)
-rinkiniai_orig={'numatytas'}; % Net jei tokio ir dar nėra, jis sukuriamas paleidižiant dialogą
+function [rinkiniai_lokaliz,rinkiniai_orig]=Darbeliu_nuostatu_rinkiniai(darbas)
+rinkiniai_orig={'numatytas'}; % Net jei tokio ir dar nėra, jis sukuriamas paleidžiant dialogą
 try    
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     k=Tikras_Kelias(fullfile(function_dir,'..'));
-    load(fullfile(k,'Darbeliai_config.mat'))
-    switch darbelio_Nr
-        case 1
-            rinkiniai_orig={Darbeliai.dialogai.pop_pervadinimas.saranka.vardas};
-        case 2
-            rinkiniai_orig={Darbeliai.dialogai.pop_nuoseklus_apdorojimas.saranka.vardas};
-        %case 3
-        %    rinkiniai_orig={Darbeliai.dialogai.pop_QRS_i_EEG.saranka.vardas};
-        case 4-1
-            rinkiniai_orig={Darbeliai.dialogai.pop_Epochavimas_ir_atrinkimas.saranka.vardas};
-        case 5-1
-            rinkiniai_orig={Darbeliai.dialogai.pop_ERP_savybes.saranka.vardas};
-        case 6-1
-            rinkiniai_orig={Darbeliai.dialogai.pop_eeg_spektrine_galia.saranka.vardas};
-        case 7-1
-            rinkiniai_orig={Darbeliai.dialogai.pop_rankinis.saranka.vardas};
-        otherwise
-            disp('darbelio_Nr=');
-            disp(darbelio_Nr);
-            error([lokaliz('Netinkami parametrai')]);
-    end;    
-catch err;
-    %Pranesk_apie_klaida(err, 'Darbeliu_nuostatu_rinkiniai', darbelio_Nr, 0);
+    load(fullfile(k,'Darbeliai_config.mat'));
+    eval(['rinkiniai_orig={Darbeliai.dialogai.' darbas '.saranka.vardas};' ]);
+catch %err; Pranesk_apie_klaida(err, 'Darbeliu_nuostatu_rinkiniai', darbelio_Nr, 0);
+    %disp('darbas='); disp(darbas);
 end;
 rinkiniai_lokaliz=rinkiniai_orig;
 i=find(ismember(rinkiniai_orig, 'numatytas' ));
