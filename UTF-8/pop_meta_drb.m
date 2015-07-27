@@ -1885,12 +1885,22 @@ try if length(get(pm, 'UserData')) ~= length(get(pm, 'String'))...
         tstr = get(pm_,'UserData');
         if ischar(tstr);
             set(pm_,'TooltipString',tstr);
-        end;
-        pmV=get(pm, 'Value');
-        if pmV > 2;
+            set(pm, 'TooltipString','');
+            pmV =get(pm, 'Value');
+            pmUD=get(pm, 'UserData');
             Darbeliai=getappdata(handles.figure1, 'Darbeliai_config');
-            if Darbeliai.nuostatos.stabili_versija;
-                set(pm, 'Value',pmV+1); % 3 = QRS į EEG
+            if pmV > 2 && Darbeliai.nuostatos.stabili_versija;
+                set(pm, 'Value', pmV+1);
+            end;
+            if length(pmUD) < pmV ;
+                d=pmV-length(pmUD);
+                for i=1:10;
+                    eval(['pm0=handles.popupmenu_drb' num2str(i) ' ; ']);
+                    pm0V=get(pm0, 'Value');
+                    if pm0V-d>2;
+                        set(pm0, 'Value', pm0V-d);
+                    end;
+                end;
             end;
         end;
     end;
@@ -1904,9 +1914,7 @@ if ~isempty(pmTS) && iscellstr(pmUD);
     if ~isempty(n); 
         set(pm, 'Value', n(1));
     else
-        try error([lokaliz('Netinkami parametrai') ': ' pmTS]); 
-        catch err; Pranesk_apie_klaida(err, lokaliz('Job preset'), mfilename, 1);
-        end;
+        warning([lokaliz('Netinkami parametrai') ': ' num2str(id) ': ' pmTS]);
         set(cbh,'Value',0); set(pm,'Enable','off');
     end;
 end;
@@ -1915,6 +1923,7 @@ virtual_popupmenu_drb_Callback(hObject, eventdata, handles, id);
 
 % --- Executes on selection change in popupmenu_drb*.
 function virtual_popupmenu_drb_Callback(hObject, eventdata, handles, id)
+eval(['cbh=handles.checkbox_drb' num2str(id) ' ; ']);
 eval(['pm=handles.popupmenu_drb' num2str(id) ' ; ']);
 eval(['pm_=handles.popupmenu_drb' num2str(id) '_ ; ']);
 pm_Enable=get(pm, 'Enable');
@@ -1926,8 +1935,15 @@ set(pm,'TooltipString',darbas);
 if ~isempty(rinkiniai_lok);
     set(pm_,'String',rinkiniai_lok);
     set(pm_,'UserData',rinkiniai_orig);
-    i = [];
-    try i=find(ismember(rinkiniai_orig,get(pm_,'TooltipString'))); catch; end;
+    pm_TS=get(pm_,'TooltipString'); 
+    i = [] ;
+    if ~isempty(pm_TS) && ischar(pm_TS);
+        i=find(ismember(rinkiniai_orig,pm_TS));
+        if isempty(i); 
+            warning([lokaliz('Netinkami parametrai') ': ' num2str(id) ': ' darbas ': ' pm_TS]);
+            set(cbh,'Value',0); set(pm,'Enable','off'); pm_Enable='off';
+        end;
+    end;
     if isempty(i); i=find(ismember(rinkiniai_orig,'paskutinis')); end; if isempty(i); i=1; end;
     set(pm_,'Value',i(1));
 else
