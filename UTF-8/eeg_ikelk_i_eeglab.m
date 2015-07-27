@@ -53,6 +53,13 @@ try Kelias=g(1).pathin; catch; end;
 
 Rinkmenos={};
 try Rinkmenos={g.files}; catch; end;
+if isempty(Rinkmenos);
+    try kd=pwd; cd(Kelias);
+        Rinkmenos=filter_filenames(g.flt_show);
+        cd(kd);
+    catch
+    end;
+end;
 if isempty(Rinkmenos); return; end;
 
 % statusbar
