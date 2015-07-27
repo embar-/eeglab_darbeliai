@@ -2114,8 +2114,9 @@ try if length(get(pm, 'UserData')) ~= length(get(pm, 'String'))...
     || ischar(get(pm_,'UserData'));
         atstatyk_darbu_id(hObject, eventdata, handles, id);
         tstr = get(pm_,'UserData');
-        if ~ischar(tstr); tstr=''; end;
-        set(pm_,'TooltipString',tstr);
+        if ischar(tstr);
+            set(pm_,'TooltipString',tstr);
+        end;
         pmV=get(pm, 'Value');
         if pmV > 2;
             Darbeliai=getappdata(handles.figure1, 'Darbeliai_config');
@@ -2134,7 +2135,9 @@ if ~isempty(pmTS) && iscellstr(pmUD);
     if ~isempty(n); 
         set(pm, 'Value', n(1));
     else
-        warning([lokaliz('Netinkami parametrai') ': ' pmTS]);
+        try error([lokaliz('Netinkami parametrai') ': ' pmTS]); 
+        catch err; Pranesk_apie_klaida(err, lokaliz('Job preset'), mfilename, 1);
+        end;
         set(cbh,'Value',0); set(pm,'Enable','off');
     end;
 end;
@@ -2147,9 +2150,7 @@ eval(['pm=handles.popupmenu_drb' num2str(id) ' ; ']);
 eval(['pm_=handles.popupmenu_drb' num2str(id) '_ ; ']);
 pm_Enable=get(pm, 'Enable');
 darbai=get(pm, 'UserData');
-darbo_nr=get(pm, 'Value');
-
-darbas=darbai{darbo_nr};
+darbas=darbai{get(pm, 'Value')};
 set(pm,'TooltipString',darbas);
 [rinkiniai_lok,rinkiniai_orig]=Darbeliu_nuostatu_rinkiniai(darbas);
 
