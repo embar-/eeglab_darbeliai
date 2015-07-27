@@ -49,11 +49,14 @@ switch lower(meniu)
         drb_meniu_darbeliai(hObject, eventdata, handles, darbas, varargin(3:end));
     case {'parinktys'}
         drb_meniu_parinktys(hObject, eventdata, handles, darbas, varargin(3:end));
+    case {'veiksmai'}
+        drb_meniu_veiksmai( hObject, eventdata, handles, darbas, varargin(3:end));
     case {'apie'}
         drb_meniu_apie(     hObject, eventdata, handles, darbas, varargin(3:end));
     case {'visas'}
         drb_meniu_darbeliai(hObject, eventdata, handles, darbas, varargin(3:end));
         drb_meniu_parinktys(hObject, eventdata, handles, darbas, varargin(3:end));
+        drb_meniu_veiksmai( hObject, eventdata, handles, darbas, varargin(3:end));
         drb_meniu_apie(     hObject, eventdata, handles, darbas, varargin(3:end));
 end
 
@@ -81,7 +84,7 @@ uimenu( handles.meniu_darbeliai, 'Label', lokaliz('Meta darbeliai...') ,        
 set(findobj(handles.meniu_darbeliai,'Tag',darbas),'Enable','off')
 
 
-function nukreipimas_i_kita_darba(hObject, eventdata, handles, aktyvus_darbas, naujas_darbas) %#ok
+function nukreipimas_i_kita_darba(hObject, eventdata, handles, aktyvus_darbas, naujas_darbas, varargin) %#ok
 %%
 switch aktyvus_darbas
     case {'pop_pervadinimas'}
@@ -115,9 +118,9 @@ switch aktyvus_darbas
         darbeliu_param={ 'pathin',pathin, 'pathout',pathout ,'flt_show',flt_show };
 end;
 if ar_filtr;
-    darbeliu_param=[darbeliu_param {'flt_slct',flt_slct}]; %#ok
+    darbeliu_param=[darbeliu_param {'flt_slct',flt_slct} varargin{:}]; %#ok
 else
-    darbeliu_param=[darbeliu_param {'files',files_sl}]; %#ok
+    darbeliu_param=[darbeliu_param {'files',files_sl} varargin{:}]; %#ok
 end;
 eval([ naujas_darbas '(darbeliu_param{:}); ']);
 
@@ -249,4 +252,12 @@ for i=5:nargin;
 end;
 com=[ varargin{1} '(' pars 'hObject, eventdata, handles);' ];
 eval( com );
+
+
+function drb_meniu_veiksmai(hObject, eventdata, handles, darbas, varargin) %#ok
+handles.meniu_veiksmai = uimenu(handles.figure1,'Label',lokaliz('Veiksmai'),'Tag','m_Veiksmai');
+uimenu(handles.meniu_veiksmai, 'Accelerator','L', 'Label', lokaliz('Load into EEGLAB'), ...
+    'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab'}  );
+uimenu(handles.meniu_veiksmai, 'Accelerator','P', 'Label', lokaliz('Preview data in EEGLAB'), ...
+    'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab', 'command', 'pop_eegplot( EEG(end), 1, 1, 1,[],''submean'',''on'');'}  );
 
