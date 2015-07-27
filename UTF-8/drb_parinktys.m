@@ -188,34 +188,17 @@ drb_meniu(hObject, eventdata, handles, 'visas', darbas);
 
 function drb_parinktis_irasyti(hObject, eventdata, handles, konfig_rinkm, darbas, vardas, komentaras, isimintini)
 %% Įrašyti
-reikia_perkurti_meniu=0;
-if isempty(vardas); 
-    a=inputdlg({lokaliz('Pavadinimas:'),lokaliz('Komentaras:')}); 
-    if isempty(a); return; end;
-    if iscell(a);
-        if isempty(a{1});
-            vardas='paskutinis';
-            komentaras='';
-        else
-            vardas=a{1};
-            komentaras=a{2};
-        end;
-    end;
-end;
-
-try
-    load(konfig_rinkm);
+try load(konfig_rinkm);
     eval([ 'saranka=Darbeliai.dialogai.' darbas '.saranka;' ]);
     esami={saranka.vardas}; %#ok
-    if and(ismember(vardas,esami),~ismember(vardas,{'numatytas','paskutinis'}));
-        ats=questdlg(lokaliz('Perrasyti nuostatu rinkini?'),...
-            lokaliz('Nuostatos jau yra!'),lokaliz('Rewrite'),lokaliz('Cancel'),lokaliz('Cancel'));
-        if isempty(ats); return; end;
-        if ~strcmp(ats,lokaliz('Rewrite')); return; end;
-        reikia_perkurti_meniu=1;
-    end;
 catch %err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm, 0);
-    saranka=struct;
+    saranka=struct; esami={};
+end;
+[vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(vardas, komentaras, saranka, [], ~isempty(vardas));
+if ~pavyko; return; end;
+if isempty(vardas);
+    vardas='paskutinis';
+    komentaras='';
 end;
 
 % Užduočių parinktys
@@ -278,14 +261,13 @@ for b=1:length(isimintini);
     end;
 end;
 
-try
-    i=find(ismember(esami,vardas));
-    if isempty(i);
-        i=length(esami)+1; 
-        reikia_perkurti_meniu=1;
+try p=find(ismember(esami,vardas));
+    if isempty(p);
+        p=length(esami)+1; 
+    else p=p(1);
     end;
 catch
-    i=1;
+    p=1;
 end;
 
 % Darbelių versija
@@ -297,11 +279,11 @@ try
 catch
 end;
 
-saranka(i).vardas    = vardas ;
-saranka(i).data      = datestr(now,'yyyy-mm-dd HH:MM:SS') ;
-saranka(i).komentaras= [ komentaras ' ' ] ;
-saranka(i).parinktys = Parinktys ;
-saranka(i).versija   = vers ;
+saranka(p).vardas    = vardas ;
+saranka(p).data      = datestr(now,'yyyy-mm-dd HH:MM:SS') ;
+saranka(p).komentaras= [ komentaras ' ' ] ;
+saranka(p).parinktys = Parinktys ;
+saranka(p).versija   = vers ;
 eval(['Darbeliai.dialogai.' darbas '.saranka=saranka; ']);
 
 % Įrašymas
@@ -312,9 +294,7 @@ catch err; Pranesk_apie_klaida(err, darbas, konfig_rinkm, 0);
 end;
 
 % meniu
-if reikia_perkurti_meniu;
-    drb_meniu(hObject, eventdata, handles, 'visas', darbas);
-end;
+drb_meniu(hObject, eventdata, handles, 'visas', darbas);
 
 
 function [vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(pradinis_vardas, pradinis_komentaras, saranka1, saranka2, neklausti)
