@@ -260,4 +260,21 @@ uimenu(handles.meniu_veiksmai, 'Accelerator','L', 'Label', lokaliz('Load into EE
     'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab'}  );
 uimenu(handles.meniu_veiksmai, 'Accelerator','P', 'Label', lokaliz('Preview data in EEGLAB'), ...
     'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab', 'command', 'pop_eegplot( EEG(end), 1, 1, 1,[],''submean'',''on'');'}  );
+if ~ismember(darbas, {'pop_pervadinimas'})
+handles.meniu_veiksmai_fltr_rod=...
+uimenu(handles.meniu_veiksmai, 'separator','on', 'Label', lokaliz('Rodyti rinkmenas is'));
+uimenu(handles.meniu_veiksmai_fltr_rod, 'Label', lokaliz('katalogo virs'), ...
+    'callback', {@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_fltr_rod', darbas, '..'}  );
+uimenu(handles.meniu_veiksmai_fltr_rod, 'Label', lokaliz('katalogu lygiagreciai'), ...
+    'callback', {@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_fltr_rod', darbas, ['..' filesep '*']});
+uimenu(handles.meniu_veiksmai_fltr_rod, 'Label', lokaliz('katalogu po'), ...
+    'callback', {@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_fltr_rod', darbas, '*'}  );
+end;
+
+
+function drb_meniu_veiksmai_fltr_rod(hObject, eventdata, handles, darbas, fltr_tarp, varargin) %#ok
+fltr_rod = get(handles.edit_failu_filtras1, 'String');
+fltr_rod = [fltr_rod ';.' filesep fltr_tarp filesep fltr_rod ];
+set(handles.edit_failu_filtras1, 'String', fltr_rod);
+nukreipimas_gui2(hObject, eventdata, handles, darbas, 'atnaujink_rodomus_failus');
 
