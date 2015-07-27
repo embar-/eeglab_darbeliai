@@ -397,7 +397,7 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 % Neleisk nieko daryti
 function susaldyk(hObject, eventdata, handles)
 %Neleisti spausti Nuostatų meniu!
-for m_id={'m_Nuostatos' 'm_Darbeliai'};
+for m_id={'m_Nuostatos' 'm_Darbeliai' 'm_Veiksmai'};
     set(findall(handles.figure1,'Type','uimenu','Tag',m_id{1}),'Enable','off');
 end;
 drawnow;
@@ -504,7 +504,7 @@ set(handles.text_darbas,'String',' ');
 set(handles.pushbutton2,'Value',0);
 
 % Leisti spausti Nuostatų meniu!
-for m_id={'m_Nuostatos' 'm_Darbeliai'};
+for m_id={'m_Nuostatos' 'm_Darbeliai' 'm_Veiksmai'};
     set(findall(handles.figure1,'Type','uimenu','Tag',m_id{1}),'Enable','on');
 end;
 drawnow;
@@ -654,7 +654,7 @@ end;
 % Užduočių parinkčių įsiminimas
 parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 %Neleisti spausti Nuostatų meniu!
-for m_id={'m_Nuostatos' 'm_Darbeliai'};
+for m_id={'m_Nuostatos' 'm_Darbeliai' 'm_Veiksmai'};
     set(findall(handles.figure1,'Type','uimenu','Tag',m_id{1}),'Enable','off');
 end;
 drawnow;

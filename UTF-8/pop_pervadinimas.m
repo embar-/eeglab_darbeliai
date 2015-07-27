@@ -1317,7 +1317,7 @@ disp(' ');
 % Užduočių parinkčių įsiminimas
 parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 %Neleisti spausti Nuostatų meniu!
-for m_id={'m_Nuostatos' 'm_Darbeliai'};
+for m_id={'m_Nuostatos' 'm_Darbeliai' 'm_Veiksmai'};
     set(findall(handles.figure1,'Type','uimenu','Tag',m_id{1}),'Enable','off');
 end;
 drawnow;
@@ -1486,7 +1486,7 @@ set(handles.edit11,'BackgroundColor',[1 1 0]);
 
 function susaldyk(hObject, eventdata, handles)
 %Neleisti spausti Nuostatų meniu!
-for m_id={'m_Nuostatos' 'm_Darbeliai'};
+for m_id={'m_Nuostatos' 'm_Darbeliai' 'm_Veiksmai'};
     set(findall(handles.figure1,'Type','uimenu','Tag',m_id{1}),'Enable','off');
 end;
 drawnow;
@@ -1543,7 +1543,7 @@ set(handles.pushbutton8,'Enable','on');
 checkbox1_Callback(hObject, eventdata, handles);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 % Leisti spausti Nuostatų meniu!
-for m_id={'m_Nuostatos' 'm_Darbeliai'};
+for m_id={'m_Nuostatos' 'm_Darbeliai' 'm_Veiksmai'};
     set(findall(handles.figure1,'Type','uimenu','Tag',m_id{1}),'Enable','on');
 end;
 drawnow;
