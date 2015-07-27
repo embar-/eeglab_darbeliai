@@ -476,26 +476,7 @@ end;
 
 switch darbas
     case {'pop_meta_drb'}
-        sar={};
-        for i=1:length(saranka);
-            for dbr_i=1:10; dbr_id=num2str(dbr_i);
-                try ci=ismember({saranka(i).parinktys.id}, {['checkbox_drb' dbr_id]});
-                    if saranka(i).parinktys(ci).Value;
-                        d=find(ismember({saranka(i).parinktys.id}, {['popupmenu_drb' dbr_id]}));
-                        p=find(ismember({saranka(i).parinktys.id}, {['popupmenu_drb' dbr_id '_']}));
-                        if length(d) >= 1 && length(p) >= 1; % buvo klaida pop_meta_drb, kai 2x septintus darbus įrašė ir neįrašė aštuntų
-                            d=d(1); p=p(1); 
-                            drb=saranka(i).parinktys(d).TooltipString;
-                            prk=saranka(i).parinktys(p).TooltipString;
-                            if ~isempty(drb) && ~isempty(prk);
-                                sar=[sar; {drb prk}]; %#ok
-                            end;
-                        end;
-                    end;
-                catch %err; Pranesk_apie_klaida(err, num2str(i), dbr_id, 0);
-                end;
-            end;
-        end;
+        sar=meta_drb_priklausomybes(saranka);
         if ~isempty(sar);
             disp(' '); disp(lokaliz('Eksportuoti priklausomybes?')); disp(sar); disp(' '); 
             mgtk={lokaliz('Yes'), lokaliz('No'), lokaliz('Yes')};
@@ -520,7 +501,30 @@ i=find(ismember(rinkiniai_orig, 'paskutinis' ));
 if ~isempty(i); rinkiniai_lokaliz(i)={lokaliz('Paskiausias')}; end;
 
 
-function drb_parinktis_importuoti(hObject, eventdata, handles, konfig_rinkm, darbas, varargin) 
+function sar=meta_drb_priklausomybes(saranka)
+sar={};
+for i=1:length(saranka);
+    for dbr_i=1:10; dbr_id=num2str(dbr_i);
+        try ci=ismember({saranka(i).parinktys.id}, {['checkbox_drb' dbr_id]});
+            if saranka(i).parinktys(ci).Value;
+                d=find(ismember({saranka(i).parinktys.id}, {['popupmenu_drb' dbr_id]}));
+                p=find(ismember({saranka(i).parinktys.id}, {['popupmenu_drb' dbr_id '_']}));
+                if length(d) >= 1 && length(p) >= 1; % buvo klaida pop_meta_drb, kai 2x septintus darbus įrašė ir neįrašė aštuntų
+                    d=d(1); p=p(1);
+                    drb=saranka(i).parinktys(d).TooltipString;
+                    prk=saranka(i).parinktys(p).TooltipString;
+                    if ~isempty(drb) && ~isempty(prk);
+                        sar=[sar; {drb prk}]; %#ok
+                    end;
+                end;
+            end;
+        catch err; Pranesk_apie_klaida(err, num2str(i), dbr_id, 0);
+        end;
+    end;
+end;
+
+
+function drb_parinktis_importuoti(hObject, eventdata, handles, konfig_rinkm, darbas, varargin)
 %% Importuoti
 try
 g=struct(varargin{:}); % imp_rinkm, rinkiniai
@@ -609,4 +613,22 @@ end;
 
 % meniu
 drb_meniu(hObject, eventdata, handles, 'visas', darbas);
+
+switch darbas
+    case {'pop_meta_drb'}
+        sar=meta_drb_priklausomybes(saranka2);
+        if ~isempty(sar);
+            disp(' '); disp(lokaliz('Importuoti priklausomybes?')); disp(sar); disp(' '); 
+            mgtk={lokaliz('Yes'), lokaliz('No'), lokaliz('Yes')};
+            ats=questdlg(lokaliz('Importuoti priklausomybes?'), lokaliz('Importuoti priklausomybes?'), mgtk{:});
+            if strcmp(ats,lokaliz('Yes'));
+                drbs=unique(sar(:,1));
+                for d=1:length(drbs); drb=drbs{d};
+                    prks=unique(sar(ismember(sar(:,1),{drb}),2));
+                    drb_parinktis_importuoti([], eventdata, handles, konfig_rinkm, drb, ...
+                        'rinkiniai', prks, 'imp_rinkm', imp_rinkm);
+                end;
+            end;
+        end;
+end;
 
