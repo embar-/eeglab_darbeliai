@@ -611,8 +611,6 @@ try   save(konfig_rinkm,'Darbeliai');
 catch err; Pranesk_apie_klaida(err, darbas, konfig_rinkm, 0);
 end;
 
-% meniu
-drb_meniu(hObject, eventdata, handles, 'visas', darbas);
 
 switch darbas
     case {'pop_meta_drb'}
@@ -632,3 +630,5 @@ switch darbas
         end;
 end;
 
+% meniu
+drb_meniu(hObject, eventdata, handles, 'visas', darbas);
