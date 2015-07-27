@@ -1889,8 +1889,8 @@ try if length(get(pm, 'UserData')) ~= length(get(pm, 'String'))...
             pmV =get(pm, 'Value');
             pmUD=get(pm, 'UserData');
             Darbeliai=getappdata(handles.figure1, 'Darbeliai_config');
-            if pmV > 2 && Darbeliai.nuostatos.stabili_versija;
-                set(pm, 'Value', pmV+1);
+            if pmV > 2 && isequal(Darbeliai.nuostatos.stabili_versija,1);
+                pmV=pmV+1; set(pm, 'Value', pmV);
             end;
             if length(pmUD) < pmV ;
                 d=pmV-length(pmUD);
@@ -1915,7 +1915,7 @@ if ~isempty(pmTS) && iscellstr(pmUD);
         set(pm, 'Value', n(1));
     else
         warning([lokaliz('Netinkami parametrai') ': ' num2str(id) ': ' pmTS]);
-        set(cbh,'Value',0); set(pm,'Enable','off');
+        set(cbh,'Value',0); set(pm,'Value', 1); set(pm,'Enable','off');
     end;
 end;
 virtual_popupmenu_drb_Callback(hObject, eventdata, handles, id);
@@ -1939,7 +1939,7 @@ if ~isempty(rinkiniai_lok);
     i = [] ;
     if ~isempty(pm_TS) && ischar(pm_TS);
         i=find(ismember(rinkiniai_orig,pm_TS));
-        if isempty(i); 
+        if isempty(i);
             warning([lokaliz('Netinkami parametrai') ': ' num2str(id) ': ' darbas ': ' pm_TS]);
             set(cbh,'Value',0); set(pm,'Enable','off'); pm_Enable='off';
         end;
