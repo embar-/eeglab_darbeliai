@@ -51,6 +51,8 @@ switch lower(veiskmas)
         drb_parinktis_trinti(hObject, eventdata, handles, konfig_rinkm, darbas, varargin{:});
     case {'irasyti'}
         drb_parinktis_irasyti(hObject, eventdata, handles, konfig_rinkm, darbas, rinkinys, varargin{2:end});
+    case {'importuoti'}
+        drb_parinktis_importuoti(hObject, eventdata, handles, konfig_rinkm, darbas, varargin);
     case {'eksportuoti'}
         drb_parinktis_eksportuoti(hObject, eventdata, handles, konfig_rinkm, darbas, varargin);
 end;
@@ -60,37 +62,39 @@ function drb_parinktis_ikelti(hObject, eventdata, handles, konfig_rinkm, darbas,
 %% Įkelti
 versija_par='';
 versija_plg='';
-try eval([ darbas '(''susaldyk'',hObject, eventdata, handles);' ]) ; catch; end;
 try
     load(konfig_rinkm);   
     eval([ 'saranka=Darbeliai.dialogai.' darbas '.saranka;' ]);
     esami={saranka.vardas}; 
     i=find(ismember(esami,rinkinys));
+    if isempty(i); error([lokaliz('Neradome parinkciu rinkinio') ': ' rinkinys ]); end;
     Parinktys=saranka(i).parinktys;
-    try versija_par=saranka(i).versija;
-    catch; end;
+    try versija_par=saranka(i).versija; catch; end;
     Laukai1=fieldnames(Parinktys);
     Laukai2=unique(regexprep(setdiff(Laukai1,{'id'}),'_$',''));
-    for j=1:length(Parinktys);
-        for l=1:length(Laukai2);
-            Laukas=Laukai2{l};
-            try 
-                skirti=0;
-                if ismember([Laukas '_'], Laukai1);
-                    try eval([ 'skirti=Parinktys(j).' Laukas '_;' ]); catch; end;
-                elseif ismember(Laukas, {'Value' 'UserData'}); % suderinamumui su Darbeliais <= 2015.07.18
-                    skirti=1; 
-                end;
-                if skirti;
-                    eval([ 'rksm=Parinktys(j).' Laukas ';' ]);
-                    set(eval(['handles.' Parinktys(j).id ]), Laukas, rksm);
-                end;
-            catch err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
-                disp([ Parinktys(j).id ': ' Laukas ]); 
+catch err; Pranesk_apie_klaida(err, darbas, konfig_rinkm, 1);
+    return;
+end;
+try eval([ darbas '(''susaldyk'',hObject, eventdata, handles);' ]) ; catch; end;
+% Naujų reikšmių priskyrimas
+for j=1:length(Parinktys);
+    for l=1:length(Laukai2);
+        Laukas=Laukai2{l};
+        try
+            skirti=0;
+            if ismember([Laukas '_'], Laukai1);
+                try eval([ 'skirti=Parinktys(j).' Laukas '_;' ]); catch; end;
+            elseif ismember(Laukas, {'Value' 'UserData'}); % suderinamumui su Darbeliais <= 2015.07.18
+                skirti=1;
             end;
+            if skirti;
+                eval([ 'rksm=Parinktys(j).' Laukas ';' ]);
+                set(eval(['handles.' Parinktys(j).id ]), Laukas, rksm);
+            end;
+        catch err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
+            disp([ Parinktys(j).id ': ' Laukas ]);
         end;
     end;
-catch err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
 end;
 guidata(hObject, handles);
 switch darbas
@@ -105,7 +109,9 @@ switch darbas
     case {'pop_meta_drb'}
         versija_plg='Darbeliai v2015.07.26';
 end;
-try eval([ darbas '(''susildyk'',hObject, eventdata, handles);' ]) ; catch; end;
+try eval([ darbas '(''susildyk'',hObject, eventdata, handles);' ]) ; 
+catch err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
+end;
 if ar_senesne_versija(versija_par,versija_plg);
     warndlg({lokaliz('Senos parinktys:') rinkinys ' ' ...
         lokaliz('Patariame is naujo issaugoti ka tik ikeltas parinktis!')},...
@@ -445,7 +451,7 @@ if papildyti;
         esami2={saranka2.vardas};
         persidengia_i2v=find(ismember(esami2,vardas));
         for persidengia_i2=persidengia_i2v;
-            persidengia_i1_=ismember(vardas,esami2(persidengia_i2));
+            persidengia_i1_=ismember({saranka.vardas},esami2(persidengia_i2));
             persidengia_i1=find(persidengia_i1_); persidengia_i1=persidengia_i1(1);
             
             [vardas2, komentaras2, pavyko]=parinkciu_rinkinio_uzvadinimas(...
@@ -543,4 +549,95 @@ i=find(ismember(rinkiniai_orig, 'numatytas' ));
 if ~isempty(i); rinkiniai_lokaliz(i)={lokaliz('Numatytas')}; end;
 i=find(ismember(rinkiniai_orig, 'paskutinis' ));
 if ~isempty(i); rinkiniai_lokaliz(i)={lokaliz('Paskiausias')}; end;
+
+
+function drb_parinktis_importuoti(hObject, eventdata, handles, konfig_rinkm, darbas, varargin) 
+%% Importuoti
+try
+g=struct(varargin{:}); % imp_rinkm, rinkiniai
+catch %err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
+end;
+
+imp_rinkm='';
+try imp_rinkm=g.imp_rinkm; catch; end;
+if isempty(imp_rinkm);
+    [imp_rinkm,imp_kel]=uigetfile({'*.drbk';'*.mat'},lokaliz('Importuoti'),...
+        [ 'Darbeliai (' darbas ').drbk' ]);
+    if isempty(imp_rinkm); return; end;
+    if isequal(imp_rinkm,0); return; end;
+    imp_rinkm=fullfile(imp_kel,imp_rinkm);
+    if exist(imp_rinkm,'file') ~= 2; return; end;
+end;
+
+try load(imp_rinkm,'-mat');
+    try    eval([ 'saranka2=Darbeliai.dialogai.' darbas '.saranka;' ]);
+    catch; error(lokaliz('Nera ko importuoti.'));
+    end;
+    esami2={saranka2.vardas}; %#ok
+    pasirinkti=[];
+    try pasirinkti=find(ismember(esami2,{g.rinkiniai})); catch; end;
+    if isempty(pasirinkti);
+        pasirinkti=listdlg('ListString', lokalizuok_rinkinius(esami2),...
+            'SelectionMode','multiple',...
+            'PromptString', lokaliz('Importuoti'),...
+            'InitialValue',length(esami2),...
+            'OKString',lokaliz('Importuoti'),...
+            'CancelString',lokaliz('Cancel'));
+    end;
+    if isempty(pasirinkti); return; end;
+    esami2=esami2(pasirinkti);
+    saranka2=saranka2(pasirinkti);
+catch err; Pranesk_apie_klaida(err, mfilename, imp_rinkm);
+    return;
+end;
+
+try
+    load(konfig_rinkm);
+    eval([ 'saranka=Darbeliai.dialogai.' darbas '.saranka;' ]);
+    esami={saranka.vardas}; %#ok
+    
+    persidengia_i2v=find(ismember(esami2,esami));
+    for persidengia_i2=persidengia_i2v;
+        [vardas2, komentaras2, pavyko]=parinkciu_rinkinio_uzvadinimas(...
+            saranka2(persidengia_i2).vardas, saranka2(persidengia_i2).komentaras, saranka2, saranka, 1);
+        if pavyko == 2; % perrašyta ir pervadinta
+            saranka=saranka(~ismember({saranka.vardas},vardas2));
+            pavyko=1;
+        end;
+        if pavyko == 1; % pervadinta
+            persidengia_i2v=setdiff(persidengia_i2v, persidengia_i2);
+            saranka2(persidengia_i2).vardas=vardas2;
+            saranka2(persidengia_i2).komentaras=komentaras2;
+        end;
+    end;
+    
+    
+    if length(persidengia_i2v) == length(saranka2);
+        return;
+    else
+        saranka2=saranka2(setdiff(1:length(saranka2),persidengia_i2v)); % ištrint persidengiančius
+        saranka_N=length(saranka);
+        % pridėti papildomus
+        laukai=fieldnames(saranka2);
+        for i=1:length(saranka2);
+            for l=1:length(laukai); laukas=laukai{l};
+                saranka(saranka_N+i).(laukas)=saranka2(i).(laukas); %#ok
+            end;
+        end;
+    end;
+catch err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm, 0);
+    saranka=saranka2; %#ok
+end;
+
+eval(['Darbeliai.dialogai.' darbas '.saranka=saranka; ']);
+
+% Įrašymas
+try   movefile([konfig_rinkm '~'], [konfig_rinkm '~~' ], 'f'); catch; end;
+try   movefile(konfig_rinkm, [konfig_rinkm '~' ], 'f'); catch; end;
+try   save(konfig_rinkm,'Darbeliai');
+catch err; Pranesk_apie_klaida(err, darbas, konfig_rinkm, 0);
+end;
+
+% meniu
+drb_meniu(hObject, eventdata, handles, 'visas', darbas);
 
