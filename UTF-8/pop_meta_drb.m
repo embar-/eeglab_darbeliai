@@ -128,6 +128,7 @@ tic;
 lokalizuoti(hObject, eventdata, handles);
 atstatyk_darbu_id(hObject, eventdata, handles, 1:10);
 drb_meniu(hObject, eventdata, handles, 'visas', mfilename);
+set(handles.checkbox_pabaigus_atverti,'Value',1);
 
 %Pabandyk įkelti senąjį kelią
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
