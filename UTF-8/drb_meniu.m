@@ -92,11 +92,11 @@ switch aktyvus_darbas
         pathout  = get(handles.edit_siulomi,'String');
        %flt_show = get(handles.edit_failu_filtras1,'String');
         flt_slct = get(handles.edit_filtras,'String');
-        files_sh = get(handles.text_tikri,'String');
-        files_sN = get(handles.text_tikri,'Value');
+        files_sh = get(handles.listbox_tikri,'String');
+        files_sN = get(handles.listbox_tikri,'Value');
         if ~isempty(files_sN) && ~isequal(files_sN,0);
             files_sl = files_sh(files_sN);
-            ar_filtr = strcmp(get(handles.edit_filtras,'Style'),'edit');
+            ar_filtr = 0 ;%strcmp(get(handles.edit_filtras,'Style'),'edit') #FIXME: pop_pervadinime failų rankinis žymėjimas neperjungia stiliaus
         else
             ar_filtr = 1;
         end;
