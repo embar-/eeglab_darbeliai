@@ -92,7 +92,7 @@ if Pasirinktu_failu_N > 0 ;
         ALLEEG=[];
         for f=1:Pasirinktu_failu_N;
             EEG = eeg_ikelk(Rinkmenos2{f,2},Rinkmenos2{f,3});
-            try eval(g(1).command) ; catch err; disp(err.message); end;
+            try eval(g(1).command) ; catch ; end;
             [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'study',0,'setname',Rinkmenos2{f,3});
             %[ALLEEG EEG CURRENTSET]=eeg_store(ALLEEG, EEG);
             
@@ -103,7 +103,8 @@ if Pasirinktu_failu_N > 0 ;
             end;
             
         end;
-        [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, Pasirinktu_failu_N,'retrieve',[1:f] ,'study',0);
+        
+        [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, Pasirinktu_failu_N,'retrieve',[1:length(ALLEEG)] ,'study',0);
         
     catch err; Pranesk_apie_klaida(err);
     end;
