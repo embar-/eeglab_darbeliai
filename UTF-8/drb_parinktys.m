@@ -213,45 +213,34 @@ for b=1:length(isimintini);
             Parinktys(j).id = isimintini_nariai{i} ; 
             
             if ismember({'value'}, isimintini_raktai);
-                Parinktys(j).Value_  = 1;
-                Parinktys(j).Value    = get(eval(['handles.' isimintini_nariai{i}]), 'Value');
-            else
-                Parinktys(j).Value_  = 0;
+                 Parinktys(j).Value_  = 1;
+                 Parinktys(j).Value    = get(eval(['handles.' isimintini_nariai{i}]), 'Value');
+            else Parinktys(j).Value_  = 0;
             end;
-            
             if ismember({'userdata'}, isimintini_raktai);
-                Parinktys(j).UserData_  = 1;
-                Parinktys(j).UserData = get(eval(['handles.' isimintini_nariai{i}]), 'UserData');
-            else
-                Parinktys(j).UserData_  = 0;
+                 Parinktys(j).UserData_  = 1;
+                 Parinktys(j).UserData = get(eval(['handles.' isimintini_nariai{i}]), 'UserData');
+            else Parinktys(j).UserData_  = 0;
             end;
-            
             if ismember({'string'}, isimintini_raktai);
-                Parinktys(j).String_  = 1;
-                Parinktys(j).String   = get(eval(['handles.' isimintini_nariai{i}]), 'String');
-            else
-                Parinktys(j).String_  = 0;
+                 Parinktys(j).String_  = 1;
+                 Parinktys(j).String   = get(eval(['handles.' isimintini_nariai{i}]), 'String');
+            else Parinktys(j).String_  = 0;
             end;
-            
             if ismember({'tooltipstring'}, isimintini_raktai);
-                Parinktys(j).TooltipString_ = 1;
-                Parinktys(j).TooltipString   = get(eval(['handles.' isimintini_nariai{i}]), 'TooltipString');
-            else
-                Parinktys(j).TooltipString_ = 0;
+                 Parinktys(j).TooltipString_ = 1;
+                 Parinktys(j).TooltipString   = get(eval(['handles.' isimintini_nariai{i}]), 'TooltipString');
+            else Parinktys(j).TooltipString_ = 0;
             end;
-            
             if ismember({'data'}, isimintini_raktai);
-                Parinktys(j).Data_  = 1;
-                Parinktys(j).Data = get(eval(['handles.' isimintini_nariai{i}]), 'Data');
-            else
-                Parinktys(j).Data_  = 0;
+                 Parinktys(j).Data_  = 1;
+                 Parinktys(j).Data = get(eval(['handles.' isimintini_nariai{i}]), 'Data');
+            else Parinktys(j).Data_  = 0;
             end;
-            
             if ismember({'columnname'}, isimintini_raktai);
-                Parinktys(j).ColumnName_  = 1;
-                Parinktys(j).ColumnName = get(eval(['handles.' isimintini_nariai{i}]), 'ColumnName');
-            else
-                Parinktys(j).ColumnName_  = 0;
+                 Parinktys(j).ColumnName_  = 1;
+                 Parinktys(j).ColumnName = get(eval(['handles.' isimintini_nariai{i}]), 'ColumnName');
+            else Parinktys(j).ColumnName_  = 0;
             end;
             
             j=j+1;
