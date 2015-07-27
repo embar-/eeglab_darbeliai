@@ -305,24 +305,29 @@ else
 end;
 if ~isempty(a) && iscell(a);
     if ismember(a{1},draudziami_vardai);
-        klsm=sprintf('%s\n\n%s\n\n', lokaliz('Parinkciu rinkinys jau yra!'), darbas);
+        klsm=sprintf('%s\n\n%s: %s\n\n', lokaliz('Parinkciu rinkinys jau yra!'), lokaliz('Darbas'), darbas);
         if isempty(saranka2);
             persidengia_i1=find(ismember({saranka1.vardas},a{1}));
             persidengia_i1=persidengia_i1(1);
             klsm=[klsm sprintf('%s\n%s\n%s', ...
-                lokaliz('Aptiktos parinktys:'), saranka1(persidengia_i1).data, saranka1(persidengia_i1).vardas, saranka1(persidengia_i1).komentaras)];
+                lokaliz('Aptiktos parinktys:'), saranka1(persidengia_i1).data, saranka1(persidengia_i1).vardas)];
+            kom=saranka1(persidengia_i1).komentaras; if ~isempty(kom); klsm=[klsm sprintf('\n%s', kom)]; end;
         else
             persidengia_i1=find(ismember({saranka1.vardas},pradinis_vardas));
             persidengia_i2=find(ismember({saranka2.vardas},a{1}));
             persidengia_i2=persidengia_i2(1);
             if isempty(persidengia_i1);
-              klsm=[klsm sprintf('%s\n%s\n%s\n%s', ...
-                lokaliz('Aptiktos parinktys:'), saranka2(persidengia_i2).data, saranka2(persidengia_i2).vardas, saranka2(persidengia_i2).komentaras)];
+              klsm=[klsm sprintf('%s\n%s\n%s', ...
+                lokaliz('Aptiktos parinktys:'), saranka2(persidengia_i2).data, saranka2(persidengia_i2).vardas)];
+              kom=saranka2(persidengia_i2).komentaras; if ~isempty(kom); klsm=[klsm sprintf('\n%s', kom)]; end;
             else
               persidengia_i1=persidengia_i1(1);
-              klsm=[klsm sprintf('%s\n%s\n%s\n%s\n\n%s\n%s\n%s\n%s', ...
-                lokaliz('Siulomos parinktys:'), saranka1(persidengia_i1).data, saranka1(persidengia_i1).vardas, saranka1(persidengia_i1).komentaras,...
-                lokaliz('Aptiktos parinktys:'), saranka2(persidengia_i2).data, saranka2(persidengia_i2).vardas, saranka2(persidengia_i2).komentaras)];
+              klsm=[klsm sprintf('%s\n%s\n%s', ...
+                lokaliz('Siulomos parinktys:'), saranka1(persidengia_i1).data, saranka1(persidengia_i1).vardas)];
+              kom=saranka1(persidengia_i1).komentaras; if ~isempty(kom); klsm=[klsm sprintf('\n%s', kom)]; end;
+              klsm=[klsm sprintf('\n\n%s\n%s\n%s', ...
+                lokaliz('Aptiktos parinktys:'), saranka2(persidengia_i2).data, saranka2(persidengia_i2).vardas)];
+              kom=saranka2(persidengia_i2).komentaras; if ~isempty(kom); klsm=[klsm sprintf('\n%s', kom)]; end;
             end;
         end;
         klsm=[klsm sprintf('\n\n%s', lokaliz('Perrasyti parinkciu rinkini?'))];
