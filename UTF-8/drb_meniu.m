@@ -167,20 +167,14 @@ switch darbas
         else   url2='https://github.com/embar-/eeglab_darbeliai/wiki/3.1.%20Common%20behaviour';
         end;
 end;
-function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-vers='Darbeliai';
-try
-    fid_vers=fopen(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai.versija'));
-    vers=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
-    fclose(fid_vers); 
-catch
-end;
 
 handles.meniu_apie = uimenu(handles.figure1,'Label',lokaliz('Pagalba'));
-uimenu( handles.meniu_apie, 'Accelerator','H', 'Label', lokaliz('Apie dialogo langa'), ...
+uimenu( handles.meniu_apie, 'Accelerator','H', 'Label', [lokaliz('Apie dialogo langa') ' ' lokaliz('(internete)')], ...
     'callback', [ 'web(''' url2 ''',''-browser'') ;' ]  );
-uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], ...
+uimenu( handles.meniu_apie, 'Label', [lokaliz('Zinynas') ' ' lokaliz('(internete)') ], ...
     'callback', [ 'web(''' url1 ''',''-browser'') ;' ]  );
+uimenu( handles.meniu_apie, 'Label', lokaliz('Apie'), ...
+    'callback', 'apie_darbelius ;' );
 if exist('atnaujinimas','file') == 2;
     uimenu( handles.meniu_apie, 'Label', lokaliz('Check for updates'), 'separator','on', ...
         'Callback', 'pop_atnaujinimas ;'  );    
