@@ -1874,13 +1874,38 @@ end
 function virtual_checkbox_drb_Callback(hObject, eventdata, handles, id)
 eval(['cbh=handles.checkbox_drb' num2str(id) ' ; ']);
 eval(['pm=handles.popupmenu_drb' num2str(id) ' ; ']);
+eval(['pm_=handles.popupmenu_drb' num2str(id) '_ ; ']);
 aktyvus=and(get(cbh, 'Value'), strcmp(get(cbh, 'Enable'),'on'));
 set(pm,'Enable',fastif(aktyvus,'on','off'));
+
+% suderinamumas su pirmuoju pop_meta_drb parinkčių valdymu
+try if length(get(pm, 'UserData')) ~= length(get(pm, 'String'))...
+    || ischar(get(pm_,'UserData'));
+        atstatyk_darbu_id(hObject, eventdata, handles, id);
+        tstr = get(pm_,'UserData');
+        if ~ischar(tstr); tstr=''; end;
+        set(pm_,'TooltipString',tstr);
+        pmV=get(pm, 'Value');
+        if pmV > 2;
+            Darbeliai=getappdata(handles.figure1, 'Darbeliai_config');
+            if Darbeliai.nuostatos.stabili_versija;
+                set(pm, 'Value',pmV+1); % 3 = QRS į EEG
+            end;
+        end;
+    end;
+catch err; Pranesk_apie_klaida(err, 'virtual_popupmenu_drb_Callback', id, 0);
+end;
+
 pmTS=get(pm, 'TooltipString');
 pmUD=get(pm, 'UserData');
 if ~isempty(pmTS) && iscellstr(pmUD);
     n=find(ismember(pmUD, pmTS));
-    if ~isempty(n); set(pm, 'Value', n(1)); end;
+    if ~isempty(n); 
+        set(pm, 'Value', n(1));
+    else
+        warning([lokaliz('Netinkami parametrai') ': ' pmTS]);
+        set(cbh,'Value',0); set(pm,'Enable','off');
+    end;
 end;
 virtual_popupmenu_drb_Callback(hObject, eventdata, handles, id);
 
@@ -1893,25 +1918,7 @@ pm_Enable=get(pm, 'Enable');
 darbai=get(pm, 'UserData');
 darbo_nr=get(pm, 'Value');
 
-% suderinamumas su pirmuoju pop_meta_drb parinkčių valdymu
-try if length(darbai) ~= length(get(pm, 'String'))...
-    || ischar(get(pm_,'UserData'));
-        atstatyk_darbu_id(hObject, eventdata, handles, id);
-        darbai=get(pm, 'UserData');
-        tstr = get(pm_,'UserData');
-        if ~ischar(tstr); tstr=''; end;
-        set(pm_,'TooltipString',tstr);
-        if darbo_nr > 2;
-            Darbeliai=getappdata(handles.figure1, 'Darbeliai_config');
-            if Darbeliai.nuostatos.stabili_versija;
-                set(pm, 'Value',darbo_nr+1); % 3 = QRS į EEG
-            end;
-        end;
-    end;
-catch err; Pranesk_apie_klaida(err, 'virtual_popupmenu_drb_Callback', id, 0);
-end;
-
-darbas=darbai{get(pm, 'Value')};
+darbas=darbai{darbo_nr};
 set(pm,'TooltipString',darbas);
 [rinkiniai_lok,rinkiniai_orig]=Darbeliu_nuostatu_rinkiniai(darbas);
 
