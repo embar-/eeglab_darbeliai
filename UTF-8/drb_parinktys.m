@@ -194,7 +194,7 @@ try load(konfig_rinkm);
 catch %err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm, 0);
     saranka=struct; esami={};
 end;
-[vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(vardas, komentaras, saranka, [], ~isempty(vardas));
+[vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(vardas, komentaras, darbas, saranka, [], ~isempty(vardas));
 if ~pavyko; return; end;
 if isempty(vardas);
     vardas='paskutinis';
@@ -286,7 +286,7 @@ end;
 drb_meniu(hObject, eventdata, handles, 'visas', darbas);
 
 
-function [vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(pradinis_vardas, pradinis_komentaras, saranka1, saranka2, neklausti)
+function [vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(pradinis_vardas, pradinis_komentaras, darbas, saranka1, saranka2, neklausti)
 %% Dialogas parinkčių rinkinio pavadinimui įvesti
 % sąranka2 nurodoma eksportuojant kaip aptiktoji
 vardas='';
@@ -305,7 +305,7 @@ else
 end;
 if ~isempty(a) && iscell(a);
     if ismember(a{1},draudziami_vardai);
-        klsm=sprintf('%s\n\n', lokaliz('Parinkciu rinkinys jau yra!'));
+        klsm=sprintf('%s\n\n%s\n\n', lokaliz('Parinkciu rinkinys jau yra!'), darbas);
         if isempty(saranka2);
             persidengia_i1=find(ismember({saranka1.vardas},a{1}));
             persidengia_i1=persidengia_i1(1);
@@ -331,9 +331,9 @@ if ~isempty(a) && iscell(a);
         switch ats
             case {lokaliz('Rename')}
                 if isempty(saranka2);
-                    [vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(a{1}, a{2}, saranka1, saranka2, 0);
+                    [vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(a{1}, a{2}, darbas, saranka1, saranka2, 0);
                 else
-                    [vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(pradinis_vardas, pradinis_komentaras, saranka1, saranka2, 0);
+                    [vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(pradinis_vardas, pradinis_komentaras, darbas, saranka1, saranka2, 0);
                 end;
             case {lokaliz('Yes')}
                 vardas=a{1};
@@ -424,7 +424,7 @@ if papildyti;
             persidengia_i1=find(persidengia_i1_); persidengia_i1=persidengia_i1(1);
             
             [vardas2, komentaras2, pavyko]=parinkciu_rinkinio_uzvadinimas(...
-                saranka(persidengia_i1).vardas, saranka(persidengia_i1).komentaras, saranka, saranka2, 1);
+                saranka(persidengia_i1).vardas, saranka(persidengia_i1).komentaras, darbas, saranka, saranka2, 1);
             
             if (pavyko == 2) && ~strcmp(saranka(persidengia_i1).vardas, vardas2) ; % perrašyta ir pervadinta
                 persidengia_i2v=unique([persidengia_i2v find(ismember(esami2,{vardas2}))]);
@@ -572,7 +572,7 @@ try
     persidengia_i2v=find(ismember(esami2,esami));
     for persidengia_i2=persidengia_i2v;
         [vardas2, komentaras2, pavyko]=parinkciu_rinkinio_uzvadinimas(...
-            saranka2(persidengia_i2).vardas, saranka2(persidengia_i2).komentaras, saranka2, saranka, 1);
+            saranka2(persidengia_i2).vardas, saranka2(persidengia_i2).komentaras, darbas, saranka2, saranka, 1);
         if pavyko == 2; % perrašyta ir pervadinta
             saranka=saranka(~ismember({saranka.vardas},vardas2));
             pavyko=1;
