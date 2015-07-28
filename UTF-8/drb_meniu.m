@@ -177,7 +177,7 @@ uimenu( handles.meniu_apie, 'Accelerator','H', 'Label', [lokaliz('Apie dialogo l
 uimenu( handles.meniu_apie, 'Label', [lokaliz('Zinynas') ' ' lokaliz('(internete)') ], ...
     'callback', [ 'web(''' url1 ''',''-browser'') ;' ]  );
 uimenu( handles.meniu_apie, 'Label', lokaliz('Apie'), ...
-    'callback', 'apie_darbelius ;' );
+    'callback', @apie_darbelius );
 if exist('atnaujinimas','file') == 2;
     uimenu( handles.meniu_apie, 'Label', lokaliz('Check for updates'), 'separator','on', ...
         'Callback', 'pop_atnaujinimas ;'  );    
@@ -346,4 +346,43 @@ elseif isunix; % Unix or derivative
 else warning('Unrecognized operating system.');
 end;
 if ishandle(h); delete(h); end;
+
+
+function apie_darbelius(varargin)
+%% apie_darbelius - trumpa informacija apie Darbelius
+function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+vers='Darbeliai';
+try
+    fid_vers=fopen(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai.versija'));
+    vers=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
+    fclose(fid_vers); 
+catch
+end;
+
+if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
+    antr='Apie „Darbelius“';
+else
+    antr=[lokaliz('Apie') ' Darbeliai'];
+end;
+
+msg={vers 
+    ' ' 
+    '(c) 2014-2015 Mindaugas Baranauskas'
+    ['' 109 105 110 100 97 117 103 97 115 46 98 97 114 97 110 97 117 115  107 97 115 64 103 102 46 118 117 46 108 116] };
+
+% % Ženkliukas
+% try
+%     h=msgbox(' ', antr);
+%     [ic,map]=imread(... %fullfile(matlabroot, 'toolbox', 'matlab', 'icons', 'csh_icon.png'),...
+%         fullfile(matlabroot, 'toolbox', 'shared', 'controllib', 'general', 'resources', 'toolstrip_icons', 'Help_24.png'),...
+%         'BackgroundColor',get(h,'Color'));
+%     ic={'custom',ic,map};
+% catch
+%    ic={'help'};
+%end;
+
+s.Interpreter='none';
+s.WindowStyle='replace';
+%msgbox(msg, antr, ic{:}, s);
+msgbox(msg, antr, s);
 
