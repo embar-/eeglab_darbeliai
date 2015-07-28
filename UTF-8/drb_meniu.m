@@ -256,15 +256,9 @@ eval( com );
 
 function drb_meniu_veiksmai(hObject, eventdata, handles, darbas, varargin) %#ok
 handles.meniu_veiksmai = uimenu(handles.figure1,'Label',lokaliz('Veiksmai'),'Tag','m_Veiksmai');
-uimenu(handles.meniu_veiksmai, 'Accelerator','L', 'Label', lokaliz('Load into EEGLAB'), ...
-    'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab'}  );
-uimenu(handles.meniu_veiksmai, 'Accelerator','P', 'Label', lokaliz('Preview data in EEGLAB'), ...
-    'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab', ...
-    'command', 'eegplot( EEG(end).data, ''srate'', EEG(end).srate, ''eloc_file'', EEG(end).chanlocs, ''title'', EEG(end).setname, ''submean'',''on''); '}  );
-% eegplot( EEG.data, 'srate', EEG.srate, 'title', 'Black = ; red =', 'limits', [EEG.xmin EEG.xmax]*1000, 'data2', EEG2.data); 
 if ~ismember(darbas, {'pop_pervadinimas'})
 handles.meniu_veiksmai_fltr_rod=...
-uimenu(handles.meniu_veiksmai, 'separator','on', 'Label', lokaliz('Rodyti rinkmenas is'));
+uimenu(handles.meniu_veiksmai, 'Label', lokaliz('Rodyti rinkmenas is'));
 uimenu(handles.meniu_veiksmai_fltr_rod, 'Label', lokaliz('katalogo virs'), ...
     'callback', {@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_fltr_rod', darbas, '..'}  );
 uimenu(handles.meniu_veiksmai_fltr_rod, 'Label', lokaliz('katalogu lygiagreciai'), ...
@@ -272,6 +266,18 @@ uimenu(handles.meniu_veiksmai_fltr_rod, 'Label', lokaliz('katalogu lygiagreciai'
 uimenu(handles.meniu_veiksmai_fltr_rod, 'Label', lokaliz('katalogu po'), ...
     'callback', {@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_fltr_rod', darbas, '*'}  );
 end;
+uimenu(handles.meniu_veiksmai, 'separator','on', 'Accelerator','L', 'Label', lokaliz('Load into EEGLAB'), ...
+    'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab'}  );
+uimenu(handles.meniu_veiksmai, 'Accelerator','P', 'Label', lokaliz('Preview data in EEGLAB'), ...
+    'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab', ...
+    'command', 'eegplot( EEG(end).data, ''srate'', EEG(end).srate, ''eloc_file'', EEG(end).chanlocs, ''title'', EEG(end).setname, ''submean'',''on''); '}  );
+% eegplot( EEG.data, 'srate', EEG.srate, 'title', 'Black = ; red =', 'limits', [EEG.xmin EEG.xmax]*1000, 'data2', EEG2.data); 
+
+uimenu(handles.meniu_veiksmai, 'Label', lokaliz('Atverti ikelimo kataloga per OS'), 'separator','on', ...
+    'callback', {@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_atverti_aplanka_os', darbas, 'ivestis'}  );
+uimenu(handles.meniu_veiksmai, 'Label', lokaliz('Atverti saugojimo kataloga per OS'), ...
+    'callback', {@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_atverti_aplanka_os', darbas, 'isvestis'}  );
+
 
 
 function drb_meniu_veiksmai_fltr_rod(hObject, eventdata, handles, darbas, fltr_tarp, varargin) %#ok
@@ -279,4 +285,46 @@ fltr_rod = get(handles.edit_failu_filtras1, 'String');
 fltr_rod = [fltr_rod ';.' filesep fltr_tarp filesep fltr_rod ];
 set(handles.edit_failu_filtras1, 'String', fltr_rod);
 nukreipimas_gui2(hObject, eventdata, handles, darbas, 'atnaujink_rodomus_failus');
+
+
+function drb_meniu_veiksmai_atverti_aplanka_os(hObject, eventdata, handles, darbas, ivestis_ar_isvestis, varargin) %#ok
+% Katalogą atverti operacinės sistemos failų naršyklėje
+% http://stackoverflow.com/questions/16808965/how-to-open-a-directory-in-the-default-file-manager-from-matlab
+
+if ismember(darbas, {'pop_pervadinimas'});
+    pathin   = get(handles.edit_tikri,'String');
+    pathout  = get(handles.edit_siulomi,'String');
+else
+    pathin   = get(handles.edit1,'String');
+    pathout  = get(handles.edit2,'String');
+end;
+if ismember(ivestis_ar_isvestis, {'2' 'isvestis'});
+    Dir=pathout;
+else
+    Dir=pathin;
+end;
+
+h=statusbar(lokaliz('Palaukite!'));
+statusbar(0.5,h);
+
+if ispc; % Windows PC
+    evalc(['!explorer "' Dir '"']);
+elseif isunix; % Unix or derivative
+    if ismac; % Mac
+        evalc(['!open "' Dir '"']);
+    else % Linux
+        fMs = {...
+            'xdg-open'   % most generic one
+            %'gvfs-open'  % successor of gnome-open
+            %'gnome-open' % older gnome-based systems
+            %'kde-open'   % older KDE systems
+           };
+        for ii=1:length(fMs);
+            C = evalc(['! LD_LIBRARY_PATH=/usr/lib64:/usr/lib ' fMs{ii} ' "'  Dir '"' ]);
+            if isempty(C); break; end;
+        end;
+    end;
+else warning('Unrecognized operating system.');
+end;
+if ishandle(h); delete(h); end;
 
