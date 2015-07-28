@@ -1,4 +1,4 @@
-function drb_parinktys(hObject, eventdata, handles, veiskmas, darbas, varargin)
+function drb_parinktys(hObject, eventdata, handles, veiksmas, darbas, varargin)
 % drb_parinktis_ikelti - „Darbelių“ langų parinkčių įkėlimas
 %
 % (C) 2015 Mindaugas Baranauskas
@@ -44,7 +44,7 @@ end;
 pagr_katalog=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 konfig_rinkm=fullfile(Tikras_Kelias(fullfile(pagr_katalog,'..')),'Darbeliai_config.mat');
 
-switch lower(veiskmas)
+switch lower(veiksmas)
     case {'ikelti'}
         drb_parinktis_ikelti(hObject, eventdata, handles, konfig_rinkm, darbas, rinkinys, varargin{2:end});
     case {'trinti'}
