@@ -397,7 +397,7 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 % Neleisk nieko daryti
 function susaldyk(hObject, eventdata, handles)
 %Neleisti spausti Nuostatų meniu!
-for m_id={'m_Nuostatos' 'm_Darbeliai' 'm_Veiksmai'};
+for m_id={'m_Nuostatos' 'm_Darbeliai'};
     set(findall(handles.figure1,'Type','uimenu','Tag',m_id{1}),'Enable','off');
 end;
 drawnow;
@@ -504,7 +504,7 @@ set(handles.text_darbas,'String',' ');
 set(handles.pushbutton2,'Value',0);
 
 % Leisti spausti Nuostatų meniu!
-for m_id={'m_Nuostatos' 'm_Darbeliai' 'm_Veiksmai'};
+for m_id={'m_Nuostatos' 'm_Darbeliai'};
     set(findall(handles.figure1,'Type','uimenu','Tag',m_id{1}),'Enable','on');
 end;
 drawnow;
@@ -654,7 +654,7 @@ end;
 % Užduočių parinkčių įsiminimas
 parinktis_irasyti(hObject, eventdata, handles, 'paskutinis','');
 %Neleisti spausti Nuostatų meniu!
-for m_id={'m_Nuostatos' 'm_Darbeliai' 'm_Veiksmai'};
+for m_id={'m_Nuostatos' 'm_Darbeliai'};
     set(findall(handles.figure1,'Type','uimenu','Tag',m_id{1}),'Enable','off');
 end;
 drawnow;
@@ -916,40 +916,29 @@ for i=1:Pasirinktu_failu_N;
                         end;
                     end;
                     
+                    [Laikai0,Ivykiai0]=eeg_ivykiu_latenc(EEG);
+                    if isempty(Laikai0); error(lokaliz('No events found.')); end;
+                    QRS_ivykis=get(handles.edit_QRS_ivykis,'String');
+                    rodykles=ismember(Ivykiai0, QRS_ivykis) ;
+                    if isempty(rodykles);
+                        error([lokaliz('No selected events found in selected files.') ' ' QRS_ivykis] );
+                    end;
+                    R_laikai   = Laikai0( rodykles);
+                    kiti_laikai= Laikai0(~rodykles);
+                    kiti_kod   =Ivykiai0(~rodykles);
+                    
                     Reikalingas_kanalas=get(handles.text_kanal,'TooltipString');
                     EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1);
                     if isempty(EKG_kanalas); % nors nenurodytas kanalas, vis tiek ieškoti 'EKG'
                         EKG_kanalas=find(ismember({EEG.chanlocs.labels},'EKG')==1);
                     end;
-                    
-                    QRS_ivykis=get(handles.edit_QRS_ivykis,'String');
-                    ivykiai0={EEG.event.type};
-                    if ~iscellstr(ivykiai0);
-                        ivykiai0=arrayfun(@(i) num2str(i), [1:length(ivykiai0)], 'UniformOutput', false);
-                    end;
-                    tipas_ir_latencija=[ivykiai0',{EEG.event.latency}'];
-                    if isempty(tipas_ir_latencija); error(lokaliz('No events found.')); end;
-                    
-                    if ~ismember(num2str(QRS_ivykis),tipas_ir_latencija(:,1)); error([lokaliz('No selected events found in selected files.') ' ' QRS_ivykis] ); end;
-                    rodykles=ismember(tipas_ir_latencija(:,1),QRS_ivykis) ;
-                    tik_R_idx=cell2mat(tipas_ir_latencija(rodykles,2)) ;
-                    kiti_idx=cell2mat(tipas_ir_latencija(~rodykles,2)) ;
-                    kiti_kod=tipas_ir_latencija(~rodykles,1) ;
-                    %size(tik_R_idx)
-                    R_laikai   =[EEG.times(tik_R_idx)]';
-                    kiti_laikai=[EEG.times(kiti_idx)]' ;
-                    
-                    if isempty(R_laikai);
-                        error('QRS?');
-                    end;
-                    
-                    
+                                        
                     % Atverti dialogą RRI redagavimui
-                    if isempty(EKG_kanalas);
+                    %if isempty(EKG_kanalas);
                         laikai=num2cell(pop_RRI_perziura(R_laikai,1,[],[], kiti_laikai * 0.001 , kiti_kod));
-                    else
-                        laikai=num2cell(pop_RRI_perziura(R_laikai,1, [EEG.data(EKG_kanalas,:)]', EEG.times' * 0.001, kiti_laikai * 0.001 , kiti_kod ));
-                    end;
+                    %else
+                    %    laikai=num2cell(pop_RRI_perziura(R_laikai,1, [EEG.data(EKG_kanalas,:)]', EEG.times' * 0.001, kiti_laikai * 0.001 , kiti_kod ));
+                    %end;
                     
                     if isempty(laikai);
                         error(lokaliz('Programa negavo QRS'));
@@ -1032,13 +1021,9 @@ for i=1:Pasirinktu_failu_N;
                     
                     % Apskaičiuoti
                     QRS_ivykis=get(handles.edit_QRS_ivykis,'String');
-                    tipas_ir_latencija=[{EEG.event.type}',{EEG.event.latency}'];
-                    rodykles=find(ismember(tipas_ir_latencija(:,1),QRS_ivykis)==1) ;
-                    tik_R_idx=cell2mat(tipas_ir_latencija(rodykles,2));
-                    R_laikai=[EEG.times(round(tik_R_idx))]';
-                    
+                    R_laikai=eeg_ivykiu_latenc(EEG, 'type', QRS_ivykis);
                     if isempty(R_laikai);
-                        error('QRS?');
+                        error([lokaliz('No selected events found in selected files.') ' ' QRS_ivykis] );
                     end;
                     
                     % Eksportuoti
@@ -1058,7 +1043,7 @@ for i=1:Pasirinktu_failu_N;
                     end;    
                     
                     dlmwrite(fullfile(KeliasRlaik,RinkmenaRlaik), ...
-                        num2cell(R_laikai),...
+                        num2cell(R_laikai(:)),...
                         'precision','%.3f',...
                         'newline', 'pc') ;
                                         
@@ -1102,15 +1087,11 @@ for i=1:Pasirinktu_failu_N;
                     
                     % Apskaičiuoti
                     QRS_ivykis=get(handles.edit_QRS_ivykis,'String');
-                    tipas_ir_latencija=[{EEG.event.type}',{EEG.event.latency}'];
-                    rodykles=find(ismember(tipas_ir_latencija(:,1),QRS_ivykis)==1) ;
-                    tik_R_idx=cell2mat(tipas_ir_latencija(rodykles,2)) ;
-                    R_laikai=[EEG.times(round(tik_R_idx))]';
-                    RRI=num2cell(diff(R_laikai));
-                    
-                    if isempty(RRI);
-                        error('QRS?');
+                    R_laikai=eeg_ivykiu_latenc(EEG, 'type', QRS_ivykis);
+                    if isempty(R_laikai);
+                        error([lokaliz('No selected events found in selected files.') ' ' QRS_ivykis] );
                     end;
+                    RRI=num2cell(diff(R_laikai(:)));
                     
                     % Eksportuoti
                     Priesaga=(get(handles.edit_eksp_RRI,'String')) ;
@@ -1128,7 +1109,7 @@ for i=1:Pasirinktu_failu_N;
                     end;                        
                     
                     dlmwrite(fullfile(KeliasRRI,RinkmenaRRI), ...
-                        RRI,...
+                        RRI(:),...
                         'precision','%.0f',...
                         'newline', 'pc') ;
                     
