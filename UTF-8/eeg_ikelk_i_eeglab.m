@@ -88,11 +88,13 @@ if Pasirinktu_failu_N > 0 ;
             disp(Rinkmenos2{f,1});
         end;
         disp(' ');
-        global ALLEEG EEG CURRENTSET;
-        ALLEEG=[];
+        global ALLEEG EEG CURRENTSET; ALLEEG=[];
+        persistent SAVITA_KOMANDA; SAVITA_KOMANDA='';
+        komanda=''; try komanda=g(1).command ; catch; end;
+        
         for f=1:Pasirinktu_failu_N;
             EEG = eeg_ikelk(Rinkmenos2{f,2},Rinkmenos2{f,3});
-            try eval(g(1).command) ; catch ; end;
+            SAVITA_KOMANDA=eval2(EEG, komanda, SAVITA_KOMANDA) ;
             [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'study',0,'setname',Rinkmenos2{f,3});
             %[ALLEEG EEG CURRENTSET]=eeg_store(ALLEEG, EEG);
             
@@ -106,7 +108,7 @@ if Pasirinktu_failu_N > 0 ;
         
         [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, Pasirinktu_failu_N,'retrieve',[1:length(ALLEEG)] ,'study',0);
         
-    catch err; Pranesk_apie_klaida(err);
+    catch %err; Pranesk_apie_klaida(err);
     end;
 end;
 eeglab redraw;
@@ -115,3 +117,10 @@ if ishandle(h)
     delete(h);
 end;
 
+function SAVITA_KOMANDA=eval2(EEG, komanda, SAVITA_KOMANDA) %#ok
+try if iscellstr(komanda);
+        komanda=sprintf('%s \n', komanda{:})
+    end;
+    eval(komanda)
+catch err; Pranesk_apie_klaida(err, 'eval2', mfilename, 0);
+end;
