@@ -1,4 +1,4 @@
-function drb_meniu(hObject, eventdata, handles, varargin)
+function drb_meniu(varargin)
 % drb_meniu - bendrų meniu sukūrimas „Darbelių“ languose 
 %
 % (C) 2015 Mindaugas Baranauskas
@@ -36,28 +36,39 @@ function drb_meniu(hObject, eventdata, handles, varargin)
 % Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 %
 %%
-
-if nargin > 3; meniu=varargin{1};
+if nargin > 0; hObject=varargin{1};
+else           hObject=gcf;
+end;
+if nargin > 1; eventdata=varargin{2};
+else           eventdata=[];
+end;
+if nargin > 2; handles=varargin{3};
+else           handles.figure1=gcf;
+end;
+if nargin > 3; meniu=varargin{4};
 else           meniu='visas';
 end;
-if nargin > 4; darbas=varargin{2};
+if nargin > 4; darbas=varargin{5};
 else           darbas='';
 end;
 
 switch lower(meniu)
     case {'darbeliai'}
-        drb_meniu_darbeliai(hObject, eventdata, handles, darbas, varargin(3:end));
+        drb_meniu_darbeliai(hObject, eventdata, handles, darbas, varargin(6:end));
     case {'parinktys'}
-        drb_meniu_parinktys(hObject, eventdata, handles, darbas, varargin(3:end));
+        drb_meniu_parinktys(hObject, eventdata, handles, darbas, varargin(6:end));
     case {'veiksmai'}
-        drb_meniu_veiksmai( hObject, eventdata, handles, darbas, varargin(3:end));
+        drb_meniu_veiksmai( hObject, eventdata, handles, darbas, varargin(6:end));
     case {'apie'}
-        drb_meniu_apie(     hObject, eventdata, handles, darbas, varargin(3:end));
+        drb_meniu_apie(     hObject, eventdata, handles, darbas, varargin(6:end));
     case {'visas'}
-        drb_meniu_darbeliai(hObject, eventdata, handles, darbas, varargin(3:end));
-        drb_meniu_parinktys(hObject, eventdata, handles, darbas, varargin(3:end));
-        drb_meniu_veiksmai( hObject, eventdata, handles, darbas, varargin(3:end));
-        drb_meniu_apie(     hObject, eventdata, handles, darbas, varargin(3:end));
+        drb_meniu_darbeliai(hObject, eventdata, handles, darbas, varargin(6:end));
+        drb_meniu_parinktys(hObject, eventdata, handles, darbas, varargin(6:end));
+        drb_meniu_veiksmai( hObject, eventdata, handles, darbas, varargin(6:end));
+        drb_meniu_apie(     hObject, eventdata, handles, darbas, varargin(6:end));
+    otherwise
+        warning(lokaliz('Netinkami parametrai'));
+        help(mfilename);
 end
 
 function drb_meniu_darbeliai(hObject, eventdata, handles, darbas, varargin) %#ok
