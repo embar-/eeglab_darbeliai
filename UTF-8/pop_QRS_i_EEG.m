@@ -916,29 +916,48 @@ for i=1:Pasirinktu_failu_N;
                         end;
                     end;
                     
-                    [Laikai0,Ivykiai0]=eeg_ivykiu_latenc(EEG);
+                    [Laikai0,Ivykiai0,~,Poslink0]=eeg_ivykiu_latenc(EEG);
                     if isempty(Laikai0); error(lokaliz('No events found.')); end;
                     QRS_ivykis=get(handles.edit_QRS_ivykis,'String');
                     rodykles=ismember(Ivykiai0, QRS_ivykis) ;
                     if isempty(rodykles);
                         error([lokaliz('No selected events found in selected files.') ' ' QRS_ivykis] );
                     end;
-                    R_laikai   = Laikai0( rodykles);
-                    kiti_laikai= Laikai0(~rodykles);
-                    kiti_kod   =Ivykiai0(~rodykles);
+                    R_laikai    = Laikai0( rodykles);
+                    
+                    rodykles_kt =~ismember(Ivykiai0, {QRS_ivykis 'boundary'}) ;
+                    kiti_laikai =  Laikai0(rodykles_kt);
+                    kiti_kod    = Ivykiai0(rodykles_kt);
                     
                     Reikalingas_kanalas=get(handles.text_kanal,'TooltipString');
                     EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1);
                     if isempty(EKG_kanalas); % nors nenurodytas kanalas, vis tiek ieškoti 'EKG'
                         EKG_kanalas=find(ismember({EEG.chanlocs.labels},'EKG')==1);
                     end;
-                                        
+                    if ~isempty(EKG_kanalas);
+                        EKG_laikai=EEG.times;
+                        bndrs=find(ismember(Ivykiai0,{'boundary'}));
+                        bndrs_lat_orig=Laikai0(bndrs)-Poslink0(bndrs);
+                        if any((bndrs_lat_orig < max(EKG_laikai)) > min(EKG_laikai));
+                            warning(lokaliz('Record is not contiguous!'));
+                        end;
+                        bndrs_n=find(bndrs_lat_orig(:)'<max(EKG_laikai),1,'last');
+                        if bndrs_n;
+                            EKG_i=EKG_laikai>bndrs_lat_orig(bndrs_n);
+                            EKG_laikai(EKG_i)=EKG_laikai(EKG_i)+Poslink0(bndrs(bndrs_n));
+                            for i=bndrs_n-(0:bndrs_n-2);
+                                EKG_i=EKG_laikai(EKG_laikai<bndrs_lat_orig(i))>bndrs_lat_orig(i-1);
+                                EKG_laikai(EKG_i)=EKG_laikai(EKG_i)+Poslink0(bndrs(i));
+                            end;
+                        end;
+                    end;
+                    
                     % Atverti dialogą RRI redagavimui
-                    %if isempty(EKG_kanalas);
+                    if isempty(EKG_kanalas);
                         laikai=num2cell(pop_RRI_perziura(R_laikai,1,[],[], kiti_laikai * 0.001 , kiti_kod));
-                    %else
-                    %    laikai=num2cell(pop_RRI_perziura(R_laikai,1, [EEG.data(EKG_kanalas,:)]', EEG.times' * 0.001, kiti_laikai * 0.001 , kiti_kod ));
-                    %end;
+                    else
+                        laikai=num2cell(pop_RRI_perziura(R_laikai,1, [EEG.data(EKG_kanalas,:)]', EKG_laikai' * 0.001, kiti_laikai * 0.001 , kiti_kod ));
+                    end;
                     
                     if isempty(laikai);
                         error(lokaliz('Programa negavo QRS'));
