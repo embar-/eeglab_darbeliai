@@ -1,4 +1,4 @@
-function [Laikai, Tipai, Rodykles]=eeg_ivykiu_latenc(EEG, varargin)
+function [Laikai, Tipai, Rodykles, Laiku_skirtumas]=eeg_ivykiu_latenc(EEG, varargin)
 % eeg_ivykiu_latenc - įvykių latencija, atsižvelgiant į karpymus (boundary)
 % [Laikai, Tipai, Rodykles] = eeg_ivykiu_latenc(EEG, 'type', IVYKIS) 
 % [Laikai, Tipai, Rodykles] = eeg_ivykiu_latenc(EEG, 'index', INDEKSAI) 
@@ -42,7 +42,7 @@ function [Laikai, Tipai, Rodykles]=eeg_ivykiu_latenc(EEG, varargin)
 %
 %%
 
-Laikai=[]; Tipai={}; Rodykles=[]; 
+Laikai=[]; Tipai={}; Rodykles=[]; Laiku_skirtumas=[];
 try
     g=struct(varargin{:});
 catch err; Pranesk_apie_klaida(err, mfilename, '?', 0);
@@ -81,7 +81,6 @@ if ~isempty(Ivykiai3)
 end;
 
 Tipai=tipas_ir_latencija(Rodykles,1) ;
-
 Laiko_idx=cell2mat(tipas_ir_latencija(Rodykles,2)) ;
 if isinteger(Laiko_idx);
     Laikai   = EEG.times(Laiko_idx)'; % ms
@@ -89,6 +88,7 @@ else
     %Laikai = eeg_point2lat( Laiko_idx, [], EEG.srate, [EEG.xmin EEG.xmax]*1000, 1E-3);
     Laikai   = (Laiko_idx-1)/EEG.srate*1000+EEG.xmin*1000; % ms
 end;
+Laiku_skirtumas=zeros(length(Rodykles),1);
 
 try if g(1).boundary == 0 ; return; end; catch; end; % Neprašo atsižvelgti į karpymą
 
@@ -98,8 +98,10 @@ if isempty(rodykles_bnd); return; end; % Jei nekarpyta – galima baigti
 trukmes_bnd=[EEG.event(rodykles_bnd).duration]/EEG.srate*1000;
 rodykles_bnd_i=find(rodykles_bnd < max(Rodykles));
 for bnd_i=rodykles_bnd_i(:)';
-    Laikai(Rodykles>rodykles_bnd(bnd_i))=...
-    Laikai(Rodykles>rodykles_bnd(bnd_i))+trukmes_bnd(bnd_i);
+    Laiku_skirtumas(Rodykles>rodykles_bnd(bnd_i))=...
+    Laiku_skirtumas(Rodykles>rodykles_bnd(bnd_i))+trukmes_bnd(bnd_i);
 end;
-    
+
+Laikai=Laikai+Laiku_skirtumas;
+
 return;
