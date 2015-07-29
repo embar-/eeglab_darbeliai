@@ -987,7 +987,7 @@ handles.t=tic;
 guidata(handles.figure1, handles);
 refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
-%assignin('base','handles',handles);
+assignin('base','handles',handles);
 figure(handles.figure1);
 anotacijos_atnaujinimas(hObject, eventdata, handles);
 %set(handles.figure1,'pointer',Peliukas);
@@ -1692,29 +1692,28 @@ try
         error(lokaliz('Here you can not use epoched data!'));
     end;
     
-    ivykiai={EEG.event.type};
-    if ~iscellstr(ivykiai);
-        ivykiai=arrayfun(@(i) num2str(i), [1:length(ivykiai)], 'UniformOutput', false);
-    end;
-    bndrs=find(ismember(ivykiai,{'boundary'}));
-    if isempty(setdiff(bndrs,[1 length(EEG.event)]));
-        di=1:EEG.pnts;
-    else
-        warning(lokaliz('Record is not contiguous!'));
-        lat=[EEG.event(bndrs).latency]' / EEG.srate;
-        lat=[EEG.xmin ; lat ; EEG.xmax];
-        bloku_sar=arrayfun(@(i) sprintf('%d. %.3f - %.3f', ...
-            i, lat(i),lat(i+1)), [1:length(lat)-1], 'UniformOutput', false);
-        [~,blokas]=max(diff(lat));
-        blokas=listdlg(...
-            'ListString',bloku_sar,...
-            'SelectionMode','single',...
-            'InitialValue',blokas,...
-            'PromptString',lokaliz('Please select block'),...
-            'OKString',lokaliz('OK'),...
-            'CancelString',lokaliz('Cancel'));
-        di=find((EEG.times/1000)    <lat(blokas+1));
-        di=find((EEG.times(di)/1000)>lat(blokas));
+    [iv_latenc,iv_tipai,~,iv_poslink]=eeg_ivykiu_latenc(EEG);
+    bndrs=find(ismember(iv_tipai,{'boundary'}));
+    di=1:EEG.pnts;
+    if ~isempty(bndrs);
+        bndrs_=bndrs(isnan([EEG.event(bndrs).duration]));
+        if ~isempty(bndrs_);
+            warning(lokaliz('Record is not contiguous!'));
+            lat=([EEG.event(bndrs_).latency]' - 1) / EEG.srate;
+            lat=[EEG.xmin ; lat ; EEG.xmax];
+            bloku_sar=arrayfun(@(i) sprintf('%d. %.3f - %.3f', ...
+                i, lat(i),lat(i+1)), [1:length(lat)-1], 'UniformOutput', false);
+            [~,blokas]=max(diff(lat));
+            blokas=listdlg(...
+                'ListString',bloku_sar,...
+                'SelectionMode','single',...
+                'InitialValue',blokas,...
+                'PromptString',lokaliz('Please select block'),...
+                'OKString',lokaliz('OK'),...
+                'CancelString',lokaliz('Cancel'));
+            di=find((EEG.times/1000)    <lat(blokas+1));
+            di=find((EEG.times(di)/1000)>lat(blokas));
+        end;
     end;
     
     Kanalu_N=EEG.nbchan;    
@@ -1738,10 +1737,10 @@ try
         error('EEG.nbchan=0');
     end;
     
-    Ivykiai_=unique(ivykiai(find(~ismember(ivykiai,'boundary'))));
+    Ivykiai_=unique(iv_tipai(~ismember(iv_tipai,'boundary')));
     if ~isempty(Ivykiai_);
         ivyk_QRSi=find(ismember(Ivykiai_,{'R' 'r' 'QRS'}));
-        if ~isempty(ivyk_QRSi); ivyk_QRS=ivyk_QRSi(1); else ivyk_QRSi=1; end;
+        if ~isempty(ivyk_QRSi); ivyk_QRSi=ivyk_QRSi(1); else ivyk_QRSi=1; end;
         ivyk_QRSi=listdlg(...
             'ListString',Ivykiai_,...
             'SelectionMode','single',...
@@ -1768,21 +1767,32 @@ try
     
     EKG=[double(EEG.data(KanaloNr,di))]';
     if ekg_apversta(EKG,EKG_Hz,0); EKG=-EKG; end;
-    EKG_laikai=[EEG.times(di)/1000]';    
+    EKG_laikai=[EEG.times(di)];
+    bndrs_lat_orig=iv_latenc(bndrs)-iv_poslink(bndrs);
+    if any((bndrs_lat_orig < max(EKG_laikai)) > min(EKG_laikai));
+        warning(lokaliz('Record is not contiguous!'));
+    end;
+    bndrs_n=find(bndrs_lat_orig(:)'<max(EKG_laikai),1,'last');
+    if bndrs_n;
+        EKG_i=EKG_laikai>bndrs_lat_orig(bndrs_n);
+        EKG_laikai(EKG_i)=EKG_laikai(EKG_i)+iv_poslink(bndrs(bndrs_n));
+        for i=bndrs_n-(0:bndrs_n-2);
+            EKG_i=EKG_laikai(EKG_laikai<bndrs_lat_orig(i))>bndrs_lat_orig(i-1);
+            EKG_laikai(EKG_i)=EKG_laikai(EKG_i)+iv_poslink(bndrs(i));
+        end;
+    end;
     handles.EKG=EKG;
-    handles.EKG_laikai=EKG_laikai;
+    handles.EKG_laikai=[EKG_laikai / 1000]';
     handles.EKG_Hz=EKG_Hz;
-    handles.zmkl_pvd={EEG.event(find(ismember(ivykiai,ivyk_kit))).type}';
-    handles.zmkl_lks=[EEG.event(find(ismember(ivykiai,ivyk_kit))).latency]' ./ EEG.srate; % sekundėmis
+    zmkls=ismember(iv_tipai,ivyk_kit);
+    handles.zmkl_lks=iv_latenc(zmkls) / 1000; % sekundėmis
+    handles.zmkl_pvd=iv_tipai(zmkls);
     if isempty(ivyk_QRS);
         try   Aptikti_EKG_QRS_Callback2(hObject, eventdata, handles);
         catch err; Pranesk_apie_klaida(err, 'EKG QRS aptikimas', f, 0);
         end;
     else
-        tik_R_idx=find(ismember(ivykiai,{ivyk_QRS}));
-        %Laikai=[EEG.event(tik_R_idx).latency]' .* 1000 ./ EEG.srate; % milisekundėmis - netikslus, esant 1024 diskr.dažniui, 1 ms daugiau pateikia
-        tik_R_t_idx=[EEG.event(tik_R_idx).latency];
-        Laikai=[EEG.times(tik_R_t_idx)]'; % tikslus pagal EEGLAB
+        Laikai=eeg_ivykiu_latenc(EEG, 'type', ivyk_QRS);
         %if size(Laikai,2) > 1; Laikai=[Laikai]'; end;
         set(handles.axes_rri,'UserData',Laikai);
     end;
