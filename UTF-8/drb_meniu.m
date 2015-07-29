@@ -138,11 +138,16 @@ eval([ naujas_darbas '(darbeliu_param{:}); ']);
 
 function drb_meniu_apie(hObject, eventdata, handles, darbas, varargin) %#ok
 %% Apie
-lt=strcmp(char(java.util.Locale.getDefault()),'lt_LT');
+OS=fastif(ispc, 'Windows', fastif(isunix, fastif(ismac, 'MAC', 'Linux'), ''));
+lc=char(java.util.Locale.getDefault());
+lt=strcmp(lc,'lt_LT');
 if lt; url1='https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT';
 else   url1='https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN';
 end;
-    
+
+pagr_katalog=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+konfig_rinkm=fullfile(Tikras_Kelias(fullfile(pagr_katalog,'..')),'Darbeliai_config.mat');
+
 switch darbas
     case {'pop_pervadinimas'}
         if lt; url2='https://github.com/embar-/eeglab_darbeliai/wiki/3.2.%20Pervadinimas,%20informacija';
@@ -187,8 +192,14 @@ uimenu( handles.meniu_apie, 'Accelerator','H', 'Label', [lokaliz('Apie dialogo l
     'callback', [ 'web(''' url2 ''',''-browser'') ;' ]  );
 uimenu( handles.meniu_apie, 'Label', [lokaliz('Zinynas') ' ' lokaliz('(internete)') ], ...
     'callback', [ 'web(''' url1 ''',''-browser'') ;' ]  );
-uimenu( handles.meniu_apie, 'separator','on', 'Label', lokaliz('Pranesti apie klaida'), ...
-    'callback', [ 'web(''https://github.com/embar-/eeglab_darbeliai/issues/new'',''-browser'') ;' ]  );
+uimenu( handles.meniu_apie, 'separator','on', 'Label', [lokaliz('Pranesti apie klaida') ' ' lokaliz('(internete)') ], ...
+    'callback',   'web(''https://github.com/embar-/eeglab_darbeliai/issues/new'',''-browser'') ;'   );
+uimenu( handles.meniu_apie, 'Label', [lokaliz('Pranesti apie klaida') ' ' lokaliz('(el. pastu)') ], ...
+    'callback', [ 'web(''mailto:' 109 105 110 100 97 117 103 97 115 46 98 97 114 97 110 97 117 115  107 97 115 64 103 102 46 118 117 46 108 116 ...
+    '?Subject=' Darbeliu_versija '&body=%0A%0AInfo:%0A----%0A' darbas '%0A' Darbeliu_versija  '%0A' ...
+    'EEGLAB: ' eeg_getversion '%0A' 'MATLAB: ' version '%0A' OS '%0A' lc ' ' feature('DefaultCharacterSet') '%0A%0A' lokaliz('Iterpkite:') '%0A' ...
+    fastif( exist(konfig_rinkm, 'file' ) == 2, ['<' konfig_rinkm '>%0A' ], '') '%0A' ... 
+    lokaliz('MATLAB output messages') ' (' lokaliz('Command window') '): %0A%0A%0A%0A%0A'') ;' ]  );
 if exist('atnaujinimas','file') == 2;
     uimenu( handles.meniu_apie, 'Label', lokaliz('Check for updates'), ...
         'Callback', 'pop_atnaujinimas ;'  );    
@@ -363,22 +374,13 @@ if ishandle(h); delete(h); end;
 
 function apie_darbelius(varargin)
 %% apie_darbelius - trumpa informacija apie Darbelius
-function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-vers='Darbeliai';
-try
-    fid_vers=fopen(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai.versija'));
-    vers=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
-    fclose(fid_vers); 
-catch
-end;
-
 if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
     antr='Apie „Darbelius“';
 else
     antr=[lokaliz('Apie') ' Darbeliai'];
 end;
 
-msg={vers 
+msg={Darbeliu_versija 
     ' ' 
     '(c) 2014-2015 Mindaugas Baranauskas'
     ['' 109 105 110 100 97 117 103 97 115 46 98 97 114 97 110 97 117 115  107 97 115 64 103 102 46 118 117 46 108 116] };
@@ -398,4 +400,15 @@ s.Interpreter='none';
 s.WindowStyle='replace';
 %msgbox(msg, antr, ic{:}, s);
 msgbox(msg, antr, s);
+
+
+function versija=Darbeliu_versija
+function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+versija='Darbeliai';
+try
+    fid_vers=fopen(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai.versija'));
+    versija=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
+    fclose(fid_vers); 
+catch
+end;
 
