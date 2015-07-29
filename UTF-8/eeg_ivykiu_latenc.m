@@ -96,10 +96,10 @@ rodykles_bnd=find(ismember(tipas_ir_latencija(:,1),{'boundary'}));
 if isempty(rodykles_bnd); return; end; % Jei nekarpyta – galima baigti
 
 trukmes_bnd=[EEG.event(rodykles_bnd).duration]/EEG.srate*1000;
-rodykles_bnd_i=find(rodykles_bnd < max(Rodykles));
+rodykles_bnd_i=find(rodykles_bnd <= max(Rodykles));
 for bnd_i=rodykles_bnd_i(:)';
-    Laiku_skirtumas(Rodykles>rodykles_bnd(bnd_i))=...
-    Laiku_skirtumas(Rodykles>rodykles_bnd(bnd_i))+trukmes_bnd(bnd_i);
+    Laiku_skirtumas(Rodykles >= rodykles_bnd(bnd_i))=...
+    Laiku_skirtumas(Rodykles >= rodykles_bnd(bnd_i))+trukmes_bnd(bnd_i);
 end;
 
 Laikai=Laikai+Laiku_skirtumas;

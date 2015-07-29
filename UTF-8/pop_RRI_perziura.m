@@ -1767,7 +1767,7 @@ try
     
     EKG=[double(EEG.data(KanaloNr,di))]';
     if ekg_apversta(EKG,EKG_Hz,0); EKG=-EKG; end;
-    EKG_laikai=[EEG.times(di)]; % milisekundėmis
+    EKG_laikai=[EEG.times(di)]; % milisekundėmis, bet tik laikinai
     bndrs_lat_orig=iv_latenc(bndrs)-iv_poslink(bndrs);
     if any((bndrs_lat_orig < max(EKG_laikai)) > min(EKG_laikai));
         warning(lokaliz('Record is not contiguous!'));
@@ -1776,8 +1776,8 @@ try
     if bndrs_n;
         EKG_i=EKG_laikai>bndrs_lat_orig(bndrs_n);
         EKG_laikai(EKG_i)=EKG_laikai(EKG_i)+iv_poslink(bndrs(bndrs_n));
-        for i=bndrs_n-(0:bndrs_n-2);
-            EKG_i=EKG_laikai(EKG_laikai<bndrs_lat_orig(i))>bndrs_lat_orig(i-1);
+        for i=bndrs_n-(1:bndrs_n-1);
+            EKG_i=EKG_laikai(EKG_laikai<bndrs_lat_orig(i+1))>bndrs_lat_orig(i);
             EKG_laikai(EKG_i)=EKG_laikai(EKG_i)+iv_poslink(bndrs(i));
         end;
     end;
