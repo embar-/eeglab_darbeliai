@@ -1702,17 +1702,17 @@ try
             lat=([EEG.event(bndrs_).latency]' - 1) / EEG.srate;
             lat=[EEG.xmin ; lat ; EEG.xmax];
             bloku_sar=arrayfun(@(i) sprintf('%d. %.3f - %.3f', ...
-                i, lat(i),lat(i+1)), [1:length(lat)-1], 'UniformOutput', false);
-            [~,blokas]=max(diff(lat));
-            blokas=listdlg(...
-                'ListString',bloku_sar,...
-                'SelectionMode','single',...
-                'InitialValue',blokas,...
-                'PromptString',lokaliz('Please select block'),...
-                'OKString',lokaliz('OK'),...
-                'CancelString',lokaliz('Cancel'));
-            di=find((EEG.times/1000)    <lat(blokas+1));
-            di=find((EEG.times(di)/1000)>lat(blokas));
+                i, lat(i),lat(i+1)), [1:length(lat)-1], 'UniformOutput', false)
+            %[~,blokas]=max(diff(lat));
+            %blokas=listdlg(...
+            %    'ListString',bloku_sar,...
+            %    'SelectionMode','single',...
+            %    'InitialValue',blokas,...
+            %    'PromptString',lokaliz('Please select block'),...
+            %    'OKString',lokaliz('OK'),...
+            %    'CancelString',lokaliz('Cancel'));
+            %di=find((EEG.times/1000)    <lat(blokas+1));
+            %di=find((EEG.times(di)/1000)>lat(blokas));
         end;
     end;
     
@@ -1767,7 +1767,7 @@ try
     
     EKG=[double(EEG.data(KanaloNr,di))]';
     if ekg_apversta(EKG,EKG_Hz,0); EKG=-EKG; end;
-    EKG_laikai=[EEG.times(di)];
+    EKG_laikai=[EEG.times(di)]; % milisekundėmis
     bndrs_lat_orig=iv_latenc(bndrs)-iv_poslink(bndrs);
     if any((bndrs_lat_orig < max(EKG_laikai)) > min(EKG_laikai));
         warning(lokaliz('Record is not contiguous!'));
@@ -1782,7 +1782,7 @@ try
         end;
     end;
     handles.EKG=EKG;
-    handles.EKG_laikai=[EKG_laikai / 1000]';
+    handles.EKG_laikai=[EKG_laikai / 1000]'; % sekundėmis
     handles.EKG_Hz=EKG_Hz;
     zmkls=ismember(iv_tipai,ivyk_kit);
     handles.zmkl_lks=iv_latenc(zmkls) / 1000; % sekundėmis
@@ -2700,7 +2700,7 @@ else
     h=[handles.RRI_lin handles.RRI_tsk ];
 end;
 bd=get(h,'BrushData');
-assignin('base','bd',bd);
+%assignin('base','bd',bd);
 bd=sum(cell2mat(bd),1);
 Laikai=Laikai(find(bd));
 t=max(Laikai(find(Laikai < (xvid-0.001))));
