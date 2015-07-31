@@ -137,7 +137,7 @@ else
             handles.EKG_Hz=handles.EKG_laikai;
             handles.EKG_laikai=(1:length(handles.EKG)) / handles.EKG_laikai;
         else
-            handles.EKG_Hz=(length(handles.EKG_laikai)-1) / (handles.EKG_laikai(end)-handles.EKG_laikai(1));
+            handles.EKG_Hz= round(1/min(diff(handles.EKG_laikai))); %(length(handles.EKG_laikai)-1) / (handles.EKG_laikai(end)-handles.EKG_laikai(1));
         end;
         if ekg_apversta(handles.EKG,handles.EKG_Hz,0); handles.EKG=-handles.EKG; end;
         if size(handles.EKG_laikai,2) > 1; handles.EKG_laikai=handles.EKG_laikai' ; end;
