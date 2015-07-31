@@ -1692,7 +1692,7 @@ try
         error(lokaliz('Here you can not use epoched data!'));
     end;
     
-    [iv_latenc,iv_tipai,~,iv_poslink]=eeg_ivykiu_latenc(EEG);
+    [iv_latenc,iv_tipai,~,~,EKG_laikai]=eeg_ivykiu_latenc(EEG);
     bndrs=find(ismember(iv_tipai,{'boundary'}));
     di=1:EEG.pnts;
     if ~isempty(bndrs);
@@ -1767,20 +1767,6 @@ try
     
     EKG=[double(EEG.data(KanaloNr,di))]';
     if ekg_apversta(EKG,EKG_Hz,0); EKG=-EKG; end;
-    EKG_laikai=[EEG.times(di)]; % milisekundėmis, bet tik laikinai
-    bndrs_lat_orig=iv_latenc(bndrs)-iv_poslink(bndrs);
-    if any((bndrs_lat_orig < max(EKG_laikai)) > min(EKG_laikai));
-        warning(lokaliz('Record is not contiguous!'));
-    end;
-    bndrs_n=find(bndrs_lat_orig(:)'<max(EKG_laikai),1,'last');
-    if bndrs_n;
-        EKG_i=EKG_laikai>bndrs_lat_orig(bndrs_n);
-        EKG_laikai(EKG_i)=EKG_laikai(EKG_i)+iv_poslink(bndrs(bndrs_n));
-        for i=bndrs_n-(1:bndrs_n-1);
-            EKG_i=EKG_laikai(EKG_laikai<bndrs_lat_orig(i+1))>bndrs_lat_orig(i);
-            EKG_laikai(EKG_i)=EKG_laikai(EKG_i)+iv_poslink(bndrs(i));
-        end;
-    end;
     handles.EKG=EKG;
     handles.EKG_laikai=[EKG_laikai / 1000]'; % sekundėmis
     handles.EKG_Hz=EKG_Hz;
