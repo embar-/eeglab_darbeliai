@@ -316,6 +316,20 @@ setappdata(handles.figure1,'ButtonDownFcnY','pop_RRI_perziura(''optimalus_rodyma
 handles.pradines_fig=findobj(handles.figure1);
 setappdata(handles.figure1,'istorija',struct('RRI','','Laikai','','Nejungti',''));
 setappdata(handles.figure1,'istorijosNr',0);
+susaldyk(hObject, eventdata, handles);
+
+%% Grafikai
+handles=pirmieji_grafikai(hObject, eventdata, handles);
+susaldyk(hObject, eventdata, handles);
+
+% Įtartinų taškų žymėjimas
+edit_ribos_Callback(hObject, eventdata, handles);
+
+%Kita
+set(handles.edit_ribos,'UserData',1);
+set(handles.pushbutton_atnaujinti,'UserData',1);
+%set(handles.figure1,'toolbar','figure');
+set(handles.pushbutton_OK,'Visible', fastif(get(handles.figure1,'userdata'),'on','off'));
 
 %% Anotacijų paruošimas
 handles.anot=RRI_perziuros_anotacija('prideti',handles.figure1,handles.axes_rri); % sukurti
@@ -337,26 +351,12 @@ setappdata(handles.axes_rri,'MouseInMainAxesFnc_BrushModeCont',{'eval', [ ...
     'set(findobj(hFig,''Tag'',''anotacijos''),''Enable'',''off''); ' ...
     'brush(hFig,''on''); ' ]});
 
-%% Grafikai
-handles=pirmieji_grafikai(hObject, eventdata, handles);
-
-% Įtartinų taškų žymėjimas
-edit_ribos_Callback(hObject, eventdata, handles);
-
-%Kita
-set(handles.edit_ribos,'UserData',1);
-set(handles.pushbutton_atnaujinti,'UserData',1);
-%set(handles.figure1,'toolbar','figure');
-
 % Update handles structure
 guidata(handles.figure1, handles);
 
 % UIWAIT makes pop_RRI_perziura wait for user response (see UIRESUME)
 if get(handles.figure1,'userdata');
-    set(handles.pushbutton_OK,'Visible','on');
     uiwait(handles.figure1);
-else
-    set(handles.pushbutton_OK,'Visible','off');
 end;
 
 %%
