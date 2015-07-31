@@ -1,10 +1,10 @@
-function [ivLaikai, ivTipai, ivRodykles, ivLaikuSkirtumai]=eeg_ivykiu_latenc(EEG, varargin)
+function [ivLaikai, ivTipai, ivRodykles, ivLaikuSkirtumai, Laikai]=eeg_ivykiu_latenc(EEG, varargin)
 % eeg_ivykiu_latenc - įvykių latencija, atsižvelgiant į karpymus (boundary)
-% [Laikai, Tipai, Rodykles] = eeg_ivykiu_latenc(EEG, 'type', IVYKIS) 
-% [Laikai, Tipai, Rodykles] = eeg_ivykiu_latenc(EEG, 'index', INDEKSAI) 
+% [Ivykiu_Laikai, Ivykiu_Tipai, Ivykiu_Rodykles, Laikai] = eeg_ivykiu_latenc(EEG, 'type', IVYKIS) 
+% [Ivykiu_Laikai, Ivykiu_Tipai, Ivykiu_Rodykles, Laikai] = eeg_ivykiu_latenc(EEG, 'index', INDEKSAI) 
 % 
 % Neatsižvelgiant į karpymus, rezultatas panašus kaip
-% [~, Laikai]=eeg_getepochevent(EEG, IVYKIS);
+% [~, Ivykiu_Laikai]=eeg_getepochevent(EEG, IVYKIS);
 % 
 % (C) 2015 Mindaugas Baranauskas
 
@@ -42,7 +42,7 @@ function [ivLaikai, ivTipai, ivRodykles, ivLaikuSkirtumai]=eeg_ivykiu_latenc(EEG
 %
 %%
 
-ivLaikai=[]; ivTipai={}; ivRodykles=[]; ivLaikuSkirtumai=[];
+ivLaikai=[]; ivTipai={}; ivRodykles=[]; ivLaikuSkirtumai=[]; Laikai=EEG.times;
 try
     g=struct(varargin{:});
 catch err; Pranesk_apie_klaida(err, mfilename, '?', 0);
@@ -95,13 +95,37 @@ try if g(1).boundary == 0 ; return; end; catch; end; % Neprašo atsižvelgti į 
 rodykles_bnd=find(ismember(tipas_ir_latencija(:,1),{'boundary'}));
 if isempty(rodykles_bnd); return; end; % Jei nekarpyta – galima baigti
 
-trukmes_bnd=[EEG.event(rodykles_bnd).duration]/EEG.srate*1000;
+% Perstumti EEG.event.latency atitikmens reikšmes
+trukmes_bnd=[EEG.event(rodykles_bnd).duration]/EEG.srate*1000; % ms
 rodykles_bnd_i=find(rodykles_bnd <= max(ivRodykles));
 for bnd_i=rodykles_bnd_i(:)';
     ivLaikuSkirtumai(ivRodykles >= rodykles_bnd(bnd_i))=...
     ivLaikuSkirtumai(ivRodykles >= rodykles_bnd(bnd_i))+trukmes_bnd(bnd_i);
 end;
 
+bndrs_lat_orig=ivLaikai(rodykles_bnd);
 ivLaikai = ivLaikai + ivLaikuSkirtumai;
+
+% Pakeisti EEG.times atitikmens reikšmes
+
+if any((bndrs_lat_orig < max(Laikai)) > min(Laikai));
+    try if g(1).warn == 1 ; 
+        warning(lokaliz('Record is not contiguous!'));
+        end;
+    catch
+    end;
+else return;
+end;
+if nargout < 4; return; end;
+
+bndrs_n=find(bndrs_lat_orig(:)'<max(Laikai),1,'last');
+if bndrs_n;
+    ti=Laikai>bndrs_lat_orig(bndrs_n);
+    Laikai(ti)=Laikai(ti)+ivLaikuSkirtumai(rodykles_bnd(bndrs_n));
+    for bi=bndrs_n-(1:bndrs_n-1);
+        ti=Laikai(Laikai<bndrs_lat_orig(bi+1))>bndrs_lat_orig(bi);
+        Laikai(ti)=Laikai(ti)+ivLaikuSkirtumai(rodykles_bnd(bi));
+    end;
+end;
 
 return;
