@@ -116,7 +116,7 @@ if any((bndrs_lat_orig < max(Laikai)) > min(Laikai));
     end;
 else return;
 end;
-if nargout < 4; return; end;
+if nargout < 5; return; end;
 
 bndrs_n=find(bndrs_lat_orig(:)'<max(Laikai),1,'last');
 if bndrs_n;
