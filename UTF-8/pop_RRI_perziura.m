@@ -544,31 +544,29 @@ try
     handles.zmkl=struct;
     for h=[handles.axes_rri];% sklinkAsisX]; 
         axes(h);
-        for i=1:length(handles.zmkl_lks);
-           handles.zmkl(end+1).obj=line('XData',[handles.zmkl_lks(i) handles.zmkl_lks(i)],'YData',ribos,param_liniju{:});
+        zmkl_N=length(handles.zmkl_lks);
+        zmkl_Y=zeros(1, 3*zmkl_N);
+        zmkl_Y((1:zmkl_N)*3)=NaN;
+        zmkl_Y((1:zmkl_N)*3-1)=ribos(1);
+        zmkl_Y((1:zmkl_N)*3-2)=ribos(2);
+        zmkl_X=zeros(1, 3*zmkl_N);
+        for i=1:zmkl_N; j=((i-1)*3+1):i*3;
+           zmkl_X(j)=handles.zmkl_lks(i);
         end;
-        % % Galėjome piešti su plot – bet tada linijas braukia Brush veiksena, jas gali ištrinti
-%         if length(handles.zmkl_lks) == 2; % jei lygiai du – kartu braižant bus pasvira linija
-%           for i=[1 2];
-%             handles.zmkl_lin=plot(h,[handles.zmkl_lks(i) handles.zmkl_lks(i)],ribos,param_liniju{:});
-%           end;
-%         else
-%             handles.zmkl_lin=plot(h,[handles.zmkl_lks handles.zmkl_lks],ribos,param_liniju{:});
-%         end;
+        handles.zmkl(end+1).obj=line('XData',zmkl_X,'YData',zmkl_Y,param_liniju{:});
     end;
     axes(handles.axes_rri);
-    if or(vidur - ribos(1) > 300, vidur < 300);
-    handles.zmkl(end+1).obj=text(handles.zmkl_lks,zeros(length(handles.zmkl_lks),1)+ribos(1),handles.zmkl_pvd,...
+    if vidur < 300; % or(vidur - ribos(1) > 500, vidur < 300);
+    handles.zmkl(end+1).obj=text(handles.zmkl_lks,zeros(zmkl_N,1)+ribos(1),handles.zmkl_pvd,...
         'color','b','hittest','off','Tag','Zymeklis','FontUnits','points','FontSize',10,'FontName','Arial','Rotation',90,'HorizontalAlignment','left');
     end;
-    handles.zmkl(end+1).obj=text(handles.zmkl_lks,zeros(length(handles.zmkl_lks),1)+ribos(2),handles.zmkl_pvd,...
+    handles.zmkl(end+1).obj=text(handles.zmkl_lks,zeros(zmkl_N,1)+ribos(2),handles.zmkl_pvd,...
         'color','b','hittest','off','Tag','Zymeklis','FontUnits','points','FontSize',10,'FontName','Arial','Rotation',90,'HorizontalAlignment','right');
     if vidur >= 300;
-    handles.zmkl(end+1).obj=text(handles.zmkl_lks,zeros(length(handles.zmkl_lks),1)+vidur,  handles.zmkl_pvd,...
+    handles.zmkl(end+1).obj=text(handles.zmkl_lks,zeros(zmkl_N,1)+vidur,  handles.zmkl_pvd,...
         'color','b','hittest','off','Tag','Zymeklis','FontUnits','points','FontSize',10,'FontName','Arial','Rotation',90,'HorizontalAlignment','right');
     end;
-catch err;
-    %Pranesk_apie_klaida(err,mfilename,'',0);
+catch %err; Pranesk_apie_klaida(err,mfilename,'',0);
 end;
 %drawnow;
 % %pause(5);
