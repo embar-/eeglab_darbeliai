@@ -987,7 +987,7 @@ handles.t=tic;
 guidata(handles.figure1, handles);
 refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
-assignin('base','handles',handles);
+%assignin('base','handles',handles);
 figure(handles.figure1);
 anotacijos_atnaujinimas(hObject, eventdata, handles);
 %set(handles.figure1,'pointer',Peliukas);
@@ -2707,7 +2707,7 @@ else
     h=[handles.RRI_lin handles.RRI_tsk ];
 end;
 bd=get(h,'BrushData');
-assignin('base','bd',bd);
+%assignin('base','bd',bd);
 bd=sum(cell2mat(bd),1);
 Laikai=Laikai(find(bd));
 t=min(Laikai(find(Laikai > (xvid+0.001))));
