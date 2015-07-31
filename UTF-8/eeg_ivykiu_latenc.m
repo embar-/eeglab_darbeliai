@@ -1,4 +1,4 @@
-function [Laikai, Tipai, Rodykles, Laiku_skirtumas]=eeg_ivykiu_latenc(EEG, varargin)
+function [ivLaikai, ivTipai, ivRodykles, ivLaikuSkirtumai]=eeg_ivykiu_latenc(EEG, varargin)
 % eeg_ivykiu_latenc - įvykių latencija, atsižvelgiant į karpymus (boundary)
 % [Laikai, Tipai, Rodykles] = eeg_ivykiu_latenc(EEG, 'type', IVYKIS) 
 % [Laikai, Tipai, Rodykles] = eeg_ivykiu_latenc(EEG, 'index', INDEKSAI) 
@@ -42,7 +42,7 @@ function [Laikai, Tipai, Rodykles, Laiku_skirtumas]=eeg_ivykiu_latenc(EEG, varar
 %
 %%
 
-Laikai=[]; Tipai={}; Rodykles=[]; Laiku_skirtumas=[];
+ivLaikai=[]; ivTipai={}; ivRodykles=[]; ivLaikuSkirtumai=[];
 try
     g=struct(varargin{:});
 catch err; Pranesk_apie_klaida(err, mfilename, '?', 0);
@@ -55,40 +55,40 @@ end;
 if ~iscellstr(Ivykiai);
     Ivykiai=arrayfun(@(i) num2str(i), 1:length(Ivykiai), 'UniformOutput', false);
 end;
-Rodykles=1:length(Ivykiai);
-tipas_ir_latencija=[Ivykiai', {EEG.event.latency}', num2cell(Rodykles)'];
+ivRodykles=1:length(Ivykiai);
+tipas_ir_latencija=[Ivykiai', {EEG.event.latency}', num2cell(ivRodykles)'];
 
-try Rodykles=find(ismember(Rodykles,[g(1).index])); catch; end;
+try ivRodykles=find(ismember(ivRodykles,[g(1).index])); catch; end;
 
 Ivykiai2={}; try Ivykiai2={g(1).type}; catch; end; % YRA ĮVYKIAI
 if ~isempty(Ivykiai2)
-    rodykles2=ismember(tipas_ir_latencija(Rodykles,1),Ivykiai2) ;
+    rodykles2=ismember(tipas_ir_latencija(ivRodykles,1),Ivykiai2) ;
     if ~any(rodykles2);
-        Rodykles=[]; return;
+        ivRodykles=[]; return;
         %error([lokaliz('No selected events found in selected files.') ' ' Ivykiai2] );
     end;
-    Rodykles=Rodykles(rodykles2);
+    ivRodykles=ivRodykles(rodykles2);
 end;
 
 Ivykiai3={}; try Ivykiai3={g(1).notype}; catch; end; % NĖRA ĮVYKIŲ
 if ~isempty(Ivykiai3)
-    rodykles3=~ismember(tipas_ir_latencija(Rodykles,1),Ivykiai3) ;
+    rodykles3=~ismember(tipas_ir_latencija(ivRodykles,1),Ivykiai3) ;
     if ~any(rodykles3);
-        Rodykles=[]; return;
+        ivRodykles=[]; return;
         %error([lokaliz('No selected events found in selected files.') ' ' Ivykiai2] );
     end;
-    Rodykles=Rodykles(rodykles3);
+    ivRodykles=ivRodykles(rodykles3);
 end;
 
-Tipai=tipas_ir_latencija(Rodykles,1) ;
-Laiko_idx=cell2mat(tipas_ir_latencija(Rodykles,2)) ;
+ivTipai=tipas_ir_latencija(ivRodykles,1) ;
+Laiko_idx=cell2mat(tipas_ir_latencija(ivRodykles,2)) ;
 if isinteger(Laiko_idx);
-    Laikai   = EEG.times(Laiko_idx)'; % ms
+    ivLaikai   = EEG.times(Laiko_idx)'; % ms
 else
     %Laikai = eeg_point2lat( Laiko_idx, [], EEG.srate, [EEG.xmin EEG.xmax]*1000, 1E-3);
-    Laikai   = (Laiko_idx-1)/EEG.srate*1000+EEG.xmin*1000; % ms
+    ivLaikai   = (Laiko_idx-1)/EEG.srate*1000+EEG.xmin*1000; % ms
 end;
-Laiku_skirtumas=zeros(length(Rodykles),1);
+ivLaikuSkirtumai=zeros(length(ivRodykles),1);
 
 try if g(1).boundary == 0 ; return; end; catch; end; % Neprašo atsižvelgti į karpymą
 
@@ -96,12 +96,12 @@ rodykles_bnd=find(ismember(tipas_ir_latencija(:,1),{'boundary'}));
 if isempty(rodykles_bnd); return; end; % Jei nekarpyta – galima baigti
 
 trukmes_bnd=[EEG.event(rodykles_bnd).duration]/EEG.srate*1000;
-rodykles_bnd_i=find(rodykles_bnd <= max(Rodykles));
+rodykles_bnd_i=find(rodykles_bnd <= max(ivRodykles));
 for bnd_i=rodykles_bnd_i(:)';
-    Laiku_skirtumas(Rodykles >= rodykles_bnd(bnd_i))=...
-    Laiku_skirtumas(Rodykles >= rodykles_bnd(bnd_i))+trukmes_bnd(bnd_i);
+    ivLaikuSkirtumai(ivRodykles >= rodykles_bnd(bnd_i))=...
+    ivLaikuSkirtumai(ivRodykles >= rodykles_bnd(bnd_i))+trukmes_bnd(bnd_i);
 end;
 
-Laikai=Laikai+Laiku_skirtumas;
+ivLaikai = ivLaikai + ivLaikuSkirtumai;
 
 return;
