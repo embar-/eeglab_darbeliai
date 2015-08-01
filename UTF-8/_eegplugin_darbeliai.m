@@ -200,10 +200,10 @@ Darbeliai_nuostatos.lokale={ '' ; '' ; '' ; } ;
 Darbeliai_nuostatos.tikrinti_versija=1;
 Darbeliai_nuostatos.diegti_auto=0;
 Darbeliai_konfig_vers='?';
-Darbeliai_nuostatos.stabili_versija=0;
+Darbeliai_nuostatos.stabili_versija=1;
 Darbeliai_nuostatos.savita_versija=0;
-Darbeliai_nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/master.zip';
-Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
+Darbeliai_nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/stable.zip';
+Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
 Darbeliai_nuostatos.meniu_ragu=1;
 
 try
