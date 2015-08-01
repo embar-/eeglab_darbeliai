@@ -121,11 +121,11 @@ end;
 
 function [senesne]=ar_senesne_versija(versija1,versija2)
 % Ar versija1 < versija2
-if       isempty(versija1);
-    if   isempty(versija2);
-         senesne=0; return;
-    else senesne=1; return;
-    end;
+if isempty(versija2);
+   senesne=0; return;
+end;
+if isempty(versija1);
+   senesne=1; return;
 end;
 versija1=versija1(ismember(versija1,'1234567890.')); versija1=textscan(strrep(versija1,'.',' '),'%d','delimiter',' '); versija1=versija1{1};
 versija2=versija2(ismember(versija2,'1234567890.')); versija2=textscan(strrep(versija2,'.',' '),'%d','delimiter',' '); versija2=versija2{1};
