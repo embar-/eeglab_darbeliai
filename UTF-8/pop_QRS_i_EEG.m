@@ -945,22 +945,18 @@ for i=1:Pasirinktu_failu_N;
                     if isempty(laikai);
                         error(lokaliz('Programa negavo QRS'));
                     end;
-                    assignin('base','laikai0',[([EEG.event(ismember({EEG.event.type},'R')).latency] -1) / EEG.srate * 1000]')
-                    assignin('base','laikai1',laikai)
-                        bndrs=find(ismember(Ivykiai0,{'boundary'}));
-                        bndrs_lat=Laikai0(bndrs);
-                        bndrs_n=find(bndrs_lat(:)'<max(laikai),1,'last');
-                        if bndrs_n; 
-                            lki=[ nan(bndrs_n,1) ; length(laikai)+1]; 
-                            for lj=1:bndrs_n;
-                                li=find(laikai>=bndrs_lat(lj),1,'first'); lki(lj)=li;
-                            end;
-                            for lj=1:bndrs_n;
-                                laikai(lki(lj):lki(lj+1)-1)=laikai(lki(lj):lki(lj+1)-1)-Poslink0(bndrs(lj));
-                            end;
+                    bndrs=find(ismember(Ivykiai0,{'boundary'}));
+                    bndrs_lat=Laikai0(bndrs);
+                    bndrs_n=find(bndrs_lat(:)'<max(laikai),1,'last');
+                    if bndrs_n;
+                        lki=[ nan(bndrs_n,1) ; length(laikai)+1];
+                        for lj=1:bndrs_n;
+                            li=find(laikai>=bndrs_lat(lj),1,'first'); lki(lj)=li;
                         end;
-                    assignin('base','laikai2',laikai)
-                    assignin('base','lki',lki)
+                        for lj=1:bndrs_n;
+                            laikai(lki(lj):lki(lj+1)-1)=laikai(lki(lj):lki(lj+1)-1)-Poslink0(bndrs(lj));
+                        end;
+                    end;
                     laikai=num2cell(laikai);
                     ivykiai(1:length(laikai),1)={QRS_ivykis};
                     
