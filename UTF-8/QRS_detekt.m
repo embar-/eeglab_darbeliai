@@ -54,7 +54,7 @@ switch mode
         % Check if there is no some custom 'findpeaks.m'
         rehash toolbox;
         findpeaks_paths=galima_fja('findpeaks',...
-           'findpeaks([1 2 1],''MINPEAKDISTANCE'',1);');
+           '[~]=findpeaks([1 2 1],''MINPEAKDISTANCE'',1);');
         
         % Check upside-down EKG 
         if ekg_apversta(EKG,SR,0); EKG=-EKG; end;
