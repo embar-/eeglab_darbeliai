@@ -1915,7 +1915,7 @@ if ~isempty(pmTS) && iscellstr(pmUD);
     if ~isempty(n); 
         set(pm, 'Value', n(1));
     else
-        warning([lokaliz('Netinkami parametrai') ': ' num2str(id) ': ' pmTS]);
+        if get(cbh,'Value'); warning([lokaliz('Netinkami parametrai') ': ' num2str(id) ': ' pmTS]); end;
         set(cbh,'Value',0); set(pm,'Value', 1); set(pm,'Enable','off');
     end;
 end;
@@ -1941,7 +1941,7 @@ if ~isempty(rinkiniai_lok);
     if ~isempty(pm_TS) && ischar(pm_TS);
         i=find(ismember(rinkiniai_orig,pm_TS));
         if isempty(i);
-            warning([lokaliz('Netinkami parametrai') ': ' num2str(id) ': ' darbas ': ' pm_TS]);
+            if get(cbh,'Value'); warning([lokaliz('Netinkami parametrai') ': ' num2str(id) ': ' darbas ': ' pm_TS]); end;
             set(cbh,'Value',0); set(pm,'Enable','off'); pm_Enable='off';
         end;
     end;
