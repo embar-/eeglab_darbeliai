@@ -208,6 +208,7 @@ if status == 1 ;
            end;
         catch err;
         end;
+        rehash toolbox;
         try
            close(findobj('tag', 'EEGLAB'));
            evalin('base','eeglab redraw');
