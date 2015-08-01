@@ -1,6 +1,14 @@
-Darbeliai v2015.07.26.1
-Patikimesnis pop_meta_drb parinkčių išsaugojimas ir įkėlimas.
-EKG/RRI peržiūros, QRS įterpimo į EEG patobulinimai.
+Darbeliai v2015.08.01.1
+Parinkčių importavimas ir eksportavimas.
+Veiksmų meniu: 
+* rodyti failus iš pakatalogių, virškatalogių ar lygiagrečių katalogų;
+* įkelti į EEGLAB, peržiūrėti duomenis su EEGLAB, įvykdyti paprastą komandą;
+* atverti katalogą operacinės sistemos rinkmenų tvarkytuvėje.
+Meniu punktai pranešimams apie klaidas: internetu ir el.paštu.
 
-More reliable saving and loading of options in pop_meta_drb.
-EKG/RRI viewer, QRS inserting into EEG enhancements.
+Import and export presets.
+Actions menu:
+* show files from subdirectories, parallel or parent directories;
+* load selected files in EEGLAB, preview data (scrool) or execute command;
+* open directory in file manager of your operating system.
+Menu items to report about bug/wish: online or via e-mail.
