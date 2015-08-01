@@ -87,7 +87,7 @@ else
     set(handles.checkbox1, 'Enable','off');
     set(handles.checkbox2, 'Enable','off');
 end;
-Darbeliai_nuostatos_senos.meniu_ragu=1;
+Darbeliai_nuostatos_senos.meniu_ragu=0;
 Darbeliai_nuostatos_senos.diegti_auto=0;
 Darbeliai_nuostatos_senos.stabili_versija=1;
 Darbeliai_nuostatos_senos.savita_versija=0;
