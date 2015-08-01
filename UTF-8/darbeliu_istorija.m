@@ -1,6 +1,21 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.08.01.1
+% + Parinkčių importavimas ir eksportavimas.
+% + Veiksmų meniu: 
+%   rodyti failus iš pakatalogių, virškatalogių ar lygiagrečių katalogų;
+%   įkelti į EEGLAB, peržiūrėti duomenis su EEGLAB, įvykdyti paprastą komandą;
+%   atverti katalogą operacinės sistemos rinkmenų tvarkytuvėje.
+% + Meniu punktai pranešimams apie klaidas: internetu ir el.paštu.
+%
+% v2015.07.26.1
+% ~ Patikimesnis pop_meta_drb parinkčių išsaugojimas ir įkėlimas.
+%   EKG/RRI peržiūros, QRS įterpimo į EEG patobulinimai.
+%
+% v2015.07.24.1
+% ~ Stabilesnis paleidimas ir atnaujinimas.
+%
 % v2015.07.09.1
 % ~ EEG_spektr_galia.m tinkamai suteikia kanalų etiketes.
 % ~ pop_eeg_spektrine_galia.m galios peržiūroje naudoja įvairesnes 
