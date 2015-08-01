@@ -285,6 +285,7 @@ end;
 if exist('atnaujinimas','file') == 2;
     uimenu( handles.meniu_apie, 'Label', lokaliz('Check for updates'), 'separator','on', 'Callback', 'pop_atnaujinimas ;'  );    
 end;
+susaldyk(hObject, eventdata, handles);
 
 
 %% GUI niuansai
@@ -316,7 +317,6 @@ setappdata(handles.figure1,'ButtonDownFcnY','pop_RRI_perziura(''optimalus_rodyma
 handles.pradines_fig=findobj(handles.figure1);
 setappdata(handles.figure1,'istorija',struct('RRI','','Laikai','','Nejungti',''));
 setappdata(handles.figure1,'istorijosNr',0);
-susaldyk(hObject, eventdata, handles);
 
 %% Grafikai
 handles=pirmieji_grafikai(hObject, eventdata, handles);
@@ -330,6 +330,7 @@ set(handles.edit_ribos,'UserData',1);
 set(handles.pushbutton_atnaujinti,'UserData',1);
 %set(handles.figure1,'toolbar','figure');
 set(handles.pushbutton_OK,'Visible', fastif(get(handles.figure1,'userdata'),'on','off'));
+drawnow;
 
 %% Anotacijų paruošimas
 handles.anot=RRI_perziuros_anotacija('prideti',handles.figure1,handles.axes_rri); % sukurti
