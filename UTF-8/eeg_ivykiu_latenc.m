@@ -103,7 +103,7 @@ for bnd_i=rodykles_bnd_i(:)';
     ivLaikuSkirtumai(ivRodykles >= rodykles_bnd(bnd_i))+trukmes_bnd(bnd_i);
 end;
 
-bndrs_lat_orig=cell2mat(tipas_ir_latencija(rodykles_bnd,2));
+bndrs_lat_orig=(cell2mat(tipas_ir_latencija(rodykles_bnd,2))-1) /EEG.srate*1000+EEG.xmin*1000; % ms;
 ivLaikai = ivLaikai + ivLaikuSkirtumai;
 
 % Pakeisti EEG.times atitikmens reikšmes
