@@ -45,7 +45,7 @@ if size(EKG,1) > 1; EKG=EKG'; end;
 % Rasti gerą findpeaks
 rehash toolbox;
 findpeaks_paths=galima_fja('findpeaks',...
-     'findpeaks([1 2 1],''MINPEAKDISTANCE'',1);');
+     '[~]=findpeaks([1 2 1],''MINPEAKDISTANCE'',1);');
 % Q
 [P1R,L1R]=findpeaks( EKG,'MINPEAKDISTANCE',round(0.6*Hz));
 [P2R,L2R]=findpeaks(-EKG,'MINPEAKDISTANCE',round(0.6*Hz));

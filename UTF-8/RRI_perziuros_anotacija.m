@@ -67,8 +67,7 @@ try
         otherwise
             anotObj=RRI_perziuros_anotacija_prideti(hFig,cAx);
     end;
-catch err;
-    Pranesk_apie_klaida(err,mfilename,'',0);
+catch %err; Pranesk_apie_klaida(err,mfilename,'',0);
 end;
 
 
