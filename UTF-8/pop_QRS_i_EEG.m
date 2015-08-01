@@ -916,7 +916,7 @@ for i=1:Pasirinktu_failu_N;
                         end;
                     end;
                     
-                    [Laikai0,Ivykiai0,~,~,EKG_laikai]=eeg_ivykiu_latenc(EEG);
+                    [Laikai0,Ivykiai0,~,Poslink0,EKG_laikai]=eeg_ivykiu_latenc(EEG);
                     if isempty(Laikai0); error(lokaliz('No events found.')); end;
                     QRS_ivykis=get(handles.edit_QRS_ivykis,'String');
                     rodykles=ismember(Ivykiai0, QRS_ivykis) ;
@@ -937,15 +937,31 @@ for i=1:Pasirinktu_failu_N;
                                         
                     % Atverti dialogą RRI redagavimui
                     if isempty(EKG_kanalas);
-                        laikai=num2cell(pop_RRI_perziura(R_laikai,1,[],[], kiti_laikai * 0.001 , kiti_kod));
+                        laikai=pop_RRI_perziura(R_laikai,1,[],[], kiti_laikai * 0.001 , kiti_kod);
                     else
-                        laikai=num2cell(pop_RRI_perziura(R_laikai,1, [EEG.data(EKG_kanalas,:)]', EKG_laikai' * 0.001, kiti_laikai * 0.001 , kiti_kod ));
+                        laikai=pop_RRI_perziura(R_laikai,1, [EEG.data(EKG_kanalas,:)]', EKG_laikai' * 0.001, kiti_laikai * 0.001 , kiti_kod);
                     end;
                     
                     if isempty(laikai);
                         error(lokaliz('Programa negavo QRS'));
                     end;
-                    
+                    assignin('base','laikai0',[([EEG.event(ismember({EEG.event.type},'R')).latency] -1) / EEG.srate * 1000]')
+                    assignin('base','laikai1',laikai)
+                        bndrs=find(ismember(Ivykiai0,{'boundary'}));
+                        bndrs_lat=Laikai0(bndrs);
+                        bndrs_n=find(bndrs_lat(:)'<max(laikai),1,'last');
+                        if bndrs_n; 
+                            lki=[ nan(bndrs_n,1) ; length(laikai)+1]; 
+                            for lj=1:bndrs_n;
+                                li=find(laikai>=bndrs_lat(lj),1,'first'); lki(lj)=li;
+                            end;
+                            for lj=1:bndrs_n;
+                                laikai(lki(lj):lki(lj+1)-1)=laikai(lki(lj):lki(lj+1)-1)-Poslink0(bndrs(lj));
+                            end;
+                        end;
+                    assignin('base','laikai2',laikai)
+                    assignin('base','lki',lki)
+                    laikai=num2cell(laikai);
                     ivykiai(1:length(laikai),1)={QRS_ivykis};
                     
                     % Pašalinti senus QRS_ivykis tipo įvykius
