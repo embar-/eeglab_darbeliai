@@ -125,6 +125,9 @@ setappdata(handles.figure1,'url_atnaujinimui',Darbeliai_nuostatos.url_atnaujinim
 
 if length(varargin) > 1 ;
     sena_versija=varargin{2};
+   if length(varargin) > 3;
+       apie_vers=varargin{4};
+   end;
 else
     try
         fid_vers=fopen(fullfile(Tikras_Kelias(fullfile(curdir,'..')),'Darbeliai.versija'));

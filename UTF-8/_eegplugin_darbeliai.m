@@ -372,7 +372,7 @@ if and((exist('atnaujinimas','file') == 2),...
       else
           h=gcf;
           %msgbox(Tekstas, lokaliz('Nauja versija'));
-          pop_atnaujinimas([],vers,sprintf('%s\n \n%s',nauja_versija,apie_vers));          
+          pop_atnaujinimas([],vers,nauja_versija,apie_vers);          
           %disp([h gcf]);
           figure(h);
       end;
