@@ -212,13 +212,6 @@ if status == 1 ;
            end;
         catch err;
         end;
-        rehash toolbox;
-        try
-           close(findobj('tag', 'EEGLAB'));
-           evalin('base','eeglab redraw');
-        catch err;
-           disp(err.message);
-        end;
     catch err;
         disp(err.message);
         disp(char(['Parsiuntėme ' filestr [{}] 'Bet nepavyko išpakuoti į ' path_new ]));
@@ -234,6 +227,13 @@ if status == 1 ;
         catch err;
              %disp(err.message);
         end;
+    end;
+    rehash toolbox;
+    try
+        close(findobj('tag', 'EEGLAB'));
+        evalin('base','eeglab redraw');
+    catch err;
+        disp(err.message);
     end;
     try   
         savepath ;
