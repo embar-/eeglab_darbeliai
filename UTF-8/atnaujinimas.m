@@ -176,11 +176,15 @@ end;
 % Jei pavyko parsiųsti, bandyk išpakuoti
 if status == 1 ;
     try
-        subdrs1=subdirs(path_new);
+        d=dir(path_new); d0={d([d.isdir]).name}; % poaplankiai prieš išpakavimą
+        subdrs1=arrayfun(@(x) [regexprep(path_new,[filesep '$'],'') filesep d0{x}], ...
+            3:length(d0),'UniformOutput', false);
         unzip(filestr,path_new);
         delete(filestr);
-        subdrs2=subdirs(path_new);
-        path_new_sub=subdrs2(find(~ismember(subdrs2,subdrs1)));
+        d=dir(path_new); d0={d([d.isdir]).name}; % poaplankiai išpakavus
+        subdrs2=arrayfun(@(x) [regexprep(path_new,[filesep '$'],'') filesep d0{x}], ...
+            3:length(d0),'UniformOutput', false);
+        path_new_sub=subdrs2(~ismember(subdrs2,subdrs1));
         if length(path_new_sub) ~= 1;
             path_new_sub=path_new;
         else
@@ -252,25 +256,4 @@ else
         %disp(err.message);        
     end;
 end;
-
-%%
-function restore_plugin(path_deactivated,path_old)
-% Sugrąžina papildinį į seną aplanką
-% path_deactivated - aplankas, į kurį buvo perkeltas deaktyvuojant
-% path_old - kelias, į kurį sugrąžinama
-if strcmp(path_old(end),filesep); 
-   path_old=path_old(1:end-1);
-end ;
-path_old_sep=find(ismember(path_old,filesep));
-path_old_parrent=path_old(1:path_old_sep(end));
-movefile(fullfile(path_deactivated,'*'), path_old_parrent, 'f') ;
-rmdir(path_deactivated);
-addpath(path_old); % savepath ;
-
-function subdrs=subdirs(directory)
-d=dir(directory);
-d0={d(find([d.isdir])).name};
-subdrs=arrayfun(...
-    @(x) [regexprep(directory,[filesep '$'],'') filesep d0{x}], ...
-    3:length(d0),'UniformOutput', false);
 
