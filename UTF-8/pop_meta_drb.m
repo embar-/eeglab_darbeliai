@@ -1977,11 +1977,18 @@ try
 catch %err; Pranesk_apie_klaida(err, 'Darbeliu_nuostatu_rinkiniai', darbelio_Nr, 0);
     %disp('darbas='); disp(darbas);
 end;
+if ismember(rinkiniai_orig, 'paskutinis' );
+    rinkiniai_orig=[{'numatytas' 'paskutinis'} rinkiniai_orig];
+else
+    rinkiniai_orig=[{'numatytas'} rinkiniai_orig];
+end;
+[~, i]=unique(rinkiniai_orig);
+rinkiniai_orig=rinkiniai_orig(sort(i));
 rinkiniai_lokaliz=rinkiniai_orig;
-i=find(ismember(rinkiniai_orig, 'numatytas' ));
-if ~isempty(i); rinkiniai_lokaliz(i)={lokaliz('Numatytas')}; end;
-i=find(ismember(rinkiniai_orig, 'paskutinis' ));
-if ~isempty(i); rinkiniai_lokaliz(i)={lokaliz('Paskiausias')}; end;
+n=find(ismember(rinkiniai_orig, 'numatytas' ));
+if ~isempty(n); rinkiniai_lokaliz(n)={lokaliz('Numatytas')}; end;
+p=find(ismember(rinkiniai_orig, 'paskutinis' ));
+if ~isempty(p); rinkiniai_lokaliz(p)={lokaliz('Paskiausias')}; end;
 
 
 % --- Executes on selection change in popupmenu_patvirt.
