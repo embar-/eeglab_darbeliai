@@ -293,9 +293,17 @@ vardas='';
 komentaras='';
 pavyko=0;
 if isempty(saranka2);
-    draudziami_vardai=setdiff({saranka1.vardas}, {'numatytas','paskutinis'});
+    try draudziami_vardai=setdiff({saranka1.vardas}, {'numatytas','paskutinis'});
+    catch
+        draudziami_vardai={};
+        saranka1=struct('vardas','','komentaras','','data','','versija',''); saranka1=saranka1([]);
+    end;
 else
-    draudziami_vardai=[{saranka2.vardas} {'' ' '}];
+    try draudziami_vardai=[{saranka2.vardas} {'' ' '}];
+    catch
+        draudziami_vardai={'' ' '};
+        saranka2=struct('vardas','','komentaras','','data','','versija',''); saranka2=saranka2([]);
+    end;
 end;
 if neklausti;
     a={pradinis_vardas pradinis_komentaras};
