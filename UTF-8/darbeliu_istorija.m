@@ -1,6 +1,9 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.08.02.1
+% ~ Stabilesnis atnaujinimo mechanizmas.
+%
 % v2015.08.01.1
 % + Parinkčių importavimas ir eksportavimas.
 % + Veiksmų meniu: 
