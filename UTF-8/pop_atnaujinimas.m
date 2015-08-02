@@ -98,7 +98,7 @@ config_file='Darbeliai_config.mat';
 %Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
 Darbeliai_nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/stable.zip';
 Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
-Darbeliai_nuostatos.stabili_versija=0;
+Darbeliai_nuostatos.stabili_versija=1;
 
 % Unix - UTF-8
 V= version('-release') ;
