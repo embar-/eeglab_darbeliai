@@ -176,19 +176,15 @@ end;
 % Jei pavyko parsiųsti, bandyk išpakuoti
 if status == 1 ;
     try
-        d=dir(path_new); d0={d([d.isdir]).name}; % poaplankiai prieš išpakavimą
-        subdrs1=arrayfun(@(x) [regexprep(path_new,[filesep '$'],'') filesep d0{x}], ...
-            3:length(d0),'UniformOutput', false);
+        d1=dir(path_new); subdrs1={d1([d1.isdir]).name}; % poaplankiai prieš išpakavimą
         unzip(filestr,path_new);
         delete(filestr);
-        d=dir(path_new); d0={d([d.isdir]).name}; % poaplankiai išpakavus
-        subdrs2=arrayfun(@(x) [regexprep(path_new,[filesep '$'],'') filesep d0{x}], ...
-            3:length(d0),'UniformOutput', false);
+        d2=dir(path_new); subdrs2={d2([d2.isdir]).name}; % poaplankiai išpakavus
         path_new_sub=subdrs2(~ismember(subdrs2,subdrs1));
         if length(path_new_sub) ~= 1;
             path_new_sub=path_new;
         else
-            path_new_sub=path_new_sub{1};
+            path_new_sub=[regexprep(path_new,[filesep '$'],'') filesep path_new_sub{1}];
             try
                 fid_vers=fopen(fullfile(path_new_sub,'Darbeliai.versija'));
                 vers=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
