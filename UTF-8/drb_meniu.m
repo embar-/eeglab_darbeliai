@@ -242,7 +242,7 @@ try
             Pranesk_apie_klaida(err0, 'pop_pervadinimas.m', '-', 0);
         end;
     end;
-catch err; Pranesk_apie_klaida(err, 'pop_QRS_i_EEG.m', '-', 0);
+catch %err; Pranesk_apie_klaida(err, 'pop_QRS_i_EEG.m', '-', 0);
 end;
 %handles.meniu_nuostatos_irasyti = uimenu(handles.meniu_nuostatos,'Label','Įrašyti');
 %uimenu(handles.meniu_nuostatos_irasyti,'Label','Kaip paskutines','Callback',{@parinktis_irasyti,handles,'paskutinis',''});

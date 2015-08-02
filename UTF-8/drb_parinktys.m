@@ -611,7 +611,7 @@ try
             end;
         end;
     end;
-catch err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm, 0);
+catch %err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm, 0);
     saranka=saranka2; %#ok
 end;
 
