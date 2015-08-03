@@ -29,6 +29,11 @@ if isempty(to_encoding);
    end;
 end;
 
+if strcmp(from_encoding,to_encoding);
+    copyfile(infile, outfile, 'f');
+    return;
+end;
+
 if strcmp(infile(end-2:end),'mdl');
     isMDL = 1;
 else
