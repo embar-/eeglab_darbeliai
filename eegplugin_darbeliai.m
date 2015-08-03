@@ -222,7 +222,7 @@ catch err;
 end;
 lc=Darbeliai_nuostatos.lokale;    
 if ~isempty(lc{1});
-   java.util.Locale.setDefault(java.util.Locale(lc(1),lc(2),lc(3)));
+   try java.util.Locale.setDefault(java.util.Locale(lc(1),lc(2),lc(3))); catch; end;
 end;
 
 %encoding='windows-1257';
@@ -480,7 +480,10 @@ end;
 
 
 % Apie
-if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
+LC_=''
+try LC_=[lc(1) ' ' lc(2)]; catch; end;
+try LC=javaObject ('java.util.Locale',''); LC_=LC.getDefault(); catch; end;
+if strcmp(LC_,'lt_LT');
 uimenu( darbeliai_m, 'Label',  [ lokaliz('Apie') ' ' vers ] , ...
           'separator','off', 'userdata', on, 'callback', ...
            'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20LT'',''-browser'') ;'  );
