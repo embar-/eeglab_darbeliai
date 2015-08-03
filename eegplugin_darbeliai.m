@@ -180,7 +180,7 @@ elseif str2num(V(1:end-1)) >= 2008 ;
     [~,r] = strtok(ret.ctype,'.');
     encoding = r(2:end);
 else
-    encoding = '';
+    encoding = get(0,'language');
 end;
 
 if strcmp(curdir(end),filesep); 
