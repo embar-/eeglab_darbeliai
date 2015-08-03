@@ -46,14 +46,18 @@ function txt=lokaliz(orig_txt)
 
 persistent LC_TXT LC_info LC_current_locale warning_no_translation function_dir;
 
-enc=feature('DefaultCharacterSet');
-%disp(enc);
 msg='';
 txt='';
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 i=[];
 LANG_id_fallback=2;
 data_file='lokaliz.mat';
+try
+    enc=feature('DefaultCharacterSet');
+catch
+    enc=get(0,'language');
+end;
+
 % create example of locale_txt.mat :
 % LC_info=struct('LANG', {'--' 'en' 'lt'}, 'COUNTRY', {'' 'US' 'LT'}, 'VARIANT', {'' '' ''});
 % LC_TXT={ ...
@@ -64,24 +68,19 @@ data_file='lokaliz.mat';
 %          } ;
 % save('locale_txt.mat', LC_info, LC_TXT ) ;
 
-% % Default encoding:
-% if or(strcmp(V,'2010b'), str2num(V(1:end-1)) > 2010 ) ;
-%     ret = feature('locale');
-%     encoding = ret.encoding;
-%     % For MATLAB R2008a through R2010a:
-% elseif str2num(V(1:end-1)) >= 2008 ;
-%     ret = feature('locale');
-%     [t,r] = strtok(ret.ctype,'.');
-%     encoding = r(2:end);
-% else
-%     encoding = '';
-% end;
-
-% Current encoding:
-
 try
    if isempty(LC_current_locale);
-       LC_current_locale=java.util.Locale.getDefault();
+       if usejava('awt');
+           LC=javaObject ('java.util.Locale','');
+           LC_current_locale=LC.getDefault();
+       else
+           try load('Darbeliai_config.mat','-mat');
+               lnt=[{'getLanguage' 'getCountry' 'getVariant'}; Darbeliai.nuostatos.lokale' ];
+               LC_current_locale=struct(lnt{:});
+           catch
+               LC_current_locale=struct('getLanguage','--','getCountry','','getVariant','');
+           end;
+       end;
    end;
    if or(isempty(LC_TXT),isempty(LC_info)) ;
       %disp('load locale');
