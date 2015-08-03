@@ -12,6 +12,7 @@ function [EEG]=eeg_ikelk(Kelias, Rinkmena)
         try % Importuoti per BIOSIG
             EEG=pop_biosig(Kelias_ir_rinkmena);
             EEG=eegh( ['pop_biosig(' Kelias_ir_rinkmena ')' ], EEG);
+            if isempty(EEG.data); error(lokaliz('Empty dataset')); end;
         catch %; Pranesk_apie_klaida(lasterr, mfilename, Kelias_ir_rinkmena, 0);
             fprintf('%s...\n', lokaliz('BIOSIG negali nuskaityti'));
             try % Importuoti per FILEIO
