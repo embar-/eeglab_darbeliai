@@ -1555,9 +1555,16 @@ if strcmp(get(handles.checkbox_ekg,'Visible'),'off');
     set(handles.ekg_rodyti,'Enable','off');
     %set(handles.Eksportuoti_laikus,'Enable','off');
 end;
-if length(find(~isnan(get(handles.RRI_tsk,'YData')))) < 3;
+
+neeksportuoti=1;
+try length(find(~isnan(get(handles.RRI_tsk,'YData')))) > 2;
+    neeksportuoti=0;
+catch
+end;
+if neeksportuoti;
     set(findobj(handles.figure1,'Tag','Eksportuoti'),'Enable','off');
 end;
+
 if strcmp(get(handles.toggle_brush,'state'),'on');
     set(handles.aktyvusis,'Enable','off');
 end;
