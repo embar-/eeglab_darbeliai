@@ -498,7 +498,9 @@ function Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_
 
 disp(' ');
 disp('-----------------------------------');
-NaujaAntraste=[ num2str(DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' meta darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.'];
+kelintas_failas=num2str(i);
+if isempty(kelintas_failas); kelintas_failas='?'; end;
+NaujaAntraste=[ num2str(DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' meta darb., ' kelintas_failas '/' num2str(Pasirinktu_failu_N) ' įr.'];
 disp(NaujaAntraste);
 disp(Darbo_apibudinimas);
 set(handles.text_darbas,'Visible','on');
@@ -622,7 +624,7 @@ for dbr_i=1:10;
             Darbo_apibudinimas=get(eval(['handles.popupmenu_drb' dbr_id]),'String');
             Darbo_apibudinimas=Darbo_apibudinimas{Darbo_tipo_nr};
             preset=get(eval(['handles.popupmenu_drb' dbr_id '_']),'TooltipString');
-            Darbo_eigos_busena(handles, [lokaliz('Job') ': ' Darbo_apibudinimas], dbr_i, 0, Pasirinktu_failu_N);
+            Darbo_eigos_busena(handles, [lokaliz('Job') ': ' Darbo_apibudinimas], dbr_i, [], Pasirinktu_failu_N);
             disp([lokaliz('Job preset') ': ' preset ]); disp(' ');
             switch Darbo_tipo_id
                 case {'pop_pervadinimas'}
