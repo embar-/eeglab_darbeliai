@@ -2536,11 +2536,9 @@ guidata(handles.figure1, handles);
 
 
 function istorijos_busena(hObject, eventdata, handles)
-try
-    istorijosNr=getappdata(handles.figure1,'istorijosNr');
-catch
-    istorijosNr=0;
-end;
+istorijosNr=[];
+try istorijosNr=getappdata(handles.figure1,'istorijosNr'); catch; end;
+if isempty(istorijosNr); istorijosNr=0; end;
 set(findobj(handles.figure1,'Tag','istorija_atgal'),'Enable',...
     fastif(istorijosNr > 1,'on','off'));
 set(findobj(handles.figure1,'Tag','istorija_tolyn'),'Enable',...
