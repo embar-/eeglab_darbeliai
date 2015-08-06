@@ -2512,6 +2512,7 @@ function istorija_atgal_ClickedCallback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 istorijosNr=getappdata(handles.figure1,'istorijosNr');
+if isempty(istorijosNr); istorijosNr=0; end;
 if istorijosNr < 2; return; end;
 istorijosNr=max(istorijosNr-1,1);
 setappdata(handles.figure1,'istorijosNr',istorijosNr);
@@ -2527,6 +2528,7 @@ function istorija_tolyn_ClickedCallback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 istorijos_busena(hObject, eventdata, handles);
 istorijosNr=getappdata(handles.figure1,'istorijosNr');
+if isempty(istorijosNr); istorijosNr=0; end;
 if istorijosNr >= length(getappdata(handles.figure1,'istorija')); return; end;
 istorijosNr=min(istorijosNr+1,length(getappdata(handles.figure1,'istorija')));
 setappdata(handles.figure1,'istorijosNr',istorijosNr);
