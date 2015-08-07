@@ -62,15 +62,16 @@ end;
 
 if isempty(RINKMENOS); return; end;
 
+galimi_kanalai=cell(length(RINKMENOS),1);
 f=statusbar(lokaliz('Palaukite!'));
 statusbar('off',f);
 for i=1:length(RINKMENOS);
+    Rinkmena=RINKMENOS{i};
+    [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(KELIAS,Rinkmena));
+    Rinkmena_=[Rinkmena_ galune];
+    KELIAS_=Tikras_Kelias(KELIAS_);
+    galimi_kanalai{i,1}={};
     try
-        Rinkmena=RINKMENOS{i};
-        [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(KELIAS,Rinkmena));
-        Rinkmena_=[Rinkmena_ galune];
-        KELIAS_=Tikras_Kelias(KELIAS_);
-        TMPEEG=[];
         TMPEEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_,'loadmode','info');
         if ~isempty(TMPEEG);
             if ~isempty(TMPEEG.chanlocs);
@@ -92,14 +93,22 @@ for i=1:length(RINKMENOS);
                         %warning([Rinkmena ': ' lokaliz('unexpected events types.')]);
                         %warndlg({Rinkmena lokaliz('unexpected events types.')},mfilename);
                         disp(kanalai);
-                        galimi_kanalai{i,1}={};
                     end;
                 end;
             end;
         end;
-    catch err;
-        ar_patikrintos_visos_rinkmenos=false;
-        warning(err.message);
+    catch % err; warning(err.message);
+        KELIAS_Rinkmena=fullfile(KELIAS_,Rinkmena_);
+        try HDR = sopen(KELIAS_Rinkmena,'r',[],'OVERFLOWDETECTION:OFF'); % BIOSIG
+            galimi_kanalai{i,1}={HDR.Label{:}};
+            [~] = sclose(HDR);
+        catch
+            try HDR = ft_read_header(KELIAS_Rinkmena); % FILEIO
+                galimi_kanalai{i,1}={HDR.label{:}};
+            catch
+                ar_patikrintos_visos_rinkmenos=false;
+            end;
+        end;
     end;
 
 
