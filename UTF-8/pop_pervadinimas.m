@@ -61,7 +61,7 @@ function varargout = pop_pervadinimas(varargin)
 
 % Edit the above text to modify the response to help pop_pervadinimas
 
-% Last Modified by GUIDE v2.5 07-Dec-2014 16:24:46
+% Last Modified by GUIDE v2.5 07-Aug-2015 21:38:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -137,10 +137,8 @@ try
 catch err;
 end;
 
-
-%set(handles.pushbutton_v1,'UserData',{});
-%set(handles.pushbutton_v2,'UserData',{});
-
+set(handles.pushbutton_v1,'UserData',{});
+set(handles.pushbutton_v2,'UserData',{});
 atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
 
 % Patikrink kelią duomenų išsaugojimui
@@ -258,6 +256,8 @@ catch err;
 end;
 set(handles.edit_tikri,'String',pwd);
 set(handles.edit_tikri,'TooltipString',pwd);
+set(handles.pushbutton_v1,'UserData',...
+    unique([get(handles.pushbutton_v1,'UserData') Kelias_dabar {pwd}]));
 cd(Kelias_dabar);
 set(handles.edit_tikri,'BackgroundColor',[1 1 1]);
 
@@ -636,6 +636,8 @@ catch err;
 end;
 set(handles.edit_siulomi,'String',pwd);
 set(handles.edit_siulomi,'TooltipString',pwd);
+set(handles.pushbutton_v2,'UserData',...
+    unique([get(handles.pushbutton_v2,'UserData') KELIAS {pwd}]));
 cd(KELIAS);
 set(handles.edit_siulomi,'BackgroundColor',[1 1 1]);
 
@@ -724,6 +726,8 @@ catch err;
 end;
 set(handles.edit_siulomi,'String',pwd);
 set(handles.edit_siulomi,'TooltipString',pwd);
+set(handles.pushbutton_v2,'UserData',...
+    unique([get(handles.pushbutton_v2,'UserData') KELIAS {pwd}]));
 cd(KELIAS);
 set(handles.edit_siulomi,'BackgroundColor',[1 1 1]);
 Ar_galima_vykdyti(hObject, eventdata, handles);
@@ -1514,6 +1518,8 @@ set(handles.pushbutton7,'Enable','off');
 set(handles.radiobutton1, 'Enable', 'off');
 set(handles.radiobutton2, 'Enable', 'off');
 set(handles.pushbutton8,'Enable','off');
+set(handles.pushbutton_v1,'Enable','off');
+set(handles.pushbutton_v2,'Enable','off');
 drawnow;
 
 function susildyk(hObject, eventdata, handles)
@@ -1539,6 +1545,8 @@ set(handles.pushbutton7,'Enable','on');
 set(handles.radiobutton1, 'Enable', 'on');
 set(handles.radiobutton2, 'Enable', 'on');
 set(handles.pushbutton8,'Enable','on');
+set(handles.pushbutton_v1,'Enable','on');
+set(handles.pushbutton_v2,'Enable','on');
 %pushbutton5_Callback(hObject, eventdata, handles);
 %atnaujink_rodomus_failus(hObject, eventdata, handles);
 checkbox1_Callback(hObject, eventdata, handles);
@@ -1706,13 +1714,13 @@ set(handles.uipanel3,'Title',lokaliz('Open'));
 set(handles.uipanel4,'Title',lokaliz('Save as'));
 set(handles.text_kartojasi,'String',lokaliz('Dublicate filenames'));
 set(handles.text3,'String',lokaliz('Filename_schema:'));
-set(handles.text4,'String',lokaliz('textscan_short_help'));
+set(handles.text4,'String','FontSize',10,'FontUnits','pixels',lokaliz('textscan_short_help'));
 set(handles.text5,'String',lokaliz('New_filename:'));
 set(handles.text6,'String',lokaliz('Experiment_participant'));
 set(handles.text7,'String',lokaliz('Group'));
 set(handles.text8,'String',lokaliz('Condition_'));
 set(handles.text9,'String',lokaliz('Session_No'));
-set(handles.text10,'String',lokaliz('pervadinimas_substitute_help'));
+set(handles.text10,'String','FontSize',10,'FontUnits','pixels',lokaliz('pervadinimas_substitute_help'));
 set(handles.text11,'String',lokaliz('Filter:'));
 set(handles.text12,'String',lokaliz('Separators'));
 set(handles.checkbox1,'String',lokaliz('enter EEGLAB info'));
@@ -1759,4 +1767,38 @@ isimintini(2).raktai={'Value' 'UserData' 'String'};
 isimintini(2).nariai={ 'edit4' 'edit10' 'edit11' 'edit5' 'edit6' 'edit7' 'edit8' };
 
 drb_parinktys(hObject, eventdata, handles, 'irasyti', mfilename, vardas, komentaras, isimintini);
+
+
+% --- Executes on button press in pushbutton_v1.
+function pushbutton_v1_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_v1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+i=get(handles.edit_tikri,'String'); % įkėlimo
+s=get(handles.edit_siulomi,'String'); % saugojimo
+n=get(handles.pushbutton_v1,'UserData'); % naudotieji
+a=drb_uzklausa('katalogas','atverimui',i, [s n]);
+if isempty(a); return; end;
+set(handles.edit_tikri,'String',a);
+atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
+atnaujink_rodomus_failus(hObject, eventdata, handles);
+edit4_Callback(hObject, eventdata, handles);
+Pabandyk_atspeti_failu_sablona(hObject, eventdata, handles);
+
+
+% --- Executes on button press in pushbutton_v2.
+function pushbutton_v2_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_v2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+i=get(handles.edit_tikri,'String'); % įkėlimo
+s=get(handles.edit_siulomi,'String'); % saugojimo
+n=get(handles.pushbutton_v2,'UserData'); % naudotieji
+a=drb_uzklausa('katalogas','atverimui',s, [i n]);
+if isempty(a); return; end;
+set(handles.edit_siulomi,'String',a);
+set(handles.edit_siulomi,'TooltipString',a);
+set(handles.pushbutton_v2,'UserData',...
+    unique([get(handles.pushbutton_v2,'UserData') {s} {a}]));
+set(handles.edit_siulomi,'BackgroundColor',[1 1 1]);
 
