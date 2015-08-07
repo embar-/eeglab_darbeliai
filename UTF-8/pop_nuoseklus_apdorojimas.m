@@ -3073,7 +3073,7 @@ else
     set(handles.checkbox_atrink_kanalus1_,'Enable','off');
     set(handles.edit_atrink_kanalus1,'Enable','off');
     set(handles.pushbutton9,'Enable','off');
-    set(handles.pushbutton9,'BackgroundColor', 'remove'); %[0.7 0.7 0.7]);
+    set(handles.pushbutton9,'BackgroundColor', 'remove');
     %set(handles.text8,'Visible','on');
 end;
 checkbox_atrink_kanalus1__Callback(hObject, eventdata, handles);
@@ -3266,7 +3266,7 @@ if and(get(handles.checkbox_atrink_kanalus2, 'Value') == 1, ...
     %if or(get(handles.pushbutton7,'UserData') ~= 0, ~isempty(get(handles.pushbutton7,'UserData'))) ;
     if ~isempty(get(handles.pushbutton7,'UserData'));
         set(handles.text9,'String',length(get(handles.pushbutton7,'UserData')));
-        set(handles.pushbutton7,'BackgroundColor','remove'); %[0.7 0.7 0.7]);
+        set(handles.pushbutton7,'BackgroundColor','remove');
     else
         set(handles.pushbutton7,'BackgroundColor',[1 1 0]);
         set(handles.text9,'String','?');
@@ -3276,7 +3276,7 @@ else
     set(handles.checkbox_atrink_kanalus2_,'Enable','off');
     set(handles.edit_atrink_kanalus2,'Enable','off');
     set(handles.pushbutton7,'Enable','off');
-    set(handles.pushbutton7,'BackgroundColor','remove'); %[0.7 0.7 0.7]);
+    set(handles.pushbutton7,'BackgroundColor','remove');
 end;
 checkbox_atrink_kanalus2__Callback(hObject, eventdata, handles);
 Ar_galima_vykdyti(hObject, eventdata, handles);
@@ -4454,7 +4454,7 @@ if strcmp(get(handles.edit_failu_filtras2,'Style'),'pushbutton') ;
 else
     set(handles.edit_failu_filtras2,'Style','pushbutton');
     set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
-    set(handles.edit_failu_filtras2,'BackgroundColor','remove'); %[0.7 0.7 0.7]);
+    set(handles.edit_failu_filtras2,'BackgroundColor','remove');
 end;
 
 
