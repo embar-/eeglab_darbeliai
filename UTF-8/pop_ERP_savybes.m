@@ -1429,7 +1429,7 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
               set(handles.edit1,'String',PaskRinkmIssaugKelias);
            end;    
         end;
-        set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
+        set(handles.edit_failu_filtras2,'BackgroundColor','remove');
         set(handles.edit_failu_filtras2,'Style','pushbutton');
         set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
         set(handles.checkbox57,'Value',0);
@@ -1451,7 +1451,7 @@ else
     if ~isempty(PaskRinkmIssaugKelias);
        set(handles.edit1,'String',PaskRinkmIssaugKelias);
     end;    
-    set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
+    set(handles.edit_failu_filtras2,'BackgroundColor','remove');
     set(handles.edit_failu_filtras2,'Style','pushbutton');
     set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
     atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
@@ -1575,7 +1575,7 @@ function listbox1_Callback(hObject, eventdata, handles)
 if ~strcmp(get(handles.edit_failu_filtras2,'Style'),'pushbutton') ;
     set(handles.edit_failu_filtras2,'Style','pushbutton');
     set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
-    set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
+    set(handles.edit_failu_filtras2,'BackgroundColor','remove');
 end;
 
 Ar_galima_vykdyti(hObject, eventdata, handles);
@@ -1866,7 +1866,7 @@ if strcmp(get(handles.edit_failu_filtras2,'Style'),'pushbutton') ;
 else
     set(handles.edit_failu_filtras2,'Style','pushbutton');
     set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
-    set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
+    set(handles.edit_failu_filtras2,'BackgroundColor','remove');
 end;
 
 
@@ -1888,7 +1888,7 @@ else
     Ar_galima_vykdyti(hObject, eventdata, handles);
     %set(handles.edit_failu_filtras2,'Style','pushbutton');
     %set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
-    %set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
+    %set(handles.edit_failu_filtras2,'BackgroundColor','remove');
 end;
 
 

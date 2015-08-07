@@ -4476,7 +4476,7 @@ else
     Ar_galima_vykdyti(hObject, eventdata, handles);
     %set(handles.edit_failu_filtras2,'Style','pushbutton');
     %set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
-    %set(handles.edit_failu_filtras2,'BackgroundColor',[0.7 0.7 0.7]);
+    %set(handles.edit_failu_filtras2,'BackgroundColor','remove');
 end;
 
 
