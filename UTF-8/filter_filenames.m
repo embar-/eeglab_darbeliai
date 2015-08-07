@@ -119,8 +119,8 @@ if mode;
             if ~isempty(path1); cd(path1); end;
             file_absolute=fullfile(pwd,[file1 ext1]);
             if ~ismember(file_absolute, files_absolute);
-                files_absolute=[files_absolute {file_absolute}] %#ok
-                files2=[files2, {f{1}}] %#ok
+                files_absolute=[files_absolute {file_absolute}]; %#ok
+                files2=[files2, {f{1}}]; %#ok
             end;
         cd(path0);
     end;
