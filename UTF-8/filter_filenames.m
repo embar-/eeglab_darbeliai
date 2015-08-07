@@ -111,21 +111,24 @@ for i=1:length(dir_out);
 end;
 
 if mode;
-    path0=pwd;
+    path_orig=pwd; path0='';
     files_absolute={};
     files2={};
     for f=[files{:}];
-            [path1,file1,ext1]=fileparts(f{1});
-            if ~isempty(path1); cd(path1); end;
-            file_absolute=fullfile(pwd,[file1 ext1]);
-            if ~ismember(file_absolute, files_absolute);
-                files_absolute=[files_absolute {file_absolute}]; %#ok
-                files2=[files2, {f{1}}]; %#ok
-            end;
-        cd(path0);
+        [path1,file1,ext1]=fileparts(f{1});
+        if ~isempty(path1) && ~strcmp(path0,path1); 
+            cd(path_orig); cd(path1);
+            path0=path1;
+        end;
+        file_absolute=fullfile(pwd,[file1 ext1]);
+        if ~ismember(file_absolute, files_absolute);
+            files_absolute=[files_absolute {file_absolute}]; %#ok
+            files2=[files2, {f{1}}]; %#ok
+        end;
     end;
     [~,i]=unique(files2);
     files=files2(sort(i));
+    cd(path_orig);
 end;
 
 function rez=filter_filenames2(str)
