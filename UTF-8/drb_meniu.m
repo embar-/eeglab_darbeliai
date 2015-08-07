@@ -122,10 +122,10 @@ switch aktyvus_darbas
         files_sl = files_sh(files_sN);
         if ~isempty(files_sN) && ~isequal(files_sN,0);
             files_sl = files_sh(files_sN);
-            ar_filtr = strcmp(get(handles.edit_failu_filtras2,'Style'),'edit');
         else
-            ar_filtr = 1;
+            files_sl = {''};
         end;
+        ar_filtr = strcmp(get(handles.edit_failu_filtras2,'Style'),'edit');
         darbeliu_param={ 'pathin',pathin, 'pathout',pathout ,'flt_show',flt_show };
 end;
 if ar_filtr;
