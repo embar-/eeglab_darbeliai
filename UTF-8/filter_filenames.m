@@ -63,7 +63,7 @@
 %
 %%
 
-function files=filter_filenames(varargin)
+function [files]=filter_filenames(varargin)
 files={};
 clear('filter_filenames2','filter_filenames');
 
@@ -88,7 +88,7 @@ end;
 if ~ischar(filter_string);
     if iscellstr(filter_string);
         for i=1:length(filter_string);
-            files=[files ;  filter_filenames(filter_string{i},mode)];
+            files=[files ;  filter_filenames(filter_string{i},mode)]; %#ok
         end;
         if mode;
             files={files{:}};
@@ -107,13 +107,25 @@ dir_out=cellfun(@(x) filter_filenames2(flt{1}{x}), num2cell(1:length(flt{1})),'U
 for i=1:length(dir_out);
     files_and_dirs={dir_out{i}.name};
     files_idx=find([dir_out{i}.isdir] == 0 );
-    files=[files ; { files_and_dirs(files_idx) } ];
+    files=[files ; { files_and_dirs(files_idx) } ]; %#ok
 end;
 
 if mode;
-    files=[files{:}];
-    [~,i]=unique(files);
-    files=files(sort(i));
+    path0=pwd;
+    files_absolute={};
+    files2={};
+    for f=[files{:}];
+            [path1,file1,ext1]=fileparts(f{1});
+            if ~isempty(path1); cd(path1); end;
+            file_absolute=fullfile(pwd,[file1 ext1]);
+            if ~ismember(file_absolute, files_absolute);
+                files_absolute=[files_absolute {file_absolute}] %#ok
+                files2=[files2, {f{1}}] %#ok
+            end;
+        cd(path0);
+    end;
+    [~,i]=unique(files2);
+    files=files2(sort(i));
 end;
 
 function rez=filter_filenames2(str)
@@ -121,7 +133,7 @@ rez=struct('name',{},'isdir',{});
 persistent dir_;
 [dir_n,f,t]=fileparts(str);
 if ~isempty(dir_n);
-    dir_=[dir_n ];
+    dir_=dir_n;
     if ~strcmp(dir_(end),filesep);
         dir_=[dir_ filesep];
     end;
@@ -129,7 +141,7 @@ if ~isempty(dir_n);
     str=[f t];
 end;
 if ismember(pathsep,dir_);
-    seplocs = findstr([dir_ ], pathsep);
+    seplocs = strfind(dir_,pathsep);
     loc1 = [1 seplocs(1:end-1)+1];
     loc2 = seplocs(1:end)-1;
     pathfolders = arrayfun(@(a,b) dir_(a:b), loc1, loc2, 'UniformOutput', false);
@@ -145,7 +157,7 @@ for i=1:length(pathfolders);
     if isempty(rez);
         rez=rez_;
     else
-        rez=[rez;rez_];
+        rez=[rez;rez_]; %#ok
     end;
 end;
 
@@ -156,7 +168,7 @@ if ~strcmp(dirstr(end),pathsep);
 end;
 
 if ismember('*',dirstr);
-    seplocs = findstr(dirstr, pathsep);
+    seplocs = strfind(dirstr,pathsep);
     loc1 = [1 seplocs(1:end-1)+1];
     loc2 = seplocs(1:end)-1;
     pathfolders = arrayfun(@(a,b) dirstr(a:b), loc1, loc2, 'UniformOutput', false);
@@ -171,7 +183,7 @@ if ismember('*',dirstr);
             while and(ismember('*',dir1),or(~isempty([dir21 dir22]),isempty(dir2)));
                 [dir1, dir21, dir22]=fileparts(dir1);
                 dir3=dir2;
-                dir2=[dir21  dir22 filesep dir2];
+                dir2=[dir21  dir22 filesep dir2]; %#ok
             end;
             %disp([dir1 filesep dir21 dir22 ' x ' dir3]);
             dir_out=dir([dir1 filesep dir21 dir22]);
@@ -179,7 +191,7 @@ if ismember('*',dirstr);
             dir_idx=find([dir_out.isdir] == 1 );
             dir_idx=intersect(dir_idx,find(ismember(files_and_dirs,{'.' '..'})==0));
             if ~isempty(dir_idx);
-                if ~strcmp(dir1(end),filesep); dir1=[dir1 filesep]; end;
+                if ~strcmp(dir1(end),filesep); dir1=[dir1 filesep]; end; %#ok
                 if ispc;
                     filesepar='\\';
                     dir1=strrep(dir1,filesep,filesepar);
@@ -188,12 +200,12 @@ if ismember('*',dirstr);
                 end;
                 dir3=regexprep(dir3,[filesepar '$'],'');
                 dirstr_= sprintf([dir1 '%s' filesepar dir3 pathsep], files_and_dirs{dir_idx});
-                dirstr=[dirstr filter_dir(dirstr_)];
+                dirstr=[dirstr filter_dir(dirstr_)]; %#ok
             else
-                dirstr=[dirstr d pathsep ];
+                dirstr=[dirstr d pathsep ]; %#ok
             end;
         else
-            dirstr=[dirstr d pathsep ];
+            dirstr=[dirstr d pathsep ]; %#ok
         end;
     end;
 end;
@@ -203,18 +215,18 @@ str='*.elp;*.elc;*.loc;*.locs;*.eloc;*.sph;*.xyz;*.asc;*.sfp;*.ced;*.dat';
 locfiles={};
 path__=fileparts(which('eeglab.m'));
 pathstr=genpath(path__);
-seplocs = findstr(pathstr, pathsep);
+seplocs = strfind(pathstr, pathsep);
 loc1 = [1 seplocs(1:end-1)+1];
 loc2 = seplocs(1:end)-1;
 pathfolders = arrayfun(@(a,b) pathstr(a:b), loc1, loc2, 'UniformOutput', false);
-files=cellfun(@(i) filter_filenames(fullfile(pathfolders{i},str)), num2cell([1:length(pathfolders)]),'UniformOutput',false);
-non_empty_paths_idx=find(cellfun(@(i) ~isempty(files{i}), num2cell([1:length(files)])));
+files=cellfun(@(i) filter_filenames(fullfile(pathfolders{i},str)), num2cell(1:length(pathfolders)),'UniformOutput',false);
+non_empty_paths_idx=find(cellfun(@(i) ~isempty(files{i}), num2cell(1:length(files))));
 non_empty_paths=pathfolders(non_empty_paths_idx);
 for i=1:length(non_empty_paths_idx);
     path_=regexprep(non_empty_paths{i},['^' path__ ],'');
     files_=files{non_empty_paths_idx(i)};
     for j=1:length(files_);
-        locfiles={locfiles{:} [path_ filesep files_{j}]};
+        locfiles=[locfiles(:) {path_ filesep files_{j}}];
     end;
 end;
 
