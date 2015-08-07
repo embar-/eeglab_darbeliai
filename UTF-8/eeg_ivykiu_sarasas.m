@@ -65,14 +65,13 @@ if isempty(RINKMENOS); return; end;
 
 f=statusbar(lokaliz('Palaukite!'));
 statusbar('off',f);
-
+galimi_ivykiai=cell(length(RINKMENOS),1);
 for i=1:length(RINKMENOS);
+    Rinkmena=RINKMENOS{i};
+    [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(KELIAS,Rinkmena));
+    Rinkmena_=[Rinkmena_ galune];
+    KELIAS_=Tikras_Kelias(KELIAS_);
     try
-        Rinkmena=RINKMENOS{i};
-        [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(KELIAS,Rinkmena));
-        Rinkmena_=[Rinkmena_ galune];
-        KELIAS_=Tikras_Kelias(KELIAS_);
-        TMPEEG=[];
         TMPEEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_,'loadmode','info');
         if ~isempty(TMPEEG);
             ivykiai={TMPEEG.event.type};
@@ -95,10 +94,17 @@ for i=1:length(RINKMENOS);
                 end;
             end;
         end;
-
-    catch err;
-        ar_patikrintos_visos_rinkmenos=false;
-        warning(err.message);
+    catch %err; warning(err.message);
+        KELIAS_Rinkmena=fullfile(KELIAS_,Rinkmena_);
+        try HDR = sopen(KELIAS_Rinkmena,'r',[],'OVERFLOWDETECTION:OFF'); % BIOSIG
+            ivykiai=HDR.EVENT.TYP; % HDR.EVENT.TeegType
+            ivykiai=unique(ivykiai);
+            ivykiai=cellfun(@(i) {num2str(ivykiai(i))}, num2cell([1:length(ivykiai)]));
+            galimi_ivykiai{i,1}=ivykiai;
+            [~] = sclose(HDR);
+        catch
+            ar_patikrintos_visos_rinkmenos=false;
+        end;
     end;
 
     % statusbar
