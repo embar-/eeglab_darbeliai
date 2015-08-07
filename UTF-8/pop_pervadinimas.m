@@ -110,6 +110,7 @@ set(handles.figure1,'Units','pixels');
 set(handles.figure1,'Resize','on');
 pad=get(handles.figure1,'Position');
 set(handles.figure1,'Position',[pad(1) pad(2) max(pad(3),900) max(pad(4),500)]);
+set(handles.pushbutton7, 'BackgroundColor', 'remove');
 
 lokalizuoti(hObject, eventdata, handles);
 drb_meniu(hObject, eventdata, handles, 'visas', mfilename);
