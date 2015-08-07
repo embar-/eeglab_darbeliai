@@ -1559,8 +1559,9 @@ if strcmp(get(handles.checkbox_ekg,'Visible'),'off');
 end;
 
 neeksportuoti=1;
-try length(find(~isnan(get(handles.RRI_tsk,'YData')))) > 2;
-    neeksportuoti=0;
+try if length(find(~isnan(get(handles.RRI_tsk,'YData')))) > 2;
+        neeksportuoti=0;
+    end;
 catch
 end;
 if neeksportuoti;
