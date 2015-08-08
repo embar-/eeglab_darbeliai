@@ -743,6 +743,9 @@ for i=1:Pasirinktu_failu_N;
                    
                     QRS_ivykis=get(handles.edit_QRS_ivykis,'String');
                     
+                    % Pašalinti senus QRS_ivykis tipo įvykius
+                    EEG = pop_selectevent( EEG, 'omittype',{QRS_ivykis},'deleteevents','on');
+                    
                     switch get(handles.popupmenu_QRS_saltinis,'Value')                        
                         case 1 
                             % EKG yra viename iš EEG kanalų. Naudojamas QRS aptikimo algoritmas
