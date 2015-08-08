@@ -892,14 +892,6 @@ for i=1:Pasirinktu_failu_N;
         
         
         
-        
-        
-        
-        
-        
-        
-        
-        
         % QRS korekcija
         Darbo_apibudinimas=lokaliz('QRS korekcija...');
         if get(handles.checkbox_QRS_korekcija,'Value') == 1 ;
@@ -1003,21 +995,6 @@ for i=1:Pasirinktu_failu_N;
         
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(1 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         try  ALLEEG = pop_delset( ALLEEG, find ([1:length(ALLEEG)] ~= CURRENTSET) ); catch err;  end;
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         
         
@@ -2357,7 +2334,7 @@ function popupmenu_QRS_algoritmas_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
+set(handles.popupmenu_QRS_algoritmas,'Value',1);
 
 
 function edit_QRS_ivykis_Callback(hObject, eventdata, handles)
