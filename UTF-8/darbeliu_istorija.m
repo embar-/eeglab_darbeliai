@@ -1,6 +1,11 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.08.08.1
+% + Kanalų ir įvykių pasirinkimas ne EEGLAB *.set duomenims (per BIOSIG).
+% + Failų pervadinimo dialoge irgi galima greitai pasirinkti katalogus.
+% ~ Nedubliuoti failų kartu rodant lygiagrečius aplankus.
+%
 % v2015.08.02.1
 % ~ Stabilesnis atnaujinimo mechanizmas.
 %
