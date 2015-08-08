@@ -106,7 +106,7 @@ if Pasirinktu_failu_N > 0 ;
             
         end;
         
-        [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, Pasirinktu_failu_N,'retrieve',[1:length(ALLEEG)] ,'study',0);
+        [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, [], Pasirinktu_failu_N,'retrieve',[1:length(ALLEEG)] ,'study',0);
         
     catch %err; Pranesk_apie_klaida(err);
     end;
