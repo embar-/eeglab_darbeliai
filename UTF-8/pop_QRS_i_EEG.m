@@ -796,7 +796,10 @@ for i=1:Pasirinktu_failu_N;
                                 end;
                             end;
                             
-                            laikai=num2cell(dlmread(QRS_rinkmena));
+                            laikai=dlmread(QRS_rinkmena);
+                            [Laikai0,Ivykiai0,~,Poslink0,EKG_laikai]=eeg_ivykiu_latenc(EEG);
+                            laikai=laikai_be_tarpu(laikai, Laikai0, Ivykiai0, Poslink0);
+                            laikai=num2cell(laikai);
                             ivykiai(1:length(laikai),1)={QRS_ivykis};
                             
                             EEG = pop_importevent( EEG, 'append','yes',...
@@ -940,18 +943,7 @@ for i=1:Pasirinktu_failu_N;
                     if isempty(laikai);
                         error(lokaliz('Programa negavo QRS'));
                     end;
-                    bndrs=find(ismember(Ivykiai0,{'boundary'}));
-                    bndrs_lat=Laikai0(bndrs);
-                    bndrs_n=find(bndrs_lat(:)'<max(laikai),1,'last');
-                    if bndrs_n;
-                        lki=[ nan(bndrs_n,1) ; length(laikai)+1];
-                        for lj=1:bndrs_n;
-                            li=find(laikai>=bndrs_lat(lj),1,'first'); lki(lj)=li;
-                        end;
-                        for lj=1:bndrs_n;
-                            laikai(lki(lj):lki(lj+1)-1)=laikai(lki(lj):lki(lj+1)-1)-Poslink0(bndrs(lj));
-                        end;
-                    end;
+                    laikai=laikai_be_tarpu(laikai, Laikai0, Ivykiai0, Poslink0);
                     laikai=num2cell(laikai);
                     ivykiai(1:length(laikai),1)={QRS_ivykis};
                     
@@ -3087,3 +3079,20 @@ isimintini(2).nariai={ 'text_kanal' 'edit_QRS_ivykis' 'popupmenu_QRS_algoritmas'
     'edit_QRS_aptikimas_' 'edit_QRS_korekcija_' 'edit_eksp_Rlaikus_' 'edit_eksp_RRI_' 'edit_trint_EKG_' };
 drb_parinktys(hObject, eventdata, handles, 'irasyti', mfilename, vardas, komentaras, isimintini);
 
+
+function laikai=laikai_be_tarpu(laikai, Laikai0, Ivykiai0, Poslink0)
+%[Laikai0,Ivykiai0,~,Poslink0,~]=eeg_ivykiu_latenc(EEG);
+bndrs=find(ismember(Ivykiai0,{'boundary'}));
+bndrs_lat=Laikai0(bndrs);
+bndrs_n=find(bndrs_lat(:)'<max(laikai),1,'last');
+if bndrs_n;
+    lki=[ nan(bndrs_n,1) ; length(laikai)+1];
+    for lj=1:bndrs_n;
+        li=find(laikai>=bndrs_lat(lj),1,'first'); lki(lj)=li;
+    end;
+    for lj=1:bndrs_n;
+        laikai(lki(lj):lki(lj+1)-1)=laikai(lki(lj):lki(lj+1)-1)-Poslink0(bndrs(lj));
+    end;
+end;
+                    
+                    
