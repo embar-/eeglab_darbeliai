@@ -1,16 +1,8 @@
-Darbeliai v2015.08.02.4
-Stabilesnis atnaujinimo mechanizmas.
-Parinkčių importavimas ir eksportavimas.
-Meniu punktai pranešimams apie klaidas: internetu ir el.paštu.
-Veiksmų meniu: 
-* rodyti failus iš pakatalogių, virškatalogių ar lygiagrečių katalogų;
-* įkelti į EEGLAB, peržiūrėti su EEGLAB, įvykdyti paprastą komandą;
-* atverti katalogą operacinės sistemos rinkmenų tvarkytuvėje.
+Darbeliai v2015.08.08.1
+Kanalų ir įvykių pasirinkimas ne EEGLAB *.set duomenims (per BIOSIG).
+Failų pervadinimo dialoge irgi galima greitai pasirinkti katalogus.
+Nedubliuoti failų kartu rodant lygiagrečius aplankus.
 
-More stable update mechanism.
-Import and export presets.
-Menu items to report about bug/wish: online or via e-mail.
-Actions menu:
-* show files from subdirectories, parallel or parent directories;
-* load selected files in EEGLAB, preview data (scrool) or execute command;
-* open directory in file manager of your operating system.
+Selection of channels and event for non-EEGLAB *.set files.
+Quick selection of directory in dialog of renaming files.
+Don't dublicate files then listing files from current and parallel dirs.
