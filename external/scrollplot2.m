@@ -704,9 +704,11 @@ function mouseOutsidePatch(hFig,inDragMode,hAx)  %#ok Hax is unused
 function mouseWithinPatch(hFig,inDragMode,hAx,scrollPatch,cx,isOverBar)
     try
         % Dissable modes if any
-        if ~isempty(get(hFig,'ModeManager'));
-            brush(hFig,'off'); datacursormode(hFig,'off'); %set(hFig,'ModeManager','');
-            set(hFig,'Pointer','arrow');
+        if ismember('ModeManager',properties(hFig));
+            if ~isempty(get(hFig,'ModeManager'));
+                brush(hFig,'off'); datacursormode(hFig,'off'); %set(hFig,'ModeManager','');
+                set(hFig,'Pointer','arrow');
+            end;
         end;
         
         % Separate actions for X,Y scrolling
@@ -866,6 +868,7 @@ function mouseMoveCallback(varargin)
             hMode = modeMgr.CurrentMode;
             %set(hMode,'ButtonDownFilter',@shouldModeBeInactiveFcn);
         catch
+            hMode='';
             % Never mind - either an old Matlab (no mode managers) or no mode currently active
         end
         
@@ -1032,9 +1035,9 @@ function mouseDownCallback(varargin)
             
             if (cx < min(barXs) - fuzz) || (cx > max(barXs) - fuzz);
                 if strcmpi(axName,'x')
-                    try eval(getappdata(hFig,'ButtonDownFcnX')); catch err; disp(err.message); end;
+                    try eval(getappdata(hFig,'ButtonDownFcnX')); catch; end;
                 else
-                    try eval(getappdata(hFig,'ButtonDownFcnY')); catch err; disp(err.message); end;
+                    try eval(getappdata(hFig,'ButtonDownFcnY')); catch; end;
                 end
             end;
             
