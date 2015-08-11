@@ -1,7 +1,7 @@
 function [ivLaikai, ivTipai, ivRodykles, ivLaikuSkirtumai, Laikai]=eeg_ivykiu_latenc(EEG, varargin)
 % eeg_ivykiu_latenc - įvykių latencija, atsižvelgiant į karpymus (boundary)
-% [Ivykiu_Laikai, Ivykiu_Tipai, Ivykiu_Rodykles, Laikai] = eeg_ivykiu_latenc(EEG, 'type', IVYKIS) 
-% [Ivykiu_Laikai, Ivykiu_Tipai, Ivykiu_Rodykles, Laikai] = eeg_ivykiu_latenc(EEG, 'index', INDEKSAI) 
+% [Ivykiu_Laikai, Ivykiu_Tipai, Ivykiu_Rodykles, Ivykiu_Poslinkiai, Laikai] = eeg_ivykiu_latenc(EEG, 'type', IVYKIS) 
+% [Ivykiu_Laikai, Ivykiu_Tipai, Ivykiu_Rodykles, Ivykiu_Poslinkiai, Laikai] = eeg_ivykiu_latenc(EEG, 'index', INDEKSAI) 
 % 
 % Neatsižvelgiant į karpymus, rezultatas panašus kaip
 % [~, Ivykiu_Laikai]=eeg_getepochevent(EEG, IVYKIS);
