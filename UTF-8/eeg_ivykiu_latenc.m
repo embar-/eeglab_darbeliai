@@ -1,7 +1,8 @@
 function [ivLaikai, ivTipai, ivRodykles, ivLaikuSkirtumai, Laikai]=eeg_ivykiu_latenc(EEG, varargin)
 % eeg_ivykiu_latenc - įvykių latencija, atsižvelgiant į karpymus (boundary)
-% [Ivykiu_Laikai, Ivykiu_Tipai, Ivykiu_Rodykles, Ivykiu_Poslinkiai, Laikai] = eeg_ivykiu_latenc(EEG, 'type', IVYKIS) 
-% [Ivykiu_Laikai, Ivykiu_Tipai, Ivykiu_Rodykles, Ivykiu_Poslinkiai, Laikai] = eeg_ivykiu_latenc(EEG, 'index', INDEKSAI) 
+% [Ivykiu_Laikai, Ivykiu_Tipai, Ivykiu_Rodykles, Ivykiu_Poslinkiai, Laikai] = eeg_ivykiu_latenc(EEG)
+% [Ivykiu_Laikai, Ivykiu_Tipai, Ivykiu_Rodykles, Ivykiu_Poslinkiai] = eeg_ivykiu_latenc(EEG, 'type', IVYKIS) 
+% [Ivykiu_Laikai, Ivykiu_Tipai, Ivykiu_Rodykles, Ivykiu_Poslinkiai] = eeg_ivykiu_latenc(EEG, 'index', INDEKSAI) 
 % 
 % Neatsižvelgiant į karpymus, rezultatas panašus kaip
 % [~, Ivykiu_Laikai]=eeg_getepochevent(EEG, IVYKIS);
@@ -42,7 +43,12 @@ function [ivLaikai, ivTipai, ivRodykles, ivLaikuSkirtumai, Laikai]=eeg_ivykiu_la
 %
 %%
 
+if nargout >= 5 && nargin > 1; % būtina prasukti su 'boundary' įvykiu, geriau be jokių parametrų
+    error(lokaliz('Internal error'));
+end;
+
 ivLaikai=[]; ivTipai={}; ivRodykles=[]; ivLaikuSkirtumai=[]; Laikai=EEG.times;
+
 try
     g=struct(varargin{:});
 catch err; Pranesk_apie_klaida(err, mfilename, '?', 0);
@@ -114,17 +120,24 @@ if any((bndrs_lat_orig < max(Laikai)) > min(Laikai));
         end;
     catch
     end;
-else return;
+elseif ~any(bndrs_lat_orig < max(Laikai));
+    return;
 end;
 if nargout < 5; return; end;
+
+if ismember({'boundary'},ivTipai);
+    ivLaikuSkirtumai_bnd=ivLaikuSkirtumai(rodykles_bnd);
+else
+    error(lokaliz('Internal error'));
+end;
 
 bndrs_n=find(bndrs_lat_orig(:)'<max(Laikai),1,'last');
 if bndrs_n;
     ti=Laikai>bndrs_lat_orig(bndrs_n);
-    Laikai(ti)=Laikai(ti)+ivLaikuSkirtumai(rodykles_bnd(bndrs_n));
+    Laikai(ti)=Laikai(ti)+ivLaikuSkirtumai_bnd(bndrs_n);
     for bi=bndrs_n-(1:bndrs_n-1);
         ti=Laikai(Laikai<bndrs_lat_orig(bi+1))>bndrs_lat_orig(bi);
-        Laikai(ti)=Laikai(ti)+ivLaikuSkirtumai(rodykles_bnd(bi));
+        Laikai(ti)=Laikai(ti)+ivLaikuSkirtumai_bnd(bi);
     end;
 end;
 
