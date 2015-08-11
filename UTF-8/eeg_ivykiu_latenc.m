@@ -54,10 +54,10 @@ try
 catch err; Pranesk_apie_klaida(err, mfilename, '?', 0);
 end;
 
+if ~isfield(EEG,'event'); return; end;
+if ~isfield(EEG.event,'type'); return; end;
 Ivykiai={EEG.event.type};
-if isempty(Ivykiai); 
-    return; %error(lokaliz('No events found.')); 
-end;
+if isempty(Ivykiai); return; end;
 if ~iscellstr(Ivykiai);
     Ivykiai=arrayfun(@(i) num2str(i), 1:length(Ivykiai), 'UniformOutput', false);
 end;
