@@ -43,15 +43,17 @@ function [ivLaikai, ivTipai, ivRodykles, ivLaikuSkirtumai, Laikai]=eeg_ivykiu_la
 %
 %%
 
-if nargout >= 5 && nargin > 1; % būtina prasukti su 'boundary' įvykiu, geriau be jokių parametrų
-    error(lokaliz('Internal error'));
-end;
 
 ivLaikai=[]; ivTipai={}; ivRodykles=[]; ivLaikuSkirtumai=[]; Laikai=EEG.times;
 
 try
     g=struct(varargin{:});
 catch err; Pranesk_apie_klaida(err, mfilename, '?', 0);
+end;
+
+if nargout >= 5 && any(ismember(fieldnames(g),{'type' 'notype' 'index'})); 
+    % būtina prasukti su 'boundary' įvykiu, geriau be jokių parametrų
+    error(lokaliz('Internal error'));
 end;
 
 if ~isfield(EEG,'event'); return; end;
