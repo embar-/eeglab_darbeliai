@@ -1,8 +1,6 @@
-Darbeliai v2015.08.08.2
-Kanalų ir įvykių pasirinkimas ne EEGLAB *.set duomenims (per BIOSIG).
-Failų pervadinimo dialoge irgi galima greitai pasirinkti katalogus.
-Nedubliuoti failų kartu rodant lygiagrečius aplankus.
+Darbeliai v2015.08.14.1
+Naujas įrankis EEG įrašų peržiūrai/palyginimui
+leidžia sklandžiau naviguoti klaviatūra ir pele.
 
-Selection of channels and event for non-EEGLAB *.set files.
-Quick selection of directory in dialog of renaming files.
-Don't dublicate files then listing files from current and parallel dirs.
+New user-friendly tool to view/compare EEG records
+allows to navigate more confortable with keyboard and mouse.

@@ -47,6 +47,8 @@ if and(nargin, mod(nargin+1, 2)) ;
 else    g=[];
 end;
 
+reikia_EEGLAB=1; try reikia_EEGLAB=g(1).reikia_EEGLAB; catch; end;
+
 Kelias=pwd;
 try Kelias=g(1).path;   catch; end;
 try Kelias=g(1).pathin; catch; end;
@@ -88,14 +90,15 @@ if Pasirinktu_failu_N > 0 ;
             disp(Rinkmenos2{f,1});
         end;
         disp(' ');
-        global ALLEEG EEG CURRENTSET; ALLEEG=[];
+        if reikia_EEGLAB; global ALLEEG EEG CURRENTSET; end; 
+        ALLEEG=[];
         persistent SAVITA_KOMANDA; SAVITA_KOMANDA='';
         komanda=''; try komanda=g(1).command ; catch; end;
         
         for f=1:Pasirinktu_failu_N;
             EEG = eeg_ikelk(Rinkmenos2{f,2},Rinkmenos2{f,3});
-            SAVITA_KOMANDA=eval2(EEG, komanda, SAVITA_KOMANDA) ;
             [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'study',0,'setname',Rinkmenos2{f,3});
+            SAVITA_KOMANDA=eval2(ALLEEG, EEG, komanda, SAVITA_KOMANDA) ;
             %[ALLEEG EEG CURRENTSET]=eeg_store(ALLEEG, EEG);
             
             % statusbar
@@ -111,13 +114,15 @@ if Pasirinktu_failu_N > 0 ;
     catch %err; Pranesk_apie_klaida(err);
     end;
 end;
-eeglab redraw;
+if reikia_EEGLAB;
+    eeglab redraw;
+end;
 
 if ishandle(h)
     delete(h);
 end;
 
-function SAVITA_KOMANDA=eval2(EEG, komanda, SAVITA_KOMANDA) %#ok
+function SAVITA_KOMANDA=eval2(ALLEEG, EEG, komanda, SAVITA_KOMANDA) %#ok
 try if iscellstr(komanda);
         komanda=sprintf('%s \n', komanda{:})
     end;

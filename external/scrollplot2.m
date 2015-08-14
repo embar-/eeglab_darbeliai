@@ -97,6 +97,11 @@ function scrollHandles = scrollplot2(varargin)
 % Programmed and Copyright by Yair M. Altman: altmany(at)gmail.com
 % $Revision: 1.5 $  $Date: 2013/06/28 00:31:27 $
 
+% Updated by
+% Mindaugas Baranauskas, 2015
+
+%%
+
     try
         % Note: on some systems with Matlab 6, an OpenGL warning is displayed due to semi-
         % transparent scroll patch. This may be safely ignored. Unfortunately, specific warning
@@ -503,9 +508,9 @@ function processArgs(pvPairs,hScroll)
         hScroll = double(hScroll);  % Matlab 6 could not use findall with handle objects...
         axName = get(hScroll, 'userdata');
         if strcmpi(axName,'x')
-            otherAxName = 'y';  %#ok mlint mistaken warning - used below
+            otherAxName = 'y';  % mlint mistaken warning - used below
         else  % Y scroll
-            otherAxName = 'x';  %#ok mlint mistaken warning - used below
+            otherAxName = 'x';  % mlint mistaken warning - used below
         end
         dataStr = [axName 'Data'];
         %disp(dataStr);
@@ -817,6 +822,8 @@ function mouseWithinPatch(hFig,inDragMode,hAx,scrollPatch,cx,isOverBar)
             if ~isempty(newPtr)
                 setptr(hFig, newPtr);
             end
+            
+            try eval(getappdata(parentAx,'MouseDragFnc')); catch; end;
 
         else  % Normal mouse movement (no drag)
 
@@ -1034,11 +1041,14 @@ function mouseDownCallback(varargin)
             scrollBarIdx = scrollBarIdx(min(1:end)); % find(x,1) is unsupported on Matlab 6!
             
             if (cx < min(barXs) - fuzz) || (cx > max(barXs) - fuzz);
-                if strcmpi(axName,'x')
-                    try eval(getappdata(hFig,'ButtonDownFcnX')); catch; end;
-                else
-                    try eval(getappdata(hFig,'ButtonDownFcnY')); catch; end;
-                end
+                parentAx = getappdata(hAx, 'parent');
+                AxLim=get(hAx, [axName 'Lim']);
+                halfDiff=(max(barXs)-min(barXs))/2;
+                cx=max(min(AxLim)+halfDiff,cx);
+                cx=min(max(AxLim)-halfDiff,cx);
+                barXs=barXs-mean(barXs)+cx;
+                set(parentAx, [axName 'Lim'], barXs);
+                try eval(getappdata(parentAx,'MouseDragFnc')); catch; end;
             end;
             
             if strcmpi(get(hAx,[axName 'Scale']), 'log')

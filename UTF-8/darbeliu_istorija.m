@@ -1,6 +1,10 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.08.14.1
+% + Naujas įrankis EEG įrašų peržiūrai/palyginimui
+% + leidžia sklandžiau naviguoti klaviatūra ir pele.
+%
 % v2015.08.08.1
 % + Kanalų ir įvykių pasirinkimas ne EEGLAB *.set duomenims (per BIOSIG).
 % + Failų pervadinimo dialoge irgi galima greitai pasirinkti katalogus.
