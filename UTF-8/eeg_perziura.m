@@ -736,8 +736,7 @@ try
             set(ax,[asisR 'lim'],lim_nj);
         end;
     end;
-catch err;
-    Pranesk_apie_klaida(err,mfilename,'',0);
+catch %err; Pranesk_apie_klaida(err,mfilename,'',0);
 end;
 eeg_perziura_atnaujinti;
 
