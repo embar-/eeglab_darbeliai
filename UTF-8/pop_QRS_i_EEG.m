@@ -2341,7 +2341,7 @@ function popupmenu_QRS_algoritmas_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-set(handles.popupmenu_QRS_algoritmas,'Value',1);
+set(hObject,'Value',1);
 
 
 function edit_QRS_ivykis_Callback(hObject, eventdata, handles)
