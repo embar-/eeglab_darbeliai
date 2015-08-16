@@ -99,6 +99,8 @@ function scrollHandles = scrollplot2(varargin)
 
 % Updated by
 % Mindaugas Baranauskas, 2015
+% + try integrate mode managers.
+% + go to X or Y, if scrool axis is clicked outside scrool patch.
 
 %%
 
