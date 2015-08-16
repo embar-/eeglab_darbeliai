@@ -96,8 +96,52 @@ if ~isempty(EEG2.times) && length(EEG1.times)/EEG1.srate > length(EEG2.times)/EE
 elseif EEG1.nbchan > EEG2.nbchan && length(EEG1.times)/EEG1.srate == length(EEG2.times)/EEG2.srate;
     sukeisk=1;
 end;
+
 if sukeisk; % EEG1 <-> EEG2
     EEG=EEG1; EEG1=EEG2; EEG2=EEG;
+end;
+
+% epochuotų ir neepochuotų duomenų susiejimas
+if EEG1.trials > 1 && EEG2.trials == 1;
+    if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
+        assignin('base','EEG1',EEG1);
+        assignin('base','EEG2',EEG2);
+        urid1={EEG1.event.urevent}; urid1(arrayfun(@(i) isempty(urid1{i}), 1:length(urid1)))={NaN}; urid1=cell2mat(urid1);
+        urid2={EEG2.event.urevent}; urid2(arrayfun(@(i) isempty(urid2{i}), 1:length(urid2)))={NaN}; urid2=cell2mat(urid2);
+        urid1_sutampa_i=find(ismember(urid1,urid2));
+        urid2_sutampa_i=find(ismember(urid2,urid1));
+        urid_sutampa_tipas1={EEG1.event(urid1_sutampa_i).type};
+        urid_sutampa_tipas2={EEG2.event(urid2_sutampa_i).type};
+        sutampa_ivykiai=0;
+        if iscellstr(urid_sutampa_tipas1) && iscellstr(urid_sutampa_tipas2);
+            if strcmp(urid_sutampa_tipas1,urid_sutampa_tipas2);
+                sutampa_ivykiai=1;
+            end;
+        elseif isnumeric(urid_sutampa_tipas1) && isnumeric(urid_sutampa_tipas2);
+            if isequal(urid_sutampa_tipas1,urid_sutampa_tipas2);
+                sutampa_ivykiai=1;
+            end;
+        end;
+        if sutampa_ivykiai;
+            sk=[EEG2.event(urid2_sutampa_i).laikas_ms] - [EEG1.event(urid1_sutampa_i).laikas_ms];
+            skd=[sk(1) diff(sk)];
+            epochos=[EEG1.event.epoch];
+            ep=epochos(urid1_sutampa_i); %[EEG1.event(urid1_sutampa_i).epoch];
+            [~,ei]=unique(ep);
+            for i=ei';
+                ti=(ep(i)-1)*(EEG1.pnts+1)+1;
+                EEG1.times(    ti:end)=EEG1.times(    ti:end) + skd(i);
+                EEG1.times_nan(ti:end)=EEG1.times_nan(ti:end) + skd(i);
+                for vi=find(epochos >= i);
+                    EEG1.event(vi).laikas_ms=EEG1.event(vi).laikas_ms + skd(i);
+                end;
+            end;
+            ivTipai={EEG1.event.type};
+            if iscellstr(ivTipai);
+                EEG1.event(ismember(ivTipai,{'boundary'}))=[];
+            end;
+        end;
+    end;
 end;
 
 % Y mažinimo koeficientas
@@ -377,13 +421,18 @@ if isempty(EEG);
 end;
 dim3=size(EEG.data,3);
 if dim3 > 1;
+    dim1=size(EEG.data,1);
+    EEG.data(:,end+1,:)=nan([dim1,1,dim3]);
     dim2=size(EEG.data,2);
     EEG.data=EEG.data(:,:);
-    EEG.times=[0:size(EEG.data,2)-1]/EEG.srate*1000; % ms
+    EEG.times=[0:(dim2-1)*dim3-1]/EEG.srate*1000; % ms
+    EEG.times=reshape(EEG.times, dim2-1, dim3);
+    EEG.times_nan=[EEG.times; nan(1,dim3)]; EEG.times_nan=EEG.times_nan(:)';
+    EEG.times(end+1,:)=EEG.times(end,:)+0.5/EEG.srate*1000; EEG.times=EEG.times(    :)';
     EEG.xmin_org=EEG.xmin;
     EEG.xmax_org=EEG.xmax;
     for i=0:dim3;
-        l=0.5 + i * dim2;
+        l=0.5 + i * dim2 - i; %  ...- i dėl to, kad įterpiam NaN gale
         j=find([EEG.event.latency] > l, 1, 'first');
         if isempty(j);
             j=1+length(EEG.event);
@@ -393,6 +442,7 @@ if dim3 > 1;
         EEG.event(j).type = 'boundary';
         EEG.event(j).latency  = l;
         EEG.event(j).duration = 0;
+        EEG.event(j).urevent  = [];
     end;
 end;
 if isfield(EEG, 'event_org');
@@ -413,27 +463,29 @@ reikia_ribozenkliu=~isempty(getappdata(gca,'reikia_ribozenkliu'));
 for i=ivRodykles;
     EEG.event(i).laikas_ms=ivLaikai(i);
 end;
-if ~reikia_ribozenkliu && dim3 <= 1 ;
-    EEG.times_nan=EEG.times_bnd;
-    bndrs=ismember(ivTipai','boundary');
-    for i=find(bndrs); 
-        n=find(EEG.times_bnd >= ivLaikai(i),1,'first');
-        if ~isempty(n);
-            EEG.times_bnd(1,n+1:end+1)=EEG.times_bnd(1,n:end);
-            EEG.times_nan(1,n+1:end+1)=EEG.times_nan(1,n:end);
-            EEG.data( :,n+1:end+1)=EEG.data( :,n:end);
-            EEG.times_bnd(n)=ivLaikai(i);
-            EEG.times_nan(n)=NaN;
-            EEG.data(:,n)=nan(size(EEG.data,1),1);
+if dim3 <= 1 ;
+    if ~reikia_ribozenkliu;
+        EEG.times_nan=EEG.times_bnd;
+        bndrs=ismember(ivTipai','boundary');
+        for i=find(bndrs);
+            n=find(EEG.times_bnd >= ivLaikai(i),1,'first');
+            if ~isempty(n);
+                EEG.times_bnd(1,n+1:end+1)=EEG.times_bnd(1,n:end);
+                EEG.times_nan(1,n+1:end+1)=EEG.times_nan(1,n:end);
+                EEG.data( :,n+1:end+1)=EEG.data( :,n:end);
+                EEG.times_bnd(n)=ivLaikai(i);
+                EEG.times_nan(n)=NaN;
+                EEG.data(:,n)=nan(size(EEG.data,1),1);
+            end;
         end;
+        EEG.times=EEG.times_bnd;
+        EEG.event=EEG.event(~bndrs);
+        EEG.xmin=0.001*min(EEG.times); if isempty(EEG.xmin); EEG.xmin=NaN; end;
+        EEG.xmax=0.001*max(EEG.times); if isempty(EEG.xmax); EEG.xmax=0; end;
+    else
+        EEG.times_nan=EEG.times_org;
+        EEG.times_bnd=EEG.times_org;
     end;
-    EEG.times=EEG.times_bnd;
-    EEG.event=EEG.event(~bndrs);
-    EEG.xmin=0.001*min(EEG.times); if isempty(EEG.xmin); EEG.xmin=NaN; end;
-    EEG.xmax=0.001*max(EEG.times); if isempty(EEG.xmax); EEG.xmax=0; end;
-else
-    EEG.times_nan=EEG.times_org;
-    EEG.times_bnd=EEG.times_org;
 end;
 
 function eeg_perziura_atnaujinti(varargin)
