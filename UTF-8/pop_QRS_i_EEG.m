@@ -806,7 +806,7 @@ for i=1:Pasirinktu_failu_N;
                             [Laikai0,Ivykiai0,~,Poslink0,EKG_laikai]=eeg_ivykiu_latenc(EEG);
                             laikai=laikai_be_tarpu(laikai, Laikai0, Ivykiai0, Poslink0);
                             laikai=num2cell(laikai);
-                            ivykiai(1:length(laikai),1)={QRS_ivykis};
+                            ivykiai={}; ivykiai(1:length(laikai),1)={QRS_ivykis};
                             
                             EEG = pop_importevent( EEG, 'append','yes',...
                                 'event', [ivykiai laikai],...
@@ -951,7 +951,7 @@ for i=1:Pasirinktu_failu_N;
                     end;
                     laikai=laikai_be_tarpu(laikai, Laikai0, Ivykiai0, Poslink0);
                     laikai=num2cell(laikai);
-                    ivykiai(1:length(laikai),1)={QRS_ivykis};
+                    ivykiai={}; ivykiai(1:length(laikai),1)={QRS_ivykis};
                     
                     % Pašalinti senus QRS_ivykis tipo įvykius
                     if isfield(EEG.event,'type');
