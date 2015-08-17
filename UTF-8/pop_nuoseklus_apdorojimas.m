@@ -667,6 +667,15 @@ drawnow;
 %uiwait(gcf,1);
 
 
+function vykdymas_su_perziura(hObject, eventdata, handles, varargin)
+if nargin > 3; veiksena=varargin{1};
+else           veiksena=0;
+end;
+setappdata(handles.figure1,'TIK_PERZIURA',veiksena);
+pushbutton1_Callback(hObject, eventdata, handles);
+setappdata(handles.figure1,'TIK_PERZIURA',[]);
+
+
 % --- Executes on button press in pushbutton1.
 function pushbutton1_Callback(hObject, eventdata, handles)
 Ar_galima_vykdyti(hObject, eventdata, handles);
@@ -771,8 +780,10 @@ end;
 
 DarboNr=0;
 PaskutinioIssaugotoDarboNr=0;
-
 Apdoroti_visi_tiriamieji=0;
+TIK_PERZIURA=getappdata(handles.figure1,'TIK_PERZIURA');
+PERZIURA=~isempty(TIK_PERZIURA);
+if ~PERZIURA; TIK_PERZIURA=0; end;
 
 for i=1:Pasirinktu_failu_N;
     Rinkmena=Pasirinkti_failu_pavadinimai{i};
@@ -798,8 +809,7 @@ for i=1:Pasirinktu_failu_N;
     if ~isempty(EEG);
 
         EEG = eeg_checkset( EEG );
-        %eeglab redraw;
-
+        if PERZIURA; EEG0=EEG; end;
 
         % Kanalų padėtis
         Darbo_apibudinimas=lokaliz('Setting channel positions...');
@@ -834,7 +844,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_kanalu_padetis,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_kanalu_padetis_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_kanalu_padetis_,'Value') == 1 ;
+                if get(handles.checkbox_kanalu_padetis_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -899,7 +909,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_rf,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_rf_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_rf_,'Value') == 1 ;
+                if get(handles.checkbox_rf_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -960,7 +970,7 @@ for i=1:Pasirinktu_failu_N;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_atrink_kanalus1_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
                 disp(NaujaRinkmena);
-                if get(handles.checkbox_atrink_kanalus1_,'Value') == 1 ;
+                if get(handles.checkbox_atrink_kanalus1_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -1043,7 +1053,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_filtr1,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_filtr1_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_filtr1_,'Value') == 1 ;
+                if get(handles.checkbox_filtr1_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -1099,7 +1109,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_filtr_tinklo,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_filtr_tinklo_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_filtr_tinklo_,'Value') == 1 ;
+                if get(handles.checkbox_filtr_tinklo_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -1156,7 +1166,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_atmesk_atkarpas_amp,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_atmesk_atkarpas_amp_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_atmesk_atkarpas_amp_,'Value') == 1 ;
+                if get(handles.checkbox_atmesk_atkarpas_amp_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -1210,7 +1220,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_atmesk_atkarpas_dzn,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_atmesk_atkarpas_dzn_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_atmesk_atkarpas_dzn_,'Value') == 1 ;
+                if get(handles.checkbox_atmesk_atkarpas_dzn_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -1280,7 +1290,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_atmesk_kan_auto,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_atmesk_kan_auto_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_atmesk_kan_auto_,'Value') == 1 ;
+                if get(handles.checkbox_atmesk_kan_auto_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -1334,7 +1344,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_ASR,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_ASR_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_ASR_,'Value') == 1 ;
+                if get(handles.checkbox_ASR_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -1447,7 +1457,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_perziureti,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_perziureti_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_perziureti_,'Value') == 1 ;
+                if get(handles.checkbox_perziureti_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -1514,7 +1524,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_ICA,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_ICA_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_ICA_,'Value') == 1 ;
+                if get(handles.checkbox_ICA_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -1594,7 +1604,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_MARA,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_MARA_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_MARA_,'Value') == 1 ;
+                if get(handles.checkbox_MARA_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -1772,7 +1782,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_perziureti_ICA,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_perziureti_ICA_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_perziureti_ICA_,'Value') == 1 ;
+                if get(handles.checkbox_perziureti_ICA_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -1852,7 +1862,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_atmesk_iki2s,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_atmesk_iki2s_,'String')) ];
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_atmesk_iki2s_,'Value') == 1 ;
+                if get(handles.checkbox_atmesk_iki2s_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -1982,7 +1992,7 @@ for i=1:Pasirinktu_failu_N;
                     Priesaga=(get(handles.edit_vienoda_trukme,'String')) ;
                     Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_vienoda_trukme_,'String')) ] ;
                     [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                    if get(handles.checkbox_vienoda_trukme_,'Value') == 1 ;
+                    if get(handles.checkbox_vienoda_trukme_,'Value') == 1 && ~TIK_PERZIURA;
                         Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                         PaskutinioIssaugotoDarboNr=DarboNr;
                         DarboPorcijaAtlikta = 1;
@@ -2140,7 +2150,7 @@ for i=1:Pasirinktu_failu_N;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_atrink_kanalus2_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
                 disp(NaujaRinkmena);
-                if get(handles.checkbox_atrink_kanalus2_,'Value') == 1 ;
+                if get(handles.checkbox_atrink_kanalus2_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -2197,7 +2207,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_filtr2,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_filtr2_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_filtr2_,'Value') == 1 ;
+                if get(handles.checkbox_filtr2_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -2332,7 +2342,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_epoch,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_epoch_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_epoch_,'Value') == 1 ;
+                if get(handles.checkbox_epoch_,'Value') == 1 && ~TIK_PERZIURA;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -2369,7 +2379,7 @@ for i=1:Pasirinktu_failu_N;
 
 
         % Išsaugoti
-        if isempty(PaskRinkmIssaugKelias);
+        if isempty(PaskRinkmIssaugKelias) && ~TIK_PERZIURA;
             Poaplankis='.';
             Priesaga='';
             Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
@@ -2381,7 +2391,7 @@ for i=1:Pasirinktu_failu_N;
         str=(sprintf('%s apdorotas (%d/%d = %3.2f%%)\r\n', NaujaRinkmena, i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100 )) ;
         disp(str);
 
-        if and(~isempty(EEG),DarboPorcijaAtlikta);
+        if and(~isempty(EEG),DarboPorcijaAtlikta) && ~TIK_PERZIURA;
             if and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)) ;
                 NaujosRinkmenos=get(handles.listbox2,'String');
                 NaujosRinkmenos{i}=NaujaRinkmena;
@@ -2395,6 +2405,7 @@ for i=1:Pasirinktu_failu_N;
                t, pwd, Rinkmena),lokaliz('Empty dataset'),'error');
     end;
 
+    if PERZIURA; eeg_palyginimas(EEG0,EEG,Rinkmena_,NaujaRinkmena); end;
 
     % Isvalyti atminti
     STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
@@ -2586,6 +2597,12 @@ try
 catch err;
     Pranesk_apie_klaida(err,lokaliz('Save file'),RinkmenaSaugojimui);
 end;
+
+
+function eeg_palyginimas(EEG0,EEG,pvd0,pvd)
+f=figure('toolbar','none','menubar','none','NumberTitle','off','units','normalized','outerposition',[0 0 1 1],'name', [ pvd ' + ' pvd0 ]);
+axes('units','normalized','position',[0.08 0.05 0.9 0.9 ]);
+eeg_perziura(EEG,EEG0);
 
 
 % --- Executes on button press in pushbutton2.
