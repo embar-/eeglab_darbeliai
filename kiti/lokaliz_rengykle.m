@@ -47,7 +47,7 @@ end;
 r=which(r);
 load(r,'-mat');
 f=figure;
-set(f,'name',r);
+set(f,'Name',r,'NumberTitle','off');
 l= ismember(ones(1,size(LC_TXT,2)),1);
 t=uitable(f,'data',LC_TXT,'ColumnName', {LC_info.LANG }, 'Units', 'normalized', 'position', [0.02 0.15 0.96 0.8],'ColumnEditable',l,'tag','lentele', 'userdata',LC_info,...
     'CellEditCallback','LC_TXT=get(findobj(gcf,''tag'',''lentele''),''data''); LC_info=get(findobj(gcf,''tag'',''lentele''),''userdata''); save(get(gcf,''name''),''LC_info'', ''LC_TXT'') ; clear(''lokaliz'');');
@@ -63,3 +63,4 @@ p=uicontrol('style','pushbutton', 'String', '+', 'Units', 'normalized', 'positio
     ['LC_TXT=get(findobj(gcf,''tag'',''lentele''),''data'');'...
     'LC_TXT{1+size(LC_TXT,1),1}=get(findobj(gcf,''tag'',''filtras''),''string'');'...
     'set(findobj(gcf,''tag'',''lentele''),''data'', LC_TXT);']);
+
