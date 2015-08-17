@@ -104,23 +104,22 @@ end;
 % epochuotų ir neepochuotų duomenų susiejimas
 if EEG1.trials > 1 && EEG2.trials == 1;
     if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
-        assignin('base','EEG1',EEG1);
-        assignin('base','EEG2',EEG2);
+        %assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
         urid1={EEG1.event.urevent}; urid1(arrayfun(@(i) isempty(urid1{i}), 1:length(urid1)))={NaN}; urid1=cell2mat(urid1);
         urid2={EEG2.event.urevent}; urid2(arrayfun(@(i) isempty(urid2{i}), 1:length(urid2)))={NaN}; urid2=cell2mat(urid2);
         urid1_sutampa_i=find(ismember(urid1,urid2));
-        urid2_sutampa_i=find(ismember(urid2,urid1));
+        [~,urid2_sutampa_i]=ismember(urid1(urid1_sutampa_i),urid2);
         urid_sutampa_tipas1={EEG1.event(urid1_sutampa_i).type};
         urid_sutampa_tipas2={EEG2.event(urid2_sutampa_i).type};
         sutampa_ivykiai=0;
-        if iscellstr(urid_sutampa_tipas1) && iscellstr(urid_sutampa_tipas2);
+        if iscellstr(urid_sutampa_tipas1) && iscellstr(urid_sutampa_tipas2)
             if strcmp(urid_sutampa_tipas1,urid_sutampa_tipas2);
                 sutampa_ivykiai=1;
             end;
-        elseif isnumeric(urid_sutampa_tipas1) && isnumeric(urid_sutampa_tipas2);
-            if isequal(urid_sutampa_tipas1,urid_sutampa_tipas2);
-                sutampa_ivykiai=1;
-            end;
+        %elseif isnumeric(urid_sutampa_tipas1) && isnumeric(urid_sutampa_tipas2);
+        %    if isequal(urid_sutampa_tipas1,urid_sutampa_tipas2);
+        %        sutampa_ivykiai=1;
+        %    end;
         end;
         if sutampa_ivykiai;
             sk=[EEG2.event(urid2_sutampa_i).laikas_ms] - [EEG1.event(urid1_sutampa_i).laikas_ms];
@@ -140,6 +139,8 @@ if EEG1.trials > 1 && EEG2.trials == 1;
             if iscellstr(ivTipai);
                 EEG1.event(ismember(ivTipai,{'boundary'}))=[];
             end;
+            EEG1.xmin=0.001*min(EEG1.times); if isempty(EEG1.xmin); EEG1.xmin=NaN; end;
+            EEG1.xmax=0.001*max(EEG1.times); if isempty(EEG1.xmax); EEG1.xmax=0; end;
         end;
     end;
 end;
@@ -158,8 +159,8 @@ end;
 try    l2={EEG2.chanlocs.labels};
 catch; l2=[1:EEG2.nbchan]; %arrayfun(@(i) sprintf('%d', i), [1:EEG2.nbchan], 'UniformOutput', false);
 end;
-assignin('base','l1',l1);
-assignin('base','l2',l2);
+% assignin('base','l1',l1);
+% assignin('base','l2',l2);
 if isequal(l1,l2);
     set(a,'YTick', 1:length(l1));
     set(a,'YTickLabel', l1);
@@ -320,11 +321,16 @@ setappdata(a,'MouseOutMainAxesFnc',{@eeg_perziura,'atstatyk_pele'});
 
 % Slikikliai
 warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+if isempty(EEG1.times);
+    minx=min(EEG1.xmin,EEG2.xmin);
+else
+    minx=EEG1.xmin;
+end;
 scrollHandles = scrollplot2('Axis','XY', ...
     'MinY', 0.2, ...
     'MaxY', max(EEG1.nbchan,EEG2.nbchan)+0.8, ...
-    'MinX', min(EEG1.xmin,EEG2.xmin), ...
-    'MaxX', min(EEG1.xmin,EEG2.xmin)+5);
+    'MinX', minx, ...
+    'MaxX', minx+5);
 set(scrollHandles(1),'XLim',[min(EEG1.xmin,EEG2.xmin)-1 1+max(EEG1.xmax,EEG2.xmax)]);
 set(scrollHandles(2),'YLim',[0.1 max(EEG1.nbchan,EEG2.nbchan)+0.9]);
 scrl_lin=findobj(findobj(f,'tag','scrollAx','userdata','x'),'tag','scrollDataLine');
@@ -444,6 +450,8 @@ if dim3 > 1;
         EEG.event(j).duration = 0;
         EEG.event(j).urevent  = [];
     end;
+    EEG.xmin=0.001*min(EEG.times); if isempty(EEG.xmin); EEG.xmin=NaN; end;
+    EEG.xmax=0.001*max(EEG.times); if isempty(EEG.xmax); EEG.xmax=0; end;
 end;
 if isfield(EEG, 'event_org');
      EEG.event=EEG.event_org;
@@ -462,6 +470,7 @@ reikia_ribozenkliu=~isempty(getappdata(gca,'reikia_ribozenkliu'));
 [ivLaikai, ivTipai, ivRodykles, ~, EEG.times_bnd] = eeg_ivykiu_latenc(EEG, 'boundary', ~reikia_ribozenkliu);
 for i=ivRodykles;
     EEG.event(i).laikas_ms=ivLaikai(i);
+    EEG.event(i).type     =ivTipai{i};
 end;
 if dim3 <= 1 ;
     if ~reikia_ribozenkliu;
@@ -581,12 +590,11 @@ for i=[1 2];
         end;
         zy=zy(:);
         zm={EEG.event(zi).type} ;
-        if iscellstr(zm);
+        %if iscellstr(zm);
             bi=ismember(zm,{'boundary'}); bi=[bi; bi; bi]; bi=bi(:); zm=strrep(zm,'boundary','');
             plot(parentAx, zx_(bi), zy(bi),'hittest','off','tag',['zymekliaiB' num2str(i)], 'color',zymekliu_spalvosB{i}, 'LineWidth', 2);
-        else
-            bi=zeros(size(zx_));
-        end;
+        %else bi=zeros(size(zx_));
+        %end;
         if isempty(getappdata(parentAx,'nereikia_ivykiu'));
             plot(parentAx, zx_(~bi), zy(~bi),'hittest','off','tag',['zymekliaiA' num2str(i)], 'color',zymekliu_spalvosA{i});
             %zx=zx+abs(diff(LX))/parentAx_pos(3)*5
