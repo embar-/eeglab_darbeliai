@@ -155,6 +155,17 @@ try set(handles.edit2,'String',g(1).path);    catch err; end;
 try set(handles.edit2,'String',g(1).pathout); catch err; end;
 edit2_Callback(hObject, eventdata, handles);
 
+set(    handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
+try set(handles.edit_failu_filtras1,'String',g(1).flt_show); catch err; end;
+try 
+    if ~isempty(g(1).flt_slct);    
+        set(handles.edit_failu_filtras2,'Style','pushbutton'); % 'edit'
+        edit_failu_filtras2_ButtonDownFcn(hObject, eventdata, handles);
+        set(handles.edit_failu_filtras2,'String',g(1).flt_slct);
+    end
+catch err; 
+end;
+
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 
 edit3_Callback(hObject, eventdata, handles);
@@ -182,17 +193,7 @@ set(handles.checkbox_ASR,'Value',0);
 set(handles.checkbox_perziureti_ICA,'Value',0);
 set(handles.checkbox_epoch,'Value',0);
 
-% Numatytosios reikšmės
-set(    handles.edit_failu_filtras1,'String','*.set;*.cnt;*.edf');
-try set(handles.edit_failu_filtras1,'String',g(1).flt_show); catch err; end;
-try 
-    if ~isempty(g(1).flt_slct);    
-        set(handles.edit_failu_filtras2,'Style','pushbutton'); % 'edit'
-        edit_failu_filtras2_ButtonDownFcn(hObject, eventdata, handles);
-        set(handles.edit_failu_filtras2,'String',g(1).flt_slct);
-    end
-catch err; 
-end;
+% Kitos umatytosios reikšmės
 set(handles.edit_epoch_iv,'String','');
 
 set(handles.text_apdorotini_kanalai,'String',lokaliz('all'));
