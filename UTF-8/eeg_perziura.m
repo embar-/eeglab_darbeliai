@@ -53,6 +53,12 @@ if nargin > 0;
                 eeg_perziura_perkurti(varargin{2:end});
             case {'ribozenkliu_perjungimas'};
                 eeg_ribozenkliu_perjungimas(varargin{2:end});
+            case {'zymejimas_prasideda'};
+                eeg_zymejimas_prasideda(varargin{2:end});
+            case {'zymejimas_tesiasi'};
+                eeg_zymejimas_tesiasi(varargin{2:end});
+            case {'zymejimas_baigiasi'};
+                eeg_zymejimas_baigiasi(varargin{2:end});
             otherwise;
                 eeg_perziura_sukurti(varargin{2:end});
         end;
@@ -339,7 +345,7 @@ set(scrl_lin(2),'color','r','xdata',0.001*EEG2.times_nan,'ydata',max(EEG1.nbchan
 setappdata(a,'scrl_lin',scrl_lin);
 
 % Kontekstinis meniu
-c=uicontextmenu;
+c=uicontextmenu('tag','kontekstinis_meniu');
 uimenu(c,'label',['+ ' lokaliz('Artinti')], 'callback','eeg_perziura(''atsakas'',''add'');');
 uimenu(c,'label',['- ' lokaliz('Tolinti')], 'callback','eeg_perziura(''atsakas'',''subtract'');');
 p=uimenu(c,'label',lokaliz('Laiko plotis'));
@@ -419,6 +425,9 @@ setappdata(f,'scrollHandles',scrollHandles);
 eeg_perziura_atnaujinti('plotis',plotis);
 set(f,'KeyPressFcn','eeg_perziura(''atsakas'')');
 set(f,'WindowScrollWheelFcn',{@eeg_perziura,'ratukas'});
+set(a,'ButtonDownFcn', 'eeg_perziura(''zymejimas_prasideda'');');
+setappdata(a,'MouseInMainAxesFnc',{@eeg_perziura, 'zymejimas_tesiasi'});
+set(f,'WindowButtonUpFcn', 'eeg_perziura(''zymejimas_baigiasi'');');
 
 
 function EEG=perkeisk_eeg2(EEG)
@@ -548,7 +557,7 @@ if zymekliu_sukeitimas;
 else
     zymekliu_kryptis={ 'left' 'right' };
 end;
-zymekliai_pilni = isempty(EEG1.data) || isempty(EEG2.data);
+zymekliai_pilni = isempty(EEG1.data) || isempty(EEG2.data) || ~isempty(getappdata(parentAx,'zymeti'));
 
 % Matomų taškų atrinkimas
 for i=[1 2];
@@ -569,7 +578,7 @@ if ~isempty(getappdata(parentAx,'derinti_Y'))
 elseif zymekliai_pilni;
     derinti_Y=0;
 elseif any(ismember(EEG1.grafikoX,EEG2.grafikoX));
-    derinti_Y=1;
+    derinti_Y=2;
 else
     derinti_Y=0;
 end;
@@ -580,15 +589,18 @@ if derinti_Y
     for eil=1:max(d1,d2);
         grafikoY_tmp1=[]; if eil <= d1; grafikoY_tmp1=EEG1.grafikoY(eil,:); end;
         grafikoY_tmp2=[]; if eil <= d2; grafikoY_tmp2=EEG2.grafikoY(eil,:); end;
+        med=[];
         if ~isempty(grafikoY_tmp1) && ~isempty(grafikoY_tmp2);
             if isequal(...
                     grafikoY_tmp1(ismember(grafikoX_tmp1,grafikoX_tmp2)),...
                     grafikoY_tmp2(ismember(grafikoX_tmp2,grafikoX_tmp1)));
                 med=median([grafikoY_tmp1 grafikoY_tmp2],'omitnan');
-                if ~isempty(med);
-                    suderintos_med(eil)=med;
-                end;
+            elseif derinti_Y == 1;
+                med=median(grafikoY_tmp2,'omitnan');
             end;
+        end;
+        if ~isempty(med);
+            suderintos_med(eil)=med;
         end;
     end;
 end;
@@ -618,7 +630,7 @@ for i=[1 2];
     end;
     grafikas=getappdata(parentAx,['grafikas' num2str(i)]);
     set(grafikas,'XData', EEG.grafikoX, 'YData', EEG.grafikoY);
-    if isfield(EEG.event, 'laikas_ms');
+    if isfield(EEG.event, 'laikas_ms') && ~and( ~isempty(getappdata(parentAx,'zymeti')) , i == 2 );
         delete(findobj(parentAx,'tag',['zymekliaiA' num2str(i)]));
         delete(findobj(parentAx,'tag',['zymekliaiB' num2str(i)]));
         zi=find([EEG.event(find([EEG.event.laikas_ms] <= LX(2)*1000)).laikas_ms] >= LX(1)*1000);
@@ -746,6 +758,7 @@ try
             end;
             set(ax,'XLim',lim_nj);
             eeg_perziura_atnaujinti;
+            eeg_zymejimas_tesiasi;
         case {'subtract' 'add'}
             switch diff(ismember({'shift' 'control'}, modifiers))
                 case  1; asisR='x'; asisN=1;
@@ -841,4 +854,48 @@ try
 catch %err; Pranesk_apie_klaida(err,mfilename,'',0);
 end;
 eeg_perziura_atnaujinti;
+if asisN == 1 && ~ismember('control',modifiers);
+    eeg_zymejimas_tesiasi;
+end;
+
+
+function eeg_zymejimas_prasideda(varargin)
+a=getappdata(gcf,'main_axes');
+x=get(a,'CurrentPoint');
+if isempty(x); return; end;
+x=x(1,1); 
+setappdata(a,'spragtelejimo_vieta',x);
+if isempty(getappdata(a,'zymeti')); return; end;
+setappdata(a,'EEG1_',getappdata(a,'EEG1'));
+
+function eeg_zymejimas_tesiasi(varargin)
+a=getappdata(gcf,'main_axes');
+if ~strcmp(get(gcf, 'SelectionType'),'normal');
+    setappdata(a,'spragtelejimo_vieta',[]);
+    return;
+end;
+if isempty(getappdata(a,'zymeti')); return; end;
+
+x1=getappdata(a,'spragtelejimo_vieta');
+if isempty(x1); return; end;
+
+x2=get(a,'CurrentPoint'); x2=x2(1,1);
+if x1 > x2;
+    x3=x1; x1=x2; x2=x3;
+end;
+EEG1=getappdata(a,'EEG1_');
+ix=find(EEG1.times(EEG1.times <= x2*1000) >= x1*1000);
+EEG1.data(:,ix)=nan(size(EEG1.data,1),length(ix));
+ix_nan=find(EEG1.times_nan(EEG1.times_nan <= x2*1000) >= x1*1000);
+EEG1.times_nan(ix_nan)=NaN(1,length(ix_nan));
+setappdata(a,'EEG1',EEG1);
+scrl_lin=getappdata(a,'scrl_lin');
+set(scrl_lin(1),'xdata',0.001*EEG1.times_nan);
+setappdata(a,'derinti_Y',1);
+eeg_perziura_atnaujinti;
+
+function eeg_zymejimas_baigiasi
+a=getappdata(gcf,'main_axes');
+setappdata(a,'spragtelejimo_vieta',[]);
+if isempty(getappdata(a,'zymeti')); return; end;
 
