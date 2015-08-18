@@ -322,9 +322,9 @@ setappdata(a,'MouseOutMainAxesFnc',{@eeg_perziura,'atstatyk_pele'});
 % Slikikliai
 warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
 if isempty(EEG1.times);
-    minx=min(EEG1.xmin,EEG2.xmin);
+    minx=0.001*min(min(EEG1.times_nan),min(EEG1.times_nan));
 else
-    minx=EEG1.xmin;
+    minx=0.001*min(EEG1.times_nan);
 end;
 scrollHandles = scrollplot2('Axis','XY', ...
     'MinY', 0.2, ...
@@ -548,44 +548,86 @@ if zymekliu_sukeitimas;
 else
     zymekliu_kryptis={ 'left' 'right' };
 end;
+zymekliai_pilni = isempty(EEG1.data) || isempty(EEG2.data);
+
+% Matomų taškų atrinkimas
 for i=[1 2];
-    if isequal(i,1);
-        EEG=EEG1; EEG_=EEG2;
-    else
-        EEG=EEG2; EEG_=EEG1;
-    end;
+    eval([ 'EEG=EEG' num2str(i) ';' ]);
     ix=find(EEG.times(EEG.times <= (LX(2)+2/EEG.srate)*1000) >= (LX(1)-2/EEG.srate)*1000);
-    grafikoX=[0.001*EEG.times(ix) 0]; %disp([i min(grafikoX(1:end-1)) max(grafikoX(1:end-1))]);
+    EEG.grafikoX=[0.001*EEG.times(ix) 0]; %disp([i min(EEG.grafikoX(1:end-1)) max(EEG.grafikoX(1:end-1))]);
     iy=[max(ceil(LY(1)),1):min(floor(LY(2)),EEG.nbchan)];
-    grafikoY=EEG.data(iy,ix) ./ getappdata(parentAx,'y_koef');
+    EEG.grafikoY=EEG.data(iy,ix) ./ getappdata(parentAx,'y_koef');
     if isempty(getappdata(parentAx,'apversti'));
-        grafikoY=-grafikoY;
+        EEG.grafikoY=-EEG.grafikoY;
     end;
-    for eil=1:length(iy);
-        grafikoX(eil,:)=grafikoX(1,:);
-        grafikoY_=grafikoY(eil,:);
-        med=median(grafikoY_(~isnan(grafikoY_)));
-        grafikoY(eil,:)=grafikoY(eil,:)-med+iy(eil);
+    eval([ 'EEG' num2str(i) '=EEG;' ]);
+end
+
+% Y suderinimas tarp EEG1 ir EEG2
+if ~isempty(getappdata(parentAx,'derinti_Y'))
+    derinti_Y=1;
+elseif zymekliai_pilni;
+    derinti_Y=0;
+elseif any(ismember(EEG1.grafikoX,EEG2.grafikoX));
+    derinti_Y=1;
+else
+    derinti_Y=0;
+end;
+if derinti_Y
+    d1=size(EEG1.grafikoY,1); grafikoX_tmp1=EEG1.grafikoX(1:end-1);
+    d2=size(EEG2.grafikoY,1); grafikoX_tmp2=EEG2.grafikoX(1:end-1);
+    suderintos_med=nan(max(d1,d2),1);
+    for eil=1:max(d1,d2);
+        grafikoY_tmp1=[]; if eil <= d1; grafikoY_tmp1=EEG1.grafikoY(eil,:); end;
+        grafikoY_tmp2=[]; if eil <= d2; grafikoY_tmp2=EEG2.grafikoY(eil,:); end;
+        if ~isempty(grafikoY_tmp1) && ~isempty(grafikoY_tmp2);
+            if isequal(...
+                    grafikoY_tmp1(ismember(grafikoX_tmp1,grafikoX_tmp2)),...
+                    grafikoY_tmp2(ismember(grafikoX_tmp2,grafikoX_tmp1)));
+                med=median([grafikoY_tmp1 grafikoY_tmp2],'omitnan');
+                if ~isempty(med);
+                    suderintos_med(eil)=med;
+                end;
+            end;
+        end;
     end;
-    grafikoY=[grafikoY nan(length(iy),1)]';
-    grafikoY=grafikoY(:)';
-    grafikoX=grafikoX';
-    grafikoX=grafikoX(:)';
-    if ~isequal(size(grafikoY),size(grafikoX));
-        grafikoY=nan(size(grafikoX));
+end;
+
+% atvaizdavimas grafiškai
+for i=[1 2];
+    eval([ 'EEG=EEG' num2str(i) ';' ]);
+    for eil=1:size(EEG.grafikoY,1);
+        EEG.grafikoX(eil,:)=EEG.grafikoX(1,:);
+        grafikoY_tmp=EEG.grafikoY(eil,:);
+        if derinti_Y;
+            med=suderintos_med(eil);
+            if isnan(med);
+                med=median(grafikoY_tmp,'omitnan');
+            end;
+        else
+            med=median(grafikoY_tmp,'omitnan');
+        end;
+        EEG.grafikoY(eil,:)=EEG.grafikoY(eil,:)-med+eil+ceil(LY(1))-1;
+    end;
+    EEG.grafikoY=[EEG.grafikoY nan(size(EEG.grafikoY,1),1)]';
+    EEG.grafikoY=EEG.grafikoY(:)';
+    EEG.grafikoX=EEG.grafikoX';
+    EEG.grafikoX=EEG.grafikoX(:)';
+    if ~isequal(size(EEG.grafikoY),size(EEG.grafikoX));
+        EEG.grafikoY=nan(size(EEG.grafikoX));
     end;
     grafikas=getappdata(parentAx,['grafikas' num2str(i)]);
-    set(grafikas,'XData', grafikoX, 'YData', grafikoY);
+    set(grafikas,'XData', EEG.grafikoX, 'YData', EEG.grafikoY);
     if isfield(EEG.event, 'laikas_ms');
         delete(findobj(parentAx,'tag',['zymekliaiA' num2str(i)]));
         delete(findobj(parentAx,'tag',['zymekliaiB' num2str(i)]));
         zi=find([EEG.event(find([EEG.event.laikas_ms] <= LX(2)*1000)).laikas_ms] >= LX(1)*1000);
         zx=0.001 * [EEG.event(zi).laikas_ms]'; zx_=[zx zx zx]'; zx_=zx_(:);
         if (isequal(i,1) - 0.5) * (0.5 - zymekliu_sukeitimas) > 0 ;
-            if isempty(EEG_.data); zyk=max(LY); else zyk=mean(LY); end;
+            if zymekliai_pilni; zyk=max(LY); else zyk=mean(LY); end;
             zy=[min(LY)+zeros(size(zx)) zyk*ones(size(zx)) nan(size(zx))]'; zyL=min(LY)-abs(diff(LY))/parentAx_pos(4)*5;
         else
-            if isempty(EEG_.data); zyk=min(LY); else zyk=mean(LY); end;
+            if zymekliai_pilni; zyk=min(LY); else zyk=mean(LY); end;
             zy=[zyk*ones(size(zx)) max(LY)*ones(size(zx)) nan(size(zx))]';  zyL=max(LY)+abs(diff(LY))/parentAx_pos(4)*5;
         end;
         zy=zy(:);
