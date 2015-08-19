@@ -867,11 +867,32 @@ if isempty(x); return; end;
 x=x(1,1);
 setappdata(a,'spragtelejimo_vieta',x);
 if isempty(getappdata(a,'zymeti')); return; end;
+modifiers=get(gcf,'currentModifier');
 EEG1=getappdata(a,'EEG1');
+[~,xi]=min(abs(EEG1.times-1000*x));
+ni=find(isnan(EEG1.times-EEG1.times_nan)-isnan(EEG1.times));
+if ismember(xi,ni) && ~ismember('shift', modifiers);
+    d=[diff(ni) 0];
+    di=find(d > 2);
+    [~,xii1]=find(ni(di) <= xi, 1, 'last');
+    [~,xii2]=find(ni(di) >= xi, 1, 'first');
+    if isempty(xii1); xi1=ni(1);   else xi1=ni(di(xii1)+1); end;
+    if isempty(xii2); xi2=ni(end); else xi2=ni(di(xii2)-1); end;
+    %disp([EEG1.times(xi1) EEG1.times(xi2)] * 0.001) % jau pažymėtas intervalas ms
+    EEG1.times_nan(xi1:xi2)=EEG1.times(xi1:xi2);
+    EEG2=getappdata(a,'EEG2');
+    EEG1.data(:,xi1:xi2)=EEG2.data(:,xi1:xi2);
+    scrl_lin=getappdata(a,'scrl_lin');
+    set(scrl_lin(1),'xdata',0.001*EEG1.times_nan);
+    setappdata(a,'spragtelejimo_vieta',[]);
+    setappdata(a,'EEG1',EEG1);
+    eeg_perziura_atnaujinti;
+    return;
+end;
 setappdata(a,'EEG1_',EEG1);
 if ~isfield(EEG1.event,'type'); return; end;
 ribu_ms=[EEG1.event(ismember({EEG1.event.type},{'boundary'})).laikas_ms];
-[~,i]=min(abs(ribu_ms-1000*x)); r=0.001*(ribu_ms(i));
+[~,ri]=min(abs(ribu_ms-1000*x)); r=0.001*(ribu_ms(ri));
 if abs(x-r) <= 0.2; 
     x=r;
     setappdata(a,'spragtelejimo_vieta',x);
@@ -879,7 +900,7 @@ end;
 
 function eeg_zymejimas_tesiasi(varargin)
 a=getappdata(gcf,'main_axes');
-if ~strcmp(get(gcf, 'SelectionType'),'normal');
+if ~ismember(get(gcf, 'SelectionType'),{'normal' 'extend'}); % su Shift arba be jokių
     setappdata(a,'spragtelejimo_vieta',[]);
     return;
 end;
@@ -900,8 +921,7 @@ if isfield(EEG1.event,'type');
 end;
 ix=find(EEG1.times(EEG1.times <= x2*1000) >= x1*1000);
 EEG1.data(:,ix)=nan(size(EEG1.data,1),length(ix));
-ix_nan=find(EEG1.times_nan >= x1*1000, '1', 'first'):find(EEG1.times_nan <= x2*1000, '1', 'last');
-EEG1.times_nan(ix_nan)=NaN(1,length(ix_nan));
+EEG1.times_nan(ix)=NaN(1,length(ix));
 setappdata(a,'EEG1',EEG1);
 scrl_lin=getappdata(a,'scrl_lin');
 set(scrl_lin(1),'xdata',0.001*EEG1.times_nan);
@@ -909,6 +929,7 @@ setappdata(a,'derinti_Y',1);
 eeg_perziura_atnaujinti;
 
 function eeg_zymejimas_baigiasi
+if ismember('shift', get(gcf,'currentModifier')); return; end;
 a=getappdata(gcf,'main_axes');
 setappdata(a,'spragtelejimo_vieta',[]);
 if isempty(getappdata(a,'zymeti')); return; end;
