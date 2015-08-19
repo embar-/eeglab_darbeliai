@@ -864,10 +864,18 @@ function eeg_zymejimas_prasideda(varargin)
 a=getappdata(gcf,'main_axes');
 x=get(a,'CurrentPoint');
 if isempty(x); return; end;
-x=x(1,1); 
+x=x(1,1);
 setappdata(a,'spragtelejimo_vieta',x);
 if isempty(getappdata(a,'zymeti')); return; end;
-setappdata(a,'EEG1_',getappdata(a,'EEG1'));
+EEG1=getappdata(a,'EEG1');
+setappdata(a,'EEG1_',EEG1);
+if ~isfield(EEG1.event,'type'); return; end;
+ribu_ms=[EEG1.event(ismember({EEG1.event.type},{'boundary'})).laikas_ms];
+[~,i]=min(abs(ribu_ms-1000*x)); r=0.001*(ribu_ms(i));
+if abs(x-r) <= 0.2; 
+    x=r;
+    setappdata(a,'spragtelejimo_vieta',x);
+end;
 
 function eeg_zymejimas_tesiasi(varargin)
 a=getappdata(gcf,'main_axes');
@@ -885,6 +893,11 @@ if x1 > x2;
     x3=x1; x1=x2; x2=x3;
 end;
 EEG1=getappdata(a,'EEG1_');
+if isfield(EEG1.event,'type');
+    ribu_ms=[EEG1.event(ismember({EEG1.event.type},{'boundary'})).laikas_ms];
+    [~,i]=min(abs(ribu_ms-1000*x2)); r=0.001*(ribu_ms(i));
+    if abs(x2-r) <= 0.2; x2=r; end;
+end;
 ix=find(EEG1.times(EEG1.times <= x2*1000) >= x1*1000);
 EEG1.data(:,ix)=nan(size(EEG1.data,1),length(ix));
 ix_nan=find(EEG1.times_nan >= x1*1000, '1', 'first'):find(EEG1.times_nan <= x2*1000, '1', 'last');
