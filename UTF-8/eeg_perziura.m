@@ -152,9 +152,9 @@ if EEG1.trials > 1 && EEG2.trials == 1;
 end;
 
 % Y mažinimo koeficientas
-y_koef=round(20*sqrt(sqrt(mean([...
-    median(std(EEG1.data,[],2,'omitnan'),'omitnan') ...
-    median(std(EEG2.data,[],2,'omitnan'),'omitnan')], 'omitnan'))));
+rms1=rms(EEG1.data(~isnan(EEG1.data))); %std(EEG1.data(~isnan(EEG1.data)),[],2);
+rms2=rms(EEG2.data(~isnan(EEG2.data))); %std(EEG2.data(~isnan(EEG2.data)),[],2);
+y_koef=round(35*sqrt(sqrt(mean([rms1(~isnan(rms1)) rms2(~isnan(rms2))]))));
 if size(y_koef) ~= [1 1]; y_koef=50; end;
 setappdata(a,'y_koef',y_koef);
 
@@ -313,8 +313,8 @@ cla(a);
 [EEG1,EEG2]=perkeisk_eeg(a, varargin{:});
 
 hold(a,'on');
-p2=plot(a,[EEG2.xmin 0 EEG2.xmax],[1 NaN (EEG2.nbchan) ],'hittest','off','color','r');
-p1=plot(a,[EEG1.xmin 0 EEG1.xmax],[1 NaN (EEG1.nbchan) ],'hittest','off','color','k'); %[ 0 0 0.4]);
+p2=plot(a,[EEG2.xmin 0 EEG2.xmax],[1 NaN (EEG2.nbchan) ], 'hittest','off', 'color','r'); % , 'LineWidth', 1
+p1=plot(a,[EEG1.xmin 0 EEG1.xmax],[1 NaN (EEG1.nbchan) ], 'hittest','off', 'color','k'); %[ 0 0 0.4]);
 set(a,'YDir','reverse', 'TickDir', 'out', 'XGrid', 'on', 'XMinorGrid', 'off', 'XMinorTick', 'on');
 setappdata(f,'parentAx',a);
 setappdata(a,'EEG1',EEG1);
@@ -411,7 +411,7 @@ if     (EEG1.trials > 1) && isempty(EEG2.times);
     plotis=(EEG1.xmax_org - EEG1.xmin_org);
 elseif (EEG2.trials > 1) && isempty(EEG1.times);
     plotis=(EEG2.xmax_org - EEG2.xmin_org);
-elseif (EEG2.trials > 1) && (EEG2.trials > 2);
+elseif (EEG1.trials > 1) && (EEG1.trials > 1);
     if (EEG1.xmax_org - EEG1.xmin_org) == (EEG2.xmax_org - EEG2.xmin_org);
         plotis=(EEG1.xmax_org - EEG1.xmin_org);
     end;
@@ -517,10 +517,11 @@ end;
 try    parentAx=g(1).axes;
 catch; parentAx=getappdata(f,'main_axes');
 end;
-if ~isobject(parentAx); return; end;
-
-LY=get(parentAx, 'YLim');
-LX=get(parentAx, 'XLim');
+try
+    LY=get(parentAx, 'YLim');
+    LX=get(parentAx, 'XLim');
+catch; return;
+end;
 % Pakeisti X ašies centtravimą
 try plotis=g(1).plotis;
     if ~isfield(g,'x'); g.x=[min(LX) min(LX)+plotis]; end;
@@ -558,7 +559,6 @@ else
     zymekliu_kryptis={ 'left' 'right' };
 end;
 zymekliai_pilni = isempty(EEG1.data) || isempty(EEG2.data) || ~isempty(getappdata(parentAx,'zymeti'));
-
 % Matomų taškų atrinkimas
 for i=[1 2];
     eval([ 'EEG=EEG' num2str(i) ';' ]);
@@ -594,9 +594,10 @@ if derinti_Y
             if isequal(...
                     grafikoY_tmp1(ismember(grafikoX_tmp1,grafikoX_tmp2)),...
                     grafikoY_tmp2(ismember(grafikoX_tmp2,grafikoX_tmp1)));
-                med=median([grafikoY_tmp1 grafikoY_tmp2],'omitnan');
+                grafikoY_tmp=[grafikoY_tmp1 grafikoY_tmp2];
+                med=median(grafikoY_tmp(~isnan(grafikoY_tmp)));
             elseif derinti_Y == 1;
-                med=median(grafikoY_tmp2,'omitnan');
+                med=median(grafikoY_tmp2(~isnan(grafikoY_tmp2)));
             end;
         end;
         if ~isempty(med);
@@ -614,10 +615,10 @@ for i=[1 2];
         if derinti_Y;
             med=suderintos_med(eil);
             if isnan(med);
-                med=median(grafikoY_tmp,'omitnan');
+                med=median(grafikoY_tmp(~isnan(grafikoY_tmp)));
             end;
         else
-            med=median(grafikoY_tmp,'omitnan');
+            med=median(grafikoY_tmp(~isnan(grafikoY_tmp)));
         end;
         EEG.grafikoY(eil,:)=EEG.grafikoY(eil,:)-med+eil+ceil(LY(1))-1;
     end;
@@ -650,7 +651,7 @@ for i=[1 2];
         %else bi=zeros(size(zx_));
         %end;
         if isempty(getappdata(parentAx,'nereikia_ivykiu'));
-            plot(parentAx, zx_(~bi), zy(~bi),'hittest','off','tag',['zymekliaiA' num2str(i)], 'color',zymekliu_spalvosA{i});
+            plot(parentAx, zx_(~bi), zy(~bi),'hittest','off','tag',['zymekliaiA' num2str(i)], 'color',zymekliu_spalvosA{i}, 'LineWidth', 1);
             %zx=zx+abs(diff(LX))/parentAx_pos(3)*5
             text(zx,zyL+zeros(size(zx)), zm,...
                 'color',zymekliu_spalvosA{i},'Parent',parentAx,'FontUnits','points','FontSize',10,'FontName','Arial','Interpreter','none',...
@@ -886,7 +887,7 @@ end;
 EEG1=getappdata(a,'EEG1_');
 ix=find(EEG1.times(EEG1.times <= x2*1000) >= x1*1000);
 EEG1.data(:,ix)=nan(size(EEG1.data,1),length(ix));
-ix_nan=find(EEG1.times_nan(EEG1.times_nan <= x2*1000) >= x1*1000);
+ix_nan=find(EEG1.times_nan >= x1*1000, '1', 'first'):find(EEG1.times_nan <= x2*1000, '1', 'last');
 EEG1.times_nan(ix_nan)=NaN(1,length(ix_nan));
 setappdata(a,'EEG1',EEG1);
 scrl_lin=getappdata(a,'scrl_lin');
