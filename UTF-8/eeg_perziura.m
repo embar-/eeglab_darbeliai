@@ -87,17 +87,11 @@ if nargin > 2; % EEG2 - senas, raudonas
 else EEG2=[];
 end;
 
-try if isequal(EEG1.times,EEG2.times);
-        setappdata(a,'reikia_ribozenkliu',1);
-    end;
-catch;  setappdata(a,'reikia_ribozenkliu',1);
-end;
-
 EEG1=perkeisk_eeg2(EEG1);
 EEG2=perkeisk_eeg2(EEG2);
 
 sukeisk=0;
-if ~isempty(EEG2.times) && length(EEG1.times)/EEG1.srate > length(EEG2.times)/EEG2.srate;
+if ~isempty(EEG2.times) && length(EEG1.times)/EEG1.srate > length(EEG2.times)/EEG2.srate && EEG1.trials <= EEG2.trials;
     sukeisk=1;
 elseif EEG1.nbchan > EEG2.nbchan && length(EEG1.times)/EEG1.srate == length(EEG2.times)/EEG2.srate;
     sukeisk=1;
@@ -109,8 +103,9 @@ end;
 
 % epochuotų ir neepochuotų duomenų susiejimas
 if EEG1.trials > 1 && EEG2.trials == 1;
+    disp(0)
     if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
-        %assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
+        assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
         urid1={EEG1.event.urevent}; urid1(arrayfun(@(i) isempty(urid1{i}), 1:length(urid1)))={NaN}; urid1=cell2mat(urid1);
         urid2={EEG2.event.urevent}; urid2(arrayfun(@(i) isempty(urid2{i}), 1:length(urid2)))={NaN}; urid2=cell2mat(urid2);
         urid1_sutampa_i=find(ismember(urid1,urid2));
@@ -272,25 +267,48 @@ end;
 setappdata(a,'EEG1',EEG1);
 setappdata(a,'EEG2',EEG2);
 
-set(findobj(f,'tag','scrollAx','userdata','x'),'XLim',[min(EEG1.xmin,EEG2.xmin)-1 1+max(EEG1.xmax,EEG2.xmax)]);
+%Plotis
+leisti_tarpus=0;
+if     (EEG1.trials > 1) && isempty(EEG2.times);
+    plotis1=(EEG1.xmax_org - EEG1.xmin_org);
+elseif (EEG2.trials > 1) && isempty(EEG1.times);
+    plotis1=(EEG2.xmax_org - EEG2.xmin_org);
+elseif (EEG1.trials > 1) && (EEG2.trials > 1);
+    if (EEG1.xmax_org - EEG1.xmin_org) == (EEG2.xmax_org - EEG2.xmin_org);
+        plotis1=(EEG1.xmax_org - EEG1.xmin_org);
+    end;
+else plotis1=1;
+     leisti_tarpus=1;
+end;
+plotis2=ceil(5/plotis1);
+setappdata(a,'zingsnis',1/plotis2);
+plotis=plotis1*plotis2;
+
+% Riboženkliai
+km=get(a,'UIContextMenu'); 
+kmr=findobj(km,'Tag','Tarpas vietoj ribozenklio');
+if ~leisti_tarpus;
+     setappdata(a,'reikia_ribozenkliu',1);
+     set(kmr,'Enable','off');
+else set(kmr,'Enable','on');
+end;
+if isempty(getappdata(a,'reikia_ribozenkliu'));
+     set(kmr,'Checked','on');
+else set(kmr,'Checked','off');
+end;
+kmk=findobj(km,'Tag','Sukeisti');
+if isempty(getappdata(a,'zymeti'));
+     set(kmk,'Enable','on');
+else set(kmk,'Enable','off');
+end;
+
+set(findobj(f,'tag','scrollAx','userdata','x'),'XLim',[min(EEG1.xmin,EEG2.xmin)-plotis1 plotis1+max(EEG1.xmax,EEG2.xmax)]);
 set(findobj(f,'tag','scrollAx','userdata','y'),'YLim',[0.1 max(EEG1.nbchan,EEG2.nbchan)+0.9]);
 scrl_lin=findobj(findobj(f,'tag','scrollAx','userdata','x'),'tag','scrollDataLine');
 set(scrl_lin(1),'color','k','xdata',0.001*EEG1.times_nan,'ydata',max(EEG1.nbchan,EEG2.nbchan)*2/3+zeros(size(EEG1.times)));
 set(scrl_lin(2),'color','r','xdata',0.001*EEG2.times_nan,'ydata',max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(EEG2.times)));
 atnaujinti=1; try atnaujinti=g(1).atnaujinti; catch; end;
 
-%Plotis
-if     (EEG1.trials > 1) && isempty(EEG2.times);
-    plotis=(EEG1.xmax_org - EEG1.xmin_org);
-elseif (EEG2.trials > 1) && isempty(EEG1.times);
-    plotis=(EEG2.xmax_org - EEG2.xmin_org);
-elseif (EEG2.trials > 1) && (EEG2.trials > 1);
-    if (EEG1.xmax_org - EEG1.xmin_org) == (EEG2.xmax_org - EEG2.xmin_org);
-        plotis=(EEG1.xmax_org - EEG1.xmin_org);
-    end;
-else plotis=1;
-end;
-plotis=plotis*ceil(5/plotis);
 
 if atnaujinti;
     eeg_perziura_atnaujinti('x',min(EEG1.xmin,EEG2.xmin),'plotis',plotis);
@@ -310,6 +328,12 @@ catch; a=gca; % axes; % getappdata(f,'main_axes');
 end;
 cla(a);
 
+try if isequal(EEG1.times,EEG2.times);
+        setappdata(a,'reikia_ribozenkliu',1);
+    end;
+catch;  setappdata(a,'reikia_ribozenkliu',1);
+end;
+
 [EEG1,EEG2]=perkeisk_eeg(a, varargin{:});
 
 hold(a,'on');
@@ -325,6 +349,24 @@ setappdata(a,'MouseDragFnc','eeg_perziura(''atnaujinti'');');
 setappdata(a,'MouseInMainAxesFnc', {@eeg_perziura,'atstatyk_pele'});
 setappdata(a,'MouseOutMainAxesFnc',{@eeg_perziura,'atstatyk_pele'});
 
+
+% Plotis
+leisti_tarpus=0;
+if     (EEG1.trials > 1) && isempty(EEG2.times);
+    plotis1=(EEG1.xmax_org - EEG1.xmin_org) + 1/EEG1.srate;
+elseif (EEG2.trials > 1) && isempty(EEG1.times);
+    plotis1=(EEG2.xmax_org - EEG2.xmin_org) + 1/EEG1.srate;
+elseif (EEG1.trials > 1) && (EEG2.trials > 1);
+    if (EEG1.xmax_org - EEG1.xmin_org) == (EEG2.xmax_org - EEG2.xmin_org);
+        plotis1=(EEG1.xmax_org - EEG1.xmin_org) + 1/EEG1.srate;
+    end;
+else plotis1=1;
+     leisti_tarpus=1;
+end;
+plotis2=ceil(5/plotis1);
+setappdata(a,'zingsnis',1/plotis2);
+plotis=plotis1*plotis2;
+
 % Slikikliai
 warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
 if isempty(EEG1.times);
@@ -337,7 +379,7 @@ scrollHandles = scrollplot2('Axis','XY', ...
     'MaxY', max(EEG1.nbchan,EEG2.nbchan)+0.8, ...
     'MinX', minx, ...
     'MaxX', minx+5);
-set(scrollHandles(1),'XLim',[min(EEG1.xmin,EEG2.xmin)-1 1+max(EEG1.xmax,EEG2.xmax)]);
+set(scrollHandles(1),'XLim',[min(EEG1.xmin,EEG2.xmin)-plotis1 plotis1+max(EEG1.xmax,EEG2.xmax)]);
 set(scrollHandles(2),'YLim',[0.1 max(EEG1.nbchan,EEG2.nbchan)+0.9]);
 scrl_lin=findobj(findobj(f,'tag','scrollAx','userdata','x'),'tag','scrollDataLine');
 set(scrl_lin(1),'color','k','xdata',0.001*EEG1.times_nan,'ydata',max(EEG1.nbchan,EEG2.nbchan)*2/3+zeros(size(EEG1.times)),'hittest','off');
@@ -381,8 +423,11 @@ uimenu(c,'label',[lokaliz('+-') ' ' lokaliz('Apversti asis')], 'Checked','on', '
     '     setappdata(gca,''apversti'', 1); set(gcbo,''Checked'',''off'');' ...
     'else setappdata(gca,''apversti'',[]); set(gcbo,''Checked'',''on'');' ...
     'end; eeg_perziura(''atnaujinti''); ']);
-ribozenkliai=fastif(isempty(getappdata(a,'reikia_ribozenkliu')),'on','off');
-uimenu(c,'label',lokaliz('Tarpas vietoj ribozenklio'), 'Checked',ribozenkliai, 'callback', [ ...
+ribozenkliai_v=fastif(isempty(getappdata(a,'reikia_ribozenkliu')),'on','off');
+ribozenkliai_g=fastif(leisti_tarpus,'on','off');
+
+uimenu(c,'label',lokaliz('Tarpas vietoj ribozenklio'), 'Tag', 'Tarpas vietoj ribozenklio', ...
+    'Checked',ribozenkliai_v, 'Enable', ribozenkliai_g, 'callback', [ ...
     'if strcmp(get(gcbo,''Checked''),''on''); ' ...
     '     setappdata(gca,''reikia_ribozenkliu'', 1); set(gcbo,''Checked'',''off'');' ...
     'else setappdata(gca,''reikia_ribozenkliu'',[]); set(gcbo,''Checked'',''on'');' ...
@@ -397,7 +442,8 @@ uimenu(t,'label',lokaliz('Smulkus'), 'Checked','off', 'callback',...
     '     set(gca,''XMinorGrid'', ''off''); set(gcbo,''Checked'',''off'');' ...
     'else set(gca,''XMinorGrid'', ''on'') ; set(gcbo,''Checked'',''on''); end;'])
 %uimenu(c,'label','Tempti','Callback','p=pan; set(p, ''Motion'',''horizontal'',''ActionPostCallback'',''eeg_perziura(''''atnaujinti'''');'', ''Enable'',''on'') ;');
-uimenu(c,'label','EEG1 <-> EEG2','separator','on','callback', ...
+leisti_sukeisti=fastif(isempty(getappdata(a,'zymeti')),'on','off');
+uimenu(c,'label','EEG1 <-> EEG2', 'Tag','Sukeisti', 'Enable',leisti_sukeisti, 'separator','on','callback', ...
     [ 'setappdata(gcf,''laikinas'',getappdata(gca,''EEG1'')); ' ...
     'setappdata(gca,''EEG1'', getappdata(gca,''EEG2'')); ' ...
     'setappdata(gca,''EEG2'', getappdata(gcf,''laikinas'')); eeg_perziura(''atnaujinti''); ' ...
@@ -405,19 +451,6 @@ uimenu(c,'label','EEG1 <-> EEG2','separator','on','callback', ...
     'set(scrl_lin(1),''color'',get(scrl_lin(2),''color'')); set(scrl_lin(2),''color'',getappdata(gcf,''laikinas''));' ]);
 %set(f,'UIContextMenu',c);
 set(a,'UIContextMenu',c);
-
-% Plotis
-if     (EEG1.trials > 1) && isempty(EEG2.times);
-    plotis=(EEG1.xmax_org - EEG1.xmin_org);
-elseif (EEG2.trials > 1) && isempty(EEG1.times);
-    plotis=(EEG2.xmax_org - EEG2.xmin_org);
-elseif (EEG1.trials > 1) && (EEG1.trials > 1);
-    if (EEG1.xmax_org - EEG1.xmin_org) == (EEG2.xmax_org - EEG2.xmin_org);
-        plotis=(EEG1.xmax_org - EEG1.xmin_org);
-    end;
-else plotis=1;
-end;
-plotis=plotis*ceil(5/plotis);
 
 % Galutinis paruošimas
 setappdata(f,'main_axes',a);
@@ -674,6 +707,7 @@ if nargin > 1; modifiers=varargin{2};
 else           modifiers=get(gcf,'currentModifier');
 end;
 lk=0.02;
+pk=getappdata(ax,'zingsnis'); if isempty(pk); pk=0.2; end;
 try
     switch ck
         %case 'escape'
@@ -734,14 +768,14 @@ try
                     if any(ismember({'alt' 'control' 'shift'},modifiers));
                         lk=lk*5;
                     end;
-                    lim_nj=max(lim_dbr(1) - lim_plt * 0.2, lim_max(1) - lim_plt * lk);
+                    lim_nj=max(lim_dbr(1) - lim_plt * pk, lim_max(1) - lim_plt * lk);
                     lim_nj=[lim_nj lim_plt + lim_nj];
                 case 'rightarrow'
                     %disp('>');
                     if any(ismember({'alt' 'control' 'shift'},modifiers));
                         lk=lk*5;
                     end;
-                    lim_nj=min(lim_dbr(2) + lim_plt * 0.2, lim_max(2) + lim_plt * lk);
+                    lim_nj=min(lim_dbr(2) + lim_plt * pk, lim_max(2) + lim_plt * lk);
                     lim_nj=[lim_nj - lim_plt lim_nj];
                 case 'pageup'
                     %disp('<');
@@ -761,7 +795,7 @@ try
             set(ax,'XLim',lim_nj);
             eeg_perziura_atnaujinti;
             eeg_zymejimas_tesiasi;
-        case {'subtract' 'add'}
+        case {'subtract' 'hyphen' 'add'}
             switch diff(ismember({'shift' 'control'}, modifiers))
                 case  1; asisR='x'; asisN=1;
                 case -1; asisR='y'; asisN=2;
@@ -772,15 +806,21 @@ try
             end;
             lim_dbr=get(ax,[asisR 'lim']);
             switch ck
-                case 'subtract'
+                case {'subtract' 'hyphen'}
                     lim_max=get(scrollHandles(asisN),[asisR 'lim']);
                     lim_plt=(lim_dbr(2)-lim_dbr(1));
                     lim_nj1=max(lim_dbr(1) - lim_plt * 0.125, lim_max(1) - lim_plt * lk);
                     lim_nj2=min(lim_dbr(2) + lim_plt * 0.125, lim_max(2) + lim_plt * lk);
+                    if asisN == 1 && strcmp(get(findobj(get(ax,'UIContextMenu'),'Tag','Tarpas vietoj ribozenklio'),'Enable'),'off');
+                        pk=pk*0.8; if pk<0.2; pk=pk*2; end; setappdata(ax,'zingsnis',pk);
+                    end;
                 case 'add'
                     lim_plt=(lim_dbr(2)-lim_dbr(1));
                     lim_nj1=lim_dbr(1) + lim_plt * 0.1;
                     lim_nj2=lim_dbr(2) - lim_plt * 0.1;
+                    if asisN == 1 && strcmp(get(findobj(get(ax,'UIContextMenu'),'Tag','Tarpas vietoj ribozenklio'),'Enable'),'off');
+                        pk=pk*1.25; if pk>0.5; pk=pk/2; end; setappdata(ax,'zingsnis',pk);
+                    end;
             end;
             lim_nj=[lim_nj1 lim_nj2];
             set(ax,[asisR 'lim'],lim_nj);
@@ -815,12 +855,12 @@ try
     if ismember('control',modifiers);
         if eventdata.VerticalScrollCount > 0;
             if asisN == 1
-                eeg_perziura_atsakas('add',{'control'});
+                 eeg_perziura_atsakas('add',{'control'});
             else eeg_perziura_atsakas('add',{'shift'});
             end;
         else
             if asisN == 1
-                eeg_perziura_atsakas('subtract',{'control'});
+                 eeg_perziura_atsakas('subtract',{'control'});
             else eeg_perziura_atsakas('subtract',{'shift'});
             end;
         end;
@@ -835,7 +875,7 @@ try
     else
         if   ismember('shift',modifiers);
              lk=1;
-        else lk=0.2;
+        else lk=getappdata(ax,'zingsnis'); if isempty(lk); lk=0.2; end;
         end;
         if eventdata.VerticalScrollCount > 0; % Y ašis ir taip apversta
             lim_dbr=get(ax,[asisR 'lim']);
