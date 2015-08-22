@@ -59,6 +59,8 @@ if nargin > 0;
                 eeg_zymejimas_tesiasi(varargin{2:end});
             case {'zymejimas_baigiasi'};
                 eeg_zymejimas_baigiasi(varargin{2:end});
+            case {'gauk_zymejimo_sriti'};
+                eeg_zymejimo_sriti_gauk(varargin{2:end});
             otherwise;
                 eeg_perziura_sukurti(varargin{2:end});
         end;
@@ -1112,3 +1114,22 @@ if ~isempty(getappdata(a,'nebaigta_zymeti')); return; end;
 setappdata(a,'spragtelejimo_vieta',[]);
 if isempty(getappdata(a,'zymeti')); return; end;
 
+function [laikas]=eeg_zymejimo_sriti_gauk(varargin)
+% Lauti pažymėtos srities intervalus, sekundėmis
+laikas=[];
+a=getappdata(gcf,'main_axes');
+try
+    if isempty(getappdata(a,'zymeti')); return; end;
+catch; return;
+end;
+EEG1=getappdata(a,'EEG1');
+n=isnan(EEG1.times-EEG1.times_nan)-isnan(EEG1.times);
+ni=find( n);
+ne=find(~n);
+if ~any(ni); return; end;
+di1=find([diff(ni) 0] > 1); d1=ni([1 di1 end]);
+di2=find([diff(ne) 0] > 1); d2=ne(di2)+1;
+d=unique([d1 d2]);
+laikai=EEG1.times(d)*0.001;
+if mod(length(laikai),2); laikai=unique([laikai EEG1.times(ne(end))*0.001]); end;
+laikai=reshape(laikai,2,length(laikai)/2)'

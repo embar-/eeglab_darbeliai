@@ -66,8 +66,13 @@ else
 end;
 
 
-f=figure('toolbar','none','menubar','none','NumberTitle','off','units','normalized','outerposition',[0 0 1 1],'name', pvd);
+f=figure('toolbar','none','menubar','none','NumberTitle','off',...
+    'units','normalized','outerposition',[0 0 1 1],'name', pvd);
 a=axes('units','normalized','position',[0.08 0.05 0.9 0.9 ]);
+p=uicontrol('style','pushbutton', 'String', lokaliz('Close'),  'Tag', 'Close', ...
+    'Units', 'normalized', 'position', [0.84 0.05 0.1 0.05], 'callback', ...
+    'if get(gcf,''userdata''); eeg_perziura(''gauk_zymejimo_sriti''); uiresume; else delete(gcf); end;');
+try if g.laukti; set(f, 'UserData', 1); end; catch; end;
 
 zymeti=isempty(EEG2);
 if isfield(g,'zymeti'); zymeti=g.zymeti; end;
@@ -83,5 +88,8 @@ else
         eeg_perziura(EEG1,EEG2);
 end;
 
-
+if get(f,'userdata');
+    uiwait(f);
+    delete(f);
+end;
 
