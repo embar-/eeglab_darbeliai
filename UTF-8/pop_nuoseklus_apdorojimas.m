@@ -668,15 +668,6 @@ drawnow;
 %uiwait(gcf,1);
 
 
-function vykdymas_su_perziura(hObject, eventdata, handles, varargin)
-if nargin > 3; veiksena=varargin{1};
-else           veiksena=0;
-end;
-setappdata(handles.figure1,'TIK_PERZIURA',veiksena);
-pushbutton1_Callback(hObject, eventdata, handles);
-setappdata(handles.figure1,'TIK_PERZIURA',[]);
-
-
 % --- Executes on button press in pushbutton1.
 function pushbutton1_Callback(hObject, eventdata, handles)
 Ar_galima_vykdyti(hObject, eventdata, handles);
