@@ -2406,7 +2406,7 @@ for i=1:Pasirinktu_failu_N;
                t, pwd, Rinkmena),lokaliz('Empty dataset'),'error');
     end;
 
-    if PERZIURA; eeg_palyginimas(EEG0,EEG,Rinkmena_,NaujaRinkmena); end;
+    if PERZIURA; pop_eeg_palyginimas(EEG0, EEG, [Rinkmena_ ' + ' NaujaRinkmena]); end;
 
     % Isvalyti atminti
     STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
@@ -2598,12 +2598,6 @@ try
 catch err;
     Pranesk_apie_klaida(err,lokaliz('Save file'),RinkmenaSaugojimui);
 end;
-
-
-function eeg_palyginimas(EEG0,EEG,pvd0,pvd)
-f=figure('toolbar','none','menubar','none','NumberTitle','off','units','normalized','outerposition',[0 0 1 1],'name', [ pvd ' + ' pvd0 ]);
-axes('units','normalized','position',[0.08 0.05 0.9 0.9 ]);
-eeg_perziura(EEG,EEG0);
 
 
 % --- Executes on button press in pushbutton2.
