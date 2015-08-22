@@ -40,16 +40,18 @@ function pop_eeg_perziura(varargin)
 %%
 
 if nargin == 0; help(mfilename); return; end;
+EEG2=[];
 if isstruct(varargin{1});
     EEG1=varargin{1};
     if nargin > 1
         if isstruct(varargin{2});
             EEG2=varargin{2};
             g=struct(varargin{3:end});
-        else
-            EEG2=[];
+        else            
             g=struct(varargin{2:end});
         end;
+    else
+        g=struct;
     end;
 else
     help(mfilename); return;
