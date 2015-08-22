@@ -139,7 +139,7 @@ end;
 % epochuotų ir neepochuotų duomenų susiejimas
 if EEG1.trials > 1;
     if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
-        assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
+        %assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
         urid1={EEG1.event.urevent}; urid1(arrayfun(@(i) isempty(urid1{i}), 1:length(urid1)))={NaN}; urid1=cell2mat(urid1);
         urid2={EEG2.event.urevent}; urid2(arrayfun(@(i) isempty(urid2{i}), 1:length(urid2)))={NaN}; urid2=cell2mat(urid2);
         urid1_sutampa_i=find(ismember(urid1,urid2));
