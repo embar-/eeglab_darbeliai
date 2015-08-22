@@ -69,13 +69,19 @@ end;
 f=figure('toolbar','none','menubar','none','NumberTitle','off','units','normalized','outerposition',[0 0 1 1],'name', pvd);
 a=axes('units','normalized','position',[0.08 0.05 0.9 0.9 ]);
 
-zymeti=0;
+zymeti=1;
 if isfield(g,'zymeti'); zymeti=g.zymeti; end;
 if zymeti; setappdata(a,'zymeti',1); end;
 
 if isempty(EEG2)
-    eeg_perziura(EEG1);
+    if zymeti;
+        eeg_perziura(EEG1,EEG1);
+    else
+        eeg_perziura(EEG1);
+    end;
 else
-    eeg_perziura(EEG1,EEG2);
+        eeg_perziura(EEG1,EEG2);
 end;
+
+
 
