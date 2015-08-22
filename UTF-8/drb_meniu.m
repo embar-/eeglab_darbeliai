@@ -291,6 +291,15 @@ com=[ varargin{1} '(''' varargin{2} ''' , hObject, eventdata, handles' pars ');'
 eval( com );
 
 
+function drb_meniu_veiksmai_vykdymas_su_perziura(hObject, eventdata, handles, darbas, varargin)
+if nargin > 3; veiksena=varargin{1};
+else           veiksena=0;
+end;
+setappdata(handles.figure1,'TIK_PERZIURA',veiksena);
+nukreipimas_gui2(hObject, eventdata, handles, darbas, 'pushbutton1_Callback');
+setappdata(handles.figure1,'TIK_PERZIURA',[]);
+
+
 function drb_meniu_veiksmai(hObject, eventdata, handles, darbas, varargin) %#ok
 %% Veiksmų meniu
 handles.meniu_veiksmai = uimenu(handles.figure1,'Label',lokaliz('Veiksmai'),'Tag','m_Veiksmai');
@@ -298,11 +307,11 @@ handles.meniu_veiksmai = uimenu(handles.figure1,'Label',lokaliz('Veiksmai'),'Tag
 
 uimenu(handles.meniu_veiksmai,'Label',lokaliz('Execute'),...
     'Accelerator','T','Callback',{@nukreipimas_gui2, handles, darbas, 'pushbutton1_Callback'});
-if ismember(darbas, {'pop_nuoseklus_apdorojimas'})
+if ismember(darbas, {'pop_nuoseklus_apdorojimas' 'pop_rankinis'})
 uimenu(handles.meniu_veiksmai,'Label',lokaliz('Vykdyti ir palyginti'),...
-    'Accelerator','D','Callback',{@nukreipimas_gui3, handles, darbas, 'vykdymas_su_perziura', 0});
+    'Accelerator','D','Callback',{@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_vykdymas_su_perziura', darbas, 0});
 uimenu(handles.meniu_veiksmai,'Label',lokaliz('Vykdyti nesaugant ir palyginti'),...
-    'Accelerator','W','Callback',{@nukreipimas_gui3, handles, darbas, 'vykdymas_su_perziura', 1});
+    'Accelerator','W','Callback',{@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_vykdymas_su_perziura', darbas, 1});
 end;
 
 uimenu(handles.meniu_veiksmai, 'Accelerator','O', 'separator','on', 'Label', lokaliz('Vizualizuoti duomenis'), ...

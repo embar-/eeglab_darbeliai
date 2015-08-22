@@ -603,6 +603,10 @@ skaiciai=str2num(get(handles.edit51,'String'));
 Pasirinkti_kanalai=get(handles.pushbutton14,'UserData');
 Epochuoti_pagal_stimulus_=get(handles.pushbutton_epoch_iv,'UserData') ;
 
+TIK_PERZIURA=getappdata(handles.figure1,'TIK_PERZIURA');
+PERZIURA=~isempty(TIK_PERZIURA);
+if ~PERZIURA; TIK_PERZIURA=0; end;
+
 %%
 
 for i=1:Pasirinktu_failu_N;
@@ -629,8 +633,7 @@ for i=1:Pasirinktu_failu_N;
     if ~isempty(EEG);
         
         EEG = eeg_checkset( EEG );
-        %eeglab redraw;
-        
+        if PERZIURA; EEG0=EEG; end;
         
         % Darbas
         Darbo_apibudinimas=[ lokaliz('Darbas') '...'];
@@ -706,7 +709,7 @@ for i=1:Pasirinktu_failu_N;
                
         
         % Išsaugoti
-        if isempty(PaskRinkmIssaugKelias);
+        if isempty(PaskRinkmIssaugKelias) && ~TIK_PERZIURA;
             if get(handles.checkbox_poaplankis,'Value');
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' get(handles.edit_poaplankis,'String') ] ;
             else
@@ -723,7 +726,7 @@ for i=1:Pasirinktu_failu_N;
         str=(sprintf('%s apdorotas (%d/%d = %3.2f%%)\r\n', NaujaRinkmena, i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100 )) ;
         %disp(str);
         
-        if and(~isempty(EEG),DarboPorcijaAtlikta);
+        if and(~isempty(EEG),DarboPorcijaAtlikta) && ~TIK_PERZIURA;
             if EEG.nbchan > 0 ;
                 NaujosRinkmenos=get(handles.listbox2,'String');
                 NaujosRinkmenos{i}=NaujaRinkmena;
@@ -736,6 +739,8 @@ for i=1:Pasirinktu_failu_N;
         msgbox(sprintf([lokaliz('Time:') ' %s\n' lokaliz('Path:') ' %s\n' lokaliz('File:') ' %s'], ...
                t, pwd, Rinkmena),lokaliz('Empty dataset'),'error');
     end;
+    
+    if PERZIURA; pop_eeg_perziura(EEG0, EEG, 'title', [Rinkmena_ ' + ' NaujaRinkmena], 'zymeti', 0); end;
     
     % Isvalyti atminti
     %STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
