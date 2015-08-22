@@ -1016,7 +1016,7 @@ if isfield(EEG1.event,'type');
 end;
 if ismember(xi,ni) && ~ismember('shift', modifiers)...
         && x > EEG1.xmin && x < EEG1.xmax ...
-        && ~ismember({'alt'}, get(gcf, 'SelectionType'));
+        && (~ismember({'alt'}, get(gcf, 'SelectionType')) || ismember('control', modifiers));
     if EEG1.trials <= 1 || ismember('control', modifiers);
         d=[diff(ni) 0];
         di=find(d > 2);
@@ -1048,8 +1048,7 @@ if abs(x-r) <= getappdata(a,'ribu_trauka');
     setappdata(a,'spragtelejimo_vieta',r);
 end;
 if EEG1.trials > 1 && x > EEG1.xmin && x < EEG1.xmax ...
-        && ~ismember({'alt'}, get(gcf, 'SelectionType'));
-    get(gcf, 'SelectionType')
+        && (~ismember({'alt'}, get(gcf, 'SelectionType')) || ismember('control', modifiers)) ;
     ribu_ms=setdiff(ribu_ms,ribu_ms(ri));
     [~,qi]=min(abs(ribu_ms-1000*x)); q=0.001*(ribu_ms(qi));
     eeg_zymejimas_tesiasi('x1',r,'x2',q);
@@ -1063,7 +1062,7 @@ try
     if isempty(getappdata(a,'zymeti')); return; end;
 catch; return;
 end;
-if ~ismember(get(gcf, 'SelectionType'),{'normal' 'extend'}); % su Shift arba be jokių
+if ~ismember(get(gcf, 'SelectionType'),{'normal' 'extend' 'open'}); % su Shift arba be jokių
     setappdata(a,'spragtelejimo_vieta',[]);
     return;
 end;
