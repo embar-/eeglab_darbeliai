@@ -236,7 +236,7 @@ end;
 % Y mažinimo koeficientas
 rms1=rms(EEG1.data(~isnan(EEG1.data))); %std(EEG1.data(~isnan(EEG1.data)),[],2);
 rms2=rms(EEG2.data(~isnan(EEG2.data))); %std(EEG2.data(~isnan(EEG2.data)),[],2);
-y_koef=round(35*sqrt(sqrt(mean([rms1(~isnan(rms1)) rms2(~isnan(rms2))]))));
+y_koef=round(36*sqrt(sqrt(mean([rms1(~isnan(rms1)) rms2(~isnan(rms2))]))));
 if size(y_koef) ~= [1 1]; y_koef=50; end;
 setappdata(a,'y_koef',y_koef);
 
@@ -313,9 +313,15 @@ else
             set(a,'YTick', 1:n);
             set(a,'YTickLabel', l);
         end;
-    %else % FIXME
+    %elseif % FIXME
             %isempty([EEG1.chanlocs.urchan]) && ~isempty([EEG2.chanlocs.urchan])
             %l1([EEG2.chanlocs.urchan])
+    elseif length(l1) >= length(l2);
+            set(a,'YTick', 1:length(l1));
+            set(a,'YTickLabel', l1);
+    else
+            set(a,'YTick', 1:length(l2));
+            set(a,'YTickLabel', l2);
     end;
 end;
 
