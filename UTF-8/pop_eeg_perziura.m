@@ -72,6 +72,7 @@ a=axes('units','normalized','position',[0.08 0.05 0.9 0.9 ]);
 p=uicontrol('style','pushbutton', 'String', lokaliz('Close'),  'Tag', 'Close', ...
     'Units', 'normalized', 'position', [0.84 0.05 0.1 0.05], 'callback', ...
     'if get(gcf,''userdata''); eeg_perziura(''gauk_zymejimo_sriti''); uiresume; else delete(gcf); end;');
+set(f,'Visible','off');
 try if g.laukti; set(f, 'UserData', 1); end; catch; end;
 
 zymeti=isempty(EEG2);
@@ -87,6 +88,8 @@ if isempty(EEG2)
 else
         eeg_perziura(EEG1,EEG2);
 end;
+
+set(f,'Visible','on');
 
 if get(f,'userdata');
     uiwait(f);
