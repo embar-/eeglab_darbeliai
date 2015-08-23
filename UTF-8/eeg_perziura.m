@@ -413,10 +413,12 @@ catch; a=gca; % axes; % getappdata(f,'main_axes');
 end;
 cla(a);
 
-try if isequal(EEG1.times,EEG2.times);
+try EEG1=varargin{1};
+    EEG2=varargin{2};
+    if isequal(EEG1.times,EEG2.times);
         setappdata(a,'reikia_ribozenkliu',1);
     end;
-catch;  setappdata(a,'reikia_ribozenkliu',1);
+catch err; Pranesk_apie_klaida(err); setappdata(a,'reikia_ribozenkliu',1);
 end;
 
 [EEG1,EEG2]=perkeisk_eeg(a, varargin{:});
