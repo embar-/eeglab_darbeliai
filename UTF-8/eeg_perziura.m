@@ -40,6 +40,7 @@ function eeg_perziura(varargin)
 %
 %%
 
+try
 if nargin > 0;
     if ischar(varargin{1});
         switch lower(varargin{1})
@@ -77,7 +78,10 @@ if nargin > 0;
         eeg_perziura_sukurti(varargin{:});
     end;
 end;
-
+catch err; 
+    Pranesk_apie_klaida(err, '', '', 0);
+    set(gcf,'pointer','arrow');
+end;
 
 function [EEG1,EEG2]=perkeisk_eeg(a, varargin)
 if nargin > 1; % EEG1 - naujas, juodas
@@ -418,7 +422,7 @@ try EEG1=varargin{1};
     if isequal(EEG1.times,EEG2.times);
         setappdata(a,'reikia_ribozenkliu',1);
     end;
-catch err; Pranesk_apie_klaida(err); setappdata(a,'reikia_ribozenkliu',1);
+catch; setappdata(a,'reikia_ribozenkliu',1);
 end;
 
 [EEG1,EEG2]=perkeisk_eeg(a, varargin{:});
