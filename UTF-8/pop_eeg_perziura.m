@@ -89,10 +89,15 @@ else
         eeg_perziura(EEG1,EEG2);
 end;
 
+if isempty(getappdata(a,'EEG1'));
+    delete(f);
+    return;
+end;
+    
 set(f,'Visible','on');
-
 if get(f,'userdata');
     uiwait(f);
     delete(f);
 end;
+
 
