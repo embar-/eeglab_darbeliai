@@ -1,10 +1,12 @@
 Darbeliai v2015.08.24.1
 
 EEG įrašų peržiūros ir lyginimo patobulinimai.
-Nuosekliame apdorojime ir Savitų komandų vykdyme galima
-vizualiai palyginti pradinį ir apdorotą EEG įrašą.
+Nuoseklaus apdorojimo ir savitos komandos 
+vykdymo dialoguose po EEG apdorojimo 
+galima pradinį ir apdorotą EEG įrašą
+(ieškokite per Veiksmų meniu).
 
 Improved tool to view/compare EEG records.
-Serial processing and Custom command execution allow
-to visualize difference between original and 
-processed EEG record.
+Serial processing and Custom command execution 
+allow to visualize difference between original
+and processed EEG record (via Actions menu).
