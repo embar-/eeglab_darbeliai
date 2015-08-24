@@ -93,11 +93,15 @@ if nargin > 2; % EEG2 - senas, raudonas
 else EEG2=[];
 end;
 
+if ~isempty(EEG1); disp('EEG1 perkeitimas...'); end;
 EEG1=perkeisk_eeg2(EEG1);
+if ~isempty(EEG2); disp('EEG2 perkeitimas...'); end;
 EEG2=perkeisk_eeg2(EEG2);
 
 sukeisk=0;
-if ~isempty(EEG2.times) && length(EEG1.times)/EEG1.srate > length(EEG2.times)/EEG2.srate && EEG1.trials <= EEG2.trials;
+if EEG1.trials == 1 && EEG2.trials > 1 && length(EEG2.times)/EEG2.srate/EEG2.trials < length(EEG1.times)/EEG1.srate ;
+    sukeisk=1;
+elseif ~isempty(EEG2.times) && length(EEG1.times)/EEG1.srate > length(EEG2.times)/EEG2.srate && EEG1.trials <= EEG2.trials;
     sukeisk=1;
 elseif EEG1.nbchan > EEG2.nbchan && length(EEG1.times)/EEG1.srate == length(EEG2.times)/EEG2.srate;
     sukeisk=1;
@@ -105,6 +109,11 @@ end;
 
 if sukeisk; % EEG1 <-> EEG2
     EEG=EEG1; EEG1=EEG2; EEG2=EEG;
+end;
+setappdata(a, 'zymeti', 1);
+if ~isempty(getappdata(a,'zymeti')) && EEG1.trials > 1 && EEG2.trials == 1;
+    warning('zymeti == 1 && EEG1.trials > 1 && EEG2.trials == 1');
+    setappdata(a, 'zymeti', []);
 end;
 
 % epochuotų duomenų langų suvienodinimas
@@ -159,6 +168,7 @@ if EEG1.trials > 1;
             end;
         end;
         if sutampa_ivykiai;
+            disp('EEG1 ir EEG2 sugretinimas...');
             sk=[EEG2.event(urid2_sutampa_i).laikas_ms] - [EEG1.event(urid1_sutampa_i).laikas_ms]; % sutampačių įvykių laikų poslinkiai
             if EEG2.trials > 1;
                 [plotis1,pli]=max([trukme1,trukme2]);
@@ -231,15 +241,36 @@ if EEG1.trials > 1;
         end;
     end;
 end;
-%assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
 
 % Y mažinimo koeficientas
+%disp('Tinkamo Y koeficiento radimas...');
 rms1=rms(EEG1.data(~isnan(EEG1.data))); %std(EEG1.data(~isnan(EEG1.data)),[],2);
 rms2=rms(EEG2.data(~isnan(EEG2.data))); %std(EEG2.data(~isnan(EEG2.data)),[],2);
 y_koef=round(36*sqrt(sqrt(mean([rms1(~isnan(rms1)) rms2(~isnan(rms2))]))));
 if size(y_koef) ~= [1 1]; y_koef=50; end;
 setappdata(a,'y_koef',y_koef);
 
+if ~isempty(getappdata(a,'zymeti'));
+    assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
+    disp('Aptinkami EEG1 ir EEG2 laiko atitikmenys...');
+    if ~isequal(EEG1.times,EEG2.times);
+        t=artimiausi(EEG1.times,EEG2.times,1000/min(EEG1.srate,EEG2.srate));
+        assignin('base','ttt',t);
+        if ~any(isnan(t));
+            d=nan(size(EEG1.data,1),length(EEG2.times));
+            d(:,t)=EEG1.data;
+            EEG1.data=d;
+            tnan=nan(1,length(EEG2.times));
+            tnan(t)=EEG1.times_nan;
+            EEG1.times_nan=tnan;
+            EEG1.times=EEG2.times;
+        else
+            warning('zymeti == 1 && EEG1.times ~= EEG2.times');
+            setappdata(a, 'zymeti', []);
+        end;
+    end;
+end;
+%assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
 
 % Kanalų suderinimas
 try    l1={EEG1.chanlocs.labels};
@@ -324,6 +355,56 @@ else
             set(a,'YTickLabel', l2);
     end;
 end;
+
+function idx=artimiausi(x1,x2,skirtumas)
+x1=x1(:); if size(x1,1) == 1; x1=x1'; end;
+x2=x2(:); if size(x2,1) == 1; x2=x2'; end;
+[n,idx]=ismember(x1,x2);
+if ~any(~n); return; end;
+x1_=unique(x1);
+[~,x1ir]=ismember(x1,x1_);
+if isempty(which('knnsearch'));
+    %[idx,D]=knnsearch(x2,x1);
+    [idx_,D_]=knnsearch(x2,x1_); % jei dubliuojasi x1, šis variantas bus greitesnis
+else
+    warning('function "knnsearch" not found!');
+    idx_=nan(size(x1_)); D_=idx_;
+    l=length(x1_); %l=min(10000,l);
+    % skaidyti, kad neviršytų MATLAB kintamųjų dydžio ribojimų
+    zgsn=5000; % sumažink, jei randi klaidą: Out of memory. Type HELP MEMORY for your options.
+    %tic;
+    veiksena=isempty(which('dsearchn'));
+    for z=1:ceil(l/zgsn);
+        if mod(z,100) == 1; disp(' ');  end; fprintf('.');
+        i=(zgsn*(z-1)+1):min((zgsn*(z)),l);
+        x1__=x1_(i);
+        k=find(x2 <= max(x1__)+skirtumas,1,'last');
+        if ~isempty(k);
+            x2_=x2(1:min(k+1,length(x2)));
+            j=find(x2_ >= min(x1__)-skirtumas,1,'first');
+            if ~isempty(j);
+                x2__=x2_(max(j-1,1):end);
+                if veiksena
+                    C = abs(bsxfun(@minus,x2__,x1__')); [D1,idx1] = min(C(:,1:size(C,2)));
+                else
+                    [idx1,D1]=dsearchn(x2__,x1__);
+                end;
+                if ~isempty(idx1);
+                    idx_(i)=idx1+max(j-1,1)-1;
+                    D_(i)=D1;
+                end;
+            end;
+        end;
+    end;
+    %disp(' '); toc;
+end;
+assignin('base','x1ir',x1ir)
+assignin('base','idx_',idx_)
+assignin('base','D_',D_)
+idx=idx_(x1ir);
+D=D_(x1ir);
+pertoli=find(D > skirtumas);
+idx(pertoli)=nan(size(idx(pertoli)));
 
 function eeg_ribozenkliu_perjungimas(varargin)
 try g=struct(varargin{:}); catch; end;
@@ -473,6 +554,14 @@ if isempty(EEG1.times);
 else
     minx=0.001*min(EEG1.times_nan);
 end;
+scrl_lin1y=max(EEG1.nbchan,EEG2.nbchan)*2/3+zeros(size(EEG1.times));
+if isempty(getappdata(a,'zymeti'));
+    scrl_lin2y=max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(EEG2.times));
+else
+    n=find(isnan(EEG1.times-EEG1.times_nan)-isnan(EEG1.times));
+    scrl_lin2y=nan(size(EEG2.times_nan));
+    scrl_lin2y(n)=max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(n));
+end;
 scrollHandles = scrollplot2('Axis','XY', ...
     'MinY', 0.2, ...
     'MaxY', max(EEG1.nbchan,EEG2.nbchan)+0.8, ...
@@ -481,8 +570,8 @@ scrollHandles = scrollplot2('Axis','XY', ...
 set(scrollHandles(1),'XLim',[min(EEG1.xmin,EEG2.xmin)-plotis1 plotis1+max(EEG1.xmax,EEG2.xmax)]);
 set(scrollHandles(2),'YLim',[0.1 max(EEG1.nbchan,EEG2.nbchan)+0.9]);
 scrl_lin=findobj(findobj(f,'tag','scrollAx','userdata','x'),'tag','scrollDataLine');
-set(scrl_lin(1),'color','k','xdata',0.001*EEG1.times_nan,'ydata',max(EEG1.nbchan,EEG2.nbchan)*2/3+zeros(size(EEG1.times)),'hittest','off');
-set(scrl_lin(2),'color','r','xdata',0.001*EEG2.times_nan,'ydata',max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(EEG2.times)),'hittest','off');
+set(scrl_lin(1),'color','k','xdata',0.001*EEG1.times_nan,'ydata',scrl_lin1y,'hittest','off');
+set(scrl_lin(2),'color','r','xdata',0.001*EEG2.times_nan,'ydata',scrl_lin2y,'hittest','off');
 setappdata(a,'scrl_lin',scrl_lin);
 
 % Kontekstinis meniu
@@ -640,6 +729,7 @@ if dim3 <= 1 ;
     end;
 end;
 
+
 function eeg_perziura_atnaujinti(varargin)
 %% atnaujinti jau sukurtą vaizdą
 try g=struct(varargin{:});
@@ -694,6 +784,10 @@ if zymekliu_sukeitimas;
     zymekliu_kryptis={ 'right' 'left' };
 else
     zymekliu_kryptis={ 'left' 'right' };
+end;
+if ~isempty(getappdata(parentAx,'zymeti'));
+    zymekliu_spalvosA=zymekliu_spalvosA([2 1]);
+    zymekliu_spalvosB=zymekliu_spalvosB([2 1]);
 end;
 zymekliai_pilni = isempty(EEG1.data) || isempty(EEG2.data) || ~isempty(getappdata(parentAx,'zymeti'));
 % Matomų taškų atrinkimas
@@ -768,7 +862,7 @@ for i=[1 2];
     end;
     grafikas=getappdata(parentAx,['grafikas' num2str(i)]);
     set(grafikas,'XData', EEG.grafikoX, 'YData', EEG.grafikoY);
-    if isfield(EEG.event, 'laikas_ms') && ~and( ~isempty(getappdata(parentAx,'zymeti')) , i == 2 );
+    if isfield(EEG.event, 'laikas_ms') && ~and( ~isempty(getappdata(parentAx,'zymeti')) , i == 1 );
         delete(findobj(parentAx,'tag',['zymekliaiA' num2str(i)]));
         delete(findobj(parentAx,'tag',['zymekliaiB' num2str(i)]));
         zi=find([EEG.event(find([EEG.event.laikas_ms] <= LX(2)*1000)).laikas_ms] >= LX(1)*1000);
@@ -1022,16 +1116,19 @@ setappdata(a,'spragtelejimo_vieta',x);
 if isempty(getappdata(a,'zymeti')); return; end;
 modifiers=get(gcf,'currentModifier');
 EEG1=getappdata(a,'EEG1');
+EEG2=getappdata(a,'EEG2');
 [~,xi]=min(abs(EEG1.times-1000*x));
 ni=find(isnan(EEG1.times-EEG1.times_nan)-isnan(EEG1.times));
 if isfield(EEG1.event,'type');
-    ribu_ms=[EEG1.event(ismember({EEG1.event.type},{'boundary'})).laikas_ms];
+    ribu_ms1=[EEG1.event(ismember({EEG1.event.type},{'boundary'})).laikas_ms];
+    ribu_ms2=[EEG2.event(ismember({EEG2.event.type},{'boundary'})).laikas_ms];
+    ribu_ms=unique([ribu_ms1 ribu_ms2]);
     [~,ri]=min(abs(ribu_ms-1000*x)); r=0.001*(ribu_ms(ri));
 end;
 if ismember(xi,ni) && ~ismember('shift', modifiers)...
         && x > EEG1.xmin && x < EEG1.xmax ...
         && (~ismember({'alt'}, get(gcf, 'SelectionType')) || ismember('control', modifiers));
-    if EEG1.trials <= 1 || ismember('control', modifiers);
+    if EEG1.trials <= 1 || ismember('control', modifiers) || isempty(ri);
         d=[diff(ni) 0];
         di=find(d > 2);
         [~,xii1]=find(ni(di) <= xi, 1, 'last');
@@ -1047,10 +1144,11 @@ if ismember(xi,ni) && ~ismember('shift', modifiers)...
     end;
     %disp([EEG1.times(xi1) EEG1.times(xi2)] * 0.001) % jau pažymėtas intervalas ms
     EEG1.times_nan(xi1:xi2)=EEG1.times(xi1:xi2);
-    EEG2=getappdata(a,'EEG2');
     EEG1.data(:,xi1:xi2)=EEG2.data(:,xi1:xi2);
     scrl_lin=getappdata(a,'scrl_lin');
     set(scrl_lin(1),'xdata',0.001*EEG1.times_nan);
+    scrl_lin2y=get(scrl_lin(2),'ydata'); scrl_lin2y(xi1:xi2)=nan(1,length(xi1:xi2));
+    set(scrl_lin(2),'ydata',scrl_lin2y);
     setappdata(a,'spragtelejimo_vieta',[]);
     setappdata(a,'EEG1',EEG1);
     eeg_perziura_atnaujinti;
@@ -1086,12 +1184,17 @@ else x1=getappdata(a,'spragtelejimo_vieta');
 end;
 if isempty(x1); return; end;
 EEG1=getappdata(a,'EEG1_');
+EEG2=getappdata(a,'EEG2');
 if isfield(g, 'x2'); x2=g.x2;
 else x2=get(a,'CurrentPoint'); x2=x2(1,1);
     if isfield(EEG1.event,'type');
-        ribu_ms=[EEG1.event(ismember({EEG1.event.type},{'boundary'})).laikas_ms];
+        ribu_ms1=[EEG1.event(ismember({EEG1.event.type},{'boundary'})).laikas_ms];
+        ribu_ms2=[EEG2.event(ismember({EEG2.event.type},{'boundary'})).laikas_ms];
+        ribu_ms=unique([ribu_ms1 ribu_ms2]);
         [~,i]=min(abs(ribu_ms-1000*x2)); r=0.001*(ribu_ms(i));
-        if EEG1.trials > 1;
+        if isempty(i);
+            %nekeisti x2
+        elseif EEG1.trials > 1;
             if x1 < x2 && i < length(ribu_ms);
                 x2=0.001*(ribu_ms(i + (x2 > r) ));
             elseif x1 > x2 && i > 1;
@@ -1109,8 +1212,12 @@ ix=find(EEG1.times(EEG1.times <= x2*1000) >= x1*1000);
 EEG1.data(:,ix)=nan(size(EEG1.data,1),length(ix));
 EEG1.times_nan(ix)=NaN(1,length(ix));
 setappdata(a,'EEG1',EEG1);
+n=find(isnan(EEG1.times-EEG1.times_nan)-isnan(EEG1.times));
 scrl_lin=getappdata(a,'scrl_lin');
 set(scrl_lin(1),'xdata',0.001*EEG1.times_nan);
+scrl_lin2y=nan(size(EEG2.times_nan));
+scrl_lin2y(n)=max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(n));
+set(scrl_lin(2),'ydata',scrl_lin2y);
 setappdata(a,'derinti_Y',1);
 eeg_perziura_atnaujinti;
 
