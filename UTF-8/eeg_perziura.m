@@ -110,7 +110,7 @@ end;
 if sukeisk; % EEG1 <-> EEG2
     EEG=EEG1; EEG1=EEG2; EEG2=EEG;
 end;
-setappdata(a, 'zymeti', 1);
+
 if ~isempty(getappdata(a,'zymeti')) && EEG1.trials > 1 && EEG2.trials == 1;
     warning('zymeti == 1 && EEG1.trials > 1 && EEG2.trials == 1');
     setappdata(a, 'zymeti', []);
