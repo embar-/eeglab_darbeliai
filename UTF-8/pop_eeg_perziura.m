@@ -73,11 +73,16 @@ p=uicontrol('style','pushbutton', 'String', lokaliz('Close'),  'Tag', 'Close', .
     'Units', 'normalized', 'position', [0.84 0.05 0.1 0.05], 'callback', ...
     'if get(gcf,''userdata''); eeg_perziura(''gauk_zymejimo_sriti''); uiresume; else delete(gcf); end;');
 set(f,'Visible','off');
-try if g.laukti; set(f, 'UserData', 1); end; catch; end;
 
 zymeti=isempty(EEG2);
 if isfield(g,'zymeti'); zymeti=g.zymeti; end;
 if zymeti; setappdata(a,'zymeti',1); end;
+
+laukti=zymeti;
+if isfield(g,'laukti'); laukti=g.laukti; end;
+if laukti;
+    set(f, 'UserData', 1);
+end;
 
 if isempty(EEG2)
     if zymeti;
