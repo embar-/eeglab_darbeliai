@@ -47,8 +47,10 @@ if isstruct(varargin{1});
         if isstruct(varargin{2});
             EEG2=varargin{2};
             g=struct(varargin{3:end});
-        else            
+        elseif ~isempty(varargin{2});
             g=struct(varargin{2:end});
+        else
+            g=struct(varargin{3:end});
         end;
     else
         g=struct;
