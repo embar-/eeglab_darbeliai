@@ -43,17 +43,21 @@ if nargin == 0; help(mfilename); return; end;
 EEG2=[];
 if isstruct(varargin{1});
     EEG1=varargin{1};
-    if nargin > 1
-        if isstruct(varargin{2});
-            EEG2=varargin{2};
-            g=struct(varargin{3:end});
-        elseif ~isempty(varargin{2});
-            g=struct(varargin{2:end});
+    try
+        if nargin > 1
+            if isstruct(varargin{2});
+                EEG2=varargin{2};
+                g=struct(varargin{3:end});
+            elseif ~isempty(varargin{2});
+                g=struct(varargin{2:end});
+            else
+                g=struct(varargin{3:end});
+            end;
         else
-            g=struct(varargin{3:end});
+            g=struct;
         end;
-    else
-        g=struct;
+    catch err; Pranesk_apie_klaida(err,'','',0);
+        help(mfilename);
     end;
 else
     help(mfilename); return;
