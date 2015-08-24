@@ -61,7 +61,7 @@ if ~isfield(EEG.event,'type'); return; end;
 Ivykiai={EEG.event.type};
 if isempty(Ivykiai); return; end;
 if ~iscellstr(Ivykiai);
-    Ivykiai=arrayfun(@(i) num2str(i), 1:length(Ivykiai), 'UniformOutput', false);
+    Ivykiai=arrayfun(@(i) num2str(Ivykiai{i}), 1:length(Ivykiai), 'UniformOutput', false);
 end;
 ivRodykles=1:length(Ivykiai);
 tipas_ir_latencija=[Ivykiai', {EEG.event.latency}', num2cell(ivRodykles)'];
@@ -104,7 +104,15 @@ rodykles_bnd=find(ismember(tipas_ir_latencija(:,1),{'boundary'}));
 if isempty(rodykles_bnd); return; end; % Jei nekarpyta – galima baigti
 
 % Perstumti EEG.event.latency atitikmens reikšmes
-trukmes_bnd=[EEG.event(rodykles_bnd).duration]/EEG.srate*1000; % ms
+if isfield(EEG.event, 'duration');
+    trukmes_bnd=[EEG.event(rodykles_bnd).duration]/EEG.srate*1000; % ms
+else
+    trukmes_bnd=nan(size(rodykles_bnd));
+end;
+trukmes_bnd_nan_i=isnan(trukmes_bnd);
+if any(trukmes_bnd_nan_i);
+    warning([ 'EEG.event(' num2str(find(trukmes_bnd_nan_i)) ').type == ''boundary'' && EEG.event(' num2str(find(trukmes_bnd_nan_i)) ').duration == NaN ' ]);
+end;
 rodykles_bnd_i=find(rodykles_bnd <= max(ivRodykles));
 for bnd_i=rodykles_bnd_i(:)';
     ivLaikuSkirtumai(ivRodykles >= rodykles_bnd(bnd_i))=...

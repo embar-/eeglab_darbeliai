@@ -1,6 +1,11 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.08.24.1
+% ~ EEG įrašų peržiūros ir lyginimo patobulinimai.
+% + Nuosekliame apdorojime ir Savitų komandų vykdyme galima
+%   vizualiai palyginti pradinį ir apdorotą EEG įrašą.
+%
 % v2015.08.14.1
 % + Naujas įrankis EEG įrašų peržiūrai/palyginimui
 % + leidžia sklandžiau naviguoti klaviatūra ir pele.

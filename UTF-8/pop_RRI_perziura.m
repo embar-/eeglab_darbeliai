@@ -395,7 +395,9 @@ if and(~isempty(handles.EKG),...
     % EKGposlinkis Y ašyje
     EKGposlinkis=min(handles.RRI(handles.RRI(:)>0));
     if isempty(EKGposlinkis); EKGposlinkis=0; end;
-    handles.EKG_=mat2gray_octave(handles.EKG)*100-125+EKGposlinkis;
+    %handles.EKG_=mat2gray_octave(handles.EKG)*100-125+EKGposlinkis;
+    EKG_=mat2gray_octave(handles.EKG); EKG_=EKG_ .* 10 ./ std(EKG_);
+    handles.EKG_=EKG_- max(EKG_) + median(EKG_) + EKGposlinkis - 50;
     handles.EKG_lin=line(handles.EKG_laikai,handles.EKG_,'color','r');
     set(handles.EKG_lin,'Tag','EKG_lin','hittest','off');
     % % Galėjome piešti su plot – bettada linijas braukia Brush veiksena, jas gali ištrinti
@@ -403,7 +405,7 @@ if and(~isempty(handles.EKG),...
     %set(handles.EKG_lin,'Tag','EKG_lin','XDataSource','','YDataSource','','hittest','off');
     %handles.EKG_lin=get(handles.axes_rri,'Children');
     %try
-    handles.EKG_R=0.1^20*(handles.RRI)-25+EKGposlinkis;
+    handles.EKG_R=zeros(size(handles.RRI))-20+EKGposlinkis;
     handles.EKG_tsk=plot(handles.Laikai,handles.EKG_R,'o','color','g');
     set(handles.EKG_tsk,'Tag','EKG_tsk','XDataSource','','YDataSource','','hittest','off');%,'MarkerFaceColor','w');
     %linijos=get(handles.axes_rri,'Children');
@@ -944,10 +946,11 @@ set(findobj(handles.figure1,'Tag','RRI_slinkiklyje'),'XData',Laikai','YData',RRI
 if and(~isempty(handles.EKG),get(handles.checkbox_ekg,'Value'));
     EKGposlinkis=min(RRI(find(RRI(:)>0)));
     if isempty(EKGposlinkis); EKGposlinkis=1000; end;
-    handles.EKG_=mat2gray_octave(handles.EKG)*100-125+EKGposlinkis;
+    %handles.EKG_=mat2gray_octave(handles.EKG)*100-125+EKGposlinkis;
+    EKG_=mat2gray_octave(handles.EKG); EKG_=EKG_ .* 10 ./ std(EKG_);
+    handles.EKG_=EKG_- max(EKG_) + median(EKG_) + EKGposlinkis - 50;
     set(handles.EKG_lin,'XData',handles.EKG_laikai,'YData',handles.EKG_);
-
-    handles.EKG_R=0.1^20*(RRI')-25+EKGposlinkis;
+    handles.EKG_R=zeros(size(RRI'))-20+EKGposlinkis;
     set(handles.EKG_tsk,'XData',Laikai','YData',handles.EKG_R);
 else
     set([handles.EKG_lin handles.EKG_tsk],'XData',0,'YData',NaN);

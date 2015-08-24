@@ -280,6 +280,26 @@ com=[ varargin{1} '(' pars 'hObject, eventdata, handles);' ];
 eval( com );
 
 
+function nukreipimas_gui3(hObject, eventdata, handles, varargin) %#ok
+pars='';
+for i=6:nargin;
+    j=num2str(i-3);
+    eval([ 'par' j '=varargin{' j '};' ]);
+    pars=[pars ', par' j ]; %#ok
+end;
+com=[ varargin{1} '(''' varargin{2} ''' , hObject, eventdata, handles' pars ');' ];
+eval( com );
+
+
+function drb_meniu_veiksmai_vykdymas_su_perziura(hObject, eventdata, handles, darbas, varargin)
+if nargin > 3; veiksena=varargin{1};
+else           veiksena=0;
+end;
+setappdata(handles.figure1,'TIK_PERZIURA',veiksena);
+nukreipimas_gui2(hObject, eventdata, handles, darbas, 'pushbutton1_Callback');
+setappdata(handles.figure1,'TIK_PERZIURA',[]);
+
+
 function drb_meniu_veiksmai(hObject, eventdata, handles, darbas, varargin) %#ok
 %% Veiksmų meniu
 handles.meniu_veiksmai = uimenu(handles.figure1,'Label',lokaliz('Veiksmai'),'Tag','m_Veiksmai');
@@ -287,19 +307,19 @@ handles.meniu_veiksmai = uimenu(handles.figure1,'Label',lokaliz('Veiksmai'),'Tag
 
 uimenu(handles.meniu_veiksmai,'Label',lokaliz('Execute'),...
     'Accelerator','T','Callback',{@nukreipimas_gui2, handles, darbas, 'pushbutton1_Callback'});
+if ismember(darbas, {'pop_nuoseklus_apdorojimas' 'pop_rankinis'})
+uimenu(handles.meniu_veiksmai,'Label',lokaliz('Vykdyti ir palyginti'),...
+    'Accelerator','D','Callback',{@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_vykdymas_su_perziura', darbas, 0});
+uimenu(handles.meniu_veiksmai,'Label',lokaliz('Vykdyti nesaugant ir palyginti'),...
+    'Accelerator','W','Callback',{@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_vykdymas_su_perziura', darbas, 1});
+end;
 
-%lango_dydis=get(0,'ScreenSize')-[0 0 10 60]; lango_dydis=[ '[' num2str(lango_dydis) ']' ];
-asis='axes(''units'',''normalized'',''position'',[0.08 0.05 0.9 0.9 ]);';
-fig_params=['''toolbar'',''none'',''menubar'',''none'',''NumberTitle'',''off'',''units'',''normalized'',''outerposition'',[0 0 1 1]'];
 uimenu(handles.meniu_veiksmai, 'Accelerator','O', 'separator','on', 'Label', lokaliz('Vizualizuoti duomenis'), ...
     'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab', 'reikia_EEGLAB', 0, 'command', ...
-    ['f=figure(' fig_params ',''name'',EEG(end).setname); '...
-    asis 'eeg_perziura(EEG(end)); '] });
+    'pop_eeg_perziura(EEG(end), ''zymeti'', 0);' });
 uimenu(handles.meniu_veiksmai, 'Accelerator','K', 'Label', lokaliz('Palyginti duomenis 2'), ...
     'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab', 'reikia_EEGLAB', 0, 'command', ...
-    ['if length(ALLEEG) > 1; '...
-    'f=figure(' fig_params ',''name'', [ ALLEEG(end).setname ''+'' ALLEEG(end-1).setname ]); '...
-    asis 'eeg_perziura(ALLEEG(end),ALLEEG(end-1)); end; '] });
+    'if length(ALLEEG) > 1; pop_eeg_perziura(ALLEEG(end),ALLEEG(end-1), ''zymeti'', 0); end; ' });
 
 if ~ismember(darbas, {'pop_pervadinimas'})
 handles.meniu_veiksmai_fltr_rod=uimenu(handles.meniu_veiksmai, 'Label', lokaliz('Rodyti rinkmenas is'));

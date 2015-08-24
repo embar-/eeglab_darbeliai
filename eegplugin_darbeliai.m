@@ -480,7 +480,7 @@ end;
 
 
 % Apie
-LC_=''
+LC_='';
 try LC_=[lc(1) ' ' lc(2)]; catch; end;
 try LC=javaObject ('java.util.Locale',''); LC_=LC.getDefault(); catch; end;
 if strcmp(LC_,'lt_LT');

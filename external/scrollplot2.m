@@ -99,6 +99,8 @@ function scrollHandles = scrollplot2(varargin)
 
 % Updated by
 % Mindaugas Baranauskas, 2015
+% + try integrate mode managers.
+% + go to X or Y, if scrool axis is clicked outside scrool patch.
 
 %%
 
@@ -1123,7 +1125,10 @@ function axisComponent = getAxisComponent(hFig)
             axisComponent = getappdata(hFig, 'scrollplot_axisComponent');
         else
             axisComponent = [];
+            
+            s=warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
             javaFrame = get(hFig,'JavaFrame');
+            warning(s);
             axisComponent = get(javaFrame,'AxisComponent');
             axisComponent = handle(axisComponent, 'CallbackProperties');
             if ~isprop(axisComponent,'MouseReleasedCallback')

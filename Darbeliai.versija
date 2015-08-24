@@ -1,6 +1,10 @@
-Darbeliai v2015.08.14.1
-Naujas įrankis EEG įrašų peržiūrai/palyginimui
-leidžia sklandžiau naviguoti klaviatūra ir pele.
+Darbeliai v2015.08.24.1
 
-New user-friendly tool to view/compare EEG records
-allows to navigate more confortable with keyboard and mouse.
+EEG įrašų peržiūros ir lyginimo patobulinimai.
+Nuosekliame apdorojime ir Savitų komandų vykdyme galima
+vizualiai palyginti pradinį ir apdorotą EEG įrašą.
+
+Improved tool to view/compare EEG records.
+Serial processing and Custom command execution allow
+to visualize difference between original and 
+processed EEG record.

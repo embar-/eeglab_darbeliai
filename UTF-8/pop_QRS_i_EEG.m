@@ -744,7 +744,13 @@ for i=1:Pasirinktu_failu_N;
                     QRS_ivykis=get(handles.edit_QRS_ivykis,'String');
                     
                     % Pašalinti senus QRS_ivykis tipo įvykius
-                    EEG = pop_selectevent( EEG, 'omittype',{QRS_ivykis},'deleteevents','on');
+                    if isfield(EEG.event,'type');
+                        if ischar([EEG.event.type]);
+                            EEG = pop_selectevent( EEG, 'omittype',{QRS_ivykis},'deleteevents','on');
+                        elseif ~isempty(str2num(QRS_ivykis));
+                            EEG = pop_selectevent( EEG, 'omittype',str2num(QRS_ivykis),'deleteevents','on');
+                        end;
+                    end;
                     
                     switch get(handles.popupmenu_QRS_saltinis,'Value')                        
                         case 1 
@@ -800,7 +806,7 @@ for i=1:Pasirinktu_failu_N;
                             [Laikai0,Ivykiai0,~,Poslink0,EKG_laikai]=eeg_ivykiu_latenc(EEG);
                             laikai=laikai_be_tarpu(laikai, Laikai0, Ivykiai0, Poslink0);
                             laikai=num2cell(laikai);
-                            ivykiai(1:length(laikai),1)={QRS_ivykis};
+                            ivykiai={}; ivykiai(1:length(laikai),1)={QRS_ivykis};
                             
                             EEG = pop_importevent( EEG, 'append','yes',...
                                 'event', [ivykiai laikai],...
@@ -945,10 +951,16 @@ for i=1:Pasirinktu_failu_N;
                     end;
                     laikai=laikai_be_tarpu(laikai, Laikai0, Ivykiai0, Poslink0);
                     laikai=num2cell(laikai);
-                    ivykiai(1:length(laikai),1)={QRS_ivykis};
+                    ivykiai={}; ivykiai(1:length(laikai),1)={QRS_ivykis};
                     
                     % Pašalinti senus QRS_ivykis tipo įvykius
-                    EEG = pop_selectevent( EEG, 'omittype',{QRS_ivykis},'deleteevents','on');
+                    if isfield(EEG.event,'type');
+                        if ischar([EEG.event.type]);
+                            EEG = pop_selectevent( EEG, 'omittype',{QRS_ivykis},'deleteevents','on');
+                        elseif ~isempty(str2num(QRS_ivykis));
+                            EEG = pop_selectevent( EEG, 'omittype',str2num(QRS_ivykis),'deleteevents','on');
+                        end;
+                    end;
                     
                     % Įvesti naujus QRS_ivykis tipo įvykius
                     EEG = pop_importevent( EEG, 'append','yes',...
@@ -2329,7 +2341,7 @@ function popupmenu_QRS_algoritmas_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-set(handles.popupmenu_QRS_algoritmas,'Value',1);
+set(hObject,'Value',1);
 
 
 function edit_QRS_ivykis_Callback(hObject, eventdata, handles)
