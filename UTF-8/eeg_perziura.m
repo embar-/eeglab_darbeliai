@@ -251,11 +251,10 @@ if size(y_koef) ~= [1 1]; y_koef=50; end;
 setappdata(a,'y_koef',y_koef);
 
 if ~isempty(getappdata(a,'zymeti'));
-    assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
+    %assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
     disp('Aptinkami EEG1 ir EEG2 laiko atitikmenys...');
     if ~isequal(EEG1.times,EEG2.times);
         t=artimiausi(EEG1.times,EEG2.times,1000/min(EEG1.srate,EEG2.srate));
-        assignin('base','ttt',t);
         if ~any(isnan(t));
             d=nan(size(EEG1.data,1),length(EEG2.times));
             d(:,t)=EEG1.data;
@@ -398,9 +397,6 @@ else
     end;
     %disp(' '); toc;
 end;
-assignin('base','x1ir',x1ir)
-assignin('base','idx_',idx_)
-assignin('base','D_',D_)
 idx=idx_(x1ir);
 D=D_(x1ir);
 pertoli=find(D > skirtumas);
@@ -780,14 +776,15 @@ end;
 zymekliu_spalvosA={ [0 0.9 0] [0.8 0 0.8]}; % {'g' 'm'}
 zymekliu_spalvosB={ 'b' [1 0.8 0]}; % {'g' 'm'}
 zymekliu_sukeitimas=(EEG1.nbchan > EEG2.nbchan) && ~isempty(EEG2.times);
+if ~isempty(getappdata(parentAx,'zymeti'));
+   zymekliu_spalvosA=zymekliu_spalvosA([2 1]);
+   zymekliu_spalvosB=zymekliu_spalvosB([2 1]);
+   zymekliu_sukeitimas=1;
+end;
 if zymekliu_sukeitimas;
     zymekliu_kryptis={ 'right' 'left' };
 else
     zymekliu_kryptis={ 'left' 'right' };
-end;
-if ~isempty(getappdata(parentAx,'zymeti'));
-    zymekliu_spalvosA=zymekliu_spalvosA([2 1]);
-    zymekliu_spalvosB=zymekliu_spalvosB([2 1]);
 end;
 zymekliai_pilni = isempty(EEG1.data) || isempty(EEG2.data) || ~isempty(getappdata(parentAx,'zymeti'));
 % Matomų taškų atrinkimas
@@ -862,7 +859,7 @@ for i=[1 2];
     end;
     grafikas=getappdata(parentAx,['grafikas' num2str(i)]);
     set(grafikas,'XData', EEG.grafikoX, 'YData', EEG.grafikoY);
-    if isfield(EEG.event, 'laikas_ms') && ~and( ~isempty(getappdata(parentAx,'zymeti')) , i == 1 );
+    if isfield(EEG.event, 'laikas_ms') %&& ~and( ~isempty(getappdata(parentAx,'zymeti')) , i == 1 );
         delete(findobj(parentAx,'tag',['zymekliaiA' num2str(i)]));
         delete(findobj(parentAx,'tag',['zymekliaiB' num2str(i)]));
         zi=find([EEG.event(find([EEG.event.laikas_ms] <= LX(2)*1000)).laikas_ms] >= LX(1)*1000);
