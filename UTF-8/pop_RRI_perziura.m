@@ -406,7 +406,7 @@ if and(~isempty(handles.EKG),...
     %set(handles.EKG_lin,'Tag','EKG_lin','XDataSource','','YDataSource','','hittest','off');
     %handles.EKG_lin=get(handles.axes_rri,'Children');
     %try
-    handles.EKG_R=zeros(size(handles.RRI))-20+EKGposlinkis;
+    handles.EKG_R=0*handles.RRI-20+EKGposlinkis;
     handles.EKG_tsk=plot(handles.Laikai,handles.EKG_R,'o','color','g');
     set(handles.EKG_tsk,'Tag','EKG_tsk','XDataSource','','YDataSource','','hittest','off');%,'MarkerFaceColor','w');
     %linijos=get(handles.axes_rri,'Children');
@@ -951,7 +951,7 @@ if and(~isempty(handles.EKG),get(handles.checkbox_ekg,'Value'));
     EKG_=mat2gray_octave(handles.EKG); EKG_=EKG_ .* 10 ./ std(EKG_);
     handles.EKG_=EKG_- max(EKG_) + median(EKG_) + EKGposlinkis - 50;
     set(handles.EKG_lin,'XData',handles.EKG_laikai,'YData',handles.EKG_);
-    handles.EKG_R=zeros(size(RRI'))-20+EKGposlinkis;
+    handles.EKG_R=0*RRI'-20+EKGposlinkis;
     set(handles.EKG_tsk,'XData',Laikai','YData',handles.EKG_R);
 else
     set([handles.EKG_lin handles.EKG_tsk],'XData',0,'YData',NaN);
