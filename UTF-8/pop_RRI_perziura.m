@@ -336,7 +336,9 @@ drawnow;
 
 %% Anotacijų paruošimas
 handles.anot=RRI_perziuros_anotacija('prideti',handles.figure1,handles.axes_rri); % sukurti
-aktyvusis_OffCallback(hObject, eventdata, handles); % paslepti
+if strcmp(get(handles.aktyvusis, 'State'),'off');
+    aktyvusis_OffCallback(hObject, eventdata, handles); % paslepti
+end;
 setappdata(handles.axes_rri,'MouseOutMainAxesFnc',{'eval', [ ...
     'anotObj=findall(hFig,''Tag'',''Anot''); ' ...
     'if ~isequal(hittest,anotObj); ' ...
