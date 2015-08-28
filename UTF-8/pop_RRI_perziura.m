@@ -830,6 +830,7 @@ set(handles.figure1,'pointer','watch');
 set(handles.pushbutton_atnaujinti,'Enable','off');
 set(handles.atnaujinti,'Enable','off');
 guidata(hObject,handles);
+drawnow;
 rri_lin=[handles.RRI_lin handles.RRI_tsk ];
 if get(handles.checkbox_ekg,'Value');
     Laikai_=get([rri_lin handles.EKG_tsk],'XData');
