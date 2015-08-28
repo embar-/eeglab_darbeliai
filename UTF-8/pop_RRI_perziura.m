@@ -292,6 +292,7 @@ susaldyk(hObject, eventdata, handles);
 set(handles.edit_ribos,'String','500 1300')
 set(handles.axes_rri,'UserData',Pradiniai_laikai);
 set(handles.axes_rri,'Units','pixels');
+set(handles.figure1,'units','normalized','outerposition',[0 0 1 1]);
 set(handles.figure1,'Units','pixels');
 set(handles.text1,'Backgroundcolor','remove');
 set(handles.text3,'Backgroundcolor','remove');
