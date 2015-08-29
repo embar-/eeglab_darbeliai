@@ -1458,10 +1458,10 @@ end;
 function pAx=getParentAxes(obj)
 pAx=[];
 if ~isobject(obj); return; end;
-if ismember(properties(obj),{'type'})
-    if ismember(get(obj,'type'),{'figure', 'root'})
+if ismember({'Type'},properties(obj))
+    if ismember(get(obj,'Type'),{'figure', 'root'})
         return;
-    elseif strcmp(get(obj,'type'),'axes')
+    elseif strcmp(get(obj,'Type'),'axes')
         pAx=obj;
         return;
     end
