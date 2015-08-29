@@ -1267,9 +1267,9 @@ switch ck
 %             drawnow;
 %         end;
         end;
-    case 'o'
+    case {'o' 'i'}
         Importuoti_Callback(hObject, eventdata, handles);
-    case 's'
+    case {'s' 'e'}
         Eksportuoti_Callback(hObject, eventdata, handles);
     case 'z'
         if ismember('control',modifiers);
