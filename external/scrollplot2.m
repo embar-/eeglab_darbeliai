@@ -882,8 +882,10 @@ function mouseMoveCallback(varargin)
         end
         
         overObcj=hittest;
-        cAx=get(hFig,'currentAxes');
-        %anotObj=findall(hFig,'Type','textbox','Tag','Anot');
+        cAx=getParentAxes(overObcj);
+        if isempty(cAx);
+            cAx=get(hFig,'currentAxes');
+        end;
         if or(isequal(overObcj,cAx),is_family(overObcj,cAx)); % over main axis or over its child
             if and(isempty(hMode),~strcmp(get(findall(cAx,'-property','Tag'),'Tag'),'scrollAx'));
                 fja1=get(cAx,'ButtonDownFcn');
@@ -978,7 +980,7 @@ function mouseMoveCallback(varargin)
         catch
             % Never mind...
         end
-    catch err;
+    catch 
         % Never mind...
         % warning(lasterr);
     end
@@ -1451,6 +1453,20 @@ elseif isequal(par,groot) || isempty(par);
 else
     in_family=is_family(par,objParent);
 end;
+
+
+function pAx=getParentAxes(obj)
+pAx=[];
+if ~isobject(obj); return; end;
+if ismember(properties(obj),{'type'})
+    if ismember(get(obj,'type'),{'figure', 'root'})
+        return;
+    elseif strcmp(get(obj,'type'),'axes')
+        pAx=obj;
+        return;
+    end
+end;
+pAx=getParentAxes(get(obj,'parent'));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  TODO  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % - maybe add a blue diamond or a visual handle in center of side-bars?
