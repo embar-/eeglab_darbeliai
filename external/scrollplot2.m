@@ -888,17 +888,25 @@ function mouseMoveCallback(varargin)
         end;
         if isequal(overObcj,cAx) || is_family(overObcj,cAx) || strcmp(get(get(overObcj,'parent'),'tag'), 'scribeOverlay') ; % over main axis or over its child
             if and(isempty(hMode),~strcmp(get(findall(cAx,'-property','Tag'),'Tag'),'scrollAx'));
-                axes(cAx);
                 fja1=get(cAx,'ButtonDownFcn');
                 branot=findall(get(findall(hFig,'Type','Annotationpane','Tag','scribeOverlay'),'Children'),'-not','Tag','Anot');
                 if or(isempty(fja1),~isempty(branot)) ; 
                     fja0=''; try fja0=getappdata(cAx,'originalButtonDownFcn'); catch;  end;
-                    set(cAx,'ButtonDownFcn',fja0);
+                    if ~isnumeric(fja0);
+                        axes(cAx);
+                        set(cAx,'ButtonDownFcn',fja0);
+                    end;
                     fjaM=getappdata(cAx,'MouseInMainAxesFnc_BrushModeCont');
-                    try feval(fjaM{:}); catch; end;
+                    if ~isnumeric(fjaM);
+                        axes(cAx);
+                        try feval(fjaM{:}); catch; end;
+                    end;
                 else
                     fjaM=getappdata(cAx,'MouseInMainAxesFnc');
-                    try feval(fjaM{:}); catch; end;
+                    if ~isnumeric(fjaM);
+                        axes(cAx);
+                        try feval(fjaM{:}); catch; end;
+                    end;
                 end;
             else
                 fjaM=getappdata(cAx,'MouseOutMainAxesFnc');
