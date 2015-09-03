@@ -1,12 +1,5 @@
-Darbeliai v2015.08.24.2
+Darbeliai v2015.09.03.1
 
-EEG įrašų peržiūros ir lyginimo patobulinimai.
-Nuoseklaus apdorojimo ir savitos komandos 
-vykdymo dialoguose po EEG apdorojimo 
-galima pradinį ir apdorotą EEG įrašą
-(ieškokite per Veiksmų meniu).
+EEG įrašų lyginimo patobulinimai.
 
-Improved tool to view/compare EEG records.
-Serial processing and Custom command execution 
-allow to visualize difference between original
-and processed EEG record (via Actions menu).
+Improved tool to compare EEG records.

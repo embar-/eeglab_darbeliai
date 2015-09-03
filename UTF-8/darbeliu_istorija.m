@@ -1,6 +1,9 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.09.03.1
+% ~ Neepocuotų EEG įrašų lyginimo patobulinimai.
+%
 % v2015.08.24.1
 % ~ EEG įrašų peržiūros ir lyginimo patobulinimai.
 % + Nuosekliame apdorojime ir Savitų komandų vykdyme galima
