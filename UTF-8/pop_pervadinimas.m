@@ -650,6 +650,7 @@ function edit_tikri_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
+if ~isempty(get(handles.figure1, 'currentModifier')); return; end;
 set(handles.edit_tikri,'BackgroundColor',[1 1 0]);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
@@ -662,6 +663,7 @@ function edit_siulomi_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
+if ~isempty(get(handles.figure1, 'currentModifier')); return; end;
 set(handles.edit_siulomi,'BackgroundColor',[1 1 0]);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
@@ -1204,6 +1206,7 @@ function edit10_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
+if ~isempty(get(handles.figure1, 'currentModifier')); return; end;
 set(handles.edit10,'BackgroundColor',[1 1 0]);
 
 
@@ -1215,6 +1218,7 @@ function edit5_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
+if ~isempty(get(handles.figure1, 'currentModifier')); return; end;
 set(handles.edit5,'BackgroundColor',[1 1 0]);
 
 % --- Executes on key press with focus on edit6 and none of its controls.
@@ -1225,6 +1229,7 @@ function edit6_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
+if ~isempty(get(handles.figure1, 'currentModifier')); return; end;
 set(handles.edit6,'BackgroundColor',[1 1 0]);
 
 
@@ -1236,6 +1241,7 @@ function edit7_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
+if ~isempty(get(handles.figure1, 'currentModifier')); return; end;
 set(handles.edit7,'BackgroundColor',[1 1 0]);
 
 
@@ -1247,6 +1253,7 @@ function edit8_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
+if ~isempty(get(handles.figure1, 'currentModifier')); return; end;
 set(handles.edit8,'BackgroundColor',[1 1 0]);
 
 

@@ -1057,6 +1057,7 @@ function edit1_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
+if ~isempty(get(handles.figure1, 'currentModifier')); return; end;
 set(handles.edit1,'BackgroundColor',[1 1 0]);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
@@ -1069,6 +1070,7 @@ function edit2_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
+if ~isempty(get(handles.figure1, 'currentModifier')); return; end;
 set(handles.edit2,'BackgroundColor',[1 1 0]);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
@@ -1170,6 +1172,7 @@ function edit_failu_filtras1_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
+if ~isempty(get(handles.figure1, 'currentModifier')); return; end;
 set(handles.edit_failu_filtras1,'BackgroundColor',[1 1 0]);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
