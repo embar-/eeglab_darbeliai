@@ -62,7 +62,11 @@ i=~isnan(P2Ta); P2Ra=P2R(i); L2Ra=L2R(i); P2Ta=P2Ta(i); L2Ta=L2Ta(i);
 i=~isnan(P2Tb); P2Rb=P2R(i); L2Rb=L2R(i); P2Tb=P2Tb(i); L2Tb=L2Tb(i);
 
 m=median(EKG);
-[~,d]=max([ (median(P1Ra+P1Ta)-m), (median(P2Ra+P2Ta)+m), (median(P1Rb+P1Tb)-m), (median(P2Rb+P2Tb)+m) ]);
+m1a=median(P1Ra+P1Ta)-2*m;
+m2a=median(P2Ra+P2Ta)+2*m;
+m1b=median(P1Rb+P1Tb)-2*m;
+m2b=median(P2Rb+P2Tb)+2*m;
+[~,d]=max([ m1a m2a m1b m2b ]);
 ar_apversta=~mod(d,2);
 
 if fig;

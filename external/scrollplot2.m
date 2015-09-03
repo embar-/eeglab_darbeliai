@@ -882,20 +882,31 @@ function mouseMoveCallback(varargin)
         end
         
         overObcj=hittest;
-        cAx=get(hFig,'currentAxes');
-        %anotObj=findall(hFig,'Type','textbox','Tag','Anot');
-        if or(isequal(overObcj,cAx),is_family(overObcj,cAx)); % over main axis or over its child
+        cAx=getParentAxes(overObcj);
+        if isempty(cAx);
+            cAx=get(hFig,'currentAxes');
+        end;
+        if isequal(overObcj,cAx) || is_family(overObcj,cAx) || strcmp(get(get(overObcj,'parent'),'tag'), 'scribeOverlay') ; % over main axis or over its child
             if and(isempty(hMode),~strcmp(get(findall(cAx,'-property','Tag'),'Tag'),'scrollAx'));
                 fja1=get(cAx,'ButtonDownFcn');
                 branot=findall(get(findall(hFig,'Type','Annotationpane','Tag','scribeOverlay'),'Children'),'-not','Tag','Anot');
                 if or(isempty(fja1),~isempty(branot)) ; 
                     fja0=''; try fja0=getappdata(cAx,'originalButtonDownFcn'); catch;  end;
-                    set(cAx,'ButtonDownFcn',fja0);
+                    if ~isnumeric(fja0);
+                        axes(cAx);
+                        set(cAx,'ButtonDownFcn',fja0);
+                    end;
                     fjaM=getappdata(cAx,'MouseInMainAxesFnc_BrushModeCont');
-                    try feval(fjaM{:}); catch; end;
+                    if ~isnumeric(fjaM);
+                        axes(cAx);
+                        try feval(fjaM{:}); catch; end;
+                    end;
                 else
                     fjaM=getappdata(cAx,'MouseInMainAxesFnc');
-                    try feval(fjaM{:}); catch; end;
+                    if ~isnumeric(fjaM);
+                        axes(cAx);
+                        try feval(fjaM{:}); catch; end;
+                    end;
                 end;
             else
                 fjaM=getappdata(cAx,'MouseOutMainAxesFnc');
@@ -978,7 +989,7 @@ function mouseMoveCallback(varargin)
         catch
             % Never mind...
         end
-    catch err;
+    catch 
         % Never mind...
         % warning(lasterr);
     end
@@ -1451,6 +1462,20 @@ elseif isequal(par,groot) || isempty(par);
 else
     in_family=is_family(par,objParent);
 end;
+
+
+function pAx=getParentAxes(obj)
+pAx=[];
+if ~isobject(obj); return; end;
+if ismember({'Type'},properties(obj))
+    if ismember(get(obj,'Type'),{'figure', 'root'})
+        return;
+    elseif strcmp(get(obj,'Type'),'axes')
+        pAx=obj;
+        return;
+    end
+end;
+pAx=getParentAxes(get(obj,'parent'));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  TODO  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % - maybe add a blue diamond or a visual handle in center of side-bars?
