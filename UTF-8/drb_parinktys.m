@@ -1,5 +1,11 @@
 function drb_parinktys(hObject, eventdata, handles, veiksmas, darbas, varargin)
-% drb_parinktis_ikelti - „Darbelių“ langų parinkčių įkėlimas
+% drb_parinktys - „Darbelių“ langų parinkčių valdymas
+%
+% drb_parinktys(hObject, eventdata, handles, 'ikelti',  darbas)
+% drb_parinktys(hObject, eventdata, handles, 'trinti',  darbas)
+% drb_parinktys(hObject, eventdata, handles, 'irasyti', darbas)
+% drb_parinktys(hObject, eventdata, handles, 'importuoti',  darbas)
+% drb_parinktys(hObject, eventdata, handles, 'eksportuoti', darbas)
 %
 % (C) 2015 Mindaugas Baranauskas
 
