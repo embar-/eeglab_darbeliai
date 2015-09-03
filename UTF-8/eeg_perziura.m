@@ -152,24 +152,33 @@ if EEG1.trials > 1 && EEG2.trials > 1;
 end;
 
 % epochuotų ir neepochuotų duomenų susiejimas
-if EEG1.trials > 1;
-    if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
-        %assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
-        urid1={EEG1.event.urevent}; urid1(arrayfun(@(i) isempty(urid1{i}), 1:length(urid1)))={NaN}; urid1=cell2mat(urid1);
-        urid2={EEG2.event.urevent}; urid2(arrayfun(@(i) isempty(urid2{i}), 1:length(urid2)))={NaN}; urid2=cell2mat(urid2);
-        urid1_sutampa_i=find(ismember(urid1,urid2));
-        [~,urid2_sutampa_i]=ismember(urid1(urid1_sutampa_i),urid2);
-        urid_sutampa_tipas1={EEG1.event(urid1_sutampa_i).type};
-        urid_sutampa_tipas2={EEG2.event(urid2_sutampa_i).type};
-        sutampa_ivykiai=0;
-        if iscellstr(urid_sutampa_tipas1) && iscellstr(urid_sutampa_tipas2)
-            if strcmp(urid_sutampa_tipas1,urid_sutampa_tipas2);
-                sutampa_ivykiai=1;
-            end;
+if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
+    %assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
+    urid1={EEG1.event.urevent}; urid1(arrayfun(@(i) isempty(urid1{i}), 1:length(urid1)))={NaN}; urid1=cell2mat(urid1);
+    urid2={EEG2.event.urevent}; urid2(arrayfun(@(i) isempty(urid2{i}), 1:length(urid2)))={NaN}; urid2=cell2mat(urid2);
+    urid1_sutampa_i=find(ismember(urid1,urid2));
+    [~,urid2_sutampa_i]=ismember(urid1(urid1_sutampa_i),urid2);
+    urid_sutampa_tipas1={EEG1.event(urid1_sutampa_i).type};
+    urid_sutampa_tipas2={EEG2.event(urid2_sutampa_i).type};
+    sutampa_ivykiai=0;
+    if iscellstr(urid_sutampa_tipas1) && iscellstr(urid_sutampa_tipas2)
+        if strcmp(urid_sutampa_tipas1,urid_sutampa_tipas2);
+            sutampa_ivykiai=1;
         end;
-        if sutampa_ivykiai;
-            disp('EEG1 ir EEG2 sugretinimas...');
-            sk=[EEG2.event(urid2_sutampa_i).laikas_ms] - [EEG1.event(urid1_sutampa_i).laikas_ms]; % sutampačių įvykių laikų poslinkiai
+    end;
+    if sutampa_ivykiai;
+        disp('EEG1 ir EEG2 sugretinimas...');
+        sk=[EEG2.event(urid2_sutampa_i).laikas_ms] - [EEG1.event(urid1_sutampa_i).laikas_ms]; % sutampačių įvykių laikų poslinkiai        
+        if EEG1.trials <= 1;
+            if max(sk)-min(sk) < max(1000/EEG1.srate,1000/EEG2.srate);
+                m=median(sk);
+                EEG1.times=EEG1.times+m;
+                EEG1.times_nan=EEG1.times_nan+m;
+                for i=1:length(EEG1.event);
+                    EEG1.event(i).laikas_ms=EEG1.event(i).laikas_ms+m;
+                end;
+            end;
+        else            
             if EEG2.trials > 1;
                 [plotis1,pli]=max([trukme1,trukme2]);
                 if pli == 1; plotis1=plotis1+1/EEG1.srate; else plotis1=plotis1+1/EEG2.srate; end;
@@ -186,8 +195,8 @@ if EEG1.trials > 1;
             urev=[];
             for ii=1:length(uniq_ep_i);
                 i_nuo=uniq_ep_i(ii); % EEG1 ivykio, NUO kurio darbuojamės, indeksas sutampančių įvykių sąraše
-                if ii == length(uniq_ep_i); 
-                     i_iki=uniq_ep_i(end); % EEG1 ivykio, IKI kurio darbuojamės, indeksas sutampančių įvykių sąraše
+                if ii == length(uniq_ep_i);
+                    i_iki=uniq_ep_i(end); % EEG1 ivykio, IKI kurio darbuojamės, indeksas sutampančių įvykių sąraše
                 else i_iki=uniq_ep_i(ii+1)-1;
                 end;
                 %disp(['[suti: ' num2str(i_nuo) ':' num2str(i_iki) '; urev:' num2str(urid1(urid1_sutampa_i(i_nuo))) ':' num2str(urid1(urid1_sutampa_i(i_iki))) ']']);
@@ -217,7 +226,7 @@ if EEG1.trials > 1;
                         t1=EEG1.event(vis(kartojasi(1))).laikas_ms;
                         sk_=t2-t1;
                         if EEG2.trials > 1;
-                             sk(i_nuo)=sk(find(sk>sk_,1,'first'));
+                            sk(i_nuo)=sk(find(sk>sk_,1,'first'));
                         end;
                     else
                         sk_=sk(i_nuo);
@@ -235,10 +244,10 @@ if EEG1.trials > 1;
             ivTipai={EEG1.event.type};
             if EEG2.trials <= 1;
                 EEG1.event(ismember(ivTipai,{'boundary'}))=[];
-            end;
-            EEG1.xmin=0.001*min(EEG1.times); if isempty(EEG1.xmin); EEG1.xmin=NaN; end;
-            EEG1.xmax=0.001*max(EEG1.times); if isempty(EEG1.xmax); EEG1.xmax=0; end;
+            end;            
         end;
+        EEG1.xmin=0.001*min(EEG1.times); if isempty(EEG1.xmin); EEG1.xmin=NaN; end;
+        EEG1.xmax=0.001*max(EEG1.times); if isempty(EEG1.xmax); EEG1.xmax=0; end;
     end;
 end;
 
