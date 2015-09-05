@@ -266,7 +266,9 @@ for i=5:nargin;
     pars=[pars ', par' j ]; %#ok
 end;
 com=[ varargin{1} '(hObject, eventdata, handles' pars ');' ];
-eval( com );
+try eval( com );
+catch err; Pranesk_apie_klaida(err, '', '', 0) ;
+end;
 
 
 function nukreipimas_gui2(hObject, eventdata, handles, varargin) %#ok
@@ -277,7 +279,9 @@ for i=5:nargin;
     pars=[pars 'par' j ', ' ]; %#ok
 end;
 com=[ varargin{1} '(' pars 'hObject, eventdata, handles);' ];
-eval( com );
+try eval( com );
+catch err; Pranesk_apie_klaida(err, '', '', 0) ;
+end;
 
 
 function nukreipimas_gui3(hObject, eventdata, handles, varargin) %#ok
@@ -288,7 +292,9 @@ for i=6:nargin;
     pars=[pars ', par' j ]; %#ok
 end;
 com=[ varargin{1} '(''' varargin{2} ''' , hObject, eventdata, handles' pars ');' ];
-eval( com );
+try eval( com );
+catch err; Pranesk_apie_klaida(err, '', '', 0) ;
+end;
 
 
 function drb_meniu_veiksmai_vykdymas_su_perziura(hObject, eventdata, handles, darbas, varargin)
