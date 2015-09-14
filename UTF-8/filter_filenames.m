@@ -65,8 +65,6 @@
 
 function [files]=filter_filenames(varargin)
 files={};
-clear('filter_filenames2','filter_filenames');
-
 if nargin > 0;
     filter_string=varargin{1};
 else
@@ -78,7 +76,6 @@ if nargin > 1;
 else
     mode=1;
 end;
-
 
 
 if isempty(filter_string);
@@ -103,7 +100,7 @@ if ~ischar(filter_string);
 end;
 
 flt=textscan(filter_string, '%s', 'delimiter', ';');
-dir_out=cellfun(@(x) filter_filenames2(flt{1}{x}), num2cell(1:length(flt{1})),'UniformOutput',false);
+dir_out=cellfun(@(x) filter_filenames2(flt{1}{x}, (x == 1)), num2cell(1:length(flt{1})),'UniformOutput',false);
 for i=1:length(dir_out);
     files_and_dirs={dir_out{i}.name};
     files_idx=find([dir_out{i}.isdir] == 0 );
@@ -131,9 +128,12 @@ if mode;
     cd(path_orig);
 end;
 
-function rez=filter_filenames2(str)
+function rez=filter_filenames2(str, naujai)
 rez=struct('name',{},'isdir',{});
-persistent dir_;
+persistent dir_; 
+if naujai; 
+    dir_='' ; 
+end;
 [dir_n,f,t]=fileparts(str);
 if ~isempty(dir_n);
     dir_=dir_n;

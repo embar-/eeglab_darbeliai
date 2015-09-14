@@ -1,5 +1,7 @@
-Darbeliai v2015.09.03.1
+Darbeliai v2015.09.14.1
 
-EEG įrašų lyginimo patobulinimai.
+MATLAB R2015b nerodys beprasmių pranešimų.
+Stabilumo pagerinimas.
 
-Improved tool to compare EEG records.
+MATLAB R2015b will not show meaningless warnings.
+Improvevents of stability.

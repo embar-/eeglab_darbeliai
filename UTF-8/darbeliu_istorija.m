@@ -1,6 +1,9 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.09.14.1
+% ~MATLAB R2015b nerodys beprasmių pranešimų.
+%
 % v2015.09.03.1
 % ~ Neepocuotų EEG įrašų lyginimo patobulinimai.
 %
