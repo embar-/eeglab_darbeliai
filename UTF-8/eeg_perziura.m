@@ -297,14 +297,12 @@ else
         if isempty(EEG2.data);
             set(a,'YTick', 1:length(l1));
             set(a,'YTickLabel', l1);
-            setappdata(a,'reikia_ribozenkliu',1);
         else % FIXME
         end;
     elseif isempty(l1);
         if isempty(EEG1.data);
             set(a,'YTick', 1:length(l2));
             set(a,'YTickLabel', l2);
-            setappdata(a,'reikia_ribozenkliu',1);
         else % FIXME
         end;
     elseif iscellstr(l1) && (length(unique(l1)) == size(EEG1.data,1)) && ...
