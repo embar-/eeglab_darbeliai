@@ -6256,7 +6256,7 @@ if isempty(RINKMENOS);
     return;
 end;
 set(handles.pushbutton18,'Enable','off'); drawnow;
-[~,visi_galimi_kanalai,bendri_kanalai]=eeg_kanalu_sarasas (get(handles.edit1,'String'), RINKMENOS);
+[~,visi_galimi_kanalai,bendri_kanalai]=eeg_kanalu_sarasas(get(handles.edit1,'String'), RINKMENOS);
 set(handles.pushbutton18,'Enable','on');
 if isempty(visi_galimi_kanalai);
     wf=warndlg(lokaliz('No names of channels found.'),lokaliz('Selection of channels'));
