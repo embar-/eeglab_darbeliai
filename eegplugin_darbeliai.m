@@ -130,7 +130,7 @@ end;
 
 clear('lokaliz');
 
-% EEGLAB bug while using in MATLAB R2015b
+% EEGLAB klaida naudojant su  MATLAB R2015b: updatemenu:1398
 warning('off','MATLAB:lang:cannotClearExecutingFunction');
 
 % Pabandyti perkelti kitas sios programeles versijas kitur
