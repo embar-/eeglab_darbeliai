@@ -92,7 +92,7 @@ if and(nargin, ischar(p))
          f=v;
       end
    else
-      if and((nargin == 2), check(f));  % reset
+      if and((nargin == 2), ~isempty(check(f)));  % reset
          modify(f,'Line','XData',[4 4 4]);
          modify(f,'Rect','Position',[4 54 0.1 22]);
          modify(f,'Done','String','0');
@@ -165,8 +165,12 @@ end
 %
 function f=check(f)
 if isempty(f); return; end;
-if and(ishandle(f(1)), isequal(get(f(1),'Tag'),'StatusBar'))
-   f=f(1);
+if ishandle(f(1))
+    if isequal(get(f(1),'Tag'),'StatusBar'); 
+        f=f(1);
+    else
+        f=[];
+    end;
 else
    f=[];
 end
@@ -181,6 +185,7 @@ end
 s=[256 80];
 t=get(0,'ScreenSize');
 f=figure('DoubleBuffer','on','HandleVisibility','off','MenuBar','none','Name','Progress ...','IntegerHandle','off','NumberTitle','off','Resize','off','Position',[floor((t(3:4)-s)/2) s],'Tag','StatusBar','ToolBar','none','Visible',visible);
+a=struct;
 a.Parent=axes('Parent',f,'Position',[0 0 1 1],'Visible','off','XLim',[0 256],'YLim',[0 80]);
 %
 %Horizontal bar
@@ -195,7 +200,7 @@ line([4 4 4],[54 54 77],'Color',[0.2 0.2 0.2],'Tag','Line',a);
 a.FontWeight='bold';
 a.Units='pixels';
 a.VerticalAlignment='middle';
-text(136,70,1,'%',a);
+text(136,70,'%',a);
 text(16,36,lokaliz('Elapsed time:'),a);
 text(16,20,lokaliz('Remaining:'),a);
 text(200,36,'',a);
@@ -204,9 +209,12 @@ text(200,20,'',a);
 %Information texts
 %
 a.HorizontalAlignment='right';
-text(136,70,1,'0',a,'Tag','Done');
-text(198,36,'0:00:00',a,'Tag','Time');
-text(198,20,'0:00:00',a,'Tag','Task');
+a.Tag='Done';
+text(136,70,'0',a);
+a.Tag='Time';
+text(198,36,'0:00:00',a);
+a.Tag='Task';
+text(198,20,'0:00:00',a);
 
 
 %Modify an object property.
