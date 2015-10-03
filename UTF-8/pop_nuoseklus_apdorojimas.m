@@ -498,12 +498,12 @@ set(handles.checkbox_filtr1,'Enable','on');
 set(handles.checkbox_filtr2,'Enable','on');
 %'Cleanline'
 %if find(ismember({PLUGINLIST.plugin},'tmullen-cleanline-d535f9ad70db')) ;
-if exist('pop_cleanline','file') == 2;
+%if exist('pop_cleanline','file') == 2;
     set(handles.checkbox_filtr_tinklo,'Enable','on');
     set(handles.checkbox_filtr_tinklo,'TooltipString', '');
-else
-    set(handles.checkbox_filtr_tinklo,'Enable','off');
-end;
+%else
+%    set(handles.checkbox_filtr_tinklo,'Enable','off');
+%end;
 %set(handles.checkbox_filtr_tinklo,'TooltipString', 'Reikia įdiegti Cleanline paketą iš http://www.nitrc.org/projects/cleanline/ . Kažkodėl bent šiuo metu (2014 m. liepa) neveiks šis priedas įdiegtas per pačio eeglab meniu' ) ;
 set(handles.checkbox_kanalu_padetis,'Enable','on');
 %set(handles.checkbox_atrink_kanalus1__,'TooltipString','Palikti failus, kuriuose yra visi nurodyti kanalai');
@@ -2830,6 +2830,17 @@ function checkbox_filtr_tinklo_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_filtr_tinklo
+
+if get(handles.checkbox_filtr_tinklo, 'Value') == 1;
+    if isempty(which('pop_cleanline.m'));
+        disp(' ');
+        disp([lokaliz('nerasta') ': pop_cleanline.m' ]);
+        disp([ lokaliz('Please install plugin') ' CleanLine <http://sccn.ucsd.edu/wiki/Plugin_list_process>' ]);
+        warndlg([ lokaliz('Please install plugin') ' CleanLine' ], lokaliz('Please install plugin'));
+        set(handles.checkbox_filtr_tinklo, 'Value', 0);
+    end;
+end;
+
 if and(get(handles.checkbox_filtr_tinklo, 'Value') == 1, ...
         strcmp(get(handles.checkbox_filtr_tinklo, 'Enable'),'on'));
     set(handles.checkbox_filtr_tinklo_,'Enable','on');
