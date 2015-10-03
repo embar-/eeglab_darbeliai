@@ -3194,6 +3194,7 @@ else
     %set(handles.checkbox_MARA, 'Value',0);
     %checkbox_MARA_Callback(hObject, eventdata, handles);
 end;
+popupmenu4_Callback(hObject, eventdata, handles);
 checkbox_ICA__Callback(hObject, eventdata, handles);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
