@@ -130,6 +130,9 @@ end;
 
 clear('lokaliz');
 
+% EEGLAB bug while using in MATLAB R2015b
+warning('off','MATLAB:lang:cannotClearExecutingFunction');
+
 % Pabandyti perkelti kitas šios programėlės versijas kitur
 wb=warning('off','MATLAB:rmpath:DirNotFound');
 rmpath(curdir);
