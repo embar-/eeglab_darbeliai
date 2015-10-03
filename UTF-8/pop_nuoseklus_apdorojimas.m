@@ -497,14 +497,13 @@ set(handles.checkbox_rf,'Enable','on');
 set(handles.checkbox_filtr1,'Enable','on');
 set(handles.checkbox_filtr2,'Enable','on');
 %'Cleanline'
-%if find(ismember({PLUGINLIST.plugin},'tmullen-cleanline-d535f9ad70db')) ;
-%if exist('pop_cleanline','file') == 2;
-    set(handles.checkbox_filtr_tinklo,'Enable','on');
+set(handles.checkbox_filtr_tinklo,'Enable','on');
+if exist('pop_cleanline.m','file') == 2;
     set(handles.checkbox_filtr_tinklo,'TooltipString', '');
-%else
-%    set(handles.checkbox_filtr_tinklo,'Enable','off');
-%end;
-%set(handles.checkbox_filtr_tinklo,'TooltipString', 'Reikia įdiegti Cleanline paketą iš http://www.nitrc.org/projects/cleanline/ . Kažkodėl bent šiuo metu (2014 m. liepa) neveiks šis priedas įdiegtas per pačio eeglab meniu' ) ;
+else
+    set(handles.checkbox_filtr_tinklo,'TooltipString', [ lokaliz('Please install plugin') ' CleanLine' ] );
+    %set(handles.checkbox_filtr_tinklo,'TooltipString', 'Reikia įdiegti Cleanline paketą iš http://www.nitrc.org/projects/cleanline/ . Kažkodėl bent šiuo metu (2014 m. liepa) neveiks šis priedas įdiegtas per pačio eeglab meniu' ) ;
+end;
 set(handles.checkbox_kanalu_padetis,'Enable','on');
 %set(handles.checkbox_atrink_kanalus1__,'TooltipString','Palikti failus, kuriuose yra visi nurodyti kanalai');
 set(handles.checkbox_atrink_kanalus1,'Enable','on');
@@ -515,23 +514,19 @@ set(handles.checkbox_perziureti,'Enable','on');
 set(handles.checkbox_atmesk_iki2s,'Enable','on');
 set(handles.checkbox_vienoda_trukme,'Enable','on');
 set(handles.checkbox_ICA,'Enable','on');
-%if find(ismember({PLUGINLIST.plugin},'MARA')) ;
-%if exist('MARA','file') == 2;
-    set(handles.checkbox_MARA,'Enable','on');
+set(handles.checkbox_MARA,'Enable','on');
+if exist('MARA.m','file') == 2;
     set(handles.checkbox_MARA,'TooltipString', '' ) ;
-%else
-%    set(handles.checkbox_MARA,'Enable','off');
-%    set(handles.checkbox_MARA,'TooltipString', 'Reikia įdiegti MARA papildinį' ) ;
-%end;
+else
+    set(handles.checkbox_MARA,'TooltipString', [ lokaliz('Please install plugin') ' MARA' ] ) ;
+end;
 set(handles.checkbox_atrink_kanalus2,'Enable','on');
-%if find(ismember({PLUGINLIST.plugin},'clean_rawdata')) ;
-%if exist('clean_rawdata','file') == 2
-    set(handles.checkbox_ASR,'Enable','on');
-    %set(handles.checkbox_ASR,'TooltipString','' ) ;
-%else
-%    set(handles.checkbox_ASR,'Enable','off');
+set(handles.checkbox_ASR,'Enable','on');
+% if exist('clean_rawdata.m','file') == 2
+%     set(handles.checkbox_ASR,'TooltipString','' ) ;
+% else
+    set(handles.checkbox_ASR,'TooltipString', [ lokaliz('Please install plugin') ' ASR (clean_rawdata) >= 0.3' ] ) ;
 %end ;
-%set(handles.checkbox_ASR,'TooltipString', 'Reikia įdiegti clean_rawdata (ASR) papildinį. Tinka 0.3 versija. Netinka 0.21 versija.' ) ;
 set(handles.checkbox_perziureti_ICA,'Enable','on');
 set(handles.checkbox_epoch,'Enable','on');
 
@@ -2835,7 +2830,9 @@ if get(handles.checkbox_filtr_tinklo, 'Value') == 1;
     if isempty(which('pop_cleanline.m'));
         disp(' ');
         disp([lokaliz('nerasta') ': pop_cleanline.m' ]);
-        disp([ lokaliz('Please install plugin') ' CleanLine <http://sccn.ucsd.edu/wiki/Plugin_list_process>' ]);
+        disp([ lokaliz('Please install plugin') ' CleanLine:']);
+        disp('http://sccn.ucsd.edu/wiki/Plugin_list_process');
+        disp('http://www.nitrc.org/projects/cleanline/');
         warndlg([ lokaliz('Please install plugin') ' CleanLine' ], lokaliz('Please install plugin'));
         set(handles.checkbox_filtr_tinklo, 'Value', 0);
     end;
@@ -3323,7 +3320,9 @@ if get(handles.checkbox_MARA, 'Value') == 1;
     if isempty(which('MARA.m')) || isempty(which('processMARA.m'));
         disp(' ');
         disp([lokaliz('nerasta') ': pop_selectcomps_MARA.m' ]);
-        disp([ lokaliz('Please install plugin') ' MARA <http://www.user.tu-berlin.de/irene.winkler/artifacts/>' ]);
+        disp([ lokaliz('Please install plugin') ' MARA:']);
+        disp('http://www.user.tu-berlin.de/irene.winkler/artifacts/');
+        disp('http://sccn.ucsd.edu/wiki/Plugin_list_process');
         warndlg([ lokaliz('Please install plugin') ' MARA' ], lokaliz('Please install plugin'));
         set(handles.checkbox_MARA, 'Value', 0);
     end;
