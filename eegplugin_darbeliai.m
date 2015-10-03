@@ -160,7 +160,7 @@ end;
 warning(wb.state,'MATLAB:rmpath:DirNotFound');
 cd(kelias);
 addpath(curdir);
-addpath(genpath(fullfile(curdir, 'fig')));
+addpath(genpath(fullfile(curdir, 'fig_dlg')));
 addpath(genpath(fullfile(curdir, 'external')));
 %rmpath( genpath(fullfile(curdir, 'seni')));
 %rmpath( genpath(fullfile(curdir, 'kiti')));
