@@ -516,13 +516,13 @@ set(handles.checkbox_atmesk_iki2s,'Enable','on');
 set(handles.checkbox_vienoda_trukme,'Enable','on');
 set(handles.checkbox_ICA,'Enable','on');
 %if find(ismember({PLUGINLIST.plugin},'MARA')) ;
-if exist('MARA','file') == 2;
+%if exist('MARA','file') == 2;
     set(handles.checkbox_MARA,'Enable','on');
     set(handles.checkbox_MARA,'TooltipString', '' ) ;
-else
-    set(handles.checkbox_MARA,'Enable','off');
-    set(handles.checkbox_MARA,'TooltipString', 'Reikia įdiegti MARA papildinį' ) ;
-end;
+%else
+%    set(handles.checkbox_MARA,'Enable','off');
+%    set(handles.checkbox_MARA,'TooltipString', 'Reikia įdiegti MARA papildinį' ) ;
+%end;
 set(handles.checkbox_atrink_kanalus2,'Enable','on');
 %if find(ismember({PLUGINLIST.plugin},'clean_rawdata')) ;
 if exist('clean_rawdata','file') == 2
@@ -1571,7 +1571,7 @@ for i=1:Pasirinktu_failu_N;
                             EEG = eegh('[ALLEEG,EEG,CURRENTSET]= processMARA( ALLEEG ,EEG ,CURRENTSET,[0,0,1,1,0] );', EEG);
                             Palauk();
                         otherwise
-                            [artcomps, info] = MARA (EEG);
+                            [artcomps, info] = MARA(EEG);
                             EEG = eegh('[artcomps, info] = MARA (EEG);', EEG);
                             EEG = eeg_checkset( EEG );
                             EEG = pop_subcomp( EEG, artcomps, 0);
@@ -1629,46 +1629,45 @@ for i=1:Pasirinktu_failu_N;
                 try
 
                     EEG = eeg_checkset( EEG );
-
-                    try
-                        close([...
-                            findobj('-regexp','name','Reject components by map.*')  ; ...
-                            findobj('-regexp','name','pop_prop().*') ; ...
-                            findobj('-regexp','name','Scroll channel activities.*') ; ...
-                            findobj('-regexp','name','Scroll component activities.*') ; ...
-                            findobj('-regexp','name','Confirmation.*') ; ...
-                            findobj('-regexp','name','Black = channel before rejection.*') ; ] );
-                    catch err;
-                    end;
-
-
+                    [~,NaujaRinkmena_be_galunes,~]=fileparts(NaujaRinkmena);
+                    uzverti_EEG_perziuru_langus; %([ '.*' NaujaRinkmena_be_galunes '.*' ]);
                     eeglab redraw ;
                     drawnow ;
+                    
+                    ICA_kiekis=length(EEG.reject.gcompreject);
 
                     switch get(handles.popupmenu7,'Value')
                         case 1
-                            EEG = pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
-                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(length(EEG.reject.gcompreject)) ']);'], EEG);
+                            EEG = pop_selectcomps(EEG, [1:ICA_kiekis]);
+                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(ICA_kiekis) ']);'], EEG);
                         case 2
-                            pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
+                            EEG = pop_selectcomps(EEG, [1:ICA_kiekis]);
+                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(ICA_kiekis) ']);'], EEG);
                             pop_eegplot( EEG, 1, 1, 1);
                         case 3
-                            pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
+                            EEG = pop_selectcomps(EEG, [1:ICA_kiekis]);
+                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(ICA_kiekis) ']);'], EEG);
                             pop_eegplot( EEG, 0, 1, 1);
                         case 4
                             pop_eegplot( EEG, 0, 1, 1);
                         case 5
-                            pop_selectcomps_MARA(EEG);
+                            EEG = pop_selectcomps_MARA(EEG);
+                            EEG = eegh('EEG = pop_selectcomps_MARA(EEG);', EEG);
                         case 6
-                            pop_selectcomps_MARA(EEG);
+                            EEG = pop_selectcomps_MARA(EEG);
+                            EEG = eegh('EEG = pop_selectcomps_MARA(EEG);', EEG);
                             pop_eegplot( EEG, 0, 1, 1);
                         case 7
                             EEG = pop_selectcomps_MARA(EEG);
                             EEG = eegh('EEG = pop_selectcomps_MARA(EEG);', EEG);
-                            pop_visualizeMARAfeatures(EEG.reject.gcompreject, EEG.reject.MARAinfo);
+                            if isfield(EEG.reject, 'MARAinfo');
+                                pop_visualizeMARAfeatures(EEG.reject.gcompreject, EEG.reject.MARAinfo);
+                            else
+                                warning([ lokaliz('kintamasis neegzistuoja') ': EEG.reject.MARAinfo' ] );
+                            end;
                         otherwise
-                            EEG = pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
-                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(length(EEG.reject.gcompreject)) ']);'], EEG);
+                            EEG = pop_selectcomps(EEG, [1:ICA_kiekis]);
+                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(ICA_kiekis) ']);'], EEG);
                     end;
 
                     %if get(handles.popupmenu8,'Value') ~= 4 ;
@@ -1680,86 +1679,44 @@ for i=1:Pasirinktu_failu_N;
 
                     if get(handles.checkbox_perziureti_ICA_demesio,'Value') == 0 ;
 
-
-                        while ~isempty([...
-                                findobj('-regexp','name','Reject components by map.*')  ; ...
-                                findobj('-regexp','name','pop_prop().*') ; ...
-                                findobj('-regexp','name','Scroll channel activities.*') ; ...
-                                findobj('-regexp','name','Scroll component activities.*') ; ...
-                                findobj('-regexp','name','Confirmation.*') ; ...
-                                findobj('-regexp','name','Black = channel before rejection.*') ; ] ) ;
-
-
+                        while ~isempty(gauk_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]));
                             if 1 == 0
-
-                                waitfor([...
-                                    findobj('-regexp','name','Reject components by map.*')  ; ...
-                                    findobj('-regexp','name','pop_prop().*') ; ...
-                                    findobj('-regexp','name','Scroll channel activities.*') ; ...
-                                    findobj('-regexp','name','Scroll component activities.*') ; ...
-                                    findobj('-regexp','name','Confirmation.*') ; ...
-                                    findobj('-regexp','name','Black = channel before rejection.*') ; ] ) ;
-
+                                waitfor(gauk_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]));
                                 pause(1) ;
-
                             end ;
-
                             uiwait(gcf,3);
-
                             eeglab redraw ;
-
                         end ;
 
                     else
-
                         Palauk();
-
-                        try
-                            close([...
-                                findobj('-regexp','name','Reject components by map.*')  ; ...
-                                findobj('-regexp','name','pop_prop().*') ; ...
-                                findobj('-regexp','name','Scroll channel activities.*') ; ...
-                                findobj('-regexp','name','Scroll component activities.*') ; ...
-                                findobj('-regexp','name','Confirmation.*') ; ...
-                                findobj('-regexp','name','Black = channel before rejection.*') ; ] );
-                        catch err;
-                        end;
-
-
+                        uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
                     end;
 
                     EEG = eeg_checkset( EEG );
 
-
+                    gcompreject=find(EEG.reject.gcompreject);
+                    disp(gcompreject);
 
                     switch get(handles.popupmenu8,'Value')
                         case 1
-                            EEG = pop_subcomp( EEG, find(EEG.reject.gcompreject) , 0 );
-                            EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(find(EEG.reject.gcompreject)) '] , 0 );'], EEG);
+                            EEG = pop_subcomp( EEG, gcompreject, 0 );
+                            EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 0 );'], EEG);
                         case 2
-                            EEG = pop_subcomp( EEG, find(EEG.reject.gcompreject) , 1 );
-                            EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(find(EEG.reject.gcompreject)) '] , 1 );'], EEG);
-                        otherwise
-                            EEG = eeg_checkset( EEG );
+                            EEG = pop_subcomp( EEG, gcompreject, 1 );
+                            if ~isfield(EEG.reject,'gcompreject');
+                                EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 1 );'], EEG);
+                            elseif ~isequal(gcompreject,find(EEG.reject.gcompreject));
+                                EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 1 );'], EEG);
+                            end;
+                       otherwise
+                        %    EEG = eeg_checkset( EEG );
                     end;
 
                     eeglab redraw ;
                     drawnow ;
                     pause(1) ;
-
-
-                    try
-                        close([...
-                            findobj('-regexp','name','Reject components by map.*')  ; ...
-                            findobj('-regexp','name','pop_prop().*') ; ...
-                            findobj('-regexp','name','Scroll channel activities.*') ; ...
-                            findobj('-regexp','name','Scroll component activities.*') ; ...
-                            findobj('-regexp','name','Confirmation.*') ; ...
-                            findobj('-regexp','name','Black = channel before rejection.*') ; ] );
-                    catch err;
-                    end;
-
-
+                    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
                     EEG = eeg_checkset( EEG );
 
                 catch err;
@@ -2591,6 +2548,34 @@ catch err;
 end;
 
 
+function langai=gauk_EEG_perziuru_langus(varargin)
+langai=[...
+        findobj('-regexp','name','Reject components by map.*')  ; ...
+        findobj('-regexp','name','pop_prop().*') ; ...
+        findobj('-regexp','name','Scroll channel activities.*') ; ...
+        findobj('-regexp','name','Scroll component activities.*') ; ...
+        findobj('-regexp','name','Confirmation.*') ; ...
+        findobj('-regexp','name','Black = channel before rejection.*') ; ...
+        findobj('-regexp','name','MARA .*') ; ];
+if nargin > 0 ;
+    atranka=varargin{1};
+    if ischar(atranka);
+        atranka={atranka};
+    end;
+    if iscellstr(atranka);
+        for i=1:length(atranka);
+            langai=[ langai ; findobj('-regexp', 'name', atranka{i}) ] ; %#ok
+        end;
+    end;
+end;
+
+function uzverti_EEG_perziuru_langus(varargin)
+langai=gauk_EEG_perziuru_langus(varargin);
+for i=1:length(langai);
+    try close(langai(i)) ; catch; end;
+end;
+
+
 % --- Executes on button press in pushbutton2.
 function pushbutton2_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton2 (see GCBO)
@@ -3313,6 +3298,16 @@ function checkbox_MARA_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_MARA
+if get(handles.checkbox_MARA, 'Value') == 1;
+    if isempty(which('MARA.m')) || isempty(which('processMARA.m'));
+        disp(' ');
+        disp([lokaliz('nerasta') ': pop_selectcomps_MARA.m' ]);
+        disp([ lokaliz('Please install plugin') ' MARA <http://www.user.tu-berlin.de/irene.winkler/artifacts/>' ]);
+        warndlg([ lokaliz('Please install plugin') ' MARA' ], lokaliz('Please install plugin'));
+        set(handles.checkbox_MARA, 'Value', 0);
+    end;
+end;
+
 if and(get(handles.checkbox_MARA, 'Value') == 1, ...
         strcmp(get(handles.checkbox_MARA, 'Enable'),'on'));
     set(handles.checkbox_MARA_,'Enable','on');
@@ -3341,6 +3336,7 @@ if and(get(handles.checkbox_perziureti_ICA, 'Value') == 1, ...
     set(handles.checkbox_perziureti_ICA_demesio,'Enable','off');
     %set(handles.checkbox_perziureti_ICA_demesio,'Enable','inactive');
     set(handles.popupmenu7,'Enable','on');
+    popupmenu7_Callback(hObject, eventdata, handles);
     set(handles.popupmenu8,'Enable','on');
 else
     set(handles.checkbox_perziureti_ICA_,'Enable','off');
@@ -5072,7 +5068,14 @@ function popupmenu7_Callback(hObject, eventdata, handles)
 %        contents{get(hObject,'Value')} returns selected item from popupmenu7
 strl=get(handles.popupmenu7,'String');
 set(handles.popupmenu7,'Tooltip',strl{get(handles.popupmenu7,'Value')});
-
+if get(handles.popupmenu7,'Value') > 4 ;
+    if isempty(which('pop_selectcomps_MARA.m'));
+        disp(' ');
+        disp([lokaliz('nerasta') ': pop_selectcomps_MARA.m' ]);
+        disp([ lokaliz('Please install plugin') ' MARA <http://www.user.tu-berlin.de/irene.winkler/artifacts/>' ]);
+        warndlg([ lokaliz('Please install plugin') ' MARA' ], lokaliz('Please install plugin'));
+    end;
+end;
 
 % --- Executes during object creation, after setting all properties.
 function popupmenu7_CreateFcn(hObject, eventdata, handles)
