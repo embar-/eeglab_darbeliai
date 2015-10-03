@@ -525,12 +525,12 @@ set(handles.checkbox_ICA,'Enable','on');
 %end;
 set(handles.checkbox_atrink_kanalus2,'Enable','on');
 %if find(ismember({PLUGINLIST.plugin},'clean_rawdata')) ;
-if exist('clean_rawdata','file') == 2
+%if exist('clean_rawdata','file') == 2
     set(handles.checkbox_ASR,'Enable','on');
     %set(handles.checkbox_ASR,'TooltipString','' ) ;
-else
-    set(handles.checkbox_ASR,'Enable','off');
-end ;
+%else
+%    set(handles.checkbox_ASR,'Enable','off');
+%end ;
 %set(handles.checkbox_ASR,'TooltipString', 'Reikia įdiegti clean_rawdata (ASR) papildinį. Tinka 0.3 versija. Netinka 0.21 versija.' ) ;
 set(handles.checkbox_perziureti_ICA,'Enable','on');
 set(handles.checkbox_epoch,'Enable','on');
@@ -3279,6 +3279,16 @@ function checkbox_ASR_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_ASR
+if get(handles.checkbox_ASR, 'Value') == 1;
+    if isempty(which('clean_rawdata.m'));
+        disp(' ');
+        disp([lokaliz('nerasta') ': clean_rawdata.m' ]);
+        disp([ lokaliz('Please install plugin') ' ASR <http://sccn.ucsd.edu/wiki/Plugin_list_process>' ]);
+        warndlg([ lokaliz('Please install plugin') ' ASR (clean_rawdata)' ], lokaliz('Please install plugin'));
+        set(handles.checkbox_ASR, 'Value', 0);
+    end;
+end;
+
 if and(get(handles.checkbox_ASR, 'Value') == 1, ...
         strcmp(get(handles.checkbox_ASR, 'Enable'),'on'));
     set(handles.checkbox_ASR_,'Enable','on');
