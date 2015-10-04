@@ -3416,9 +3416,7 @@ try
 			   error([lokaliz('Not epoched data!') ' ' lokaliz('File') ': ' Rinkmena]);
 			end;
         else
-            [KELIAS_,F_,F__]=fileparts(fullfile(Kelias,Rinkmena));
-            Rinkmena_=[F_ F__];
-            KELIAS_=Tikras_Kelias(KELIAS_);
+            [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(Kelias,Rinkmena);
             EEGTMP = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_,'loadmode','info');
             EEGTMP.file=Rinkmena;
             if isempty(EEGTMP.epoch);
