@@ -233,10 +233,10 @@ for i=1:NumberOfFiles ;
     File=FileNames{i} ;
     disp(File);
 
-    [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(PathName,File));
-    disp(fullfile(PathName,File));
-    Rinkmena_=[Rinkmena_ galune];
-    KELIAS_=Tikras_Kelias(KELIAS_);
+    %[KELIAS_,Rinkmena_,galune]=fileparts(fullfile(PathName,File));
+    %Rinkmena_=[Rinkmena_ galune];
+    %KELIAS_=Tikras_Kelias(KELIAS_);
+    [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(PathName,File);
 
     if FilterIndex == 1 ;
         %EEG = pop_loadset('filename',File);

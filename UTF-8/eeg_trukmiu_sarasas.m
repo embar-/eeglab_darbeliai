@@ -67,10 +67,7 @@ statusbar('off',f);
 
 for i=1:length(RINKMENOS);
     try
-        Rinkmena=RINKMENOS{i};
-        [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(KELIAS,Rinkmena));
-        Rinkmena_=[Rinkmena_ galune];
-        KELIAS_=Tikras_Kelias(KELIAS_);
+        [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(KELIAS,RINKMENOS{i});
         TMPEEG=[];
         TMPEEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_,'loadmode','info');
         if ~isempty(TMPEEG);

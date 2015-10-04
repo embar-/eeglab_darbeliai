@@ -68,9 +68,7 @@ statusbar('off',f);
 galimi_ivykiai=cell(length(RINKMENOS),1);
 for i=1:length(RINKMENOS);
     Rinkmena=RINKMENOS{i};
-    [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(KELIAS,Rinkmena));
-    Rinkmena_=[Rinkmena_ galune];
-    KELIAS_=Tikras_Kelias(KELIAS_);
+    [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(KELIAS,Rinkmena);
     try
         TMPEEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_,'loadmode','info');
         if ~isempty(TMPEEG);
