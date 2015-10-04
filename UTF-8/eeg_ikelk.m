@@ -3,10 +3,11 @@
 
 function [EEG]=eeg_ikelk(Kelias, Rinkmena)
 
+    [Kelias_,Rinkmena_]=rinkmenos_tikslinimas(Kelias,Rinkmena);
     try % Importuoti kaip EEGLAB *.set
-        EEG = pop_loadset('filename',Rinkmena,'filepath',Kelias);
+        EEG = pop_loadset('filename',Rinkmena_,'filepath',Kelias_);
     catch 
-        Kelias_ir_rinkmena=fullfile(Kelias, Rinkmena);
+        Kelias_ir_rinkmena=fullfile(Kelias_, Rinkmena_);
         % Pranesk_apie_klaida(lasterr, mfilename, Kelias_ir_rinkmena, 0);
         fprintf('\n%s\n%s...\n', Kelias_ir_rinkmena, lokaliz('ne EEGLAB rinkmena'));
         try % Importuoti per BIOSIG
