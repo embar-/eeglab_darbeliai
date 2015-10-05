@@ -108,6 +108,14 @@ switch darbas
         try eval([ darbas '(''edit4_Callback'',hObject, eventdata, handles);' ]) ; catch; end;
     case {'pop_nuoseklus_apdorojimas'}
         try eval([ darbas '(''popupmenu12_Callback'',hObject, eventdata, handles);' ]) ; catch; end;
+        if ar_senesne_versija(versija_par,'Darbeliai v2015.10.05.3');
+            try
+            if get(handles.popupmenu8, 'Value') == 3 && length(get(handles.popupmenu8, 'String')) > 3 ;
+                set(handles.popupmenu8, 'Value', 4);
+            end;
+            catch err; Pranesk_apie_klaida(err,'','',0);
+            end;
+        end;
     case {'pop_eeg_spektrine_galia'}
         try eval([ darbas '(''checkbox_perziura_Callback'',hObject, eventdata, handles);' ]) ; catch; end;
     case {'pop_ERP_savybes'}
