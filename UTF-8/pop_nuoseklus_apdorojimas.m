@@ -1678,7 +1678,7 @@ for i=1:Pasirinktu_failu_N;
                             end;
                         end ;
 
-                    else                        
+                    else
                         if ICA_zr_veiksena < 8;
                             Palauk();
                         end;
@@ -1689,46 +1689,51 @@ for i=1:Pasirinktu_failu_N;
 
                     gcompreject=find(EEG.reject.gcompreject);
                     disp(gcompreject);
-
-                    switch ICA_pt_veiksena
-                        case 1
-                            EEG = pop_subcomp( EEG, gcompreject, 0 );
-                            EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 0 );'], EEG);
-                        case 2
-                            EEG = pop_subcomp( EEG, gcompreject, 1 );
-                        case 3
-                            EEG_senas  = EEG;
-                            EEG_naujas = pop_subcomp( EEG, gcompreject, 0 );
-                            pop_eeg_perziura(EEG_naujas, EEG_senas, 'zymeti', 0);
-                            ats=questdlg({lokaliz('Please review data after rejecting ICA components:') num2str(gcompreject) ...
-                                lokaliz('Priimti pakeitimus?')}, 'ICA', ...
-                                lokaliz('Cancel'), lokaliz('Atmesti'), lokaliz('Priimti'), lokaliz('Priimti') );
-                            switch ats
-                                case { lokaliz('Priimti') }
-                                    EEG = EEG_naujas;
-                                case { lokaliz('Atmesti') }
-                                    EEG = EEG_senas;
-                                otherwise
-                                    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
-                                    error(lokaliz('Nutraukta'));
-                            end;
-                            EEG_senas=[]; EEG_naujas=[]; %#ok
+                    
+                    if isempty(gcompreject);
+                        warning(lokaliz('No selected ICA components for rejection.'));
+                    else
+                        switch ICA_pt_veiksena
+                            case 1
+                                EEG = pop_subcomp( EEG, gcompreject, 0 );
+                                EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 0 );'], EEG);
+                            case 2
+                                EEG = pop_subcomp( EEG, gcompreject, 1 );
+                            case 3
+                                EEG_senas  = EEG;
+                                EEG_naujas = pop_subcomp( EEG, gcompreject, 0 );
+                                pop_eeg_perziura(EEG_naujas, EEG_senas, 'zymeti', 0);
+                                ats=questdlg({lokaliz('Please review data after rejecting ICA components:') num2str(gcompreject) ...
+                                    lokaliz('Priimti pakeitimus?')}, 'ICA', ...
+                                    lokaliz('Cancel'), lokaliz('Atmesti'), lokaliz('Priimti'), lokaliz('Priimti') );
+                                switch ats
+                                    case { lokaliz('Priimti') }
+                                        EEG = EEG_naujas;
+                                    case { lokaliz('Atmesti') }
+                                        EEG = EEG_senas;
+                                    otherwise
+                                        uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
+                                        error(lokaliz('Nutraukta'));
+                                end;
+                                EEG_senas=[]; EEG_naujas=[]; %#ok
+                        end;
+                        
+                        switch ICA_pt_veiksena
+                            case {2 3}
+                                if ~isfield(EEG.reject,'gcompreject');
+                                    EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 1 );'], EEG);
+                                elseif ~isequal(gcompreject,find(EEG.reject.gcompreject));
+                                    EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 1 );'], EEG);
+                                end;
+                        end;
                     end;
                     
-                    switch ICA_pt_veiksena
-                        case {2 3}
-                            if ~isfield(EEG.reject,'gcompreject');
-                                EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 1 );'], EEG);
-                            elseif ~isequal(gcompreject,find(EEG.reject.gcompreject));
-                                EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 1 );'], EEG);
-                            end;
-                    end;
-
                     if ICA_zr_veiksena < 8;
                         eeglab redraw ;
                         drawnow ;
                         pause(1) ;
                     end;
+                    
                     uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
                     EEG = eeg_checkset( EEG );
 
