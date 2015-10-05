@@ -1351,11 +1351,8 @@ tic
 
 for i=1:Pasirinktu_failu_N;
     Rinkmena=Pasirinkti_failu_pavadinimai{i};
-    RinkmenaAtverimuiSuKeliu=fullfile(KELIAS, Rinkmena);
-    [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(KELIAS,Rinkmena));
-    Rinkmena_=[Rinkmena_ galune];
-    NaujaRinkmena=Rinkmena_;
-    disp(sprintf('Atvertas %d/%d (%.2f%%) %s', i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100, Rinkmena));
+    [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(KELIAS,Rinkmena);
+    fprintf('\n === %s %d/%d (%.2f%%) ===\n%s\n', lokaliz('Opened file'), i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100, fullfile(KELIAS_, Rinkmena_));
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
     %SaugomoNr=1+str2num(get(handles.text_atlikta_darbu,'String'));
     %DarboNr=0;

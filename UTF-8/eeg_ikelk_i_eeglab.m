@@ -71,8 +71,7 @@ statusbar('on',h);
 
 Rinkmenos2={};
 for f=1:length(Rinkmenos);
-    [KELIAS__,Rinkmena__,Prievardis__]=fileparts(fullfile(Kelias,Rinkmenos{f}));
-    Rinkmena__=[Rinkmena__ Prievardis__];
+    [KELIAS__,Rinkmena__]=rinkmenos_tikslinimas(Kelias,Rinkmenos{f});
     if exist(fullfile(KELIAS__,Rinkmena__ ),'file') == 2;
         Rinkmenos2{end+1,1}=Rinkmenos{f};
         Rinkmenos2{end,2}=KELIAS__;

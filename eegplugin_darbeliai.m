@@ -130,6 +130,9 @@ end;
 
 clear('lokaliz');
 
+% EEGLAB klaida naudojant su  MATLAB R2015b: updatemenu:1398
+warning('off','MATLAB:lang:cannotClearExecutingFunction');
+
 % Pabandyti perkelti kitas sios programeles versijas kitur
 wb=warning('off','MATLAB:rmpath:DirNotFound');
 rmpath(curdir);
@@ -160,7 +163,7 @@ end;
 warning(wb.state,'MATLAB:rmpath:DirNotFound');
 cd(kelias);
 addpath(curdir);
-addpath(genpath(fullfile(curdir, 'fig')));
+addpath(genpath(fullfile(curdir, 'fig_dlg')));
 addpath(genpath(fullfile(curdir, 'external')));
 %rmpath( genpath(fullfile(curdir, 'seni')));
 %rmpath( genpath(fullfile(curdir, 'kiti')));

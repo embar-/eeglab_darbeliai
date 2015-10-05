@@ -64,6 +64,21 @@ else
     %g=struct(varargin{:});
 end;
 
+if isfield(g,'ICA');
+    if g.ICA;
+        if isfield(EEG1,'icaact');
+            EEG1.data=EEG1.icaact;
+        else
+            disp([lokaliz('nerasta') ': EEG.icaact']);
+            return;
+        end;
+        EEG1.nbchan=size(EEG1.data,1);
+        EEG1.chanlocs=[];
+        EEG2=[]; % neleisti lyginti
+        g.zymeti=0; % ir žymėti
+    end;
+end;
+
 if isfield(g,'title'); pvd=g.title; 
 elseif isempty(EEG2)
     pvd=EEG1.setname;
@@ -73,7 +88,7 @@ end;
 
 
 f=figure('toolbar','none','menubar','none','NumberTitle','off',...
-    'units','normalized','outerposition',[0 0 1 1],'name', pvd);
+    'units','normalized','outerposition',[0 0 1 1],'tag','Darbeliai','name', pvd);
 a=axes('units','normalized','position',[0.08 0.05 0.9 0.9 ]);
 p=uicontrol('style','pushbutton', 'String', lokaliz('Close'),  'Tag', 'Close', ...
     'Units', 'normalized', 'position', [0.84 0.05 0.1 0.05], 'callback', ...

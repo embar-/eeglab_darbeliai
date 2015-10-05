@@ -497,14 +497,13 @@ set(handles.checkbox_rf,'Enable','on');
 set(handles.checkbox_filtr1,'Enable','on');
 set(handles.checkbox_filtr2,'Enable','on');
 %'Cleanline'
-%if find(ismember({PLUGINLIST.plugin},'tmullen-cleanline-d535f9ad70db')) ;
-if exist('pop_cleanline','file') == 2;
-    set(handles.checkbox_filtr_tinklo,'Enable','on');
+set(handles.checkbox_filtr_tinklo,'Enable','on');
+if exist('pop_cleanline.m','file') == 2;
     set(handles.checkbox_filtr_tinklo,'TooltipString', '');
 else
-    set(handles.checkbox_filtr_tinklo,'Enable','off');
+    set(handles.checkbox_filtr_tinklo,'TooltipString', [ lokaliz('Please install plugin') ' CleanLine' ] );
+    %set(handles.checkbox_filtr_tinklo,'TooltipString', 'Reikia įdiegti Cleanline paketą iš http://www.nitrc.org/projects/cleanline/ . Kažkodėl bent šiuo metu (2014 m. liepa) neveiks šis priedas įdiegtas per pačio eeglab meniu' ) ;
 end;
-%set(handles.checkbox_filtr_tinklo,'TooltipString', 'Reikia įdiegti Cleanline paketą iš http://www.nitrc.org/projects/cleanline/ . Kažkodėl bent šiuo metu (2014 m. liepa) neveiks šis priedas įdiegtas per pačio eeglab meniu' ) ;
 set(handles.checkbox_kanalu_padetis,'Enable','on');
 %set(handles.checkbox_atrink_kanalus1__,'TooltipString','Palikti failus, kuriuose yra visi nurodyti kanalai');
 set(handles.checkbox_atrink_kanalus1,'Enable','on');
@@ -515,23 +514,19 @@ set(handles.checkbox_perziureti,'Enable','on');
 set(handles.checkbox_atmesk_iki2s,'Enable','on');
 set(handles.checkbox_vienoda_trukme,'Enable','on');
 set(handles.checkbox_ICA,'Enable','on');
-%if find(ismember({PLUGINLIST.plugin},'MARA')) ;
-if exist('MARA','file') == 2;
-    set(handles.checkbox_MARA,'Enable','on');
+set(handles.checkbox_MARA,'Enable','on');
+if exist('MARA.m','file') == 2;
     set(handles.checkbox_MARA,'TooltipString', '' ) ;
 else
-    set(handles.checkbox_MARA,'Enable','off');
-    set(handles.checkbox_MARA,'TooltipString', 'Reikia įdiegti MARA papildinį' ) ;
+    set(handles.checkbox_MARA,'TooltipString', [ lokaliz('Please install plugin') ' MARA' ] ) ;
 end;
 set(handles.checkbox_atrink_kanalus2,'Enable','on');
-%if find(ismember({PLUGINLIST.plugin},'clean_rawdata')) ;
-if exist('clean_rawdata','file') == 2
-    set(handles.checkbox_ASR,'Enable','on');
-    %set(handles.checkbox_ASR,'TooltipString','' ) ;
-else
-    set(handles.checkbox_ASR,'Enable','off');
-end ;
-%set(handles.checkbox_ASR,'TooltipString', 'Reikia įdiegti clean_rawdata (ASR) papildinį. Tinka 0.3 versija. Netinka 0.21 versija.' ) ;
+set(handles.checkbox_ASR,'Enable','on');
+% if exist('clean_rawdata.m','file') == 2
+%     set(handles.checkbox_ASR,'TooltipString','' ) ;
+% else
+    set(handles.checkbox_ASR,'TooltipString', [ lokaliz('Please install plugin') ' ASR (clean_rawdata) >= 0.3' ] ) ;
+%end ;
 set(handles.checkbox_perziureti_ICA,'Enable','on');
 set(handles.checkbox_epoch,'Enable','on');
 
@@ -779,11 +774,9 @@ if ~PERZIURA; TIK_PERZIURA=0; end;
 
 for i=1:Pasirinktu_failu_N;
     Rinkmena=Pasirinkti_failu_pavadinimai{i};
-    [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(KELIAS,Rinkmena));
-    Rinkmena_=[Rinkmena_ galune];
-    KELIAS_=Tikras_Kelias(KELIAS_);
+    [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(KELIAS,Rinkmena);
     NaujaRinkmena=Rinkmena_;
-    disp(sprintf([lokaliz('Opened file') ' %d/%d (%.2f%%) %s'], i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100, Rinkmena));
+    fprintf('\n === %s %d/%d (%.2f%%) ===\n%s\n', lokaliz('Opened file'), i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100, fullfile(KELIAS_, Rinkmena_));
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
     SaugomoNr=1+str2num(get(handles.text_atlikta_darbu,'String'));
     DarboNr=0;
@@ -1571,7 +1564,7 @@ for i=1:Pasirinktu_failu_N;
                             EEG = eegh('[ALLEEG,EEG,CURRENTSET]= processMARA( ALLEEG ,EEG ,CURRENTSET,[0,0,1,1,0] );', EEG);
                             Palauk();
                         otherwise
-                            [artcomps, info] = MARA (EEG);
+                            [artcomps, info] = MARA(EEG);
                             EEG = eegh('[artcomps, info] = MARA (EEG);', EEG);
                             EEG = eeg_checkset( EEG );
                             EEG = pop_subcomp( EEG, artcomps, 0);
@@ -1629,46 +1622,48 @@ for i=1:Pasirinktu_failu_N;
                 try
 
                     EEG = eeg_checkset( EEG );
-
-                    try
-                        close([...
-                            findobj('-regexp','name','Reject components by map.*')  ; ...
-                            findobj('-regexp','name','pop_prop().*') ; ...
-                            findobj('-regexp','name','Scroll channel activities.*') ; ...
-                            findobj('-regexp','name','Scroll component activities.*') ; ...
-                            findobj('-regexp','name','Confirmation.*') ; ...
-                            findobj('-regexp','name','Black = channel before rejection.*') ; ] );
-                    catch err;
-                    end;
-
-
+                    [~,NaujaRinkmena_be_galunes,~]=fileparts(NaujaRinkmena);
+                    uzverti_EEG_perziuru_langus; %([ '.*' NaujaRinkmena_be_galunes '.*' ]);
                     eeglab redraw ;
                     drawnow ;
+                    
+                    ICA_kiekis=length(EEG.reject.gcompreject);
 
                     switch get(handles.popupmenu7,'Value')
                         case 1
-                            EEG = pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
-                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(length(EEG.reject.gcompreject)) ']);'], EEG);
+                            EEG = pop_selectcomps(EEG, [1:ICA_kiekis]);
+                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(ICA_kiekis) ']);'], EEG);
                         case 2
-                            pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
-                            pop_eegplot( EEG, 1, 1, 1);
+                            EEG = pop_selectcomps(EEG, [1:ICA_kiekis]);
+                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(ICA_kiekis) ']);'], EEG);
+                            pop_eeg_perziura(EEG, 'zymeti', 0);
+                            %pop_eegplot( EEG, 1, 1, 1);
                         case 3
-                            pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
-                            pop_eegplot( EEG, 0, 1, 1);
+                            EEG = pop_selectcomps(EEG, [1:ICA_kiekis]);
+                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(ICA_kiekis) ']);'], EEG);
+                            pop_eeg_perziura(EEG, 'zymeti', 0, 'ICA', 1);
+                            %pop_eegplot( EEG, 0, 1, 1);
                         case 4
-                            pop_eegplot( EEG, 0, 1, 1);
+                            pop_eeg_perziura(EEG, 'zymeti', 0, 'ICA', 1);
+                            %pop_eegplot( EEG, 0, 1, 1);
                         case 5
-                            pop_selectcomps_MARA(EEG);
+                            EEG = pop_selectcomps_MARA(EEG);
+                            EEG = eegh('EEG = pop_selectcomps_MARA(EEG);', EEG);
                         case 6
-                            pop_selectcomps_MARA(EEG);
-                            pop_eegplot( EEG, 0, 1, 1);
+                            EEG = pop_selectcomps_MARA(EEG);
+                            EEG = eegh('EEG = pop_selectcomps_MARA(EEG);', EEG);
+                            pop_eeg_perziura(EEG, 'zymeti', 0, 'ICA', 1);
+                            %pop_eegplot( EEG, 0, 1, 1);
                         case 7
                             EEG = pop_selectcomps_MARA(EEG);
                             EEG = eegh('EEG = pop_selectcomps_MARA(EEG);', EEG);
-                            pop_visualizeMARAfeatures(EEG.reject.gcompreject, EEG.reject.MARAinfo);
+                            if isfield(EEG.reject, 'MARAinfo');
+                                pop_visualizeMARAfeatures(EEG.reject.gcompreject, EEG.reject.MARAinfo);
+                            else
+                                warning([ lokaliz('kintamasis neegzistuoja') ': EEG.reject.MARAinfo' ] );
+                            end;
                         otherwise
-                            EEG = pop_selectcomps(EEG, [1:length(EEG.reject.gcompreject)]);
-                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(length(EEG.reject.gcompreject)) ']);'], EEG);
+                            %
                     end;
 
                     %if get(handles.popupmenu8,'Value') ~= 4 ;
@@ -1680,86 +1675,44 @@ for i=1:Pasirinktu_failu_N;
 
                     if get(handles.checkbox_perziureti_ICA_demesio,'Value') == 0 ;
 
-
-                        while ~isempty([...
-                                findobj('-regexp','name','Reject components by map.*')  ; ...
-                                findobj('-regexp','name','pop_prop().*') ; ...
-                                findobj('-regexp','name','Scroll channel activities.*') ; ...
-                                findobj('-regexp','name','Scroll component activities.*') ; ...
-                                findobj('-regexp','name','Confirmation.*') ; ...
-                                findobj('-regexp','name','Black = channel before rejection.*') ; ] ) ;
-
-
+                        while ~isempty(gauk_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]));
                             if 1 == 0
-
-                                waitfor([...
-                                    findobj('-regexp','name','Reject components by map.*')  ; ...
-                                    findobj('-regexp','name','pop_prop().*') ; ...
-                                    findobj('-regexp','name','Scroll channel activities.*') ; ...
-                                    findobj('-regexp','name','Scroll component activities.*') ; ...
-                                    findobj('-regexp','name','Confirmation.*') ; ...
-                                    findobj('-regexp','name','Black = channel before rejection.*') ; ] ) ;
-
+                                waitfor(gauk_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]));
                                 pause(1) ;
-
                             end ;
-
                             uiwait(gcf,3);
-
                             eeglab redraw ;
-
                         end ;
 
                     else
-
                         Palauk();
-
-                        try
-                            close([...
-                                findobj('-regexp','name','Reject components by map.*')  ; ...
-                                findobj('-regexp','name','pop_prop().*') ; ...
-                                findobj('-regexp','name','Scroll channel activities.*') ; ...
-                                findobj('-regexp','name','Scroll component activities.*') ; ...
-                                findobj('-regexp','name','Confirmation.*') ; ...
-                                findobj('-regexp','name','Black = channel before rejection.*') ; ] );
-                        catch err;
-                        end;
-
-
+                        uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
                     end;
 
                     EEG = eeg_checkset( EEG );
 
-
+                    gcompreject=find(EEG.reject.gcompreject);
+                    disp(gcompreject);
 
                     switch get(handles.popupmenu8,'Value')
                         case 1
-                            EEG = pop_subcomp( EEG, find(EEG.reject.gcompreject) , 0 );
-                            EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(find(EEG.reject.gcompreject)) '] , 0 );'], EEG);
+                            EEG = pop_subcomp( EEG, gcompreject, 0 );
+                            EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 0 );'], EEG);
                         case 2
-                            EEG = pop_subcomp( EEG, find(EEG.reject.gcompreject) , 1 );
-                            EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(find(EEG.reject.gcompreject)) '] , 1 );'], EEG);
-                        otherwise
-                            EEG = eeg_checkset( EEG );
+                            EEG = pop_subcomp( EEG, gcompreject, 1 );
+                            if ~isfield(EEG.reject,'gcompreject');
+                                EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 1 );'], EEG);
+                            elseif ~isequal(gcompreject,find(EEG.reject.gcompreject));
+                                EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 1 );'], EEG);
+                            end;
+                       otherwise
+                        %    EEG = eeg_checkset( EEG );
                     end;
 
                     eeglab redraw ;
                     drawnow ;
                     pause(1) ;
-
-
-                    try
-                        close([...
-                            findobj('-regexp','name','Reject components by map.*')  ; ...
-                            findobj('-regexp','name','pop_prop().*') ; ...
-                            findobj('-regexp','name','Scroll channel activities.*') ; ...
-                            findobj('-regexp','name','Scroll component activities.*') ; ...
-                            findobj('-regexp','name','Confirmation.*') ; ...
-                            findobj('-regexp','name','Black = channel before rejection.*') ; ] );
-                    catch err;
-                    end;
-
-
+                    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
                     EEG = eeg_checkset( EEG );
 
                 catch err;
@@ -2591,6 +2544,34 @@ catch err;
 end;
 
 
+function langai=gauk_EEG_perziuru_langus(varargin)
+langai=[...
+        findobj('-regexp','name','Reject components by map.*')  ; ...
+        findobj('-regexp','name','pop_prop().*') ; ...
+        findobj('-regexp','name','Scroll channel activities.*') ; ...
+        findobj('-regexp','name','Scroll component activities.*') ; ...
+        findobj('-regexp','name','Confirmation.*') ; ...
+        findobj('-regexp','name','Black = channel before rejection.*') ; ...
+        findobj('-regexp','name','MARA .*') ; ];
+if nargin > 0 ;
+    atranka=varargin{1};
+    if ischar(atranka);
+        atranka={atranka};
+    end;
+    if iscellstr(atranka);
+        for i=1:length(atranka);
+            langai=[ langai ; findobj('-regexp', 'name', atranka{i}) ] ; %#ok
+        end;
+    end;
+end;
+
+function uzverti_EEG_perziuru_langus(varargin)
+langai=gauk_EEG_perziuru_langus(varargin);
+for i=1:length(langai);
+    try close(langai(i)) ; catch; end;
+end;
+
+
 % --- Executes on button press in pushbutton2.
 function pushbutton2_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton2 (see GCBO)
@@ -2845,6 +2826,19 @@ function checkbox_filtr_tinklo_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_filtr_tinklo
+
+if get(handles.checkbox_filtr_tinklo, 'Value') == 1;
+    if isempty(which('pop_cleanline.m'));
+        disp(' ');
+        disp([lokaliz('nerasta') ': pop_cleanline.m' ]);
+        disp([ lokaliz('Please install plugin') ' CleanLine:']);
+        disp('http://sccn.ucsd.edu/wiki/Plugin_list_process');
+        disp('http://www.nitrc.org/projects/cleanline/');
+        warndlg([ lokaliz('Please install plugin') ' CleanLine' ], lokaliz('Please install plugin'));
+        set(handles.checkbox_filtr_tinklo, 'Value', 0);
+    end;
+end;
+
 if and(get(handles.checkbox_filtr_tinklo, 'Value') == 1, ...
         strcmp(get(handles.checkbox_filtr_tinklo, 'Enable'),'on'));
     set(handles.checkbox_filtr_tinklo_,'Enable','on');
@@ -3201,6 +3195,7 @@ else
     %set(handles.checkbox_MARA, 'Value',0);
     %checkbox_MARA_Callback(hObject, eventdata, handles);
 end;
+popupmenu4_Callback(hObject, eventdata, handles);
 checkbox_ICA__Callback(hObject, eventdata, handles);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
@@ -3294,6 +3289,16 @@ function checkbox_ASR_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_ASR
+if get(handles.checkbox_ASR, 'Value') == 1;
+    if isempty(which('clean_rawdata.m'));
+        disp(' ');
+        disp([lokaliz('nerasta') ': clean_rawdata.m' ]);
+        disp([ lokaliz('Please install plugin') ' ASR <http://sccn.ucsd.edu/wiki/Plugin_list_process>' ]);
+        warndlg([ lokaliz('Please install plugin') ' ASR (clean_rawdata)' ], lokaliz('Please install plugin'));
+        set(handles.checkbox_ASR, 'Value', 0);
+    end;
+end;
+
 if and(get(handles.checkbox_ASR, 'Value') == 1, ...
         strcmp(get(handles.checkbox_ASR, 'Enable'),'on'));
     set(handles.checkbox_ASR_,'Enable','on');
@@ -3313,6 +3318,18 @@ function checkbox_MARA_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_MARA
+if get(handles.checkbox_MARA, 'Value') == 1;
+    if isempty(which('MARA.m')) || isempty(which('processMARA.m'));
+        disp(' ');
+        disp([lokaliz('nerasta') ': pop_selectcomps_MARA.m' ]);
+        disp([ lokaliz('Please install plugin') ' MARA:']);
+        disp('http://www.user.tu-berlin.de/irene.winkler/artifacts/');
+        disp('http://sccn.ucsd.edu/wiki/Plugin_list_process');
+        warndlg([ lokaliz('Please install plugin') ' MARA' ], lokaliz('Please install plugin'));
+        set(handles.checkbox_MARA, 'Value', 0);
+    end;
+end;
+
 if and(get(handles.checkbox_MARA, 'Value') == 1, ...
         strcmp(get(handles.checkbox_MARA, 'Enable'),'on'));
     set(handles.checkbox_MARA_,'Enable','on');
@@ -3323,6 +3340,7 @@ else
     set(handles.edit_MARA,'Enable','off');
     set(handles.popupmenu5,'Enable','off');
 end;
+popupmenu5_Callback(hObject, eventdata, handles);
 checkbox_MARA__Callback(hObject, eventdata, handles);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
@@ -3341,7 +3359,9 @@ if and(get(handles.checkbox_perziureti_ICA, 'Value') == 1, ...
     set(handles.checkbox_perziureti_ICA_demesio,'Enable','off');
     %set(handles.checkbox_perziureti_ICA_demesio,'Enable','inactive');
     set(handles.popupmenu7,'Enable','on');
+    popupmenu7_Callback(hObject, eventdata, handles);
     set(handles.popupmenu8,'Enable','on');
+    popupmenu8_Callback(hObject, eventdata, handles);
 else
     set(handles.checkbox_perziureti_ICA_,'Enable','off');
     set(handles.edit_perziureti_ICA,'Enable','off');
@@ -4967,7 +4987,8 @@ function popupmenu5_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu5 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu5
-
+strl=get(handles.popupmenu5,'String');
+set(handles.popupmenu5,'TooltipString',strl{get(handles.popupmenu5,'Value')});
 
 % --- Executes during object creation, after setting all properties.
 function popupmenu5_CreateFcn(hObject, eventdata, handles)
@@ -5071,8 +5092,16 @@ function popupmenu7_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu7 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu7
 strl=get(handles.popupmenu7,'String');
-set(handles.popupmenu7,'Tooltip',strl{get(handles.popupmenu7,'Value')});
-
+set(handles.popupmenu7,'TooltipString',strl{get(handles.popupmenu7,'Value')});
+pasirinkimas=get(handles.popupmenu7,'Value');
+if (pasirinkimas > 4) && (pasirinkimas < 8);
+    if isempty(which('pop_selectcomps_MARA.m'));
+        disp(' ');
+        disp([lokaliz('nerasta') ': pop_selectcomps_MARA.m' ]);
+        disp([ lokaliz('Please install plugin') ' MARA <http://www.user.tu-berlin.de/irene.winkler/artifacts/>' ]);
+        warndlg([ lokaliz('Please install plugin') ' MARA' ], lokaliz('Please install plugin'));
+    end;
+end;
 
 % --- Executes during object creation, after setting all properties.
 function popupmenu7_CreateFcn(hObject, eventdata, handles)
@@ -5105,7 +5134,7 @@ function popupmenu8_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu8 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu8
 strl=get(handles.popupmenu8,'String');
-set(handles.popupmenu8,'Tooltip',strl{get(handles.popupmenu8,'Value')});
+set(handles.popupmenu8,'TooltipString',strl{get(handles.popupmenu8,'Value')});
 
 
 % --- Executes during object creation, after setting all properties.
@@ -5725,7 +5754,8 @@ set(handles.popupmenu7,'String', { ...
    lokaliz('only ICA curves'      ) ...
    lokaliz('with spectrum'        ) ...
    lokaliz('+curves'              ) ...
-   lokaliz('+MARA info'           ) });
+   lokaliz('+MARA info'           ) ...
+   lokaliz('nothing'              ) });
 
 set(handles.popupmenu8,'String', { ...
    lokaliz('reject immediately'   ) ...
@@ -6233,7 +6263,7 @@ if isempty(RINKMENOS);
     return;
 end;
 set(handles.pushbutton18,'Enable','off'); drawnow;
-[~,visi_galimi_kanalai,bendri_kanalai]=eeg_kanalu_sarasas (get(handles.edit1,'String'), RINKMENOS);
+[~,visi_galimi_kanalai,bendri_kanalai]=eeg_kanalu_sarasas(get(handles.edit1,'String'), RINKMENOS);
 set(handles.pushbutton18,'Enable','on');
 if isempty(visi_galimi_kanalai);
     wf=warndlg(lokaliz('No names of channels found.'),lokaliz('Selection of channels'));
