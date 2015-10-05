@@ -1628,8 +1628,9 @@ for i=1:Pasirinktu_failu_N;
                     drawnow ;
                     
                     ICA_kiekis=length(EEG.reject.gcompreject);
+                    ICA_zr_veiksena=get(handles.popupmenu7,'Value');
 
-                    switch get(handles.popupmenu7,'Value')
+                    switch ICA_zr_veiksena
                         case 1
                             EEG = pop_selectcomps(EEG, [1:ICA_kiekis]);
                             EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(ICA_kiekis) ']);'], EEG);
@@ -1667,11 +1668,12 @@ for i=1:Pasirinktu_failu_N;
                     end;
 
                     %if get(handles.popupmenu8,'Value') ~= 4 ;
-
-                    eeglab redraw ;
-                    drawnow ;
-                    pause(1) ;
-
+                    
+                    if ICA_zr_veiksena < 8
+                        eeglab redraw ;
+                        drawnow ;
+                        pause(1) ;
+                    end;
 
                     if get(handles.checkbox_perziureti_ICA_demesio,'Value') == 0 ;
 
