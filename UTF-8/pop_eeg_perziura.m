@@ -64,6 +64,21 @@ else
     %g=struct(varargin{:});
 end;
 
+if isfield(g,'ICA');
+    if g.ICA;
+        if isfield(EEG1,'icaact');
+            EEG1.data=EEG1.icaact;
+        else
+            disp([lokaliz('nerasta') ': EEG.icaact']);
+            return;
+        end;
+        EEG1.nbchan=size(EEG.data,1);
+        EEG1.chanlocs=[];
+        EEG2=[]; % neleisti lyginti
+        g.zymeti=0; % ir žymėti
+    end;
+end;
+
 if isfield(g,'title'); pvd=g.title; 
 elseif isempty(EEG2)
     pvd=EEG1.setname;
