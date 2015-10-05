@@ -1636,20 +1636,24 @@ for i=1:Pasirinktu_failu_N;
                         case 2
                             EEG = pop_selectcomps(EEG, [1:ICA_kiekis]);
                             EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(ICA_kiekis) ']);'], EEG);
-                            pop_eegplot( EEG, 1, 1, 1);
+                            pop_eeg_perziura(EEG, 'zymeti', 0);
+                            %pop_eegplot( EEG, 1, 1, 1);
                         case 3
                             EEG = pop_selectcomps(EEG, [1:ICA_kiekis]);
                             EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(ICA_kiekis) ']);'], EEG);
-                            pop_eegplot( EEG, 0, 1, 1);
+                            pop_eeg_perziura(EEG, 'zymeti', 0, 'ICA', 1);
+                            %pop_eegplot( EEG, 0, 1, 1);
                         case 4
-                            pop_eegplot( EEG, 0, 1, 1);
+                            pop_eeg_perziura(EEG, 'zymeti', 0, 'ICA', 1);
+                            %pop_eegplot( EEG, 0, 1, 1);
                         case 5
                             EEG = pop_selectcomps_MARA(EEG);
                             EEG = eegh('EEG = pop_selectcomps_MARA(EEG);', EEG);
                         case 6
                             EEG = pop_selectcomps_MARA(EEG);
                             EEG = eegh('EEG = pop_selectcomps_MARA(EEG);', EEG);
-                            pop_eegplot( EEG, 0, 1, 1);
+                            pop_eeg_perziura(EEG, 'zymeti', 0, 'ICA', 1);
+                            %pop_eegplot( EEG, 0, 1, 1);
                         case 7
                             EEG = pop_selectcomps_MARA(EEG);
                             EEG = eegh('EEG = pop_selectcomps_MARA(EEG);', EEG);
