@@ -1700,14 +1700,16 @@ for i=1:Pasirinktu_failu_N;
                             EEG_senas  = EEG;
                             EEG_naujas = pop_subcomp( EEG, gcompreject, 0 );
                             pop_eeg_perziura(EEG_naujas, EEG_senas, 'zymeti', 0);
-                            ats=questdlg(lokaliz('Priimti pakeitimus?'), 'ICA', ...
-                                lokaliz('Abort'), lokaliz('Atmesti'), lokaliz('Priimti'), lokaliz('Priimti') );
+                            ats=questdlg({lokaliz('Please review data after rejecting ICA components:') num2str(gcompreject) ...
+                                lokaliz('Priimti pakeitimus?')}, 'ICA', ...
+                                lokaliz('Cancel'), lokaliz('Atmesti'), lokaliz('Priimti'), lokaliz('Priimti') );
                             switch ats
                                 case { lokaliz('Priimti') }
                                     EEG = EEG_naujas;
                                 case { lokaliz('Atmesti') }
                                     EEG = EEG_senas;
                                 otherwise
+                                    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
                                     error(lokaliz('Nutraukta'));
                             end;
                             EEG_senas=[]; EEG_naujas=[]; %#ok
