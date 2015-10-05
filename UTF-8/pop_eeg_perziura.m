@@ -72,7 +72,7 @@ if isfield(g,'ICA');
             disp([lokaliz('nerasta') ': EEG.icaact']);
             return;
         end;
-        EEG1.nbchan=size(EEG.data,1);
+        EEG1.nbchan=size(EEG1.data,1);
         EEG1.chanlocs=[];
         EEG2=[]; % neleisti lyginti
         g.zymeti=0; % ir žymėti
