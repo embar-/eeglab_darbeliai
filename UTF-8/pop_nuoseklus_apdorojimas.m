@@ -3340,6 +3340,7 @@ else
     set(handles.edit_MARA,'Enable','off');
     set(handles.popupmenu5,'Enable','off');
 end;
+popupmenu5_Callback(hObject, eventdata, handles);
 checkbox_MARA__Callback(hObject, eventdata, handles);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
@@ -3360,6 +3361,7 @@ if and(get(handles.checkbox_perziureti_ICA, 'Value') == 1, ...
     set(handles.popupmenu7,'Enable','on');
     popupmenu7_Callback(hObject, eventdata, handles);
     set(handles.popupmenu8,'Enable','on');
+    popupmenu8_Callback(hObject, eventdata, handles);
 else
     set(handles.checkbox_perziureti_ICA_,'Enable','off');
     set(handles.edit_perziureti_ICA,'Enable','off');
@@ -4985,7 +4987,8 @@ function popupmenu5_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu5 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu5
-
+strl=get(handles.popupmenu5,'String');
+set(handles.popupmenu5,'TooltipString',strl{get(handles.popupmenu5,'Value')});
 
 % --- Executes during object creation, after setting all properties.
 function popupmenu5_CreateFcn(hObject, eventdata, handles)
@@ -5089,7 +5092,7 @@ function popupmenu7_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu7 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu7
 strl=get(handles.popupmenu7,'String');
-set(handles.popupmenu7,'Tooltip',strl{get(handles.popupmenu7,'Value')});
+set(handles.popupmenu7,'TooltipString',strl{get(handles.popupmenu7,'Value')});
 pasirinkimas=get(handles.popupmenu7,'Value');
 if (pasirinkimas > 4) && (pasirinkimas < 8);
     if isempty(which('pop_selectcomps_MARA.m'));
@@ -5131,7 +5134,7 @@ function popupmenu8_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu8 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu8
 strl=get(handles.popupmenu8,'String');
-set(handles.popupmenu8,'Tooltip',strl{get(handles.popupmenu8,'Value')});
+set(handles.popupmenu8,'TooltipString',strl{get(handles.popupmenu8,'Value')});
 
 
 % --- Executes during object creation, after setting all properties.
