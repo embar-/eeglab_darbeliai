@@ -1663,8 +1663,7 @@ for i=1:Pasirinktu_failu_N;
                                 warning([ lokaliz('kintamasis neegzistuoja') ': EEG.reject.MARAinfo' ] );
                             end;
                         otherwise
-                            EEG = pop_selectcomps(EEG, [1:ICA_kiekis]);
-                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(ICA_kiekis) ']);'], EEG);
+                            %
                     end;
 
                     %if get(handles.popupmenu8,'Value') ~= 4 ;
@@ -5091,7 +5090,8 @@ function popupmenu7_Callback(hObject, eventdata, handles)
 %        contents{get(hObject,'Value')} returns selected item from popupmenu7
 strl=get(handles.popupmenu7,'String');
 set(handles.popupmenu7,'Tooltip',strl{get(handles.popupmenu7,'Value')});
-if get(handles.popupmenu7,'Value') > 4 ;
+pasirinkimas=get(handles.popupmenu7,'Value');
+if (pasirinkimas > 4) && (pasirinkimas < 8);
     if isempty(which('pop_selectcomps_MARA.m'));
         disp(' ');
         disp([lokaliz('nerasta') ': pop_selectcomps_MARA.m' ]);
@@ -5751,7 +5751,8 @@ set(handles.popupmenu7,'String', { ...
    lokaliz('only ICA curves'      ) ...
    lokaliz('with spectrum'        ) ...
    lokaliz('+curves'              ) ...
-   lokaliz('+MARA info'           ) });
+   lokaliz('+MARA info'           ) ...
+   lokaliz('nothing'              ) });
 
 set(handles.popupmenu8,'String', { ...
    lokaliz('reject immediately'   ) ...
