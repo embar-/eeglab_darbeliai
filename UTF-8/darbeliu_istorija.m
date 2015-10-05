@@ -1,6 +1,10 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.10.05.1
+% ~ Patobulinimai peržiūrint ICA per nuoseklaus apdorojimo langą.
+% ~ Nenulūžti rodant būsenos langelį, kai naudojama MATLAB R2015b.
+%
 % v2015.09.14.1
 % ~MATLAB R2015b nerodys beprasmių pranešimų.
 %

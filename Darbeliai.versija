@@ -1,7 +1,8 @@
-Darbeliai v2015.09.14.1
+Darbeliai v2015.10.05.1
 
-MATLAB R2015b nerodys beprasmių pranešimų.
-Stabilumo pagerinimas.
+Patobulinimai peržiūrint ICA per nuoseklaus apdorojimo langą.
+Nenulūžti rodant būsenos langelį, kai naudojama MATLAB R2015b.
 
-MATLAB R2015b will not show meaningless warnings.
-Improvevents of stability.
+Enhanced ICA reviewing via Serial processing dialog.
+Don't crash at dialog of statusbar in MATLAB R2015b.
+
