@@ -2695,6 +2695,11 @@ function listbox1_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns listbox1 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from listbox1
+if ~strcmp(get(handles.edit_failu_filtras2,'Style'),'pushbutton') ;
+    set(handles.edit_failu_filtras2,'Style','pushbutton');
+    set(handles.edit_failu_filtras2,'String',lokaliz('Filter'));
+    set(handles.edit_failu_filtras2,'BackgroundColor','remove');
+end;
 Ar_galima_vykdyti(hObject, eventdata, handles)
 
 % --- Executes during object creation, after setting all properties.

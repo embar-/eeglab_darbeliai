@@ -1,8 +1,9 @@
-Darbeliai v2015.10.05.4
+Darbeliai v2015.10.06.1
 
-Patobulinimai peržiūrint ICA per nuoseklaus apdorojimo langą.
-Nenulūžti rodant būsenos langelį, kai naudojama MATLAB R2015b.
+Nuosekliame apdorojime ir SĮSP savybių lange 
+išjungti filtrą rinkmenų, atrinkimui vos tik jos
+pradedamos žymėti rankiniu būdu.
 
-Enhanced ICA reviewing via Serial processing dialog.
-Don't crash at dialog of statusbar in MATLAB R2015b.
-
+In Serial processing and ERP properties dialog:
+turn off filtering files by key as soon as 
+user selects files manually.

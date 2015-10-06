@@ -1,6 +1,11 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.10.06.1
+% ~ Nuosekliame apdorojime ir SĮSP savybių lange 
+%   išjungti filtrą rinkmenų, atrinkimui vos tik jos
+%   pradedamos žymėti rankiniu būdu.
+%
 % v2015.10.05.1
 % ~ Patobulinimai peržiūrint ICA per nuoseklaus apdorojimo langą.
 % ~ Nenulūžti rodant būsenos langelį, kai naudojama MATLAB R2015b.
