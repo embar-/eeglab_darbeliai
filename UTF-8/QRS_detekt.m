@@ -1,4 +1,4 @@
-function [RR_idx,RRI]=QRS_detekt(EKG,sampling_rate,mode)
+function [RR_idx,RRI]=QRS_detekt(EKG, sampling_rate, mode, varargin)
 %[RR_idx,RRI]=QRS_detekt(EKG,sampling_rate,mode)
 %
 % Ši programa yra laisva. Jūs galite ją platinti ir/arba modifikuoti
@@ -44,6 +44,12 @@ if length(EKG)/SR < 2.5 ;
    return; 
 end;
 
+if nargin > 3 ;
+    leisti_apversti=varargin{1};
+else
+    leisti_apversti=1;
+end;
+
 switch mode
 
     case {1 , '1', 'PT' }
@@ -57,7 +63,9 @@ switch mode
            '[~]=findpeaks([1 2 1],''MINPEAKDISTANCE'',1);');
         
         % Check upside-down EKG 
-        if ekg_apversta(EKG,SR,0); EKG=-EKG; end;
+        if leisti_apversti;
+            if ekg_apversta(EKG,SR,0); EKG=-EKG; end;
+        end;
         
         % QRS
         [qrs_amp_raw,qrs_i_raw,delay]=...
@@ -94,7 +102,9 @@ switch mode
         %% Adaptive detector, writen by Hooman Sedghamiz, 2014
         
         % Check upside-down EKG 
-        if ekg_apversta(EKG,SR,0); EKG=-EKG; end;
+        if leisti_apversti;
+            if ekg_apversta(EKG,SR,0); EKG=-EKG; end;
+        end;
         
         [R_i,R_amp,S_i,S_amp,T_i,T_amp,Q_i,Q_amp,heart_rate,buffer_plot]= ...
             QRS_detekt_adaptive_Sedghamiz(double(EKG),SR,0);
