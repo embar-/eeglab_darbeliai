@@ -866,7 +866,7 @@ end ;
 disp([ Rezultatu_TXT_failas ' (galite atverti su MS Excel ar LibreOffice Calc)' ] );
 fid=fopen(Rezultatu_TXT_failas, 'w');
 % Antraštė
-if exist('lokaliz','file') == 2;
+if exist('lokaliz.m','file') == 2;
 fprintf(fid, sprintf([ lokaliz('Rinkmena') '\t' lokaliz('Salyga') '\t' lokaliz('Freq_int_name') '\t' lokaliz('Freq_interval') ] ));
 else
 fprintf(fid, sprintf('Rinkmena\tSalyga\tDazniu_int_pav\tDazniu_interv'));

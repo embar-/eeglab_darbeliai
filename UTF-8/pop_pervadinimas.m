@@ -145,7 +145,7 @@ atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
 set(handles.edit_siulomi,'String','');
 try
     k=Darbeliai.keliai.saugojimui{1};
-    if exist(k) == 7 ; set(handles.edit_siulomi,'String',k); end;
+    if exist(k,'dir') == 7 ; set(handles.edit_siulomi,'String',k); end;
 catch err; 
 end;
 try set(handles.edit_siulomi,'String',g(1).path);    catch err; end;
@@ -1397,7 +1397,7 @@ for i=1:Pasirinktu_failu_N;
     try
         RinkmenaSaugojimuiSuKeliu=fullfile(KELIAS_SAUGOJIMUI, RinkmenaSaugojimui);
         TikrasSaugojimoKelias=fileparts(RinkmenaSaugojimuiSuKeliu);
-        if exist(TikrasSaugojimoKelias) ~= 7; try mkdir(TikrasSaugojimoKelias); catch err ; end; end;
+        if exist(TikrasSaugojimoKelias,'dir') ~= 7; try mkdir(TikrasSaugojimoKelias); catch err ; end; end;
         [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
             'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
             'savenew',RinkmenaSaugojimuiSuKeliu);

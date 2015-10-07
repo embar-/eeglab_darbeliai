@@ -282,7 +282,7 @@ else
     uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
 end;
-if exist('atnaujinimas','file') == 2;
+if exist('atnaujinimas.m','file') == 2;
     uimenu( handles.meniu_apie, 'Label', lokaliz('Check for updates'), 'separator','on', 'Callback', 'pop_atnaujinimas ;'  );    
 end;
 susaldyk(hObject, eventdata, handles);

@@ -407,7 +407,7 @@ disp(' ');
  
  
  
-if and(~(exist('Ragu','file') == 2) , (exist('ragu_diegimas','file') == 2) );
+if and(~(exist('Ragu.m','file') == 2) , (exist('ragu_diegimas.m','file') == 2) );
  
       button = questdlg(['Ar norėtumėte įdiegti Ragu?']  , ...
            'RAGU programa nerasta!', ...
@@ -427,7 +427,7 @@ if and(~(exist('Ragu','file') == 2) , (exist('ragu_diegimas','file') == 2) );
          end;
 end;
  
-if (exist('Ragu','file') == 2) ;
+if (exist('Ragu.m','file') == 2) ;
  
       button = questdlg(['Atverti Ragu?']  , ...
            'Ar norite atverti RAGU?', ...
