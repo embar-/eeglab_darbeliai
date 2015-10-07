@@ -27,7 +27,9 @@ function qrs=QRS_detekt_DPI(y,fs,sw,p)
 % original filename: dpi_qrs.m
 % downloaded from:
 % http://mile.ee.iisc.ernet.in/QRS/
-
+%
+% Modifications by Mindaugas Baranauskas 2015:
+% Avoid crash in epoch_lpr_ec, if gcim1+ms20 exceeds size of y and sig.
 
 if size(y,1) == 1
     
@@ -102,8 +104,9 @@ i=0;
 m=2;
 while i< length(y)-2000
     gcim1= gci(m-1);
-    yh= y(gcim1-ms2:gcim1+ms20);
-    y2= sig(gcim1-ms2:gcim1+ms20);
+    idx=[max(1,gcim1-ms2):min(length(sig),gcim1+ms20)];
+    yh= y(idx);
+    y2= sig(idx);
     y2=hpf(y2,4,fs);
     pos= yh>=0;
     yh1=((1*yh.*pos))';
