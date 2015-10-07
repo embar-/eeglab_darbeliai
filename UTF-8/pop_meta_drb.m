@@ -1034,9 +1034,9 @@ try
 catch err;
     
     button3 = questdlg([' ' KELIAS_siulomas ' ' ] , ...
-        'Neradome aplanko', ...
-        'Atšaukti', 'Sukurti aplanką', 'Sukurti aplanką');
-    if and(~isempty(KELIAS_siulomas),strcmp(button3,'Sukurti aplanką'));
+        lokaliz('No such directory'), ...
+        lokaliz('Cancel'), lokaliz('Create directory'), lokaliz('Create directory'));
+    if and(~isempty(KELIAS_siulomas),strcmp(button3,lokaliz('Create directory')));
         try
             mkdir(KELIAS_siulomas);
             cd(KELIAS_siulomas);
