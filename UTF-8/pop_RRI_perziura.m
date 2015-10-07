@@ -1271,6 +1271,11 @@ switch ck
         Importuoti_Callback(hObject, eventdata, handles);
     case {'s' 'e'}
         Eksportuoti_Callback(hObject, eventdata, handles);
+    case 'v'
+        if ismember('alt',modifiers);
+            handles.EKG = 0 - handles.EKG;
+            pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
+        end;
     case 'z'
         if ismember('control',modifiers);
             istorija_atgal_ClickedCallback(hObject, eventdata, handles);
@@ -2164,7 +2169,8 @@ p=0;
 statusbar(p,f);
 
 try
-[RR_idx]=QRS_detekt(handles.EKG,handles.EKG_Hz,mode);
+    leisti_apversti=~isempty(get(gcf,'currentModifier'));
+    [RR_idx]=QRS_detekt(handles.EKG, handles.EKG_Hz, mode, leisti_apversti);
 catch err;
     if ishandle(f); delete(f); end; 
     Pranesk_apie_klaida(err,QRS_algoritmai{mode},mfilename,1,1);
