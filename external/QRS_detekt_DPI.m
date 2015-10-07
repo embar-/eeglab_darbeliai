@@ -48,7 +48,11 @@ nn1= floor(8/freq_res);
 h1= 0.5-0.5*cos(pi.*(1:nn1)/(nn1));
 h2= ones( 1, floor(length(y)/2)-length(h1));
 h3= [ h1 h2];
-h4= wrev(h3);
+if exist('wrev.m','file');
+    h4= wrev(h3);
+else
+    h4= wrev_octave(h3);
+end;
 h5= [ h3 h4];
 h5=h5.^4;
 g3= fft(y);
@@ -206,11 +210,15 @@ pn=indn>0;
 
 indp1= (sort(indp,'descend'));
 
-indp = wrev(indp1((1:sum(pp))));
-
 indn1= (sort(indn,'descend'));
 
-indn=wrev(indn1((1:sum(pn))));
+if exist('wrev.m','file');
+    indp = wrev(indp1((1:sum(pp))));
+    indn = wrev(indn1((1:sum(pn))));
+else
+    indp = wrev_octave(indp1((1:sum(pp))));
+    indn = wrev_octave(indn1((1:sum(pn))));
+end;
 
 return;
 
@@ -251,7 +259,11 @@ freq_res= fs/length(y);
 
     h2= ones( 1, floor(length(y)/2)-length(h1));
     h3= [ h1 h2];
-    h4= wrev(h3);
+    if exist('wrev.m','file');
+        h4= wrev(h3);
+    else
+        h4= wrev_octave(h3);
+    end;
     h5= [ h3 h4];
     
    h5=h5.^4;
