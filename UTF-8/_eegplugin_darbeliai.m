@@ -309,7 +309,7 @@ else
     end;
 end;
 
-if and((exist('atnaujinimas','file') == 2),...
+if and((exist('atnaujinimas.m','file') == 2),...
    and(~isempty(Darbeliai_nuostatos.url_versijai),...
        ~isempty(Darbeliai_nuostatos.url_atnaujinimui))) ;
        
@@ -384,7 +384,7 @@ if and((exist('atnaujinimas','file') == 2),...
 end;
 
 % Ieškoti Ragu
-if ~(exist('Ragu','file') == 2 ) ;
+if ~(exist('Ragu.m','file') == 2 ) ;
     eeglab_plugin_dir=([ fileparts(which('eeglab')) filesep 'plugins' filesep ]);
     
     gal_ragu=filter_filenames([eeglab_plugin_dir '*' filesep 'Ragu.m;']);
@@ -445,7 +445,7 @@ uimenu( darbeliai_m, 'Label', lokaliz('Meta darbeliai...') , ...
 
 
 if Darbeliai_nuostatos.meniu_ragu ;          
-    if (exist('Ragu','file') == 2 ) ;          
+    if (exist('Ragu.m','file') == 2 ) ;          
         ragu_m = uimenu( darbeliai_m, 'Label', lokaliz('Ragu'), 'Separator','on', 'userdata', on);
     else
         Ragu_atnaujinimo_meniu_pavadinimas=lokaliz('Diegti Ragu');
@@ -460,7 +460,7 @@ uimenu( darbeliai_m, 'Label', [lokaliz('Nuostatos') ' (kalba/language)'], ...
          'konfig ;'  );
 
 
-if and(exist('atnaujinimas','file') == 2,...
+if and(exist('atnaujinimas.m','file') == 2,...
    and(~isempty(Darbeliai_nuostatos.url_versijai),...
        ~isempty(Darbeliai_nuostatos.url_atnaujinimui))) ;      
    if and(~isempty(nauja_versija),~strcmp(nauja_versija,vers));
@@ -500,7 +500,7 @@ end;
 
 
 % RAGU meniu
-if and(Darbeliai_nuostatos.meniu_ragu,(exist('Ragu','file') == 2 )) ;
+if and(Darbeliai_nuostatos.meniu_ragu,(exist('Ragu.m','file') == 2 )) ;
 %    uimenu( ragu_m, 'Label', lokaliz('Eksp Ragu'), ...
 %    'Separator','on', 'userdata', on, 'Callback', ...
 %         'eksportuoti_ragu_programai(ALLEEG, EEG, CURRENTSET) ;'  );

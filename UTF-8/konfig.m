@@ -79,7 +79,7 @@ function konfig_OpeningFcn(hObject, eventdata, handles, varargin)
 
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 Darbeliai_nuostatos_senos.lokale={ '' ; '' ; '' ; } ;
-if (exist('atnaujinimas','file') == 2) ;
+if (exist('atnaujinimas.m','file') == 2) ;
     Darbeliai_nuostatos_senos.tikrinti_versija=1;
 else
     Darbeliai_nuostatos_senos.tikrinti_versija=0;

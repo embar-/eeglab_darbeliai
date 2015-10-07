@@ -27,7 +27,9 @@ function qrs=QRS_detekt_DPI(y,fs,sw,p)
 % original filename: dpi_qrs.m
 % downloaded from:
 % http://mile.ee.iisc.ernet.in/QRS/
-
+%
+% Modifications by Mindaugas Baranauskas 2015:
+% Avoid crash in epoch_lpr_ec, if gcim1+ms20 exceeds size of y and sig.
 
 if size(y,1) == 1
     
@@ -48,7 +50,11 @@ nn1= floor(8/freq_res);
 h1= 0.5-0.5*cos(pi.*(1:nn1)/(nn1));
 h2= ones( 1, floor(length(y)/2)-length(h1));
 h3= [ h1 h2];
-h4= wrev(h3);
+if exist('wrev.m','file');
+    h4= wrev(h3);
+else
+    h4= wrev_octave(h3);
+end;
 h5= [ h3 h4];
 h5=h5.^4;
 g3= fft(y);
@@ -98,8 +104,9 @@ i=0;
 m=2;
 while i< length(y)-2000
     gcim1= gci(m-1);
-    yh= y(gcim1-ms2:gcim1+ms20);
-    y2= sig(gcim1-ms2:gcim1+ms20);
+    idx=[max(1,gcim1-ms2):min(length(sig),gcim1+ms20)];
+    yh= y(idx);
+    y2= sig(idx);
     y2=hpf(y2,4,fs);
     pos= yh>=0;
     yh1=((1*yh.*pos))';
@@ -206,11 +213,15 @@ pn=indn>0;
 
 indp1= (sort(indp,'descend'));
 
-indp = wrev(indp1((1:sum(pp))));
-
 indn1= (sort(indn,'descend'));
 
-indn=wrev(indn1((1:sum(pn))));
+if exist('wrev.m','file');
+    indp = wrev(indp1((1:sum(pp))));
+    indn = wrev(indn1((1:sum(pn))));
+else
+    indp = wrev_octave(indp1((1:sum(pp))));
+    indn = wrev_octave(indn1((1:sum(pn))));
+end;
 
 return;
 
@@ -251,7 +262,11 @@ freq_res= fs/length(y);
 
     h2= ones( 1, floor(length(y)/2)-length(h1));
     h3= [ h1 h2];
-    h4= wrev(h3);
+    if exist('wrev.m','file');
+        h4= wrev(h3);
+    else
+        h4= wrev_octave(h3);
+    end;
     h5= [ h3 h4];
     
    h5=h5.^4;

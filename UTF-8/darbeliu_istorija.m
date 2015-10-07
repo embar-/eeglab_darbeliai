@@ -1,6 +1,12 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.10.07.1
+% ~ 2015.10.05 ir 2015.10.06 versijose įvelta klaida, kuri
+%   neleido ištrinti failų juos pervadinant.
+% + RRI peržiūros lange Leisti rankiniu būdu apversti EKG.
+% ~ Funkcijai „exist“ pateikti tikslius parametrus.
+%
 % v2015.10.06.1
 % ~ Nuosekliame apdorojime ir SĮSP savybių lange 
 %   išjungti filtrą rinkmenų, atrinkimui vos tik jos

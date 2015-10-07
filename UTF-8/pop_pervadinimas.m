@@ -145,7 +145,7 @@ atnaujink_rodoma_darbini_kelia(hObject, eventdata, handles);
 set(handles.edit_siulomi,'String','');
 try
     k=Darbeliai.keliai.saugojimui{1};
-    if exist(k) == 7 ; set(handles.edit_siulomi,'String',k); end;
+    if exist(k,'dir') == 7 ; set(handles.edit_siulomi,'String',k); end;
 catch err; 
 end;
 try set(handles.edit_siulomi,'String',g(1).path);    catch err; end;
@@ -1352,7 +1352,8 @@ tic
 for i=1:Pasirinktu_failu_N;
     Rinkmena=Pasirinkti_failu_pavadinimai{i};
     [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(KELIAS,Rinkmena);
-    fprintf('\n === %s %d/%d (%.2f%%) ===\n%s\n', lokaliz('Opened file'), i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100, fullfile(KELIAS_, Rinkmena_));
+    RinkmenaAtverimuiSuKeliu=fullfile(KELIAS_, Rinkmena_);
+    fprintf('\n === %s %d/%d (%.2f%%) ===\n%s\n', lokaliz('Opened file'), i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100, RinkmenaAtverimuiSuKeliu);
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
     %SaugomoNr=1+str2num(get(handles.text_atlikta_darbu,'String'));
     %DarboNr=0;
@@ -1396,7 +1397,7 @@ for i=1:Pasirinktu_failu_N;
     try
         RinkmenaSaugojimuiSuKeliu=fullfile(KELIAS_SAUGOJIMUI, RinkmenaSaugojimui);
         TikrasSaugojimoKelias=fileparts(RinkmenaSaugojimuiSuKeliu);
-        if exist(TikrasSaugojimoKelias) ~= 7; try mkdir(TikrasSaugojimoKelias); catch err ; end; end;
+        if exist(TikrasSaugojimoKelias,'dir') ~= 7; try mkdir(TikrasSaugojimoKelias); catch err ; end; end;
         [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
             'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
             'savenew',RinkmenaSaugojimuiSuKeliu);

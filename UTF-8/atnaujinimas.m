@@ -108,7 +108,7 @@ end;
 rehash;
 path_new=fullfile(regexprep(which('eeglab.m'),'eeglab.m$','plugins') );
 
-if (exist(file_to_identify) == 2) ;    
+if (exist(file_to_identify,'file') == 2) ;    
     st=warning('off','MATLAB:rmpath:DirNotFound');
     path_old=fullfile(regexprep(which(file_to_identify),[ file_to_identify '$' ],'')) ;
     if strcmp(fullfile(pwd,'.'),fullfile(path_old,'.')) ;

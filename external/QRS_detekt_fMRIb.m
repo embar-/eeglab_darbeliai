@@ -98,7 +98,7 @@ function Peaks=QRS_detekt_fMRIb(EEG,ecgchan)
 
 nargchk(2,2,nargin);
 dLFlag=1;
-if ~exist('decimate')
+if ~exist('decimate.m','file')
     error('QRS detection requires the DSP toolbox');
 end
 

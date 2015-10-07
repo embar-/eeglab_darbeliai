@@ -148,7 +148,7 @@ cd(Kelias_dabar);
 set(handles.edit2,'String','');
 try
     k=Darbeliai.keliai.saugojimui{1};
-    if exist(k) == 7 ; set(handles.edit2,'String',k); end;
+    if exist(k,'dir') == 7 ; set(handles.edit2,'String',k); end;
 catch err;
 end;
 try set(handles.edit2,'String',g(1).path);    catch err; end;

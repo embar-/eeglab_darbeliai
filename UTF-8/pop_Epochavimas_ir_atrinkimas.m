@@ -163,7 +163,7 @@ cd(Kelias_dabar);
 set(handles.edit2,'String','');
 try
     k=Darbeliai.keliai.saugojimui{1};
-    if exist(k) == 7 ; set(handles.edit2,'String',k); end;
+    if exist(k,'dir') == 7 ; set(handles.edit2,'String',k); end;
 catch err;
 end;
 try set(handles.edit2,'String',g(1).path);    catch err; end;
@@ -1095,9 +1095,9 @@ try
 catch err;
     
     button3 = questdlg([' ' KELIAS_siulomas ' ' ] , ...
-        'Neradome aplanko', ...
-        'Atšaukti', 'Sukurti aplanką', 'Sukurti aplanką');
-    if and(~isempty(KELIAS_siulomas),strcmp(button3,'Sukurti aplanką'));
+        lokaliz('No such directory'), ...
+        lokaliz('Cancel'), lokaliz('Create directory'), lokaliz('Create directory'));
+    if and(~isempty(KELIAS_siulomas),strcmp(button3,lokaliz('Create directory')));
         try
             mkdir(KELIAS_siulomas);
             cd(KELIAS_siulomas);

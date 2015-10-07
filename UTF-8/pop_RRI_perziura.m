@@ -282,7 +282,7 @@ else
     uimenu( handles.meniu_apie, 'Label', [lokaliz('Apie') ' ' vers], 'callback', ...
         'web(''https://github.com/embar-/eeglab_darbeliai/wiki/0.%20EN'',''-browser'') ;'  );
 end;
-if exist('atnaujinimas','file') == 2;
+if exist('atnaujinimas.m','file') == 2;
     uimenu( handles.meniu_apie, 'Label', lokaliz('Check for updates'), 'separator','on', 'Callback', 'pop_atnaujinimas ;'  );    
 end;
 susaldyk(hObject, eventdata, handles);
@@ -1271,6 +1271,11 @@ switch ck
         Importuoti_Callback(hObject, eventdata, handles);
     case {'s' 'e'}
         Eksportuoti_Callback(hObject, eventdata, handles);
+    case 'v'
+        if ismember('alt',modifiers);
+            handles.EKG = 0 - handles.EKG;
+            pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
+        end;
     case 'z'
         if ismember('control',modifiers);
             istorija_atgal_ClickedCallback(hObject, eventdata, handles);
@@ -2164,7 +2169,8 @@ p=0;
 statusbar(p,f);
 
 try
-[RR_idx]=QRS_detekt(handles.EKG,handles.EKG_Hz,mode);
+    leisti_apversti=~isempty(get(gcf,'currentModifier'));
+    [RR_idx]=QRS_detekt(handles.EKG, handles.EKG_Hz, mode, leisti_apversti);
 catch err;
     if ishandle(f); delete(f); end; 
     Pranesk_apie_klaida(err,QRS_algoritmai{mode},mfilename,1,1);
