@@ -1305,7 +1305,7 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
         %Darbo_eigos_busena(handles, 'Eksportuoti į TXT...', DarboNr, 0, length(ALLEEG_));
         
         excel_dokumentas_erp=dokumentas_savybiu_eksportui;
-        
+                
         for eeg_i=1:length(ALLEEG_);
             try
                 Darbo_eigos_busena(handles, 'Eksportuoti į TXT...', DarboNr, eeg_i, length(ALLEEG_));
@@ -3607,10 +3607,12 @@ try
                         di=1;
                         for d=grpnar{grpid};
                             idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
-                            tmp(di,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                            if ~isempty(idx);
+                                tmp(di,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                            end;
                             di=di+1;
                         end;
-                        assignin('base','tmp',tmp)
+                        %assignin('base','tmp',tmp)
                         ALLEEG__(grpid).erp_data(k,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
                     end;
                     legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),1)={grpsar{grpid}};
@@ -3673,8 +3675,8 @@ try
         xmax=max(max([ALLEEG_.times]));
         xmin_=xmin - 0.05*(xmax-xmin);
         xmax_=xmax + 0.05*(xmax-xmin);
-        ymin=min(min([ALLEEG_.erp_data]));
-        ymax=max(max([ALLEEG_.erp_data]));
+        ymin=min(arrayfun(@(x) min(min(ALLEEG_(x).erp_data, [], 2)), 1:length(ALLEEG_))); 
+        ymax=max(arrayfun(@(x) max(max(ALLEEG_(x).erp_data, [], 2)), 1:length(ALLEEG_)));
         ymin_=ymin - 0.05*(ymax-ymin);
         ymax_=ymax + 0.05*(ymax-ymin);
         %d=get(handles.listbox1,'UserData');
