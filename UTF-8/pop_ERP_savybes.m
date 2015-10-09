@@ -1308,11 +1308,16 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
                 
         for eeg_i=1:length(ALLEEG_);
             try
-                Darbo_eigos_busena(handles, 'Eksportuoti į TXT...', DarboNr, eeg_i, length(ALLEEG_));
+                Darbo_eigos_busena(handles, 'Eksportuoti į Excel...', DarboNr, eeg_i, length(ALLEEG_));
                 EEGTMP=ALLEEG_(eeg_i);
                 [~,Rinkmenos_pav,~]=fileparts(EEGTMP.file);
-                [~, idx_1] = min(abs(EEGTMP.times - time_interval_erp(1) )) ;
-                [~, idx_2] = min(abs(EEGTMP.times - time_interval_erp(2) )) ;
+                if isempty(time_interval_erp);
+                    idx_1=1;
+                    idx_2=length(EEGTMP.times);
+                else
+                    [~, idx_1] = min(abs(EEGTMP.times - time_interval_erp(1) )) ;
+                    [~, idx_2] = min(abs(EEGTMP.times - time_interval_erp(2) )) ;
+                end;
                 ERP{i}=[EEGTMP.erp_data(:,idx_1:idx_2)]'; %[mean([EEGTMP.data(:,idx_1:idx_2,:)],3)]';
                 EEGTMP.nbchan=size(EEGTMP.erp_data,1);
                 ERP_lentele={};                
@@ -1326,16 +1331,16 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
                 else
                     laksto_pav=num2str(i);
                 end;
-                if ispc
+                %if ispc
                     xlswrite(excel_dokumentas_erp, ERP_lentele, laksto_pav );
+                    disp(excel_dokumentas_erp);
                 %elseif 1 == 0;
                     %disp('Abejoju, ar kitoje nei Windows sistemoje MATLAB ras Excel');
                 %    csvwrite([csv_dokumentas_erp '_' laksto_pav '.csv'], ERP_lentele );
-                end ;
+                %end ;
                 %disp(' ');
-                disp(excel_dokumentas_erp);
             catch err;
-                warning(err.message);
+                Pranesk_apie_klaida(err,'','',0);
             end;
         end;
     end;
@@ -3871,6 +3876,10 @@ function popupmenu10_Callback(hObject, eventdata, handles)
 %        contents{get(hObject,'Value')} returns selected item from popupmenu10
 if get(handles.popupmenu10,'Value') == 3;
     set(handles.edit70,'Visible','on');
+    if ~ispc;
+        warning([ lokaliz('Export ERP') ': Excel + Windows!']);
+        warndlg('Excel + Windows!', lokaliz('Export ERP'));
+    end;
 else    
     set(handles.edit70,'Visible','off');
 end;
