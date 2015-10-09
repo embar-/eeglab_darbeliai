@@ -3675,8 +3675,9 @@ try
         xmax=max(max([ALLEEG_.times]));
         xmin_=xmin - 0.05*(xmax-xmin);
         xmax_=xmax + 0.05*(xmax-xmin);
-        ymin=min(arrayfun(@(x) min(min(ALLEEG_(x).erp_data, [], 2)), 1:length(ALLEEG_))); 
-        ymax=max(arrayfun(@(x) max(max(ALLEEG_(x).erp_data, [], 2)), 1:length(ALLEEG_)));
+        netusti=find(arrayfun(@(x) ~isempty(ALLEEG_(x).erp_data), 1:length(ALLEEG_)));
+        ymin=min(arrayfun(@(x) min(min(ALLEEG_(x).erp_data, [], 2)), netusti)); 
+        ymax=max(arrayfun(@(x) max(max(ALLEEG_(x).erp_data, [], 2)), netusti));
         ymin_=ymin - 0.05*(ymax-ymin);
         ymax_=ymax + 0.05*(ymax-ymin);
         %d=get(handles.listbox1,'UserData');
