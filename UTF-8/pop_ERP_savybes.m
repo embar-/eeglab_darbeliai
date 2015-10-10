@@ -3332,7 +3332,7 @@ if strcmp(get(handles.checkbox57,'Enable'),'off');
 end;
 Fs=get(handles.listbox1,'String');
 Fsi=get(handles.listbox1,'Value');
-if ~(get(handles.checkbox57, 'Value') * (~isempty(Fs)) * (~isempty(Fsi)) );
+if ~(get(handles.checkbox57, 'Value') && (~isempty(Fs)) && (~isempty(Fsi)) );
     set(handles.edit64, 'Visible', 'off'); % vid ampl
     set(handles.edit65, 'Visible', 'off'); % plotas
     set(handles.edit66, 'Visible', 'off'); % laikas pusei ploto
@@ -4025,6 +4025,38 @@ catch err;
 end;
 set(handles.togglebutton1,'Visible','off');
 set(h2,'Visible','on');
+spausdinti=getappdata(handles.axes1, 'spausdinti');
+if ~isempty(spausdinti);
+    pavad=get(handles.text47,'TooltipString');
+    for i=1:length(spausdinti);
+        print(h2,pavad,spausdinti{i});
+    end;
+    pause(1);
+    delete(h2);
+    setappdata(handles.axes1, 'spausdinti', []);
+end;
+
+
+function spausdinimas_pagal_kanalus(hObject, eventdata, handles)
+%pradinis_rodymas=get(handles.checkbox57, 'Value');
+pradiniai_kanalai1=get(handles.pushbutton14, 'UserData');
+pradiniai_kanalai2=get(handles.text47, 'TooltipString');
+set(handles.checkbox57, 'Value', 0);
+pushbutton14_Callback(hObject, eventdata, handles);
+set(handles.checkbox57, 'Value', 1);
+kanalai=get(handles.pushbutton14, 'UserData');
+for i=1:length(kanalai);
+    set(handles.pushbutton14, 'UserData', kanalai(i));
+    set(handles.text47,'TooltipString', kanalai{i});
+    ERP_perziura(hObject, eventdata, handles);
+    setappdata(handles.axes1, 'spausdinti', {'-dpng' '-dsvg'});
+    axes1_ButtonDownFcn(hObject, eventdata, handles);
+    setappdata(handles.axes1, 'spausdinti', []);
+end;
+set(handles.checkbox57, 'Value', 0); % pradinis_rodymas
+set(handles.pushbutton14, 'UserData', pradiniai_kanalai1);
+set(handles.text47,  'TooltipString', pradiniai_kanalai2);
+ERP_perziura(hObject, eventdata, handles);
 
 
 % --- Executes on selection change in popupmenu11.

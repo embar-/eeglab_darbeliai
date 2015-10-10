@@ -337,6 +337,11 @@ uimenu(handles.meniu_veiksmai_fltr_rod, 'Accelerator','B', 'Label', lokaliz('kat
     'callback', {@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_fltr_rod', darbas, '*'}  );
 end;
 
+if ismember(darbas, {'pop_ERP_savybes'})
+uimenu(handles.meniu_veiksmai, 'separator','on', 'Label', lokaliz('Saugoti grafikus pagal kanalus'),...
+    'Callback',{@nukreipimas_gui2, handles, darbas, 'spausdinimas_pagal_kanalus'});    
+end;
+
 handles.meniu_veiksmai_eeglab=uimenu(handles.meniu_veiksmai, 'separator','on', 'Label', lokaliz('EEGLABeje'));
 uimenu(handles.meniu_veiksmai_eeglab, 'Accelerator','L', 'Label', lokaliz('Ikelti'), ...
     'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab'}  );
