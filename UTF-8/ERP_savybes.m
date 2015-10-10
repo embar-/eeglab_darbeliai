@@ -147,23 +147,29 @@ for chan_i=1:ChN;
     end;
 end;
 
-min_y(i,1:ChN)=[min(lango_erp,[],2)]';
-min_x(i,1:ChN)=EEGTMP.times(idx1 - 1 + cell2mat([ ...
-    cellfun(@(x) find(ismember(lango_erp(x,:),min_y(i,x)),1), ...
-    num2cell(1:ChN), ...
-    'UniformOutput',false)]));
-max_y(i,1:ChN)=[max(lango_erp,[],2)]';
-max_x(i,1:ChN)=EEGTMP.times(idx1 - 1 + cell2mat([ ...
-    cellfun(@(x) find(ismember(lango_erp(x,:),max_y(i,x)),1), ...
-    num2cell(1:ChN), ...
-    'UniformOutput',false)]));
-
-if ~isempty(nauja_kanalu_tvarka);
-    nauja_kanalu_tvarka=pakeisk_reiksmes(nauja_kanalu_tvarka,ChN+1,0);
-    min_x=min_x(nauja_kanalu_tvarka);
-    min_y=min_y(nauja_kanalu_tvarka);
-    max_x=max_x(nauja_kanalu_tvarka);
-    max_y=max_y(nauja_kanalu_tvarka);
+if ChN == 0 || size(lango_erp,1) == 0;
+    min_y=NaN;
+    min_x=NaN;
+    max_y=NaN;
+    max_x=NaN;
+else
+    min_y(i,1:ChN)=[min(lango_erp,[],2)]';
+    min_x(i,1:ChN)=EEGTMP.times(idx1 - 1 + cell2mat([cellfun(@(x) find(ismember(lango_erp(x,:),min_y(i,x)),1), ...
+        num2cell(1:ChN), ...
+        'UniformOutput',false)]));
+    max_y(i,1:ChN)=[max(lango_erp,[],2)]';
+    max_x(i,1:ChN)=EEGTMP.times(idx1 - 1 + cell2mat([ ...
+        cellfun(@(x) find(ismember(lango_erp(x,:),max_y(i,x)),1), ...
+        num2cell(1:ChN), ...
+        'UniformOutput',false)]));
+    
+    if ~isempty(nauja_kanalu_tvarka);
+        nauja_kanalu_tvarka=pakeisk_reiksmes(nauja_kanalu_tvarka,ChN+1,0);
+        min_x=min_x(nauja_kanalu_tvarka);
+        min_y=min_y(nauja_kanalu_tvarka);
+        max_x=max_x(nauja_kanalu_tvarka);
+        max_y=max_y(nauja_kanalu_tvarka);
+    end;
 end;
 
 function B = pakeisk_reiksmes(A, newval, oldval)

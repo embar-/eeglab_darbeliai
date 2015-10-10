@@ -1305,14 +1305,19 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
         %Darbo_eigos_busena(handles, 'Eksportuoti į TXT...', DarboNr, 0, length(ALLEEG_));
         
         excel_dokumentas_erp=dokumentas_savybiu_eksportui;
-        
+                
         for eeg_i=1:length(ALLEEG_);
             try
-                Darbo_eigos_busena(handles, 'Eksportuoti į TXT...', DarboNr, eeg_i, length(ALLEEG_));
+                Darbo_eigos_busena(handles, 'Eksportuoti į Excel...', DarboNr, eeg_i, length(ALLEEG_));
                 EEGTMP=ALLEEG_(eeg_i);
                 [~,Rinkmenos_pav,~]=fileparts(EEGTMP.file);
-                [~, idx_1] = min(abs(EEGTMP.times - time_interval_erp(1) )) ;
-                [~, idx_2] = min(abs(EEGTMP.times - time_interval_erp(2) )) ;
+                if isempty(time_interval_erp);
+                    idx_1=1;
+                    idx_2=length(EEGTMP.times);
+                else
+                    [~, idx_1] = min(abs(EEGTMP.times - time_interval_erp(1) )) ;
+                    [~, idx_2] = min(abs(EEGTMP.times - time_interval_erp(2) )) ;
+                end;
                 ERP{i}=[EEGTMP.erp_data(:,idx_1:idx_2)]'; %[mean([EEGTMP.data(:,idx_1:idx_2,:)],3)]';
                 EEGTMP.nbchan=size(EEGTMP.erp_data,1);
                 ERP_lentele={};                
@@ -1326,16 +1331,16 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
                 else
                     laksto_pav=num2str(i);
                 end;
-                if ispc
+                %if ispc
                     xlswrite(excel_dokumentas_erp, ERP_lentele, laksto_pav );
+                    disp(excel_dokumentas_erp);
                 %elseif 1 == 0;
                     %disp('Abejoju, ar kitoje nei Windows sistemoje MATLAB ras Excel');
                 %    csvwrite([csv_dokumentas_erp '_' laksto_pav '.csv'], ERP_lentele );
-                end ;
+                %end ;
                 %disp(' ');
-                disp(excel_dokumentas_erp);
             catch err;
-                warning(err.message);
+                Pranesk_apie_klaida(err,'','',0);
             end;
         end;
     end;
@@ -3607,10 +3612,12 @@ try
                         di=1;
                         for d=grpnar{grpid};
                             idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
-                            tmp(di,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                            if ~isempty(idx);
+                                tmp(di,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                            end;
                             di=di+1;
                         end;
-                        assignin('base','tmp',tmp)
+                        %assignin('base','tmp',tmp)
                         ALLEEG__(grpid).erp_data(k,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
                     end;
                     legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),1)={grpsar{grpid}};
@@ -3673,8 +3680,9 @@ try
         xmax=max(max([ALLEEG_.times]));
         xmin_=xmin - 0.05*(xmax-xmin);
         xmax_=xmax + 0.05*(xmax-xmin);
-        ymin=min(min([ALLEEG_.erp_data]));
-        ymax=max(max([ALLEEG_.erp_data]));
+        netusti=find(arrayfun(@(x) ~isempty(ALLEEG_(x).erp_data), 1:length(ALLEEG_)));
+        ymin=min(arrayfun(@(x) min(min(ALLEEG_(x).erp_data, [], 2)), netusti)); 
+        ymax=max(arrayfun(@(x) max(max(ALLEEG_(x).erp_data, [], 2)), netusti));
         ymin_=ymin - 0.05*(ymax-ymin);
         ymax_=ymax + 0.05*(ymax-ymin);
         %d=get(handles.listbox1,'UserData');
@@ -3868,6 +3876,10 @@ function popupmenu10_Callback(hObject, eventdata, handles)
 %        contents{get(hObject,'Value')} returns selected item from popupmenu10
 if get(handles.popupmenu10,'Value') == 3;
     set(handles.edit70,'Visible','on');
+    if ~ispc;
+        warning([ lokaliz('Export ERP') ': Excel + Windows!']);
+        warndlg('Excel + Windows!', lokaliz('Export ERP'));
+    end;
 else    
     set(handles.edit70,'Visible','off');
 end;
@@ -3987,10 +3999,13 @@ try
     a2=openfig(fn);
     set(a2,'Parent',h2);
     set(a2,'ButtonDownFcn','');
-    set(a2,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
+    V=version('-release');
+    if str2num(V(1:end-1)) < 2014;
+        set(a2,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
+    end;
     figure(h2);
     datacursormode on;
-    try delete(fn); catch err; end;
+    try delete(fn); catch; end;
 catch err;
     delete(h2);
     h2 = figure;

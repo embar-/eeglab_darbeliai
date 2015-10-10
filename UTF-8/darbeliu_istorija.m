@@ -1,6 +1,10 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.10.10.1
+% ~ SĮSP savybių nustatymas ir grafinis pavaizdavimas
+%   neturi sutrikti, jei kanalų nerasta ar nesuderinami.
+%
 % v2015.10.07.1
 % ~ 2015.10.05 ir 2015.10.06 versijose įvelta klaida, kuri
 %   neleido ištrinti failų juos pervadinant.
