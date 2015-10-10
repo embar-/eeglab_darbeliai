@@ -3999,10 +3999,13 @@ try
     a2=openfig(fn);
     set(a2,'Parent',h2);
     set(a2,'ButtonDownFcn','');
-    set(a2,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
+    V=version('-release');
+    if str2num(V(1:end-1)) < 2014;
+        set(a2,'units','normalized','Position',[0.1 0.1 0.65 0.8]);
+    end;
     figure(h2);
     datacursormode on;
-    try delete(fn); catch err; end;
+    try delete(fn); catch; end;
 catch err;
     delete(h2);
     h2 = figure;
