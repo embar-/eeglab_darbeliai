@@ -1,5 +1,8 @@
-Darbeliai v2015.10.07.1
+Darbeliai v2015.10.10.1
 
-Įvairūs nedideli pataisymai.
+SĮSP savybių nustatymas ir grafinis pavaizdavimas
+neturi sutrikti, jei kanalų nerasta ar nesuderinami.
 
-Various minor fixes.
+Calculation of ERP properties and ERP visualization 
+should manage cases, then all or some selected 
+channels are missing in particular dataset.
