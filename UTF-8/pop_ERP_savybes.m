@@ -4044,19 +4044,34 @@ pradiniai_kanalai2=get(handles.text47, 'TooltipString');
 set(handles.checkbox57, 'Value', 0);
 pushbutton14_Callback(hObject, eventdata, handles);
 set(handles.checkbox57, 'Value', 1);
+lokaliz('all');
 kanalai=get(handles.pushbutton14, 'UserData');
+paveisklai={'-dpng' '-dsvg'};
+spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveisklai, lokaliz('all'), [], []);
+xlim=get(handles.axes1, 'XLim');
+ylim=get(handles.axes1, 'YLim');
 for i=1:length(kanalai);
-    set(handles.pushbutton14, 'UserData', kanalai(i));
-    set(handles.text47,'TooltipString', kanalai{i});
-    ERP_perziura(hObject, eventdata, handles);
-    setappdata(handles.axes1, 'spausdinti', {'-dpng' '-dsvg'});
-    axes1_ButtonDownFcn(hObject, eventdata, handles);
-    setappdata(handles.axes1, 'spausdinti', []);
+    spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai(i), paveisklai, kanalai{i}, xlim, ylim);
 end;
 set(handles.checkbox57, 'Value', 0); % pradinis_rodymas
 set(handles.pushbutton14, 'UserData', pradiniai_kanalai1);
 set(handles.text47,  'TooltipString', pradiniai_kanalai2);
 ERP_perziura(hObject, eventdata, handles);
+
+
+function spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveisklai, pavadinimas, xlim, ylim)
+    set(handles.pushbutton14, 'UserData', kanalai);
+    set(handles.text47,'TooltipString', pavadinimas);
+    ERP_perziura(hObject, eventdata, handles);
+    setappdata(handles.axes1, 'spausdinti', paveisklai);
+    if ~isempty(xlim);
+        set(handles.axes1, 'XLim', xlim);
+    end;
+    if ~isempty(ylim);
+        set(handles.axes1, 'YLim', ylim);
+    end;
+    axes1_ButtonDownFcn(hObject, eventdata, handles);
+    setappdata(handles.axes1, 'spausdinti', []);
 
 
 % --- Executes on selection change in popupmenu11.
