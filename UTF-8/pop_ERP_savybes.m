@@ -4025,13 +4025,14 @@ catch err;
 end;
 set(handles.togglebutton1,'Visible','off');
 set(h2,'Visible','on');
+drawnow;
 spausdinti=getappdata(handles.axes1, 'spausdinti');
 if ~isempty(spausdinti);
     pavad=get(handles.text47,'TooltipString');
     for i=1:length(spausdinti);
         print(h2,pavad,spausdinti{i});
     end;
-    pause(1);
+    %pause(1);
     delete(h2);
     setappdata(handles.axes1, 'spausdinti', []);
 end;
@@ -4041,21 +4042,28 @@ function spausdinimas_pagal_kanalus(hObject, eventdata, handles)
 %pradinis_rodymas=get(handles.checkbox57, 'Value');
 pradiniai_kanalai1=get(handles.pushbutton14, 'UserData');
 pradiniai_kanalai2=get(handles.text47, 'TooltipString');
+pradiniai_kanalai3=get(handles.text47, 'String');
 set(handles.checkbox57, 'Value', 0);
 pushbutton14_Callback(hObject, eventdata, handles);
-set(handles.checkbox57, 'Value', 1);
-lokaliz('all');
 kanalai=get(handles.pushbutton14, 'UserData');
-paveisklai={'-dpng' '-dsvg'};
-spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveisklai, lokaliz('all'), [], []);
-xlim=get(handles.axes1, 'XLim');
-ylim=get(handles.axes1, 'YLim');
-for i=1:length(kanalai);
-    spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai(i), paveisklai, kanalai{i}, xlim, ylim);
+paveikslu_sar={'BMP' 'JPEG' 'PNG' 'TIFF' 'EPS' 'EPS mono' 'PDF' 'PS' 'PS mono' 'SVG' };
+paveikslu_id=listdlg('OKString',lokaliz('OK'),'CancelString',lokaliz('Cancel'), ...
+    'SelectionMode','multiple','ListString',paveikslu_sar,'InitialValue',3);
+if ~isempty(paveikslu_id);
+    paveikslu_spausd={'-dbmp' '-djpeg' '-dpng' '-dtiff' '-depsc' '-deps' '-dpdf' '-dpsc' '-dps' '-dsvg'};
+    paveisklai=paveikslu_spausd(paveikslu_id);
+    set(handles.checkbox57, 'Value', 1);
+    spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveisklai, lokaliz('all'), [], []);
+    xlim=get(handles.axes1, 'XLim');
+    ylim=get(handles.axes1, 'YLim');
+    for i=1:length(kanalai);
+        spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai(i), paveisklai, kanalai{i}, xlim, ylim);
+    end;
+    set(handles.checkbox57, 'Value', 0); % pradinis_rodymas
 end;
-set(handles.checkbox57, 'Value', 0); % pradinis_rodymas
 set(handles.pushbutton14, 'UserData', pradiniai_kanalai1);
 set(handles.text47,  'TooltipString', pradiniai_kanalai2);
+set(handles.text47,  'String',        pradiniai_kanalai3);
 ERP_perziura(hObject, eventdata, handles);
 
 
