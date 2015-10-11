@@ -4028,7 +4028,7 @@ set(h2,'Visible','on');
 drawnow;
 spausdinti=getappdata(handles.axes1, 'spausdinti');
 if ~isempty(spausdinti);
-    pavad=get(handles.text47,'TooltipString');
+    pavad=fullfile(get(handles.edit2,'String'), get(handles.text47,'TooltipString'));
     for i=1:length(spausdinti);
         print(h2,pavad,spausdinti{i});
     end;
