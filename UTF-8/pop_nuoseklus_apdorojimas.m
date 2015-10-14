@@ -5737,6 +5737,7 @@ set(handles.pushbutton4,'String',lokaliz('Update'));
 set(handles.pushbutton7,'TooltipString',lokaliz('Channels'));
 set(handles.pushbutton9,'TooltipString',lokaliz('Channels'));
 set(handles.pushbutton_apdorotini_kanalai,'String',lokaliz('Channels'));
+set(handles.pushbutton_apdorotini_kanalai,'TooltipString',lokaliz('Nuoseklus apdorojimas: kanalai keliems darbams'));
 set(handles.pushbutton13,'TooltipString',lokaliz('Events'));
 set(handles.uipanel3,'Title',lokaliz('Options'));
 set(handles.uipanel4,'Title',lokaliz('File filter'));
