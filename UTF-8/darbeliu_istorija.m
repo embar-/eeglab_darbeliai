@@ -1,6 +1,11 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.10.16.1
+% + SĮSP grafiko įrašymas kiekvienam kanalui atskirai.
+% ~ Ištaisyta eeg_ikelk_i_eeglab.m: jei nurodytas 
+%   rinkmenų pavadinimų filtras, atrinkti rinkmenas.
+%
 % v2015.10.10.1
 % ~ SĮSP savybių nustatymas ir grafinis pavaizdavimas
 %   neturi sutrikti, jei kanalų nerasta ar nesuderinami.
