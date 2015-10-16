@@ -1,8 +1,7 @@
-Darbeliai v2015.10.10.1
+Darbeliai v2015.10.16.1
 
-SĮSP savybių nustatymas ir grafinis pavaizdavimas
-neturi sutrikti, jei kanalų nerasta ar nesuderinami.
+SĮSP grafiko įrašymas kiekvienam kanalui
+atskirai. Vertimų atnaujinimas.
 
-Calculation of ERP properties and ERP visualization 
-should manage cases, then all or some selected 
-channels are missing in particular dataset.
+Printing ERP images as image files for each
+channel separately. Update of translations.

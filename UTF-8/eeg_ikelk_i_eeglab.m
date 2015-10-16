@@ -59,9 +59,19 @@ if isempty(Rinkmenos);
     kd=pwd;
     try  cd(Kelias);
         Rinkmenos=filter_filenames(g.flt_show);
-    catch
+    catch err; Pranesk_apie_klaida(err,'','',0);
     end;
     cd(kd);
+    flt_slct='';
+    try flt_slct={g.flt_slct}; catch; end;
+    if ~isempty(flt_slct);
+        if iscellstr(flt_slct);
+            flt_slct=sprintf('%s;',flt_slct{:});
+        end;
+        try Rinkmenos=atrinkti_teksta(Rinkmenos,flt_slct);
+        catch err; Pranesk_apie_klaida(err,'','',0);
+        end;
+    end;
 end;
 if isempty(Rinkmenos); return; end;
 

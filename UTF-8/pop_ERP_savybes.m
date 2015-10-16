@@ -3332,7 +3332,7 @@ if strcmp(get(handles.checkbox57,'Enable'),'off');
 end;
 Fs=get(handles.listbox1,'String');
 Fsi=get(handles.listbox1,'Value');
-if ~(get(handles.checkbox57, 'Value') * (~isempty(Fs)) * (~isempty(Fsi)) );
+if ~(get(handles.checkbox57, 'Value') && (~isempty(Fs)) && (~isempty(Fsi)) );
     set(handles.edit64, 'Visible', 'off'); % vid ampl
     set(handles.edit65, 'Visible', 'off'); % plotas
     set(handles.edit66, 'Visible', 'off'); % laikas pusei ploto
@@ -4025,6 +4025,61 @@ catch err;
 end;
 set(handles.togglebutton1,'Visible','off');
 set(h2,'Visible','on');
+drawnow;
+spausdinti=getappdata(handles.axes1, 'spausdinti');
+if ~isempty(spausdinti);
+    pavad=fullfile(get(handles.edit2,'String'), get(handles.text47,'TooltipString'));
+    for i=1:length(spausdinti);
+        print(h2,pavad,spausdinti{i});
+    end;
+    %pause(1);
+    delete(h2);
+    setappdata(handles.axes1, 'spausdinti', []);
+end;
+
+
+function spausdinimas_pagal_kanalus(hObject, eventdata, handles)
+%pradinis_rodymas=get(handles.checkbox57, 'Value');
+pradiniai_kanalai1=get(handles.pushbutton14, 'UserData');
+pradiniai_kanalai2=get(handles.text47, 'TooltipString');
+pradiniai_kanalai3=get(handles.text47, 'String');
+set(handles.checkbox57, 'Value', 0);
+pushbutton14_Callback(hObject, eventdata, handles);
+kanalai=get(handles.pushbutton14, 'UserData');
+paveikslu_sar={'BMP' 'JPEG' 'PNG' 'TIFF' 'EPS' 'EPS mono' 'PDF' 'PS' 'PS mono' 'SVG' };
+paveikslu_id=listdlg('OKString',lokaliz('OK'),'CancelString',lokaliz('Cancel'), ...
+    'SelectionMode','multiple','ListString',paveikslu_sar,'InitialValue',3);
+if ~isempty(paveikslu_id);
+    paveikslu_spausd={'-dbmp' '-djpeg' '-dpng' '-dtiff' '-depsc' '-deps' '-dpdf' '-dpsc' '-dps' '-dsvg'};
+    paveisklai=paveikslu_spausd(paveikslu_id);
+    set(handles.checkbox57, 'Value', 1);
+    spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveisklai, lokaliz('all'), [], []);
+    xlim=get(handles.axes1, 'XLim');
+    ylim=get(handles.axes1, 'YLim');
+    for i=1:length(kanalai);
+        spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai(i), paveisklai, kanalai{i}, xlim, ylim);
+    end;
+    set(handles.checkbox57, 'Value', 0); % pradinis_rodymas
+end;
+set(handles.pushbutton14, 'UserData', pradiniai_kanalai1);
+set(handles.text47,  'TooltipString', pradiniai_kanalai2);
+set(handles.text47,  'String',        pradiniai_kanalai3);
+ERP_perziura(hObject, eventdata, handles);
+
+
+function spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveisklai, pavadinimas, xlim, ylim)
+    set(handles.pushbutton14, 'UserData', kanalai);
+    set(handles.text47,'TooltipString', pavadinimas);
+    ERP_perziura(hObject, eventdata, handles);
+    setappdata(handles.axes1, 'spausdinti', paveisklai);
+    if ~isempty(xlim);
+        set(handles.axes1, 'XLim', xlim);
+    end;
+    if ~isempty(ylim);
+        set(handles.axes1, 'YLim', ylim);
+    end;
+    axes1_ButtonDownFcn(hObject, eventdata, handles);
+    setappdata(handles.axes1, 'spausdinti', []);
 
 
 % --- Executes on selection change in popupmenu11.
