@@ -1440,7 +1440,11 @@ end;
             CURRENTSTUDY=EEGLAB_senieji_kintamieji.CURRENTSTUDY;
         catch err,
         end;
-        if ~isempty(findobj('tag', 'EEGLAB')); eeglab redraw; end;
+        if ~isempty(findobj('tag', 'EEGLAB')); 
+            try eeglab redraw;
+            catch err; Pranesk_apie_klaida(err,'','',0);
+            end;
+        end;
     %end;
 
 susildyk(hObject, eventdata, handles);

@@ -1313,7 +1313,9 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
                 catch err;
                 end;
             end;
-            eeglab redraw;
+            try eeglab redraw;
+            catch err; Pranesk_apie_klaida(err,'','',0);
+            end;
             atnaujinti_eeglab=false;           
         end;          
     end;    
@@ -1329,7 +1331,11 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
             CURRENTSTUDY=EEGLAB_senieji_kintamieji.CURRENTSTUDY;
         catch err,
         end;
-        if ~isempty(findobj('tag', 'EEGLAB')); eeglab redraw; end;
+        if ~isempty(findobj('tag', 'EEGLAB')); 
+            try eeglab redraw;
+            catch err; Pranesk_apie_klaida(err,'','',0);
+            end;
+        end;
     end;
     
     
