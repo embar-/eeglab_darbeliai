@@ -226,7 +226,10 @@ if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
                         t1=EEG1.event(vis(kartojasi(1))).laikas_ms;
                         sk_=t2-t1;
                         if EEG2.trials > 1;
-                            sk(i_nuo)=sk(find(sk>sk_,1,'first'));
+                            i_nuo_n=find(sk>sk_,1,'first');
+                            if ~isempty(i_nuo_n);
+                                sk(i_nuo)=sk(i_nuo_n);
+                            end;
                         end;
                     else
                         sk_=sk(i_nuo);
@@ -253,10 +256,19 @@ end;
 
 % Y mažinimo koeficientas
 %disp('Tinkamo Y koeficiento radimas...');
-rms1=rms(EEG1.data(~isnan(EEG1.data))); %std(EEG1.data(~isnan(EEG1.data)),[],2);
-rms2=rms(EEG2.data(~isnan(EEG2.data))); %std(EEG2.data(~isnan(EEG2.data)),[],2);
+data1=EEG1.data(~isnan(EEG1.data));
+data2=EEG2.data(~isnan(EEG2.data));
+if ~exist('rms','file') == 2 ;
+    rms1=rms(data1);
+    rms2=rms(data2);
+else
+    rms1=std(data1,[],1);
+    rms2=std(data2,[],1);
+end;
 y_koef=round(36*sqrt(sqrt(mean([rms1(~isnan(rms1)) rms2(~isnan(rms2))]))));
-if size(y_koef) ~= [1 1]; y_koef=50; end;
+if or(size(y_koef) ~= [1 1], ismember(y_koef, [0 NaN])) ; 
+    y_koef=50; 
+end;
 setappdata(a,'y_koef',y_koef);
 
 if ~isempty(getappdata(a,'zymeti'));
@@ -498,8 +510,9 @@ function eeg_perziura_sukurti(varargin)
 %% Naujai kurti EEG peržiūrai
 if nargin == 0; return; end;
 try g=struct(varargin{3:end}); catch; end;
-try    f=g(1).figure; if ~isobject(f); f=gcf; end;
-catch; f=gcf; %figure;
+try    f=g(1).figure; 
+    if ~isobject(f); f=figure; end;
+catch; f=figure;
 end;
 set(f,'pointer','watch'); drawnow;
 try    a=g(1).axes; if ~isobject(a); a=gca; end;
@@ -533,11 +546,13 @@ setappdata(a,'MouseOutMainAxesFnc',{@eeg_perziura,'atstatyk_pele'});
 
 % Plotis
 leisti_tarpus=0;
-if     (EEG1.trials > 1) && isempty(EEG2.times);
+x_ribos_org1=isfield(EEG1, 'xmax_org') && isfield(EEG1, 'xmin_org');
+x_ribos_org2=isfield(EEG2, 'xmax_org') && isfield(EEG2, 'xmin_org');
+if     (EEG1.trials > 1) && isempty(EEG2.times) && x_ribos_org1;
     plotis1=(EEG1.xmax_org - EEG1.xmin_org) + 1/EEG1.srate;
-elseif (EEG2.trials > 1) && isempty(EEG1.times);
+elseif (EEG2.trials > 1) && isempty(EEG1.times) && x_ribos_org2;
     plotis1=(EEG2.xmax_org - EEG2.xmin_org) + 1/EEG1.srate;
-elseif (EEG1.trials > 1) && (EEG2.trials > 1);
+elseif (EEG1.trials > 1) && (EEG2.trials > 1) && x_ribos_org1 && x_ribos_org2;
     if (EEG1.xmax_org - EEG1.xmin_org) == (EEG2.xmax_org - EEG2.xmin_org);
         plotis1=(EEG1.xmax_org - EEG1.xmin_org) + 1/EEG1.srate;
     else [plotis1,i]=max([(EEG1.xmax_org - EEG1.xmin_org),(EEG2.xmax_org - EEG2.xmin_org)]);
@@ -565,20 +580,27 @@ else
     scrl_lin2y=nan(size(EEG2.times_nan));
     scrl_lin2y(n)=max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(n));
 end;
-scrollHandles = scrollplot2('Axis','XY', ...
+asis_pradine=gca;
+axes(a);
+scrollHandles = scrollplot2(a,'Axis','XY', ...
     'MinY', 0.2, ...
     'MaxY', max(EEG1.nbchan,EEG2.nbchan)+0.8, ...
     'MinX', minx, ...
     'MaxX', minx+5);
+axes(asis_pradine);
 set(scrollHandles(1),'XLim',[min(EEG1.xmin,EEG2.xmin)-plotis1 plotis1+max(EEG1.xmax,EEG2.xmax)]);
 set(scrollHandles(2),'YLim',[0.1 max(EEG1.nbchan,EEG2.nbchan)+0.9]);
 scrl_lin=findobj(findobj(f,'tag','scrollAx','userdata','x'),'tag','scrollDataLine');
-set(scrl_lin(1),'color','k','xdata',0.001*EEG1.times_nan,'ydata',scrl_lin1y,'hittest','off');
-set(scrl_lin(2),'color','r','xdata',0.001*EEG2.times_nan,'ydata',scrl_lin2y,'hittest','off');
+if length(scrl_lin) > 1;
+    set(scrl_lin(1),'color','k','xdata',0.001*EEG1.times_nan,'ydata',scrl_lin1y,'hittest','off');
+    set(scrl_lin(2),'color','r','xdata',0.001*EEG2.times_nan,'ydata',scrl_lin2y,'hittest','off');
+else
+    warning('scrl_lin');
+end;
 setappdata(a,'scrl_lin',scrl_lin);
 
 % Kontekstinis meniu
-c=uicontextmenu('tag','kontekstinis_meniu');
+c=uicontextmenu(f,'tag','kontekstinis_meniu');
 uimenu(c,'label',['+ ' lokaliz('Artinti')], 'callback','eeg_perziura(''atsakas'',''add'');');
 uimenu(c,'label',['- ' lokaliz('Tolinti')], 'callback','eeg_perziura(''atsakas'',''subtract'');');
 p=uimenu(c,'label',lokaliz('Laiko plotis'));
@@ -646,7 +668,7 @@ set(a,'UIContextMenu',c);
 % Galutinis paruošimas
 setappdata(f,'main_axes',a);
 setappdata(f,'scrollHandles',scrollHandles);
-eeg_perziura_atnaujinti('plotis',plotis);
+eeg_perziura_atnaujinti('figure', f, 'axes', a, 'plotis', plotis);
 setappdata(a,'ribu_trauka',0.2);
 set(f,'KeyPressFcn','eeg_perziura(''atsakas'')');
 set(f,'WindowScrollWheelFcn',{@eeg_perziura,'ratukas'});

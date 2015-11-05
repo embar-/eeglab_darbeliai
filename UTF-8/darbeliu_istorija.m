@@ -1,10 +1,13 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.11.05.1
+% ~ Stabilesnė įrašų peržiūra per nuosavą Darbelių funkciją.
+%
 % v2015.10.16.1
-% + SĮSP grafiko įrašymas kiekvienam kanalui atskirai.
-% ~ Ištaisyta eeg_ikelk_i_eeglab.m: jei nurodytas 
-%   rinkmenų pavadinimų filtras, atrinkti rinkmenas.
+% + SĮSP grafiko įrašymas kiekvienam kanalui atskirai. 
+% ~ Gerbti pavadinimų filtro parametrus.
+% ~ Vertimų atnaujinimas.
 %
 % v2015.10.10.1
 % ~ SĮSP savybių nustatymas ir grafinis pavaizdavimas

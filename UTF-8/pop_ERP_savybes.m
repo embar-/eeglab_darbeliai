@@ -1410,7 +1410,9 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
                 catch err;
                 end;
             end;
-            eeglab redraw;
+            try eeglab redraw;
+            catch err; Pranesk_apie_klaida(err,'','',0);
+            end;
         end;
         
     end;

@@ -1360,8 +1360,10 @@ for i=1:Pasirinktu_failu_N;
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
 
                 try
-                    EEG = eeg_checkset( EEG );
-                    eeglab redraw;
+                    EEG = eeg_checkset( EEG );                    
+                    try eeglab redraw;
+                    catch err; Pranesk_apie_klaida(err,'','',0);
+                    end;
                     pop_eegplot( EEG, 1, 1, 1);
                     EEG = eegh('pop_eegplot( EEG, 1, 1, 1);', EEG);
 
@@ -1376,7 +1378,7 @@ for i=1:Pasirinktu_failu_N;
                     %eeglab redraw;
 
 
-                    if get(handles.checkbox_perziureti_ICA_demesio,'Value') == 0 ;
+                    if get(handles.checkbox_perziureti_demesio,'Value') == 0 ;
 
                         while ~isempty([...
                                 findobj('-regexp','name','Reject components by map.*')  ; ...
@@ -1424,7 +1426,10 @@ for i=1:Pasirinktu_failu_N;
                     end;
 
                     %[ALLEEG EEG CURRENTSET] = eeg_store([], EEG);
-                    eeglab redraw;
+                    
+                    try eeglab redraw;
+                    catch err; Pranesk_apie_klaida(err,'','',0);
+                    end;
 
                     %Palauk();
 
@@ -1628,8 +1633,10 @@ for i=1:Pasirinktu_failu_N;
                     [~,NaujaRinkmena_be_galunes,~]=fileparts(NaujaRinkmena);
                     uzverti_EEG_perziuru_langus; %([ '.*' NaujaRinkmena_be_galunes '.*' ]);
                     
-                    if ICA_zr_veiksena < 8;
-                        eeglab redraw ;
+                    if ICA_zr_veiksena < 8;                        
+                        try eeglab redraw;
+                        catch err; Pranesk_apie_klaida(err,'','',0);
+                        end;
                         drawnow ;
                     end;
                     
@@ -1644,10 +1651,10 @@ for i=1:Pasirinktu_failu_N;
 
                     switch ICA_zr_veiksena
                         case 2
-                            pop_eeg_perziura(EEG, 'zymeti', 0);
+                            pop_eeg_perziura(EEG, 'zymeti', 0, 'title', NaujaRinkmena_be_galunes);
                             %pop_eegplot( EEG, 1, 1, 1);
                         case {3 4 6}
-                            pop_eeg_perziura(EEG, 'zymeti', 0, 'ICA', 1);
+                            pop_eeg_perziura(EEG, 'zymeti', 0, 'title', NaujaRinkmena_be_galunes, 'ICA', 1);
                             %pop_eegplot( EEG, 0, 1, 1);
                         case 7
                             if isfield(EEG.reject, 'MARAinfo');
@@ -1660,7 +1667,9 @@ for i=1:Pasirinktu_failu_N;
                     %if get(handles.popupmenu8,'Value') ~= 4 ;
                     
                     if ICA_zr_veiksena < 8;
-                        eeglab redraw ;
+                        try eeglab redraw;
+                        catch err; Pranesk_apie_klaida(err,'','',0);
+                        end;
                         drawnow ;
                         pause(1) ;
                     end;
@@ -1674,7 +1683,9 @@ for i=1:Pasirinktu_failu_N;
                             end ;
                             uiwait(gcf,3);
                             if ICA_zr_veiksena < 8;
-                                eeglab redraw ;
+                                try eeglab redraw;
+                                catch err; Pranesk_apie_klaida(err,'','',0);
+                                end;
                             end;
                         end ;
 
@@ -1702,11 +1713,11 @@ for i=1:Pasirinktu_failu_N;
                             case 3
                                 EEG_senas  = EEG;
                                 EEG_naujas = pop_subcomp( EEG, gcompreject, 0 );
-                                pop_eeg_perziura(EEG_naujas, EEG_senas, 'zymeti', 0);
+                                pop_eeg_perziura(EEG_naujas, EEG_senas, 'zymeti', 0, 'title', NaujaRinkmena_be_galunes);
+                                drawnow; 
 %                                 ats=questdlg({lokaliz('Please review data after rejecting ICA components:') num2str(gcompreject) ...
 %                                     lokaliz('Priimti pakeitimus?')}, lokaliz('You review ICA...'), ...
 %                                     lokaliz('Cancel'), lokaliz('Atmesti'), lokaliz('Priimti'), lokaliz('Priimti') );
-                                
                                 d = dialog('Position',[300 300 250 200],'Name',lokaliz('You review ICA...'),'WindowStyle','normal');
                                 
                                 uicontrol('Parent',d,...
@@ -1758,7 +1769,9 @@ for i=1:Pasirinktu_failu_N;
                     end;
                     
                     if ICA_zr_veiksena < 8;
-                        eeglab redraw ;
+                        try eeglab redraw;
+                        catch err; Pranesk_apie_klaida(err,'','',0);
+                        end;
                         drawnow ;
                         pause(1) ;
                     end;
@@ -2493,7 +2506,9 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
                 catch err;
                 end;
             end;
-            eeglab redraw;
+            try eeglab redraw;
+            catch err; Pranesk_apie_klaida(err,'','',0);
+            end;
             atnaujinti_eeglab=false;
         end;
     end;
@@ -2509,7 +2524,11 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
             CURRENTSTUDY=EEGLAB_senieji_kintamieji.CURRENTSTUDY;
         catch err,
         end;
-        if ~isempty(findobj('tag', 'EEGLAB')); eeglab redraw; end;
+        if ~isempty(findobj('tag', 'EEGLAB')); 
+            try eeglab redraw;
+            catch err; Pranesk_apie_klaida(err,'','',0);
+            end;
+        end;
     end;
 
     % Uždaryk failą, jei MARA apibendrinimai buvo rašomi
