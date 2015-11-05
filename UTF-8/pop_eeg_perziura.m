@@ -107,12 +107,12 @@ end;
 
 if isempty(EEG2)
     if zymeti;
-        eeg_perziura(EEG1,EEG1);
+        eeg_perziura(EEG1, EEG1, 'figure', f, 'axes', a);
     else
-        eeg_perziura(EEG1);
+        eeg_perziura(EEG1, []  , 'figure', f, 'axes', a);
     end;
 else
-        eeg_perziura(EEG1,EEG2);
+        eeg_perziura(EEG1, EEG2, 'figure', f, 'axes', a);
 end;
 
 if isempty(getappdata(a,'EEG1'));
