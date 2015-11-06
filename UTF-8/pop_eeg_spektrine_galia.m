@@ -1744,6 +1744,7 @@ else
     set(handles.checkbox_legenda,'Enable','off');   
     set(handles.axes1,'Visible','off');     
     axes(handles.axes1);
+    legend('off');
     cla;
     return;
 end;
