@@ -28,7 +28,7 @@ DUOMENYS.VISU.Papildomi_dazniu_santykiai=Papildomi_dazniu_santykiai;
 DUOMENYS.VISU.lango_ilgis_sekundemis=lango_ilgis_sekundemis;
 DUOMENYS.VISU.fft_tasku_herce=fft_tasku_herce;
 %% Aprašykime kintamuosius
-leisti_interpoliuoti=0;
+%leisti_interpoliuoti=0;
 analizuoti_pavadinima=0;
 %AR_GRAFIKAS='off';
 if analizuoti_pavadinima;
@@ -266,12 +266,14 @@ for i=1:NumberOfFiles ;
         EEG = eeg_ikelk(KELIAS_,Rinkmena_);
     end;
 
-    try
-
-    EEG = eeg_checkset( EEG );
-
+    try 
+        
+    EEG = eeg_checkset( EEG );        
+        
     if (EEG.xmax - EEG.xmin) < DUOMENYS.VISU.lango_ilgis_sekundemis ;
-       error(['Epocha trumpesnė už FFT lango ilgį! EEG.xmax-EEG.xmin=' num2str(EEG.xmax - EEG.xmin) 's, bet FFT langas' num2str(DUOMENYS.VISU.lango_ilgis_sekundemis) ' s.']);
+       error([lokaliz('Epocha trumpesne uz FFT lango ilgi!') ...
+           ' EEG.xmax-EEG.xmin=' num2str(EEG.xmax - EEG.xmin) 's, bet FFT langas' ...
+           num2str(DUOMENYS.VISU.lango_ilgis_sekundemis) ' s.']);
     end;
 
     %if EEG.nbchan > 0;
@@ -283,7 +285,11 @@ for i=1:NumberOfFiles ;
     end;
 
     % Atrinkti kanalus
-    EEG = pop_select( EEG,'channel',DUOMENYS.VISU.NORIMI_KANALAI);
+    try EEG = pop_select( EEG,'channel',DUOMENYS.VISU.NORIMI_KANALAI);
+    catch err; Pranesk_apie_klaida(err, 'EEG spektras', File, 0);
+        error([ lokaliz('Some selected channels may not appear in every dataset.') ' ' ...
+            lokaliz('Galimas sprendimas:') ' ' lokaliz('Allow interpolate channels') '.' ]);
+    end;
     % Jei nebuvo interpoliacijos, tada reikia naudoti sekančią eilutę, kad
     % nenulūžtų programa beieškodama nesamo kanalo
     % EEG = pop_select( EEG,'channel',intersect({EEG.chanlocs(:).labels},DUOMENYS.VISU.NORIMI_KANALAI));
@@ -414,10 +420,8 @@ end ;
 
 %% Spektrinės galios tankio duomenų apdorojimas - Galios skaičiavimas
 DUOMENYS.VISU.Dazniu_sriciu_N=length(DUOMENYS.VISU.Dazniu_sritys);
-try
-DUOMENYS.VISU.Salygu_N=size(DUOMENYS.VISU.tmp.failai,2);
-catch err;
-    error('Duomenys tušti! Patikrinkite, FFT lango ilgį nurodėte didesnį negu yra duomenų epochos ilgis?');
+try DUOMENYS.VISU.Salygu_N=size(DUOMENYS.VISU.tmp.failai,2);
+catch; error([lokaliz('Error') '! '  lokaliz('Skaitykite info konsoleje.')]);
 end
 %DUOMENYS.VISU.Tiriamieji=[];
 %for i=1:DUOMENYS.VISU.Salygu_N;
@@ -427,12 +431,10 @@ end
 DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz=DUOMENYS.VISU.tmp.SPEKTRAS_LENTELESE_absol ;
 DUOMENYS.VISU.failai=DUOMENYS.VISU.tmp.failai ;
 
-try
-cd(NewPath);
-catch err;
-    try
-        cd(NewDir);
-    catch err;
+try cd(NewPath);
+catch;
+    try cd(NewDir); 
+    catch; 
     end;
 end;
 

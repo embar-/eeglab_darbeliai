@@ -1744,6 +1744,7 @@ else
     set(handles.checkbox_legenda,'Enable','off');   
     set(handles.axes1,'Visible','off');     
     axes(handles.axes1);
+    legend('off');
     cla;
     return;
 end;
@@ -2201,7 +2202,7 @@ function checkbox_interpol_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_interpol
-
+checkbox_perziura_Callback(hObject, eventdata, handles);
 
 % --- Executes on mouse press over axes background.
 function axes1_ButtonDownFcn(hObject, eventdata, handles)

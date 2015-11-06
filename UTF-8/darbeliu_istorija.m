@@ -1,6 +1,9 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.11.06.1
+% ~ EEG spektrinė galios dialoge veikia parinktis kanalų interpoliavimui.
+%
 % v2015.11.05.1
 % ~ Stabilesnė įrašų peržiūra per nuosavą Darbelių funkciją.
 %
