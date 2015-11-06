@@ -600,7 +600,10 @@ end;
 setappdata(a,'scrl_lin',scrl_lin);
 
 % Kontekstinis meniu
-c=uicontextmenu(f,'tag','kontekstinis_meniu');
+figura_pradine=gcf;
+figure(f);
+c=uicontextmenu('tag','kontekstinis_meniu');
+figure(figura_pradine);
 uimenu(c,'label',['+ ' lokaliz('Artinti')], 'callback','eeg_perziura(''atsakas'',''add'');');
 uimenu(c,'label',['- ' lokaliz('Tolinti')], 'callback','eeg_perziura(''atsakas'',''subtract'');');
 p=uimenu(c,'label',lokaliz('Laiko plotis'));
