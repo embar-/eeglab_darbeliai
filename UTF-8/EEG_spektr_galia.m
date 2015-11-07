@@ -308,8 +308,8 @@ for i=1:NumberOfFiles ;
         DUOMENYS.FAILO(i).KANALAI=DUOMENYS.VISU.NORIMI_KANALAI; %{EEG.chanlocs.labels}
         [~,Kanalu_sukeisti_id]=ismember(DUOMENYS.VISU.NORIMI_KANALAI,{EEG.chanlocs.labels});
         
-        spectopo_daznis=[1 2 4 8 16 32 64 128 256 512 1024];
-        spectopo_daznis=spectopo_daznis(max(find(spectopo_daznis <= (EEG.srate/2) == 1)));
+        %spectopo_daznis=[1 2 4 8 16 32 64 128 256 512 1024];
+        %spectopo_daznis=spectopo_daznis(max(find(spectopo_daznis <= (EEG.srate/2) == 1)));
 
         [DUOMENYS.FAILO(i).SPEKTRAS.dB(Kanalu_sukeisti_id,:),DUOMENYS.FAILO(i).DAZNIAI]= ...
             pop_spectopo(EEG, 1, [EEG.times(1) EEG.times(end)], 'EEG',...
@@ -375,23 +375,24 @@ for i=1:NumberOfFiles ;
         end;
 
         % Tiek tikrinti nereikia, bet gali praversti, jei interpoliuosime ir kanalai nesutaps
-        if ~exist('DUOMENYS.VISU.DAZNIAI');
+        if ~isfield(DUOMENYS.VISU, 'DAZNIAI');
             DUOMENYS.VISU.DAZNIAI=DUOMENYS.FAILO(i).DAZNIAI;
         end;
-        if ~exist('DUOMENYS.VISU.KANALAI');
+        if ~isfield(DUOMENYS.VISU, 'KANALAI');
             DUOMENYS.VISU.KANALAI=DUOMENYS.FAILO(i).KANALAI;
         end;
         if isequal(DUOMENYS.VISU.DAZNIAI, DUOMENYS.FAILO(i).DAZNIAI);
-            if isequal(DUOMENYS.VISU.KANALAI, DUOMENYS.FAILO(i).KANALAI);
-                DUOMENYS.VISU.tmp.SPEKTRAS_LENTELESE_absol{DUOMENYS.FAILO(i).Tiriamojo_idx,DUOMENYS.FAILO(i).Salyga}=DUOMENYS.FAILO(i).SPEKTRAS.absol;
-                DUOMENYS.VISU.tmp.failai{DUOMENYS.FAILO(i).Tiriamojo_idx,DUOMENYS.FAILO(i).Salyga}=File;
-            else
-                warning(['Nesutampa kanalai su kitų failų. ' filename]);
+            warning(['Nesutampa EEG.srate su kitų failų. ' File]);
+            if length(DUOMENYS.FAILO(i).DAZNIAI) < length(DUOMENYS.VISU.DAZNIAI);
+                DUOMENYS.VISU.DAZNIAI=DUOMENYS.FAILO(i).KANALAI;
             end;
-        else
-            warning(['Nesutampa dažniai su kitų failų. ' filename]);
         end;
-
+        if isequal(DUOMENYS.VISU.KANALAI, DUOMENYS.FAILO(i).KANALAI);
+            DUOMENYS.VISU.tmp.SPEKTRAS_LENTELESE_absol{DUOMENYS.FAILO(i).Tiriamojo_idx,DUOMENYS.FAILO(i).Salyga}=DUOMENYS.FAILO(i).SPEKTRAS.absol;
+            DUOMENYS.VISU.tmp.failai{DUOMENYS.FAILO(i).Tiriamojo_idx,DUOMENYS.FAILO(i).Salyga}=File;
+        else
+            warning(['Nesutampa kanalai su kitų failų. ' File]);
+        end;
 
         % Isvalyti atminti
         STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
@@ -449,18 +450,25 @@ DUOMENYS.VISU.Tiriamuju_N=length(DUOMENYS.VISU.Tiriamieji);
 disp('Absoliuti galia...');
 DUOMENYS.VISU.GALIA_Absol_dazniu_srityje={};
 for i=1:DUOMENYS.VISU.Dazniu_sriciu_N;
+    [~,tasku_sritis_nuo]=min(abs(DUOMENYS.VISU.DAZNIAI - DUOMENYS.VISU.Dazniu_sritys{i}(1)));
+    [~,tasku_sritis_iki]=min(abs(DUOMENYS.VISU.DAZNIAI - DUOMENYS.VISU.Dazniu_sritys{i}(2)));
+    tasku_sritis= [tasku_sritis_nuo:tasku_sritis_iki];
+    if length(tasku_sritis) < 2
+        warning([num2str(DUOMENYS.VISU.Dazniu_sritys{i}(2)) 'Hz > ' num2str(DUOMENYS.VISU.DAZNIAI(end)) 'Hz (~EEG.srate/2)!' ]);
+    end;
     for tir=1:DUOMENYS.VISU.Tiriamuju_N ;
         for sal=1:DUOMENYS.VISU.Salygu_N ;
-            [~,tasku_sritis_nuo]=min(abs(DUOMENYS.VISU.DAZNIAI - DUOMENYS.VISU.Dazniu_sritys{i}(1)));
-            [~,tasku_sritis_iki]=min(abs(DUOMENYS.VISU.DAZNIAI - DUOMENYS.VISU.Dazniu_sritys{i}(2)));
-            tasku_sritis= [tasku_sritis_nuo:tasku_sritis_iki];
             % DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,sal}(tir,1:DUOMENYS.VISU.KANALU_N)= ( DUOMENYS.VISU.Dazniu_sritys{i}(2) - DUOMENYS.VISU.Dazniu_sritys{i}(1) ) * mean(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{tir,sal}(:,tasku_sritis),2)';
             for kan=1:DUOMENYS.VISU.KANALU_N;
                 try
-                DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,sal}(tir,kan)= ...
-                    trapz(DUOMENYS.VISU.DAZNIAI(tasku_sritis), ...
-                    DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{tir,sal}(kan,tasku_sritis));
-                catch err;
+                    if length(tasku_sritis) > 1
+                        DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,sal}(tir,kan)= ...
+                            trapz(DUOMENYS.VISU.DAZNIAI(tasku_sritis), ...
+                            DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{tir,sal}(kan,tasku_sritis));
+                    else
+                        DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,sal}(tir,kan)=0;
+                    end;
+                catch %err; Pranesk_apie_klaida(err,'','',0);
                     %warning([DUOMENYS.VISU.Tiriamieji{tir} ' : ' DUOMENYS.VISU.KANALAI{kan} ' : ' num2str(DUOMENYS.VISU.Dazniu_sritys{i}(1)) '-' num2str(DUOMENYS.VISU.Dazniu_sritys{i}(2)) 'Hz '  ] );
                     error([DUOMENYS.VISU.Tiriamieji{tir} ' : Data computed for ' ...
                         num2str(size(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{1,1},1)) ...
@@ -470,7 +478,6 @@ for i=1:DUOMENYS.VISU.Dazniu_sriciu_N;
             end;
         end;
     end;
-
 end;
 
 %% Santykinė galia
