@@ -1,10 +1,10 @@
 %% [DUOMENYS]=EEG_spektr_galia(Kelias, Failai, KANALAI, leisti_interpoliuoti, ...
-% Dazniu_sritys Dazniu_sriciu_pavadinimai Papildomi_dazniu_santykiai,
+% Dazniu_sritys Dazniu_sriciu_pavadinimai Papildomi_dazniu_santykiai, ...
 % AR_GRAFIKAS,lango_ilgis_sekundemis,fft_tasku_herce)
 %
 %% Gauna pasirinktų failų spektrinį galios tankį
 %
-% (c) 2014 Mindaugas Baranauskas
+% (c) 2014-2015 Mindaugas Baranauskas
 
 
 %%
@@ -28,7 +28,6 @@ DUOMENYS.VISU.Papildomi_dazniu_santykiai=Papildomi_dazniu_santykiai;
 DUOMENYS.VISU.lango_ilgis_sekundemis=lango_ilgis_sekundemis;
 DUOMENYS.VISU.fft_tasku_herce=fft_tasku_herce;
 %% Aprašykime kintamuosius
-%leisti_interpoliuoti=0;
 analizuoti_pavadinima=0;
 %AR_GRAFIKAS='off';
 if analizuoti_pavadinima;
@@ -36,9 +35,6 @@ if analizuoti_pavadinima;
     %DUOMENYS.VISU.Pavadinimo_schema='s%d%c_%s';
     DUOMENYS.VISU.Pavadinimo_schema='%s';
 end;
-%DUOMENYS.VISU.NORIMI_KANALAI={'F3' 'Fz' 'F4' 'C3' 'Cz' 'C4' 'P3' 'Pz' 'P4' } ;
-%DUOMENYS.VISU.NORIMI_KANALAI={'Fp1' 'Fpz' 'Fp2' 'F3' 'Fz' 'F4' 'FC5' 'FC1' 'FC2' 'FC6' 'C3' 'Cz' 'C4' 'CP5' 'CP1' 'CP2' 'CP6' 'P3' 'Pz' 'P4' 'POz' 'O1' 'Oz' 'O2' 'AF3' 'AF4' 'F5' 'F1' 'F2' 'F6' 'FC3' 'FCz' 'FC4' 'C5' 'C1' 'C2' 'C6' 'CP3' 'CPz' 'CP4' 'P5' 'P1' 'P2' 'P6' 'PO5' 'PO3' 'PO4' 'PO6';} ;
-%DUOMENYS.VISU.NORIMI_KANALAI={'F3' 'F4' 'P3' 'P4' 'FC3' 'FC4' 'CP3' 'CP4';} ;
 % Pirmojo intervalo atžvilgiu bus skaičiuojama santykinė galia
 %DUOMENYS.VISU.Dazniu_sritys = { [1 45] [8 12] [8 13] ; };
 % Turi atitikti dažnių sričių kiekį
@@ -47,8 +43,6 @@ end;
 % [4 3] reiškia, kad bus dalinama ketvirto dažnio absoliuti reikšmė iš trečio dažnio absoliučios reikšmės
 %DUOMENYS.VISU.Papildomi_dazniu_santykiai={ [4 3] [5 3] [4 9] [5 10] [3 9] [3 10] [15 9] [16 10] [15 14] [16 14] } ;
 %DUOMENYS.VISU.Papildomi_dazniu_santykiai={ } ;
-
-
 
 % Skyriklis nurodant santykinę galią
 skyriklis='.';
@@ -197,7 +191,9 @@ end;
 orig_path=pwd;
 if or(isempty(FileNames),isempty(PathName));
     % Duomenu ikelimui:
-    [FileNames,PathName,FilterIndex] = uigetfile({'*.set','EEGLAB duomenys';'*.cnt','ASA LAB EEG duomenys';'*.*','Visi failai'},'Pasirinkite duomenis','','MultiSelect','on');
+    [FileNames,PathName,FilterIndex] = ...
+        uigetfile({'*.set','EEGLAB duomenys';'*.cnt','ASA LAB EEG duomenys';'*.*','Visi failai'},...
+        'Pasirinkite duomenis','','MultiSelect','on');
     NewFileNames={};
     try
         cd(PathName);
@@ -949,7 +945,7 @@ end;
 fclose(fid);
 end;
 try
-    if exist(Rezultatu_TXT_failas);
+    if exist(Rezultatu_TXT_failas,'file') == 2;
         open(Rezultatu_TXT_failas);
     end
 catch err;
@@ -962,7 +958,7 @@ disp(Rezultatu_MAT_failas);
 save( Rezultatu_MAT_failas , 'DUOMENYS') ;
 end;
 
-try delete([Rezultatu_MAT_failas '~']) ; catch err; end;
+try delete([Rezultatu_MAT_failas '~']) ; catch; end;
 cd(orig_path);
 
 
