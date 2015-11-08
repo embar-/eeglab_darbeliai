@@ -1,10 +1,11 @@
 %% [DUOMENYS]=EEG_spektr_galia(Kelias, Failai, KANALAI, leisti_interpoliuoti, ...
-% Dazniu_sritys Dazniu_sriciu_pavadinimai Papildomi_dazniu_santykiai,
-% AR_GRAFIKAS,lango_ilgis_sekundemis,fft_tasku_herce)
+% Dazniu_sritys Dazniu_sriciu_pavadinimai Papildomi_dazniu_santykiai, ...
+% AR_GRAFIKAS,lango_ilgis_sekundemis,fft_tasku_herce, ...
+% Ar_reikia_galios_absoliucios, Ar_reikia_galios_santykines)
 %
 %% Gauna pasirinktų failų spektrinį galios tankį
 %
-% (c) 2014 Mindaugas Baranauskas
+% (c) 2014-2015 Mindaugas Baranauskas
 
 
 %%
@@ -17,7 +18,8 @@ function [DUOMENYS]=EEG_spektr_galia(...
     Dazniu_sritys, Dazniu_sriciu_pavadinimai,...
     Papildomi_dazniu_santykiai,...
     AR_GRAFIKAS,...
-    lango_ilgis_sekundemis,fft_tasku_herce)
+    lango_ilgis_sekundemis,fft_tasku_herce, ...
+    Ar_reikia_galios_absoliucios, Ar_reikia_galios_santykines)
 
 [ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
 DUOMENYS.VISU.NORIMI_KANALAI=NORIMI_KANALAI;
@@ -28,7 +30,6 @@ DUOMENYS.VISU.Papildomi_dazniu_santykiai=Papildomi_dazniu_santykiai;
 DUOMENYS.VISU.lango_ilgis_sekundemis=lango_ilgis_sekundemis;
 DUOMENYS.VISU.fft_tasku_herce=fft_tasku_herce;
 %% Aprašykime kintamuosius
-%leisti_interpoliuoti=0;
 analizuoti_pavadinima=0;
 %AR_GRAFIKAS='off';
 if analizuoti_pavadinima;
@@ -36,9 +37,6 @@ if analizuoti_pavadinima;
     %DUOMENYS.VISU.Pavadinimo_schema='s%d%c_%s';
     DUOMENYS.VISU.Pavadinimo_schema='%s';
 end;
-%DUOMENYS.VISU.NORIMI_KANALAI={'F3' 'Fz' 'F4' 'C3' 'Cz' 'C4' 'P3' 'Pz' 'P4' } ;
-%DUOMENYS.VISU.NORIMI_KANALAI={'Fp1' 'Fpz' 'Fp2' 'F3' 'Fz' 'F4' 'FC5' 'FC1' 'FC2' 'FC6' 'C3' 'Cz' 'C4' 'CP5' 'CP1' 'CP2' 'CP6' 'P3' 'Pz' 'P4' 'POz' 'O1' 'Oz' 'O2' 'AF3' 'AF4' 'F5' 'F1' 'F2' 'F6' 'FC3' 'FCz' 'FC4' 'C5' 'C1' 'C2' 'C6' 'CP3' 'CPz' 'CP4' 'P5' 'P1' 'P2' 'P6' 'PO5' 'PO3' 'PO4' 'PO6';} ;
-%DUOMENYS.VISU.NORIMI_KANALAI={'F3' 'F4' 'P3' 'P4' 'FC3' 'FC4' 'CP3' 'CP4';} ;
 % Pirmojo intervalo atžvilgiu bus skaičiuojama santykinė galia
 %DUOMENYS.VISU.Dazniu_sritys = { [1 45] [8 12] [8 13] ; };
 % Turi atitikti dažnių sričių kiekį
@@ -47,8 +45,6 @@ end;
 % [4 3] reiškia, kad bus dalinama ketvirto dažnio absoliuti reikšmė iš trečio dažnio absoliučios reikšmės
 %DUOMENYS.VISU.Papildomi_dazniu_santykiai={ [4 3] [5 3] [4 9] [5 10] [3 9] [3 10] [15 9] [16 10] [15 14] [16 14] } ;
 %DUOMENYS.VISU.Papildomi_dazniu_santykiai={ } ;
-
-
 
 % Skyriklis nurodant santykinę galią
 skyriklis='.';
@@ -197,7 +193,9 @@ end;
 orig_path=pwd;
 if or(isempty(FileNames),isempty(PathName));
     % Duomenu ikelimui:
-    [FileNames,PathName,FilterIndex] = uigetfile({'*.set','EEGLAB duomenys';'*.cnt','ASA LAB EEG duomenys';'*.*','Visi failai'},'Pasirinkite duomenis','','MultiSelect','on');
+    [FileNames,PathName,FilterIndex] = ...
+        uigetfile({'*.set','EEGLAB duomenys';'*.cnt','ASA LAB EEG duomenys';'*.*','Visi failai'},...
+        'Pasirinkite duomenis','','MultiSelect','on');
     NewFileNames={};
     try
         cd(PathName);
@@ -237,6 +235,12 @@ if ~(exist(NewPath,'dir') == 7);
     mkdir(NewPath);
 end;
 
+% tikrinimas dėl kanalų tvarkos priskyrimo
+simuliacinis_tikrinimas([3 1 2], 1:2)=[10 10; 20 20; 30 30];
+if ~isequal(simuliacinis_tikrinimas, [20 20; 30 30; 10 10]);
+    error(lokaliz('Internal error'));
+end;
+
 NumberOfFiles=length(FileNames);
 for i=1:NumberOfFiles ;
 
@@ -265,151 +269,168 @@ for i=1:NumberOfFiles ;
     else
         EEG = eeg_ikelk(KELIAS_,Rinkmena_);
     end;
-
-    try 
+    
+    try
         
-    EEG = eeg_checkset( EEG );        
-        
-    if (EEG.xmax - EEG.xmin) < DUOMENYS.VISU.lango_ilgis_sekundemis ;
-       error([lokaliz('Epocha trumpesne uz FFT lango ilgi!') ...
-           ' EEG.xmax-EEG.xmin=' num2str(EEG.xmax - EEG.xmin) 's, bet FFT langas' ...
-           num2str(DUOMENYS.VISU.lango_ilgis_sekundemis) ' s.']);
-    end;
-
-    %if EEG.nbchan > 0;
-
-    if leisti_interpoliuoti;
-        % Jei reikia – interpoliuok
-        EEG = pop_interp(EEG, EEG_.chanlocs, 'spherical');
         EEG = eeg_checkset( EEG );
-    end;
-
-    % Atrinkti kanalus
-    try EEG = pop_select( EEG,'channel',DUOMENYS.VISU.NORIMI_KANALAI);
-    catch err; Pranesk_apie_klaida(err, 'EEG spektras', File, 0);
-        error([ lokaliz('Some selected channels may not appear in every dataset.') ' ' ...
-            lokaliz('Galimas sprendimas:') ' ' lokaliz('Allow interpolate channels') '.' ]);
-    end;
-    % Jei nebuvo interpoliacijos, tada reikia naudoti sekančią eilutę, kad
-    % nenulūžtų programa beieškodama nesamo kanalo
-    % EEG = pop_select( EEG,'channel',intersect({EEG.chanlocs(:).labels},DUOMENYS.VISU.NORIMI_KANALAI));
-
-    EEG = eeg_checkset( EEG );
-
-    if and(EEG.nbchan > 0, ~isempty(EEG.data));
-
-        if strcmp(AR_GRAFIKAS,'on');
-            set(0,'CurrentFigure',figure_id);
-            clf;
+        
+        if (EEG.xmax - EEG.xmin) < DUOMENYS.VISU.lango_ilgis_sekundemis ;
+            error([lokaliz('Epocha trumpesne uz FFT lango ilgi!') ...
+                ' EEG.xmax-EEG.xmin=' num2str(EEG.xmax - EEG.xmin) 's, bet FFT langas' ...
+                num2str(DUOMENYS.VISU.lango_ilgis_sekundemis) ' s.']);
         end;
-
-        %try
         
-        DUOMENYS.FAILO(i).KANALAI=DUOMENYS.VISU.NORIMI_KANALAI; %{EEG.chanlocs.labels}
-        [~,Kanalu_sukeisti_id]=ismember(DUOMENYS.VISU.NORIMI_KANALAI,{EEG.chanlocs.labels});
+        %if EEG.nbchan > 0;
         
-        spectopo_daznis=[1 2 4 8 16 32 64 128 256 512 1024];
-        spectopo_daznis=spectopo_daznis(max(find(spectopo_daznis <= (EEG.srate/2) == 1)));
-
-        [DUOMENYS.FAILO(i).SPEKTRAS.dB(Kanalu_sukeisti_id,:),DUOMENYS.FAILO(i).DAZNIAI]= ...
-            pop_spectopo(EEG, 1, [EEG.times(1) EEG.times(end)], 'EEG',...
-            'percent',100,...
-            'freqrange',[0 EEG.srate/2],...
-            'electrodes','off',...
-            'winsize',EEG.srate*DUOMENYS.VISU.lango_ilgis_sekundemis,...
-            'nfft',EEG.srate*DUOMENYS.VISU.fft_tasku_herce,...
-            'plot',AR_GRAFIKAS );
+        if leisti_interpoliuoti;
+            % Jei reikia – interpoliuok
+            EEG = pop_interp(EEG, EEG_.chanlocs, 'spherical');
+            EEG = eeg_checkset( EEG );
+        end;
         
-        % 0.1*[0:(10*floor(EEG.srate/2))]
-        %             'freqfac',10,...
-        %         catch err;
-        %             disp('Perkuriamas EEG.chanlocs');
-        %             for kan_i=1:EEG.nbchan;
-        %                 EEG.chanlocs(kan_i).labels=    DUOMENYS.VISU.NORIMI_KANALAI{kan_i} ;
-        %                 EEG.chanlocs(kan_i).type=      '' ;
-        %                 EEG.chanlocs(kan_i).theta=     0 ;
-        %                 EEG.chanlocs(kan_i).radius=    0 ;
-        %                 EEG.chanlocs(kan_i).X=         5.20474889637625e-15 ;
-        %                 EEG.chanlocs(kan_i).Y=         0  ;
-        %                 EEG.chanlocs(kan_i).Z=         85 ;
-        %                 EEG.chanlocs(kan_i).sph_theta= 0  ;
-        %                 EEG.chanlocs(kan_i).sph_phi=   90 ;
-        %                 EEG.chanlocs(kan_i).sph_radius=85 ;
-        %                 EEG.chanlocs(kan_i).urchan=    16 ;
-        %                 EEG.chanlocs(kan_i).ref=       '' ;
-        %             end;
-        %         end;
-        %         [DUOMENYS.FAILO(i).SPEKTRAS.dB,DUOMENYS.FAILO(i).DAZNIAI]= ...
-        %         pop_spectopo(EEG, 1, [EEG.times(1) EEG.times(end)], 'EEG' , 'freq', [10], 'freqrange',[0 min(50,EEG.srate/2)],'electrodes','off','plot','off');
-
-
-        DUOMENYS.FAILO(i).SPEKTRAS.absol=10.^(DUOMENYS.FAILO(i).SPEKTRAS.dB/10);
-        DUOMENYS.FAILO(i).pavad=File;
-        if analizuoti_pavadinima
-            % Pakeitus DUOMENYS.VISU.Pavadinimo_schema ar duomenų aplanką, teks
-            % iš naujo aprašyti informacijos atpažinimą pagal failą.
-            DUOMENYS.FAILO(i).Informacija= textscan(File, DUOMENYS.VISU.Pavadinimo_schema); %,'delimiter','');
-            DUOMENYS.FAILO(i).Tiriamasis=[num2str(DUOMENYS.FAILO(i).Informacija{1}) DUOMENYS.FAILO(i).Informacija{2}];
-            DUOMENYS.FAILO(i).Salyga=DUOMENYS.FAILO(i).Informacija{2}; % (['Ramybe' num2str(DUOMENYS.FAILO(i).Informacija{2})]);
-            DUOMENYS.FAILO(i).Grupe=1;
-            DUOMENYS.FAILO(i).Sesija=1;
-        else
-            %if isempty(EEG.subject);
-            %[~,DUOMENYS.FAILO(i).Tiriamasis,~]=fileparts(File);
-            DUOMENYS.FAILO(i).Tiriamasis=File;
-            DUOMENYS.FAILO(i).Salyga=1;
-            DUOMENYS.FAILO(i).Grupe=1;
-            DUOMENYS.FAILO(i).Sesija=1;
-            %         else % Kol kas nesutvarkyta tam atvejui, jei vienam tiriamajam bus kelios salygos neskaitines, jei bus skirtingu grupiu ir sesiju.
-            DUOMENYS.FAILO(i).Tiriamasis_=EEG.subject;
-            DUOMENYS.FAILO(i).Salyga_=EEG.condition;
-            DUOMENYS.FAILO(i).Grupe=EEG.group;
-            DUOMENYS.FAILO(i).Sesija=EEG.session;
+        % Tikrinti, ar visi kanalai yra        
+        nesutampantys_kanalai=setdiff(DUOMENYS.VISU.NORIMI_KANALAI,{EEG.chanlocs(:).labels});
+        if ~isempty(nesutampantys_kanalai);
+            isp_prnsm=sprintf(' \n\n%s\n%s:\n %s\n%s\n%s\n%s %s\n', ...
+                lokaliz('Some selected channels may not appear in every dataset.'), ...
+                lokaliz('Rinkmena'), File, ...
+                lokaliz('Missing channels:'), sprintf(' %s', nesutampantys_kanalai{:}), ...
+                lokaliz('Galimas sprendimas:'), ...
+                lokaliz('Allow interpolate channels'));
+            wrn=warning('off','backtrace');
+            warning(isp_prnsm);
+            warning(wrn.state, 'backtrace');
+        end;
+        
+        % Atrinkti kanalus
+        try
+            %EEG = pop_select( EEG,'channel',DUOMENYS.VISU.NORIMI_KANALAI);
+            % Jei nebuvo interpoliacijos, tada reikia naudoti sekančią eilutę, kad
+            % nenulūžtų programa beieškodama nesamo kanalo
+            EEG = pop_select( EEG,'channel',intersect({EEG.chanlocs(:).labels},DUOMENYS.VISU.NORIMI_KANALAI));
+        catch err; Pranesk_apie_klaida(err, 'EEG spektras', File, 0);
+        end;
+        
+        EEG = eeg_checkset( EEG );
+        
+        if and(EEG.nbchan > 0, ~isempty(EEG.data));
+            
+            if strcmp(AR_GRAFIKAS,'on');
+                set(0,'CurrentFigure',figure_id);
+                clf;
+            end;
+            
+            %try
+            
+            %spectopo_daznis=[1 2 4 8 16 32 64 128 256 512 1024];
+            %spectopo_daznis=spectopo_daznis(max(find(spectopo_daznis <= (EEG.srate/2) == 1)));
+            
+            DUOMENYS.FAILO(i).KANALAI=DUOMENYS.VISU.NORIMI_KANALAI; %{EEG.chanlocs.labels}
+            [~,Kanalu_sukeisti_id]=ismember({EEG.chanlocs.labels},DUOMENYS.VISU.NORIMI_KANALAI);
+            
+            [DUOMENYS.FAILO(i).SPEKTRAS.dB(Kanalu_sukeisti_id,:),DUOMENYS.FAILO(i).DAZNIAI]= ...
+                pop_spectopo(EEG, 1, [EEG.times(1) EEG.times(end)], 'EEG',...
+                'percent',100,...
+                'freqrange',[0 EEG.srate/2],...
+                'electrodes','off',...
+                'winsize',EEG.srate*DUOMENYS.VISU.lango_ilgis_sekundemis,...
+                'nfft',EEG.srate*DUOMENYS.VISU.fft_tasku_herce,...
+                'plot',AR_GRAFIKAS );
+            
+            [~,Kanalu_nesanciu_id]=ismember(nesutampantys_kanalai,DUOMENYS.VISU.NORIMI_KANALAI);
+            DUOMENYS.FAILO(i).SPEKTRAS.dB(Kanalu_nesanciu_id,:)=nan(length(Kanalu_nesanciu_id),length(DUOMENYS.FAILO(i).DAZNIAI));
+            
+            % 0.1*[0:(10*floor(EEG.srate/2))]
+            %             'freqfac',10,...
+            %         catch err;
+            %             disp('Perkuriamas EEG.chanlocs');
+            %             for kan_i=1:EEG.nbchan;
+            %                 EEG.chanlocs(kan_i).labels=    DUOMENYS.VISU.NORIMI_KANALAI{kan_i} ;
+            %                 EEG.chanlocs(kan_i).type=      '' ;
+            %                 EEG.chanlocs(kan_i).theta=     0 ;
+            %                 EEG.chanlocs(kan_i).radius=    0 ;
+            %                 EEG.chanlocs(kan_i).X=         5.20474889637625e-15 ;
+            %                 EEG.chanlocs(kan_i).Y=         0  ;
+            %                 EEG.chanlocs(kan_i).Z=         85 ;
+            %                 EEG.chanlocs(kan_i).sph_theta= 0  ;
+            %                 EEG.chanlocs(kan_i).sph_phi=   90 ;
+            %                 EEG.chanlocs(kan_i).sph_radius=85 ;
+            %                 EEG.chanlocs(kan_i).urchan=    16 ;
+            %                 EEG.chanlocs(kan_i).ref=       '' ;
+            %             end;
             %         end;
-        end;
-        DUOMENYS.FAILO(i).Apibudinimas='_' ; % DUOMENYS.FAILO(i).Informacija{3};
-        DUOMENYS.FAILO(i).Tiriamojo_idx=find(ismember(DUOMENYS.VISU.Tiriamieji,DUOMENYS.FAILO(i).Tiriamasis));
-        if isempty(DUOMENYS.FAILO(i).Tiriamojo_idx);
-            DUOMENYS.FAILO(i).Tiriamojo_idx = length(DUOMENYS.VISU.Tiriamieji)+1;
-            DUOMENYS.VISU.Tiriamieji{DUOMENYS.FAILO(i).Tiriamojo_idx,1}=DUOMENYS.FAILO(i).Tiriamasis;
-        end;
-
-        % Tiek tikrinti nereikia, bet gali praversti, jei interpoliuosime ir kanalai nesutaps
-        if ~exist('DUOMENYS.VISU.DAZNIAI');
-            DUOMENYS.VISU.DAZNIAI=DUOMENYS.FAILO(i).DAZNIAI;
-        end;
-        if ~exist('DUOMENYS.VISU.KANALAI');
-            DUOMENYS.VISU.KANALAI=DUOMENYS.FAILO(i).KANALAI;
-        end;
-        if isequal(DUOMENYS.VISU.DAZNIAI, DUOMENYS.FAILO(i).DAZNIAI);
+            %         [DUOMENYS.FAILO(i).SPEKTRAS.dB,DUOMENYS.FAILO(i).DAZNIAI]= ...
+            %         pop_spectopo(EEG, 1, [EEG.times(1) EEG.times(end)], 'EEG' , 'freq', [10], 'freqrange',[0 min(50,EEG.srate/2)],'electrodes','off','plot','off');
+            
+            
+            DUOMENYS.FAILO(i).SPEKTRAS.absol=10.^(DUOMENYS.FAILO(i).SPEKTRAS.dB/10);
+            DUOMENYS.FAILO(i).pavad=File;
+            if analizuoti_pavadinima
+                % Pakeitus DUOMENYS.VISU.Pavadinimo_schema ar duomenų aplanką, teks
+                % iš naujo aprašyti informacijos atpažinimą pagal failą.
+                DUOMENYS.FAILO(i).Informacija= textscan(File, DUOMENYS.VISU.Pavadinimo_schema); %,'delimiter','');
+                DUOMENYS.FAILO(i).Tiriamasis=[num2str(DUOMENYS.FAILO(i).Informacija{1}) DUOMENYS.FAILO(i).Informacija{2}];
+                DUOMENYS.FAILO(i).Salyga=DUOMENYS.FAILO(i).Informacija{2}; % (['Ramybe' num2str(DUOMENYS.FAILO(i).Informacija{2})]);
+                DUOMENYS.FAILO(i).Grupe=1;
+                DUOMENYS.FAILO(i).Sesija=1;
+            else
+                %if isempty(EEG.subject);
+                %[~,DUOMENYS.FAILO(i).Tiriamasis,~]=fileparts(File);
+                DUOMENYS.FAILO(i).Tiriamasis=File;
+                DUOMENYS.FAILO(i).Salyga=1;
+                DUOMENYS.FAILO(i).Grupe=1;
+                DUOMENYS.FAILO(i).Sesija=1;
+                %         else % Kol kas nesutvarkyta tam atvejui, jei vienam tiriamajam bus kelios salygos neskaitines, jei bus skirtingu grupiu ir sesiju.
+                DUOMENYS.FAILO(i).Tiriamasis_=EEG.subject;
+                DUOMENYS.FAILO(i).Salyga_=EEG.condition;
+                DUOMENYS.FAILO(i).Grupe=EEG.group;
+                DUOMENYS.FAILO(i).Sesija=EEG.session;
+                %         end;
+            end;
+            DUOMENYS.FAILO(i).Apibudinimas='_' ; % DUOMENYS.FAILO(i).Informacija{3};
+            DUOMENYS.FAILO(i).Tiriamojo_idx=find(ismember(DUOMENYS.VISU.Tiriamieji,DUOMENYS.FAILO(i).Tiriamasis));
+            if isempty(DUOMENYS.FAILO(i).Tiriamojo_idx);
+                DUOMENYS.FAILO(i).Tiriamojo_idx = length(DUOMENYS.VISU.Tiriamieji)+1;
+                DUOMENYS.VISU.Tiriamieji{DUOMENYS.FAILO(i).Tiriamojo_idx,1}=DUOMENYS.FAILO(i).Tiriamasis;
+            end;
+            
+            % Tiek tikrinti nereikia, bet gali praversti, jei interpoliuosime ir kanalai nesutaps
+            if ~isfield(DUOMENYS.VISU, 'DAZNIAI');
+                DUOMENYS.VISU.DAZNIAI=DUOMENYS.FAILO(i).DAZNIAI;
+            end;
+            if ~isfield(DUOMENYS.VISU, 'KANALAI');
+                DUOMENYS.VISU.KANALAI=DUOMENYS.FAILO(i).KANALAI;
+            end;
+            if ~isequal(DUOMENYS.VISU.DAZNIAI, DUOMENYS.FAILO(i).DAZNIAI);
+                warning(['Nesutampa EEG.srate su kitų failų. ' File]);
+                if length(DUOMENYS.FAILO(i).DAZNIAI) < length(DUOMENYS.VISU.DAZNIAI);
+                    DUOMENYS.VISU.DAZNIAI=DUOMENYS.FAILO(i).KANALAI;
+                end;
+            end;
             if isequal(DUOMENYS.VISU.KANALAI, DUOMENYS.FAILO(i).KANALAI);
                 DUOMENYS.VISU.tmp.SPEKTRAS_LENTELESE_absol{DUOMENYS.FAILO(i).Tiriamojo_idx,DUOMENYS.FAILO(i).Salyga}=DUOMENYS.FAILO(i).SPEKTRAS.absol;
                 DUOMENYS.VISU.tmp.failai{DUOMENYS.FAILO(i).Tiriamojo_idx,DUOMENYS.FAILO(i).Salyga}=File;
             else
-                warning(['Nesutampa kanalai su kitų failų. ' filename]);
+                warning(['Nesutampa kanalai su kitų failų. ' File]);
             end;
-        else
-            warning(['Nesutampa dažniai su kitų failų. ' filename]);
+            
+            % Isvalyti atminti
+            STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
+            
+            %eeglab redraw;
+            
+            str=(sprintf('Apdorotas %d/%d(%3.2f%%): %s\r\n', i, NumberOfFiles, i/NumberOfFiles*100, File )) ;
+            disp(str);
+            % Parodyk, kiek laiko uztruko
+            %t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
+            %toc ;
+            
         end;
-
-
-        % Isvalyti atminti
-        STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
-
-        %eeglab redraw;
-
-        str=(sprintf('Apdorotas %d/%d(%3.2f%%): %s\r\n', i, NumberOfFiles, i/NumberOfFiles*100, File )) ;
-        disp(str);
-        % Parodyk, kiek laiko uztruko
-        %t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
-        %toc ;
-
-    end;
-
+        
     catch err;
         Pranesk_apie_klaida(err, 'EEG spektras', File, 0);
     end;
-
+    
 end ;
 
  if strcmp(AR_GRAFIKAS,'on');
@@ -449,18 +470,25 @@ DUOMENYS.VISU.Tiriamuju_N=length(DUOMENYS.VISU.Tiriamieji);
 disp('Absoliuti galia...');
 DUOMENYS.VISU.GALIA_Absol_dazniu_srityje={};
 for i=1:DUOMENYS.VISU.Dazniu_sriciu_N;
+    [~,tasku_sritis_nuo]=min(abs(DUOMENYS.VISU.DAZNIAI - DUOMENYS.VISU.Dazniu_sritys{i}(1)));
+    [~,tasku_sritis_iki]=min(abs(DUOMENYS.VISU.DAZNIAI - DUOMENYS.VISU.Dazniu_sritys{i}(2)));
+    tasku_sritis= [tasku_sritis_nuo:tasku_sritis_iki];
+    if length(tasku_sritis) < 2
+        warning([num2str(DUOMENYS.VISU.Dazniu_sritys{i}(2)) 'Hz > ' num2str(DUOMENYS.VISU.DAZNIAI(end)) 'Hz (~EEG.srate/2)!' ]);
+    end;
     for tir=1:DUOMENYS.VISU.Tiriamuju_N ;
         for sal=1:DUOMENYS.VISU.Salygu_N ;
-            [~,tasku_sritis_nuo]=min(abs(DUOMENYS.VISU.DAZNIAI - DUOMENYS.VISU.Dazniu_sritys{i}(1)));
-            [~,tasku_sritis_iki]=min(abs(DUOMENYS.VISU.DAZNIAI - DUOMENYS.VISU.Dazniu_sritys{i}(2)));
-            tasku_sritis= [tasku_sritis_nuo:tasku_sritis_iki];
             % DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,sal}(tir,1:DUOMENYS.VISU.KANALU_N)= ( DUOMENYS.VISU.Dazniu_sritys{i}(2) - DUOMENYS.VISU.Dazniu_sritys{i}(1) ) * mean(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{tir,sal}(:,tasku_sritis),2)';
             for kan=1:DUOMENYS.VISU.KANALU_N;
                 try
-                DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,sal}(tir,kan)= ...
-                    trapz(DUOMENYS.VISU.DAZNIAI(tasku_sritis), ...
-                    DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{tir,sal}(kan,tasku_sritis));
-                catch err;
+                    if length(tasku_sritis) > 1
+                        DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,sal}(tir,kan)= ...
+                            trapz(DUOMENYS.VISU.DAZNIAI(tasku_sritis), ...
+                            DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{tir,sal}(kan,tasku_sritis));
+                    else
+                        DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,sal}(tir,kan)=0;
+                    end;
+                catch %err; Pranesk_apie_klaida(err,'','',0);
                     %warning([DUOMENYS.VISU.Tiriamieji{tir} ' : ' DUOMENYS.VISU.KANALAI{kan} ' : ' num2str(DUOMENYS.VISU.Dazniu_sritys{i}(1)) '-' num2str(DUOMENYS.VISU.Dazniu_sritys{i}(2)) 'Hz '  ] );
                     error([DUOMENYS.VISU.Tiriamieji{tir} ' : Data computed for ' ...
                         num2str(size(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{1,1},1)) ...
@@ -470,7 +498,6 @@ for i=1:DUOMENYS.VISU.Dazniu_sriciu_N;
             end;
         end;
     end;
-
 end;
 
 %% Santykinė galia
@@ -765,7 +792,7 @@ disp(' ');
 disp('Saugomi duomenys...');
 disp( [ '[' pwd ']' ] );
 
-if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'}))));
+if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'})))) && ( Ar_reikia_galios_absoliucios || Ar_reikia_galios_santykines );
 
 %% Rezultatų po Stjudento eksportavimas
 
@@ -878,49 +905,53 @@ fprintf(fid, sprintf('\n'));
 for tir=1:DUOMENYS.VISU.Tiriamuju_N ;
     for sal=1:DUOMENYS.VISU.Salygu_N ;
         % Absoliučios galios
-        for i=1:DUOMENYS.VISU.Dazniu_sriciu_N;
-            fprintf(fid, '%s\t%d\t%s\t%s', ...
-            DUOMENYS.VISU.Tiriamieji{tir}, sal , ...
-            [DUOMENYS.VISU.Dazniu_sriciu_pavadinimai{i} ], ...
-            [num2str(DUOMENYS.VISU.Dazniu_sritys{i}(1)) '_' ...
-             num2str(DUOMENYS.VISU.Dazniu_sritys{i}(2)) ] );
-            fprintf(fid, '\t%.16g', DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,sal}(tir,:));
-            fprintf(fid, sprintf('\n'));
+        if Ar_reikia_galios_absoliucios;
+            for i=1:DUOMENYS.VISU.Dazniu_sriciu_N;
+                fprintf(fid, '%s\t%d\t%s\t%s', ...
+                    DUOMENYS.VISU.Tiriamieji{tir}, sal , ...
+                    [DUOMENYS.VISU.Dazniu_sriciu_pavadinimai{i} ], ...
+                    [num2str(DUOMENYS.VISU.Dazniu_sritys{i}(1)) '_' ...
+                    num2str(DUOMENYS.VISU.Dazniu_sritys{i}(2)) ] );
+                fprintf(fid, '\t%.16g', DUOMENYS.VISU.GALIA_Absol_dazniu_srityje{i,sal}(tir,:));
+                fprintf(fid, sprintf('\n'));
+            end;
         end;
         % Santykinės galios
-        for i=2:(DUOMENYS.VISU.Dazniu_sriciu_N + length(DUOMENYS.VISU.Papildomi_dazniu_santykiai));
-            if i <= DUOMENYS.VISU.Dazniu_sriciu_N ;
-                fprintf(fid, '%s\t%d\t%s\t%s', ...
-                    DUOMENYS.VISU.Tiriamieji{tir}, sal, ...
-                    [DUOMENYS.VISU.Dazniu_sriciu_pavadinimai{i} skyriklis...
-                    DUOMENYS.VISU.Dazniu_sriciu_pavadinimai{1}], ...
-                    [num2str(DUOMENYS.VISU.Dazniu_sritys{i}(1)) '_' ...
-                     num2str(DUOMENYS.VISU.Dazniu_sritys{i}(2)) skyriklis ...
-                     num2str(DUOMENYS.VISU.Dazniu_sritys{1}(1)) '_' ...
-                     num2str(DUOMENYS.VISU.Dazniu_sritys{1}(2)) ]);
-            else
-                e=DUOMENYS.VISU.Papildomi_dazniu_santykiai{i-DUOMENYS.VISU.Dazniu_sriciu_N};
-                fprintf(fid, '%s\t%d\t%s\t%s', ...
-                    DUOMENYS.VISU.Tiriamieji{tir}, sal, ...
-                    cell2mat(...
-                    [DUOMENYS.VISU.Dazniu_sriciu_pavadinimai( ...
-                     DUOMENYS.VISU.Papildomi_dazniu_santykiai{i-DUOMENYS.VISU.Dazniu_sriciu_N}(1)) skyriklis ...
-                     DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(...
-                     DUOMENYS.VISU.Papildomi_dazniu_santykiai{i-DUOMENYS.VISU.Dazniu_sriciu_N}(2)) ]), ...
-                    [num2str(DUOMENYS.VISU.Dazniu_sritys{e(1)}(1)) '_' ...
-                     num2str(DUOMENYS.VISU.Dazniu_sritys{e(1)}(2)) skyriklis ...
-                     num2str(DUOMENYS.VISU.Dazniu_sritys{e(2)}(1)) '_' ...
-                     num2str(DUOMENYS.VISU.Dazniu_sritys{e(2)}(2)) ]  ) ;
+        if Ar_reikia_galios_santykines;
+            for i=2:(DUOMENYS.VISU.Dazniu_sriciu_N + length(DUOMENYS.VISU.Papildomi_dazniu_santykiai));
+                if i <= DUOMENYS.VISU.Dazniu_sriciu_N ;
+                    fprintf(fid, '%s\t%d\t%s\t%s', ...
+                        DUOMENYS.VISU.Tiriamieji{tir}, sal, ...
+                        [DUOMENYS.VISU.Dazniu_sriciu_pavadinimai{i} skyriklis...
+                        DUOMENYS.VISU.Dazniu_sriciu_pavadinimai{1}], ...
+                        [num2str(DUOMENYS.VISU.Dazniu_sritys{i}(1)) '_' ...
+                        num2str(DUOMENYS.VISU.Dazniu_sritys{i}(2)) skyriklis ...
+                        num2str(DUOMENYS.VISU.Dazniu_sritys{1}(1)) '_' ...
+                        num2str(DUOMENYS.VISU.Dazniu_sritys{1}(2)) ]);
+                else
+                    e=DUOMENYS.VISU.Papildomi_dazniu_santykiai{i-DUOMENYS.VISU.Dazniu_sriciu_N};
+                    fprintf(fid, '%s\t%d\t%s\t%s', ...
+                        DUOMENYS.VISU.Tiriamieji{tir}, sal, ...
+                        cell2mat(...
+                        [DUOMENYS.VISU.Dazniu_sriciu_pavadinimai( ...
+                        DUOMENYS.VISU.Papildomi_dazniu_santykiai{i-DUOMENYS.VISU.Dazniu_sriciu_N}(1)) skyriklis ...
+                        DUOMENYS.VISU.Dazniu_sriciu_pavadinimai(...
+                        DUOMENYS.VISU.Papildomi_dazniu_santykiai{i-DUOMENYS.VISU.Dazniu_sriciu_N}(2)) ]), ...
+                        [num2str(DUOMENYS.VISU.Dazniu_sritys{e(1)}(1)) '_' ...
+                        num2str(DUOMENYS.VISU.Dazniu_sritys{e(1)}(2)) skyriklis ...
+                        num2str(DUOMENYS.VISU.Dazniu_sritys{e(2)}(1)) '_' ...
+                        num2str(DUOMENYS.VISU.Dazniu_sritys{e(2)}(2)) ]  ) ;
+                end;
+                fprintf(fid, '\t%.16g', DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{i,sal}(tir,:));
+                fprintf(fid, sprintf('\n'));
             end;
-            fprintf(fid, '\t%.16g', DUOMENYS.VISU.GALIA_Sant_dazniu_srityje{i,sal}(tir,:));
-            fprintf(fid, sprintf('\n'));
         end;
     end;
 end;
 fclose(fid);
 end;
 try
-    if exist(Rezultatu_TXT_failas);
+    if exist(Rezultatu_TXT_failas,'file') == 2;
         open(Rezultatu_TXT_failas);
     end
 catch err;
@@ -933,7 +964,7 @@ disp(Rezultatu_MAT_failas);
 save( Rezultatu_MAT_failas , 'DUOMENYS') ;
 end;
 
-try delete([Rezultatu_MAT_failas '~']) ; catch err; end;
+try delete([Rezultatu_MAT_failas '~']) ; catch; end;
 cd(orig_path);
 
 

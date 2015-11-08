@@ -511,7 +511,9 @@ function eeg_perziura_sukurti(varargin)
 if nargin == 0; return; end;
 try g=struct(varargin{3:end}); catch; end;
 try    f=g(1).figure; 
-    if ~isobject(f); f=figure; end;
+    if ~isobject(f); 
+        f=figure('toolbar','none','menubar','none','units','normalized','outerposition',[0 0 1 1]); 
+    end;
 catch; f=figure;
 end;
 set(f,'pointer','watch'); drawnow;
