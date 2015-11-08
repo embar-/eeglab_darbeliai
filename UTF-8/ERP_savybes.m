@@ -115,6 +115,9 @@ end;
 i=1;
 
 ChN=size(EEGTMP.data,1); %EEG.nbchan;
+if any(isnan(EEGTMP.data));
+    ChN=0;
+end;
 
 if ~isempty(nauja_kanalu_tvarka);
     stulpeliu=length(nauja_kanalu_tvarka);
