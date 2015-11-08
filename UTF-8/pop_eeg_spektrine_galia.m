@@ -487,6 +487,12 @@ if isempty(get(handles.edit_fft_langas,'String'));
     set(handles.edit_fft_langas,'BackgroundColor', [1 1 0]);
     return;
 end;
+if ~( get(handles.checkbox75,'Value') || get(handles.checkbox76,'Value') || get(handles.checkbox77,'Value') );
+    set([handles.checkbox75 handles.checkbox76 handles.checkbox77],'BackgroundColor', [1 1 0]); pause(1);
+    set([handles.checkbox75 handles.checkbox76 handles.checkbox77],'BackgroundColor', 'remove'); 
+    return;
+end;
+
 
 naudotojo_lentele=[[{lokaliz('visa')} ...
     num2cell(str2num(get(handles.edit51,'String')))];...
@@ -679,6 +685,8 @@ else
 end;
 leisti_interpoliuoti=get(handles.checkbox_interpol,'Value');
 ribos=str2num(get(handles.edit51,'String'));%*1000;
+Ar_reikia_galios_absoliucios=get(handles.checkbox76,'Value');
+Ar_reikia_galios_santykines=get(handles.checkbox77,'Value');
 
 [~,ALLEEG_,~]=pop_newset([],[],[]);
 ALLEEG_=setfield(ALLEEG_,'datfile',[]);
@@ -745,7 +753,9 @@ legendoje={};
                         Papildomi_dazniu_santykiai,...
                         0,...
                         fft_lango_ilgis_sekundemis(1),...
-                        fft_tasku_herce);
+                        fft_tasku_herce, ...
+                        Ar_reikia_galios_absoliucios, ...
+                        Ar_reikia_galios_santykines);
                     assignin('base','DUOMENYS',DUOMENYS);
                     Apdoroti_visi_tiriamieji=1;
                     DarboPorcijaAtlikta = 1;
@@ -1825,7 +1835,8 @@ try
         Papildomi_dazniu_santykiai,...
         0,...
         fft_lango_ilgis_sekundemis(1),...
-        fft_tasku_herce);
+        fft_tasku_herce,...
+        0, 0);
     assignin('base','DUOMENYS',DUOMENYS);
     
     
@@ -2127,15 +2138,16 @@ function popupmenu_doc_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_doc contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu_doc
+busena=get(handles.popupmenu_doc,'Enable');
 switch get(handles.popupmenu_doc,'Value')
     case 1
-        set(handles.checkbox75,'Value',1);
-        set(handles.checkbox76,'Value',1);
-        set(handles.checkbox77,'Value',1);
+        set(handles.checkbox75, 'Value',1, 'Enable', 'off', 'Visible', 'on');
+        set(handles.checkbox76, 'Value',1, 'Enable', 'off');
+        set(handles.checkbox77, 'Value',1, 'Enable', 'off');
     case 2
-        set(handles.checkbox75,'Value',0);
-        set(handles.checkbox76,'Value',1);
-        set(handles.checkbox77,'Value',1);
+        set(handles.checkbox75, 'Value',0, 'Enable', 'off', 'Visible', 'off');
+        set(handles.checkbox76, 'Enable', busena);
+        set(handles.checkbox77, 'Enable', busena);
 end;
 
 % --- Executes during object creation, after setting all properties.
@@ -2158,7 +2170,7 @@ function checkbox75_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox75
-
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 % --- Executes on button press in checkbox76.
 function checkbox76_Callback(hObject, eventdata, handles)
@@ -2167,7 +2179,7 @@ function checkbox76_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox76
-
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 % --- Executes on button press in checkbox77.
 function checkbox77_Callback(hObject, eventdata, handles)
@@ -2176,6 +2188,7 @@ function checkbox77_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox77
+Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2183,7 +2196,6 @@ function uipanel23_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to uipanel23 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-
 
 % --- Executes when selected object is changed in uipanel23.
 function uipanel23_SelectionChangeFcn(hObject, eventdata, handles)
