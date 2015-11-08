@@ -1853,8 +1853,6 @@ try
                 l=size(legendoje,1);
                 legendoje{l+1,1}=regexprep(DUOMENYS.VISU.failai{i},'.set$','');
                 legendoje{l+1,2}=DUOMENYS.VISU.KANALAI{k};
-                (k-1)*DUOMENYS.VISU.Tiriamuju_N + i
-                size(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{i,1}(k,:))
                 TMP_SPEKTR((k-1)*DUOMENYS.VISU.Tiriamuju_N + i,:)=log10(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{i,1}(k,1:dazniu_tasku_N));
             end;
         end;
