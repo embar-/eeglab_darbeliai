@@ -238,8 +238,8 @@ if ~(exist(NewPath,'dir') == 7);
 end;
 
 % tikrinimas dėl kanalų tvarkos priskyrimo
-simuliacinis_tikrinimas([3 1 2])=[10 20 30];
-if ~isequal(simuliacinis_tikrinimas, [20 30 10]);
+simuliacinis_tikrinimas([3 1 2], 1:2)=[10 10; 20 20; 30 30];
+if ~isequal(simuliacinis_tikrinimas, [20 20; 30 30; 10 10]);
     error(lokaliz('Internal error'));
 end;
 
@@ -290,15 +290,28 @@ for i=1:NumberOfFiles ;
             EEG = eeg_checkset( EEG );
         end;
         
-        % Atrinkti kanalus
-        try EEG = pop_select( EEG,'channel',DUOMENYS.VISU.NORIMI_KANALAI);
-        catch err; Pranesk_apie_klaida(err, 'EEG spektras', File, 0);
-            error([ lokaliz('Some selected channels may not appear in every dataset.') ' ' ...
-                lokaliz('Galimas sprendimas:') ' ' lokaliz('Allow interpolate channels') '.' ]);
+        % Tikrinti, ar visi kanalai yra        
+        nesutampantys_kanalai=setdiff(DUOMENYS.VISU.NORIMI_KANALAI,{EEG.chanlocs(:).labels});
+        if ~isempty(nesutampantys_kanalai);
+            isp_prnsm=sprintf(' \n\n%s\n%s:\n %s\n%s\n%s\n%s %s\n', ...
+                lokaliz('Some selected channels may not appear in every dataset.'), ...
+                lokaliz('Rinkmena'), File, ...
+                lokaliz('Missing channels:'), sprintf(' %s', nesutampantys_kanalai{:}), ...
+                lokaliz('Galimas sprendimas:'), ...
+                lokaliz('Allow interpolate channels'));
+            wrn=warning('off','backtrace');
+            warning(isp_prnsm);
+            warning(wrn.state, 'backtrace');
         end;
-        % Jei nebuvo interpoliacijos, tada reikia naudoti sekančią eilutę, kad
-        % nenulūžtų programa beieškodama nesamo kanalo
-        % EEG = pop_select( EEG,'channel',intersect({EEG.chanlocs(:).labels},DUOMENYS.VISU.NORIMI_KANALAI));
+        
+        % Atrinkti kanalus
+        try
+            %EEG = pop_select( EEG,'channel',DUOMENYS.VISU.NORIMI_KANALAI);
+            % Jei nebuvo interpoliacijos, tada reikia naudoti sekančią eilutę, kad
+            % nenulūžtų programa beieškodama nesamo kanalo
+            EEG = pop_select( EEG,'channel',intersect({EEG.chanlocs(:).labels},DUOMENYS.VISU.NORIMI_KANALAI));
+        catch err; Pranesk_apie_klaida(err, 'EEG spektras', File, 0);
+        end;
         
         EEG = eeg_checkset( EEG );
         
@@ -311,12 +324,11 @@ for i=1:NumberOfFiles ;
             
             %try
             
-            DUOMENYS.FAILO(i).KANALAI=DUOMENYS.VISU.NORIMI_KANALAI; %{EEG.chanlocs.labels}
-            [~,Kanalu_sukeisti_id]=ismember({EEG.chanlocs.labels},DUOMENYS.VISU.NORIMI_KANALAI);
-            
-            
             %spectopo_daznis=[1 2 4 8 16 32 64 128 256 512 1024];
             %spectopo_daznis=spectopo_daznis(max(find(spectopo_daznis <= (EEG.srate/2) == 1)));
+            
+            DUOMENYS.FAILO(i).KANALAI=DUOMENYS.VISU.NORIMI_KANALAI; %{EEG.chanlocs.labels}
+            [~,Kanalu_sukeisti_id]=ismember({EEG.chanlocs.labels},DUOMENYS.VISU.NORIMI_KANALAI);
             
             [DUOMENYS.FAILO(i).SPEKTRAS.dB(Kanalu_sukeisti_id,:),DUOMENYS.FAILO(i).DAZNIAI]= ...
                 pop_spectopo(EEG, 1, [EEG.times(1) EEG.times(end)], 'EEG',...
@@ -326,6 +338,9 @@ for i=1:NumberOfFiles ;
                 'winsize',EEG.srate*DUOMENYS.VISU.lango_ilgis_sekundemis,...
                 'nfft',EEG.srate*DUOMENYS.VISU.fft_tasku_herce,...
                 'plot',AR_GRAFIKAS );
+            
+            [~,Kanalu_nesanciu_id]=ismember(nesutampantys_kanalai,DUOMENYS.VISU.NORIMI_KANALAI);
+            DUOMENYS.FAILO(i).SPEKTRAS.dB(Kanalu_nesanciu_id,:)=nan(length(Kanalu_nesanciu_id),length(DUOMENYS.FAILO(i).DAZNIAI));
             
             % 0.1*[0:(10*floor(EEG.srate/2))]
             %             'freqfac',10,...
