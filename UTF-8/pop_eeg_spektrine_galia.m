@@ -1846,13 +1846,16 @@ try
             set(handles.axes1,'XTickLabel', [ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab{end,:} ' Hz' ]} ]); % MATLAB R2015a
         end;
         hold('on');
-        TMP_SPEKTR=nan(DUOMENYS.VISU.KANALU_N * DUOMENYS.VISU.Tiriamuju_N, size(DUOMENYS.VISU.DAZNIAI,1));
+        dazniu_tasku_N=size(DUOMENYS.VISU.DAZNIAI,1);
+        TMP_SPEKTR=nan(DUOMENYS.VISU.KANALU_N * DUOMENYS.VISU.Tiriamuju_N, dazniu_tasku_N);
         for k=1:DUOMENYS.VISU.KANALU_N;
             for i=1:DUOMENYS.VISU.Tiriamuju_N;
                 l=size(legendoje,1);
                 legendoje{l+1,1}=regexprep(DUOMENYS.VISU.failai{i},'.set$','');
                 legendoje{l+1,2}=DUOMENYS.VISU.KANALAI{k};
-                TMP_SPEKTR((k-1)*DUOMENYS.VISU.Tiriamuju_N + i,:)=log10(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{i,1}(k,:));
+                (k-1)*DUOMENYS.VISU.Tiriamuju_N + i
+                size(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{i,1}(k,:))
+                TMP_SPEKTR((k-1)*DUOMENYS.VISU.Tiriamuju_N + i,:)=log10(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{i,1}(k,1:dazniu_tasku_N));
             end;
         end;
         for i=1:size(TMP_SPEKTR,1);
