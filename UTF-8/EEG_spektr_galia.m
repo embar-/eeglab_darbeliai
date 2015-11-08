@@ -403,7 +403,7 @@ for i=1:NumberOfFiles ;
             if ~isfield(DUOMENYS.VISU, 'KANALAI');
                 DUOMENYS.VISU.KANALAI=DUOMENYS.FAILO(i).KANALAI;
             end;
-            if isequal(DUOMENYS.VISU.DAZNIAI, DUOMENYS.FAILO(i).DAZNIAI);
+            if ~isequal(DUOMENYS.VISU.DAZNIAI, DUOMENYS.FAILO(i).DAZNIAI);
                 warning(['Nesutampa EEG.srate su kitų failų. ' File]);
                 if length(DUOMENYS.FAILO(i).DAZNIAI) < length(DUOMENYS.VISU.DAZNIAI);
                     DUOMENYS.VISU.DAZNIAI=DUOMENYS.FAILO(i).KANALAI;
