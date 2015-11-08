@@ -3693,10 +3693,12 @@ try
             ~any(isnan(ALLEEG_(x).erp_data(:)))), ...
             1:length(ALLEEG_)));
         if isempty(netusti);
+            reikia_valyti_grafika=1;
             wrn=warning('off','backtrace');
             warning(lokaliz('No selected channels found in selected files.'));
             warning(wrn.state, 'backtrace');
-            reikia_valyti_grafika=1;
+            set(handles.pushbutton14,'BackgroundColor',[1 1 0]);    pause(1);
+            set(handles.pushbutton14,'BackgroundColor','remove');    drawnow;
         else
             reikia_valyti_grafika=0;
             ymin=min(arrayfun(@(x) min(min(ALLEEG_(x).erp_data, [], 2)), netusti));
