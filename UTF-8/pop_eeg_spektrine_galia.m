@@ -466,7 +466,7 @@ end;
 Pasirinkti_failu_indeksai=(get(handles.listbox1,'Value'));
 if isempty(Pasirinkti_failu_indeksai);
     set(handles.listbox1,'BackgroundColor', [1 1 0]); pause(1);
-    set(handles.listbox1,'BackgroundColor', 'remove'); 
+    set(handles.listbox1,'BackgroundColor', [1 1 1]); 
     drawnow; return;
 end;
 if get(handles.edit1,'BackgroundColor') == [1 1 0];
