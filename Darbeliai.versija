@@ -1,11 +1,7 @@
-Darbeliai v2015.11.06.1
+Darbeliai v2015.11.08.1
 
-EEG spektrinė galios dialoge veikia 
-parinktis kanalų interpoliavimui.
-Stabilesnė įrašų peržiūra per 
-nuosavą Darbelių funkciją.
+Svarbūs pataisymai EEG spektrinės 
+galios skaičiavime.
 
-Channel interpolation works via
-EEG spectral power dialog 
-Improved stability while scrolling 
-records via internal function.
+Important fixes for EEG spectal
+power calculation.

@@ -1,6 +1,11 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.11.08.1
+% + EEG spektrinės galios skaičiavime ištaisyti kanalų priskyrimą.
+% + EEG spektrinę galią pasirinktinai eksportuoti į txt:
+%   absoliučią, santykinę, abi (numatyta).
+%
 % v2015.11.06.1
 % ~ EEG spektrinė galios dialoge veikia parinktis kanalų interpoliavimui.
 %
