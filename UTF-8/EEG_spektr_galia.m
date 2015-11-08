@@ -237,6 +237,12 @@ if ~(exist(NewPath,'dir') == 7);
     mkdir(NewPath);
 end;
 
+% tikrinimas dėl kanalų tvarkos priskyrimo
+simuliacinis_tikrinimas([3 1 2])=[10 20 30];
+if ~isequal(simuliacinis_tikrinimas, [20 30 10]);
+    error(lokaliz('Internal error'));
+end;
+
 NumberOfFiles=length(FileNames);
 for i=1:NumberOfFiles ;
 
@@ -306,11 +312,12 @@ for i=1:NumberOfFiles ;
         %try
         
         DUOMENYS.FAILO(i).KANALAI=DUOMENYS.VISU.NORIMI_KANALAI; %{EEG.chanlocs.labels}
-        [~,Kanalu_sukeisti_id]=ismember(DUOMENYS.VISU.NORIMI_KANALAI,{EEG.chanlocs.labels});
+        [~,Kanalu_sukeisti_id]=ismember({EEG.chanlocs.labels},DUOMENYS.VISU.NORIMI_KANALAI);
+        
         
         %spectopo_daznis=[1 2 4 8 16 32 64 128 256 512 1024];
         %spectopo_daznis=spectopo_daznis(max(find(spectopo_daznis <= (EEG.srate/2) == 1)));
-
+        
         [DUOMENYS.FAILO(i).SPEKTRAS.dB(Kanalu_sukeisti_id,:),DUOMENYS.FAILO(i).DAZNIAI]= ...
             pop_spectopo(EEG, 1, [EEG.times(1) EEG.times(end)], 'EEG',...
             'percent',100,...
