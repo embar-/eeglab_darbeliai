@@ -1,8 +1,12 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.11.20.1
+% + Interpoliavus kanalus, pasirinktinai atmesti arba palikti 
+%   nepasirinktuosius kanalus. Anksčiau jie atmetinėti.
+%
 % v2015.11.08.1
-% + EEG spektrinės galios skaičiavime ištaisyti kanalų priskyrimą.
+% ~ EEG spektrinės galios skaičiavime ištaisyti kanalų priskyrimą.
 % + EEG spektrinę galią pasirinktinai eksportuoti į txt:
 %   absoliučią, santykinę, abi (numatyta).
 %
