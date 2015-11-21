@@ -61,7 +61,7 @@ function varargout = pop_nuoseklus_apdorojimas(varargin)
 
 % Edit the above text to modify the response to help pop_nuoseklus_apdorojimas
 
-% Last Modified by GUIDE v2.5 07-Dec-2014 16:27:43
+% Last Modified by GUIDE v2.5 21-Nov-2015 19:24:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -189,6 +189,7 @@ set(handles.checkbox_vienoda_trukme,'Value',0);
 set(handles.checkbox_ICA,'Value',0);
 set(handles.checkbox_MARA,'Value',0);
 set(handles.checkbox_atrink_kanalus2,'Value',0);
+set(handles.checkbox_atrink_kanalus2A,'Value',1);
 set(handles.checkbox_ASR,'Value',0);
 set(handles.checkbox_perziureti_ICA,'Value',0);
 set(handles.checkbox_epoch,'Value',0);
@@ -2139,9 +2140,10 @@ for i=1:Pasirinktu_failu_N;
                     % Kadangi po interpoliavimo pagal nurodyta struktura
                     % tie norimieji kanalai perkeliami i pabaiga,
                     % tai istrinkime visus kanalus, isskyrus N paskutiniuju
-
-                    [EEG, LASTCOM] = pop_select( EEG,'channel', Reikalingi_kanalai);
-                    EEG = eegh(LASTCOM, EEG);
+                    if get(handles.checkbox_atrink_kanalus2A,'Value') == 1 ;
+                        [EEG, LASTCOM] = pop_select( EEG,'channel', Reikalingi_kanalai);
+                        EEG = eegh(LASTCOM, EEG);
+                    end;
 
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Channel selection and interpolation'), NaujaRinkmena) ;
@@ -3154,6 +3156,15 @@ checkbox_atrink_kanalus1__Callback(hObject, eventdata, handles);
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
 
+% --- Executes on button press in checkbox_atrink_kanalus2A.
+function checkbox_atrink_kanalus2A_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_atrink_kanalus2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_atrink_kanalus2A
+
+
 % --- Executes on button press in checkbox_atmesk_atkarpas_amp.
 function checkbox_atmesk_atkarpas_amp_Callback(hObject, eventdata, handles)
 % hObject    handle to checkbox_atmesk_atkarpas_amp (see GCBO)
@@ -3326,6 +3337,7 @@ function checkbox_atrink_kanalus2_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of checkbox_atrink_kanalus2
 if and(get(handles.checkbox_atrink_kanalus2, 'Value') == 1, ...
         strcmp(get(handles.checkbox_atrink_kanalus2, 'Enable'),'on'));
+    set(handles.checkbox_atrink_kanalus2A,'Enable','on');
     set(handles.checkbox_atrink_kanalus2_,'Enable','on');
     set(handles.edit_atrink_kanalus2,'Enable','on');
     set(handles.pushbutton7,'Enable','on');
@@ -3348,6 +3360,7 @@ if and(get(handles.checkbox_atrink_kanalus2, 'Value') == 1, ...
     end;
 
 else
+    set(handles.checkbox_atrink_kanalus2A,'Enable','off');
     set(handles.checkbox_atrink_kanalus2_,'Enable','off');
     set(handles.edit_atrink_kanalus2,'Enable','off');
     set(handles.pushbutton7,'Enable','off');
@@ -5805,7 +5818,8 @@ set(handles.checkbox_atmesk_iki2s,        'String',[lokaliz('Reject intervals be
 set(handles.checkbox_vienoda_trukme,      'String',[lokaliz('Cut to have same duration')]);
 set(handles.checkbox_ICA,                 'String', lokaliz('ICA'));
 set(handles.checkbox_MARA,                'String', lokaliz('MARA'));
-set(handles.checkbox_atrink_kanalus2,     'String', lokaliz('Select chan., interpolate missing'));
+set(handles.checkbox_atrink_kanalus2,     'String', lokaliz('Interpoliuoti kanalus'));
+set(handles.checkbox_atrink_kanalus2A,    'String', lokaliz('Atmesti nepasirinktus'));
 set(handles.checkbox_ASR,                 'String', lokaliz('ASR tool for artefacts auto-removing'));
 set(handles.checkbox_perziureti_ICA,      'String', lokaliz('Review ICA'));
 set(handles.checkbox_epoch,               'String', lokaliz('Epoch. by'));
@@ -6495,7 +6509,7 @@ isimintini(1).raktai={'Value' 'UserData'};
 isimintini(1).nariai={'checkbox_uzverti_pabaigus' 'checkbox_pabaigus_atverti' 'checkbox_pabaigus_i_apdorotu_aplanka' ...
     'checkbox_rf' 'checkbox_filtr1' 'checkbox_filtr2' 'checkbox_filtr_tinklo' 'checkbox_kanalu_padetis' 'checkbox_atrink_kanalus1' ...
     'checkbox_atmesk_atkarpas_amp' 'checkbox_atmesk_atkarpas_dzn' 'checkbox_atmesk_kan_auto' 'checkbox_perziureti' 'checkbox_atmesk_iki2s' ...
-    'checkbox_vienoda_trukme' 'checkbox_ICA' 'checkbox_MARA' 'checkbox_atrink_kanalus2' 'checkbox_ASR' 'checkbox_perziureti_ICA' 'checkbox_epoch' ...
+    'checkbox_vienoda_trukme' 'checkbox_ICA' 'checkbox_MARA' 'checkbox_atrink_kanalus2' 'checkbox_atrink_kanalus2A' 'checkbox_ASR' 'checkbox_perziureti_ICA' 'checkbox_epoch' ...
     'checkbox_rf_' 'checkbox_filtr1_' 'checkbox_filtr2_' 'checkbox_filtr_tinklo_' 'checkbox_kanalu_padetis_' 'checkbox_atrink_kanalus1_' ...
     'checkbox_atmesk_atkarpas_amp_' 'checkbox_atmesk_atkarpas_dzn_' 'checkbox_atmesk_kan_auto_' 'checkbox_perziureti_' 'checkbox_atmesk_iki2s_' ...
     'checkbox_vienoda_trukme_' 'checkbox_ICA_' 'checkbox_MARA_' 'checkbox_atrink_kanalus2_' 'checkbox_ASR_' 'checkbox_perziureti_ICA_' 'checkbox_epoch_' ...

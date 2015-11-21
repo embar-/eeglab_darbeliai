@@ -1,7 +1,7 @@
-Darbeliai v2015.11.08.1
+Darbeliai v2015.11.21.1
 
-Svarbūs pataisymai EEG spektrinės 
-galios skaičiavime.
+Interpoliavus kanalus, pasirinktinai atmesti arba palikti 
+nepasirinktuosius kanalus. Anksčiau jie atmetinėti.
 
-Important fixes for EEG spectal
-power calculation.
+You can choose to leave or reject not-selected channels
+after interpolation. Earler versions rejected not-selected channels.
