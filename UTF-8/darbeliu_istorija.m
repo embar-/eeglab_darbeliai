@@ -1,7 +1,7 @@
 %
 % Pakeitimai:
 % ------------------------
-% v2015.11.20.1
+% v2015.11.21.1
 % + Interpoliavus kanalus, pasirinktinai atmesti arba palikti 
 %   nepasirinktuosius kanalus. Anksčiau jie atmetinėti.
 %
