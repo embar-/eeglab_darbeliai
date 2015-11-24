@@ -1,6 +1,13 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2015.11.24.1
+% ~ „Nuoseklaus apdorojimo“ lange,
+%   NKA komponenčių peržiūroje, kai pasirinkta 
+%   parinktis „Laukti patvirtinimo (Darbeliai)“
+%   (beje, numatytoji yra „Laukti patvirtinimo (EEGLAB)“),
+%   suteikti mygtukams „Ne“ ir „Priimti“ tinkamas funkcijas.
+%
 % v2015.11.21.1
 % + Interpoliavus kanalus, pasirinktinai atmesti arba palikti 
 %   nepasirinktuosius kanalus. Anksčiau jie atmetinėti.
