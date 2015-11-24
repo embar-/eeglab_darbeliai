@@ -1748,9 +1748,9 @@ for i=1:Pasirinktu_failu_N;
                                 
                                 ats=getappdata(0, 'mygtuko_pasirinkimas');
                                 switch ats
-                                    case { 0 lokaliz('Priimti') lokaliz('Yes') }
+                                    case { 1 lokaliz('Priimti') lokaliz('Yes') }
                                         EEG = EEG_naujas;
-                                    case { 1 lokaliz('Atmesti') lokaliz('No') }
+                                    case { 0 lokaliz('Atmesti') lokaliz('No') }
                                         EEG = EEG_senas;
                                     otherwise
                                         uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
