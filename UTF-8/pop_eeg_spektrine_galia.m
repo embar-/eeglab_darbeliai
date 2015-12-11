@@ -213,6 +213,7 @@ try
   if ~isempty(g(1).mode);
     agv=strcmp(get(handles.pushbutton1,'Enable'),'on');
     if agv; agv=Ar_galima_vykdyti2(hObject, eventdata, handles); end;
+    %if agv; agv=Ar_galima_vykdyti3(hObject, eventdata, handles, 1); end;
     if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'}),...
       and(ismember(g(1).mode,{'tryforce'}),agv));
         set(handles.checkbox_uzverti_pabaigus,'Enable','off');
@@ -455,8 +456,18 @@ drawnow;
 
 
 function Ar_galima_vykdyti(hObject, eventdata, handles)
-
 set(handles.pushbutton1,'Enable','off');
+if ~Ar_galima_vykdyti1(hObject, eventdata, handles, 1);
+    drawnow; return;
+end;
+if ~Ar_galima_vykdyti3(hObject, eventdata, handles, 1);
+    drawnow; return;
+end;
+set(handles.pushbutton1,'Enable','on');
+drawnow;
+
+function Galima=Ar_galima_vykdyti1(hObject, eventdata, handles, blykcioti)
+Galima=false;
 if isempty(get(handles.listbox1,'String'));
     drawnow; return;
 end;
@@ -465,8 +476,10 @@ if get(handles.listbox1,'Value') == 0;
 end;
 Pasirinkti_failu_indeksai=(get(handles.listbox1,'Value'));
 if isempty(Pasirinkti_failu_indeksai);
-    set(handles.listbox1,'BackgroundColor', [1 1 0]); pause(1);
-    set(handles.listbox1,'BackgroundColor', [1 1 1]); 
+    if blykcioti;
+        set(handles.listbox1,'BackgroundColor', [1 1 0]); pause(1);
+        set(handles.listbox1,'BackgroundColor', [1 1 1]);
+    end;
     drawnow; return;
 end;
 if get(handles.edit1,'BackgroundColor') == [1 1 0];
@@ -489,12 +502,6 @@ if isempty(get(handles.edit_fft_langas,'String'));
     set(handles.edit_fft_langas,'BackgroundColor', [1 1 0]);
     return;
 end;
-if ~( get(handles.checkbox75,'Value') || get(handles.checkbox76,'Value') || get(handles.checkbox77,'Value') );
-    set([handles.checkbox75 handles.checkbox76 handles.checkbox77],'BackgroundColor', [1 1 0]); pause(1);
-    set([handles.checkbox75 handles.checkbox76 handles.checkbox77],'BackgroundColor', 'remove'); 
-    return;
-end;
-
 
 naudotojo_lentele=[[{lokaliz('visa')} ...
     num2cell(str2num(get(handles.edit51,'String')))];...
@@ -522,10 +529,8 @@ else
     set(handles.uitable1,'BackgroundColor', [1 1 1]);
 end;
 
-
-set(handles.pushbutton1,'Enable','on');
-drawnow;
-
+% Vykdyti galima
+Galima=true;
 
 function Galima=Ar_galima_vykdyti2(hObject, eventdata, handles)
 Galima=false;
@@ -555,9 +560,20 @@ if isempty(find(ismember(Pasirinkti_kanalai,visi_galimi_kanalai)));
     warning(lokaliz('No selected channels found in selected files.'));
     set(handles.pushbutton14,'Backgroundcolor',[1 1 0]) ; drawnow; pause(1);
     set(handles.pushbutton14,'Backgroundcolor','remove'); drawnow;
-else
-    Galima=true;
+    return;
 end;
+Galima=true;
+
+function Galima=Ar_galima_vykdyti3(hObject, eventdata, handles, blykcioti)
+Galima=false;
+if ~( get(handles.checkbox75,'Value') || get(handles.checkbox76,'Value') || get(handles.checkbox77,'Value') );
+    if blykcioti;
+        set([handles.checkbox75 handles.checkbox76 handles.checkbox77],'BackgroundColor', [1 1 0]); pause(1);
+        set([handles.checkbox75 handles.checkbox76 handles.checkbox77],'BackgroundColor', 'remove');
+    end;
+    return;
+end;
+Galima=true;
 
 
 function Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N)
@@ -1764,8 +1780,7 @@ if strcmp(get(handles.checkbox_perziura,'Enable'),'off');
     return;
 end;
 
-Ar_galima_vykdyti(hObject, eventdata, handles);
-if strcmp(get(handles.pushbutton1,'Enable'),'off');
+if ~Ar_galima_vykdyti1(hObject, eventdata, handles, 0);
     return;
 end;
 if ~Ar_galima_vykdyti2(hObject, eventdata, handles);
