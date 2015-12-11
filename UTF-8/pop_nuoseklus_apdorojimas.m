@@ -194,7 +194,7 @@ set(handles.checkbox_ASR,'Value',0);
 set(handles.checkbox_perziureti_ICA,'Value',0);
 set(handles.checkbox_epoch,'Value',0);
 
-% Kitos umatytosios reikšmės
+% Kitos numatytosios reikšmės
 set(handles.edit_epoch_iv,'String','');
 
 set(handles.text_apdorotini_kanalai,'String',lokaliz('all'));
