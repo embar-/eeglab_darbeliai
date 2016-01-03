@@ -476,10 +476,12 @@ try
             min(1500,50+max(handles.RRI)) - ...
             max(0,min(handles.RRI(handles.RRI > 0))-80) );
     MaxY=min(1500,30+max(handles.RRI));
+    MinX=max(0,handles.Laikai(1)-5);
+    XLim=[MinX 5*ceil(handles.Laikai(end)/5)];
     handles.scrollHandles = scrollplot2('Axis','XY',...
         'WindowSizeX', WindowSizeX, 'WindowSizeY', WindowSizeY,...
-        'MinX', max(0,handles.Laikai(1)-5), 'MaxY', MaxY ) ;
-    set(handles.scrollHandles,'XLim',[max(0,handles.Laikai(1)-5) 5*ceil(handles.Laikai(end)/5)]);
+        'MinX', MinX, 'MaxY', MaxY) ;
+    set(handles.scrollHandles,'XLim',XLim);
     set(handles.scrollHandles(2),'YLim',[0 1500]);
     handles.ScrollHandlesCldrK=findobj(handles.scrollHandles,'-not','Tag','scrollDataLine');
     handles.ScrollHandlesCldrL=findobj(handles.scrollHandles,'Tag','scrollDataLine');
@@ -964,8 +966,10 @@ set(findobj(handles.scrollHandles(1),'Tag','scrollPatch'),'YData',[NY1 NY2 NY2 N
 set(findobj(handles.scrollHandles(1),'Tag','scrollBar'),  'YData',[NY1 NY2]);
 set(findobj(handles.scrollHandles(2),'Tag','scrollPatch'),'XData',[NX1 NX1 NX2 NX2]);
 set(findobj(handles.scrollHandles(2),'Tag','scrollBar'),  'XData',[NX1 NX2]);
-set(handles.scrollHandles,'XLim',[NX1 NX2]);
-set(handles.scrollHandles,'YLim',[NY1 NY2]);
+if isobject(handles.scrollHandles);
+    set(handles.scrollHandles,'XLim',[NX1 NX2]);
+    set(handles.scrollHandles,'YLim',[NY1 NY2]);
+end;
 for h=[handles.RRI_lin handles.RRI_tsk handles.EKG_tsk [handles.ScrollHandlesCldrL]'];
     try
         if length(get(h,'BrushData')) ~= length(get(h,'XData'));
