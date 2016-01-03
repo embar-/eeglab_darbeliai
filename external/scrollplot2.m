@@ -547,7 +547,7 @@ function processArgs(pvPairs,hScroll)
                         % Update the parent axes with the new limit
                         hAx = getappdata(get(thisPatch,'Parent'), 'parent');
                         lim = get(hAx, limStr);
-                        set(hAx, limStr,[paramValue,lim(2)]);
+                        set(hAx, limStr, paramValue + [0 diff(lim)]);
                     end
                     minLim = paramValue;
 
@@ -565,7 +565,7 @@ function processArgs(pvPairs,hScroll)
                         % Update the parent axes with the new limit
                         hAx = getappdata(get(thisPatch,'Parent'), 'parent');
                         lim = get(hAx, limStr);
-                        set(hAx, limStr,[lim(1),paramValue]);
+                        set(hAx, limStr, paramValue - [diff(lim) 0]);
                     end
                     maxLim = paramValue;
 
@@ -623,7 +623,7 @@ function processArgs(pvPairs,hScroll)
 
             end  % switch paramName
         end  % loop pvPairs
-    catch %err;
+    catch
         if ~isempty(paramName),  paramName = [' ''' paramName ''''];  end
         myError('YMA:scrollplot:invalidHandle',['Error setting scrollplot property' paramName ':' char(10) lasterr]);
     end
