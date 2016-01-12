@@ -106,7 +106,10 @@ end;
 
 f=findobj('name', mfilename, 'Type','figure','Tag','Darbeliai');
 if isequal(f,handles.figure1);
-    warning(lokaliz('Dialogas jau atvertas!')); figure(f);
+    wrn=warning('off','backtrace');
+    warning([mfilename ': ' lokaliz('Dialogas jau atvertas!')]);
+    warning(wrn.state, 'backtrace');
+    figure(f);
     if strcmp(get(handles.pushbutton4),'off') || isempty(g); return; end;
     button = questdlg(...
         [ lokaliz('Dialogas jau atvertas!')  ' '  lokaliz('Reload parameters?') ], ...
@@ -114,7 +117,9 @@ if isequal(f,handles.figure1);
         lokaliz('Atsisakyti'), lokaliz('Reload'), lokaliz('Reload'));
     switch button
         case lokaliz('Reload');
-            warning(lokaliz('Changing options in dialog!'));
+            wrn=warning('off','backtrace');
+            warning([mfilename ': ' lokaliz('Changing options in dialog!')]);
+            warning(wrn.state, 'backtrace');
         otherwise
             return;
     end;
