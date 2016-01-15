@@ -433,7 +433,7 @@ end;
 
 msg={Darbeliu_versija 
     ' ' 
-    '(c) 2014-2015 Mindaugas Baranauskas'
+    '(c) 2014-2016 Mindaugas Baranauskas'
     ['' 109 105 110 100 97 117 103 97 115 46 98 97 114 97 110 97 117 115  107 97 115 64 103 102 46 118 117 46 108 116] };
 
 % % Ženkliukas
