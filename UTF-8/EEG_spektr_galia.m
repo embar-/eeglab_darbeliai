@@ -5,7 +5,7 @@
 %
 %% Gauna pasirinktų failų spektrinį galios tankį
 %
-% (c) 2014-2015 Mindaugas Baranauskas
+% (c) 2014-2016 Mindaugas Baranauskas
 
 
 %%
@@ -47,7 +47,7 @@ end;
 %DUOMENYS.VISU.Papildomi_dazniu_santykiai={ } ;
 
 % Skyriklis nurodant santykinę galią
-skyriklis='.';
+skyriklis='/';
 if isempty(Doc_tp); Doc_tp={'mat' 'txt'}; end;
 if ischar(Doc_tp) ; Doc_tp={Doc_tp}; end;
 t=datestr(now, 'yyyy-mm-dd_HHMMSS'); disp(t);
