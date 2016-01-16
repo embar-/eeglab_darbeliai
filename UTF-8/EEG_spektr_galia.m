@@ -19,7 +19,8 @@ function [DUOMENYS]=EEG_spektr_galia(...
     Papildomi_dazniu_santykiai,...
     AR_GRAFIKAS,...
     lango_ilgis_sekundemis,fft_tasku_herce, ...
-    Ar_reikia_galios_absoliucios, Ar_reikia_galios_santykines)
+    Ar_reikia_galios_absoliucios, Ar_reikia_galios_santykines, ...
+    Ar_reikia_spekro_absol)
 
 [ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
 DUOMENYS.VISU.NORIMI_KANALAI=NORIMI_KANALAI;
@@ -54,7 +55,8 @@ t=datestr(now, 'yyyy-mm-dd_HHMMSS'); disp(t);
 if isempty(Doc_pvd); Doc_pvd='EEGLab_PSD_%t' ; end;
 Doc_pvd=strrep(Doc_pvd,'%t',t);
 Rezultatu_MAT_failas=[Doc_pvd '.mat'] ;
-Rezultatu_TXT_failas=[Doc_pvd '.txt'] ;
+Rezultatu_TXT_failas=[Doc_pvd '.txt'] ; % galia
+Rezultatu_TXT_failas_sp = [ Doc_pvd '-sp.txt' ] ;
 Rezultatu_Stjudento=[Doc_pvd '_Stjud.tsv'];
 Rezultatu_Stjudento_galvos=[Doc_pvd '_StjudGalvos.txt'];
 Rezultatu_Vilkoksono=[Doc_pvd '_Vilk.tsv'];
@@ -891,7 +893,7 @@ if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'})))) && ( Ar_reikia_galios_absol
     end ;
     
     
-    %% Duomenų eksportavimas į tekstinį failą
+    %% Spektrinės galios eksportavimas į tekstinį failą
     disp([ Rezultatu_TXT_failas ' (galite atverti su MS Excel ar LibreOffice Calc)' ] );
     fid=fopen(Rezultatu_TXT_failas, 'w');
     % Antraštė
@@ -949,6 +951,7 @@ if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'})))) && ( Ar_reikia_galios_absol
         end;
     end;
     fclose(fid);
+    
 end;
 
 try
@@ -958,6 +961,50 @@ try
 catch err;
     warning(err.message);
 end;
+
+if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'})))) && ( Ar_reikia_spekro_absol );
+    
+    %% Spektro eksportavimas į tekstinį failą
+    disp([ Rezultatu_TXT_failas_sp ' (galite atverti su MS Excel ar LibreOffice Calc)' ] );
+    fid=fopen(Rezultatu_TXT_failas_sp, 'w');
+    % Antraštė
+    if exist('lokaliz.m','file') == 2;
+        fprintf(fid, sprintf([ lokaliz('Rinkmena') '\t' lokaliz('Salyga') '\t' lokaliz('Vienetai') '\t' lokaliz('Channel') ] ));
+        spektro_vienetai_uV2Hz=lokaliz('mikro voltai ^ 2 / Hz');
+    else
+        fprintf(fid, sprintf('Rinkmena\tSalyga\tVienetai\tKanalas'));
+        spektro_vienetai_uV2Hz='mikroV^2/Hz';
+    end;
+    %spektro_vienetai_db=[ '10*lg(' spektro_vienetai_uV2Hz ')' ];
+    if mod(1/fft_tasku_herce, 1) == 0;
+        hz_sar_trpmn = 0 ;
+    elseif ismember(fft_tasku_herce, [2 5 10]);
+        hz_sar_trpmn = 1 ;
+    elseif fft_tasku_herce < 10 || ismember(fft_tasku_herce, [20 50 100]);
+        hz_sar_trpmn = 2 ; 
+    else
+        hz_sar_trpmn = 1 + length(num2str(fft_tasku_herce)) ;
+    end;
+    hz_sar= [ '\tHz_%.' num2str(hz_sar_trpmn) 'f' ];
+    fprintf(fid, hz_sar, DUOMENYS.VISU.DAZNIAI');
+    fprintf(fid, sprintf('\n'));
+    spektro_tasku_N=length(DUOMENYS.VISU.DAZNIAI);
+    for tir=1:DUOMENYS.VISU.Tiriamuju_N ;
+        for sal=1:DUOMENYS.VISU.Salygu_N ;
+            % Spektras, mikrovoltais
+            if Ar_reikia_spekro_absol;
+                for i=find(~isnan(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{tir,sal}(:,1)'));
+                    fprintf(fid, '%s\t%d\t%s\t%s', ...
+                        DUOMENYS.VISU.Tiriamieji{tir}, sal, spektro_vienetai_uV2Hz, DUOMENYS.VISU.NORIMI_KANALAI{i});
+                    fprintf(fid, '\t%.16g', DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{tir,sal}(i,1:spektro_tasku_N));
+                    fprintf(fid, sprintf('\n'));
+                end;
+            end;
+        end;
+    end;
+    fclose(fid);
+end;
+
 
 %% Išsaugoti į MAT
 if ~(isempty(find(ismember(Doc_tp, {'mat','MAT', 'matlab','MATLAB'}))));
