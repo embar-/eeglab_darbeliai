@@ -952,15 +952,16 @@ if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'})))) && ( Ar_reikia_galios_absol
     end;
     fclose(fid);
     
+    try
+        if exist(Rezultatu_TXT_failas,'file') == 2;
+            open(Rezultatu_TXT_failas);
+        end
+    catch err;
+        warning(err.message);
+    end;
+    
 end;
 
-try
-    if exist(Rezultatu_TXT_failas,'file') == 2;
-        open(Rezultatu_TXT_failas);
-    end
-catch err;
-    warning(err.message);
-end;
 
 if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'})))) && ( Ar_reikia_spekro_absol );
     
@@ -1002,7 +1003,16 @@ if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'})))) && ( Ar_reikia_spekro_absol
             end;
         end;
     end;
-    fclose(fid);
+    fclose(fid);    
+    
+    try
+        if exist(Rezultatu_TXT_failas_sp,'file') == 2;
+            open(Rezultatu_TXT_failas_sp);
+        end
+    catch err;
+        warning(err.message);
+    end;
+    
 end;
 
 
