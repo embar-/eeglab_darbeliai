@@ -313,6 +313,20 @@ for i=1:NumberOfFiles ;
         catch err; Pranesk_apie_klaida(err, 'EEG spektras', File, 0);
         end;
         
+        % Atmesti kanalus, kurie yra tiesi linija
+        ne_tiesiosios_linijos=[];
+        for knl=1:size(EEG.data,1);
+            if length(unique(EEG.data(knl,:))) ~= 1;
+                ne_tiesiosios_linijos=[ne_tiesiosios_linijos knl];
+            else
+                disp([ EEG.chanlocs(knl).labels ' yra tiesi linija!' ]);
+                nesutampantys_kanalai=[nesutampantys_kanalai {EEG.chanlocs(knl).labels}];
+            end;
+        end;
+        if length(ne_tiesiosios_linijos) ~= size(EEG.data,1);
+            EEG = pop_select( EEG,'channel', {EEG.chanlocs(ne_tiesiosios_linijos).labels});
+        end;
+        
         EEG = eeg_checkset( EEG );
         
         if and(EEG.nbchan > 0, ~isempty(EEG.data));
@@ -453,6 +467,8 @@ end
 %DUOMENYS.VISU.Tiriamieji=unique(DUOMENYS.VISU.Tiriamieji) ;
 DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz=DUOMENYS.VISU.tmp.SPEKTRAS_LENTELESE_absol ;
 DUOMENYS.VISU.failai=DUOMENYS.VISU.tmp.failai ;
+DUOMENYS.VISU.KANALU_N=length(DUOMENYS.VISU.KANALAI);
+DUOMENYS.VISU.Tiriamuju_N=length(DUOMENYS.VISU.Tiriamieji);
 
 try cd(NewPath);
 catch;
@@ -464,9 +480,6 @@ end;
 save([ Rezultatu_MAT_failas '~'], 'DUOMENYS') ;
 
 cd(orig_path);
-
-DUOMENYS.VISU.KANALU_N=length(DUOMENYS.VISU.KANALAI);
-DUOMENYS.VISU.Tiriamuju_N=length(DUOMENYS.VISU.Tiriamieji);
 
 %% Absoliuti galia
 disp('Absoliuti galia...');
