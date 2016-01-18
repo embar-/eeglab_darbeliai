@@ -1,7 +1,7 @@
 function varargout=drb_uzklausa(varargin)
 % drb_uzklausa - bendrų užklausų kvietimas „Darbelių“ languose 
 %
-% (C) 2015 Mindaugas Baranauskas
+% (C) 2015-2016 Mindaugas Baranauskas
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -84,9 +84,13 @@ switch tipas
     case { 'atverimui' 'ikelimo' 'input' }
         papildomi=[papildomi {[ (fileparts(which('eeglab'))) filesep 'sample_data' ]} ];
         try papildomi=[papildomi Darbeliai.keliai.atverimui ]; catch; end;
+        paaiskinimas=lokaliz('Ikeltinu duomenu aplankas');
     case { 'saugojimui' 'irasymo' 'output' }
         papildomi=[papildomi {regexprep({tempdir}, [filesep '$'], '' )} ];
         try papildomi=[papildomi Darbeliai.keliai.saugojimui ]; catch; end;
+        paaiskinimas=lokaliz('Saugotinu duomenu aplankas');
+    otherwise
+        paaiskinimas='';
 end;
 
 s0=papildomi;
@@ -99,12 +103,14 @@ end;
 
 p=unique([p1 d1 l1 s1 {pwd}]);
 a=listdlg(...
-    'ListString',p,...
-    'SelectionMode','single',...
-    'InitialValue',find(ismember(p,c)),...
-    'ListSize',[500 200],...
-    'OKString',lokaliz('OK'),...
-    'CancelString',lokaliz('Cancel'));
+    'Name', lokaliz('Pasirinkite aplanka'), ...
+    'PromptString', paaiskinimas, ...
+    'ListString', p,...
+    'SelectionMode', 'single',...
+    'InitialValue', find(ismember(p,c)),...
+    'ListSize', [700 300],...
+    'OKString', lokaliz('OK'),...
+    'CancelString', lokaliz('Cancel'));
 if isempty(a);
     katalogas={''};
 else
