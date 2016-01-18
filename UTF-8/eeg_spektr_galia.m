@@ -20,7 +20,7 @@ function [DUOMENYS]=eeg_spektr_galia(...
     AR_GRAFIKAS,...
     lango_ilgis_sekundemis,fft_tasku_herce, ...
     Ar_reikia_galios_absoliucios, Ar_reikia_galios_santykines, ...
-    Ar_reikia_spekro_absol)
+    Ar_reikia_spekro_absol, Ar_reikia_spekro_db)
 
 [ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
 DUOMENYS.VISU.NORIMI_KANALAI=NORIMI_KANALAI;
@@ -56,7 +56,7 @@ if isempty(Doc_pvd); Doc_pvd='EEGLab_PSD_%t' ; end;
 Doc_pvd=strrep(Doc_pvd,'%t',t);
 Rezultatu_MAT_failas=[Doc_pvd '.mat'] ;
 Rezultatu_TXT_failas=[Doc_pvd '.txt'] ; % galia
-Rezultatu_TXT_failas_sp = [ Doc_pvd '-sp.txt' ] ;
+Rezultatu_TXT_failas_sp = [ Doc_pvd '.sp.txt' ] ;
 Rezultatu_Stjudento=[Doc_pvd '_Stjud.tsv'];
 Rezultatu_Stjudento_galvos=[Doc_pvd '_StjudGalvos.txt'];
 Rezultatu_Vilkoksono=[Doc_pvd '_Vilk.tsv'];
@@ -425,6 +425,7 @@ for i=1:NumberOfFiles ;
             end;
             if isequal(DUOMENYS.VISU.KANALAI, DUOMENYS.FAILO(i).KANALAI);
                 DUOMENYS.VISU.tmp.SPEKTRAS_LENTELESE_absol{DUOMENYS.FAILO(i).Tiriamojo_idx,DUOMENYS.FAILO(i).Salyga}=DUOMENYS.FAILO(i).SPEKTRAS.absol;
+                DUOMENYS.VISU.tmp.SPEKTRAS_LENTELESE_dB{DUOMENYS.FAILO(i).Tiriamojo_idx,DUOMENYS.FAILO(i).Salyga}=DUOMENYS.FAILO(i).SPEKTRAS.dB;
                 DUOMENYS.VISU.tmp.failai{DUOMENYS.FAILO(i).Tiriamojo_idx,DUOMENYS.FAILO(i).Salyga}=File;
             else
                 warning(['Nesutampa kanalai su kitų failų. ' File]);
@@ -466,7 +467,9 @@ end
 %end;
 %DUOMENYS.VISU.Tiriamieji=unique(DUOMENYS.VISU.Tiriamieji) ;
 DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz=DUOMENYS.VISU.tmp.SPEKTRAS_LENTELESE_absol ;
+DUOMENYS.VISU.SPEKTRAS_LENTELESE_dB=DUOMENYS.VISU.tmp.SPEKTRAS_LENTELESE_dB ;
 DUOMENYS.VISU.failai=DUOMENYS.VISU.tmp.failai ;
+DUOMENYS.VISU=rmfield(DUOMENYS.VISU,'tmp');
 DUOMENYS.VISU.KANALU_N=length(DUOMENYS.VISU.KANALAI);
 DUOMENYS.VISU.Tiriamuju_N=length(DUOMENYS.VISU.Tiriamieji);
 
@@ -976,7 +979,7 @@ if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'})))) && ( Ar_reikia_galios_absol
 end;
 
 
-if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'})))) && ( Ar_reikia_spekro_absol );
+if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'})))) && ( Ar_reikia_spekro_absol || Ar_reikia_spekro_db );
     
     %% Spektro eksportavimas į tekstinį failą
     disp([ Rezultatu_TXT_failas_sp ' (galite atverti su MS Excel ar LibreOffice Calc)' ] );
@@ -989,7 +992,7 @@ if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'})))) && ( Ar_reikia_spekro_absol
         fprintf(fid, sprintf('Rinkmena\tSalyga\tVienetai\tKanalas'));
         spektro_vienetai_uV2Hz='mikroV^2/Hz';
     end;
-    %spektro_vienetai_db=[ '10*lg(' spektro_vienetai_uV2Hz ')' ];
+    spektro_vienetai_db=[ '10*lg(' spektro_vienetai_uV2Hz ')' ];
     if mod(1/fft_tasku_herce, 1) == 0;
         hz_sar_trpmn = 0 ;
     elseif ismember(fft_tasku_herce, [2 5 10]);
@@ -999,7 +1002,7 @@ if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'})))) && ( Ar_reikia_spekro_absol
     else
         hz_sar_trpmn = 1 + length(num2str(fft_tasku_herce)) ;
     end;
-    hz_sar= [ '\tHz_%.' num2str(hz_sar_trpmn) 'f' ];
+    hz_sar= [ '\t%.' num2str(hz_sar_trpmn) 'f' ];
     fprintf(fid, hz_sar, DUOMENYS.VISU.DAZNIAI');
     fprintf(fid, sprintf('\n'));
     spektro_tasku_N=length(DUOMENYS.VISU.DAZNIAI);
@@ -1011,6 +1014,14 @@ if ~(isempty(find(ismember(Doc_tp, {'txt','TXT'})))) && ( Ar_reikia_spekro_absol
                     fprintf(fid, '%s\t%d\t%s\t%s', ...
                         DUOMENYS.VISU.Tiriamieji{tir}, sal, spektro_vienetai_uV2Hz, DUOMENYS.VISU.NORIMI_KANALAI{i});
                     fprintf(fid, '\t%.16g', DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{tir,sal}(i,1:spektro_tasku_N));
+                    fprintf(fid, sprintf('\n'));
+                end;
+            end;
+            if Ar_reikia_spekro_db;
+                for i=find(~isnan(DUOMENYS.VISU.SPEKTRAS_LENTELESE_dB{tir,sal}(:,1)'));
+                    fprintf(fid, '%s\t%d\t%s\t%s', ...
+                        DUOMENYS.VISU.Tiriamieji{tir}, sal, spektro_vienetai_db, DUOMENYS.VISU.NORIMI_KANALAI{i});
+                    fprintf(fid, '\t%.16g', DUOMENYS.VISU.SPEKTRAS_LENTELESE_dB{tir,sal}(i,1:spektro_tasku_N));
                     fprintf(fid, sprintf('\n'));
                 end;
             end;

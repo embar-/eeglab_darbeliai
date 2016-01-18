@@ -8,7 +8,7 @@
 % GUI versija
 %
 %
-% (C) 2014-2015 Mindaugas Baranauskas
+% (C) 2014-2016 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -211,6 +211,7 @@ catch err;
 end;
 
 set(handles.checkbox_uzverti_pabaigus,'UserData',0);
+set(handles.checkbox76,'Value',1);
 
 tic;
 
@@ -721,6 +722,7 @@ ribos=str2num(get(handles.edit51,'String'));%*1000;
 Ar_reikia_galios_absoliucios=get(handles.checkbox76,'Value');
 Ar_reikia_galios_santykines=get(handles.checkbox77,'Value');
 Ar_reikia_spekro_absol=0; % FIXME: leisti pasirinkti
+Ar_reikia_spekro_db=get(handles.checkbox75,'Value');
 
 [~,ALLEEG_,~]=pop_newset([],[],[]);
 ALLEEG_=setfield(ALLEEG_,'datfile',[]);
@@ -790,8 +792,9 @@ legendoje={};
                         fft_tasku_herce, ...
                         Ar_reikia_galios_absoliucios, ...
                         Ar_reikia_galios_santykines, ...
-                        Ar_reikia_spekro_absol);
-                    assignin('base','DUOMENYS',DUOMENYS);
+                        Ar_reikia_spekro_absol, ...
+                        Ar_reikia_spekro_db);
+                    %assignin('base','DUOMENYS',DUOMENYS);
                     Apdoroti_visi_tiriamieji=1;
                     DarboPorcijaAtlikta = 1;
                     PaskutinioIssaugotoDarboNr=DarboNr;
@@ -1870,8 +1873,8 @@ try
         0,...
         fft_lango_ilgis_sekundemis(1),...
         fft_tasku_herce,...
-        0, 0, 0);
-    assignin('base','DUOMENYS',DUOMENYS);
+        0, 0, 0, 0);
+    %assignin('base','DUOMENYS',DUOMENYS);
     
     
     axes(handles.axes1);
@@ -1887,7 +1890,7 @@ try
         tmp_lab=get(handles.axes1,'XTickLabel');
         try
             set(handles.axes1,'XTickLabel', [ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab(end,:) ' Hz' ]} ]); % MATLAB R2014a
-        catch err;
+        catch
             set(handles.axes1,'XTickLabel', [ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab{end,:} ' Hz' ]} ]); % MATLAB R2015a
         end;
         hold('on');
@@ -2175,13 +2178,13 @@ function popupmenu_doc_Callback(hObject, eventdata, handles)
 busena=get(handles.popupmenu_doc,'Enable');
 switch get(handles.popupmenu_doc,'Value')
     case 1
-        set(handles.checkbox75, 'Value',1, 'Enable', 'off', 'Visible', 'on');
-        set(handles.checkbox76, 'Value',1, 'Enable', 'off');
-        set(handles.checkbox77, 'Value',1, 'Enable', 'off');
+        set(handles.checkbox75, 'Visible', 'on', 'Enable', 'off', 'Value', 1);
+        set(handles.checkbox76, 'Visible', 'on', 'Enable', 'off', 'Value', 1);
+        set(handles.checkbox77, 'Visible', 'on', 'Enable', 'off', 'Value', 1);
     case 2
-        set(handles.checkbox75, 'Value',0, 'Enable', 'off', 'Visible', 'off');
-        set(handles.checkbox76, 'Enable', busena);
-        set(handles.checkbox77, 'Enable', busena);
+        set(handles.checkbox75, 'Visible', 'on', 'Enable', busena);
+        set(handles.checkbox76, 'Visible', 'on', 'Enable', busena);
+        set(handles.checkbox77, 'Visible', 'on', 'Enable', busena);
 end;
 
 % --- Executes during object creation, after setting all properties.
