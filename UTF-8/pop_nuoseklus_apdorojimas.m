@@ -6550,7 +6550,9 @@ if length(x) == n ;
         set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
     end;
 end;
-set(id,'String',get(id,'UserData'));
+d=get(id,'UserData');
+if ~ischar(d); d=regexprep(num2str(d), '[ ]*', ' '); end;
+set(id,'String',d);
 set(id,'BackgroundColor',[1 1 1]);
 
 
