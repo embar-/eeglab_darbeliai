@@ -3,7 +3,7 @@ function pop_eeg_perziura(varargin)
 % pop_eeg_perziura(EEG)
 % pop_eeg_perziura(EEG1, EEG2)
 %
-% (C) 2015 Mindaugas Baranauskas
+% (C) 2015-2016 Mindaugas Baranauskas
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -87,8 +87,9 @@ else
 end;
 
 
-f=figure('toolbar','none','menubar','none','NumberTitle','off',...
-    'units','normalized','outerposition',[0 0 1 1],'tag','Darbeliai','name', pvd);
+f=figure('ToolBar','none','MenuBar','none','Name', pvd, 'NumberTitle','off',...
+    'Units','normalized','OuterPosition',[0 0 1 1],'Tag','Darbeliai',...
+    'Color',[0.9400 0.9400 0.9400]);
 a=axes('units','normalized','position',[0.08 0.05 0.9 0.9 ]);
 p=uicontrol('style','pushbutton', 'String', lokaliz('Close'),  'Tag', 'Close', ...
     'Units', 'normalized', 'position', [0.84 0.05 0.1 0.05], 'callback', ...
@@ -119,11 +120,10 @@ if isempty(getappdata(a,'EEG1'));
     delete(f);
     return;
 end;
-    
+
 set(f,'Visible','on');
 if get(f,'userdata');
     uiwait(f);
-    delete(f);
+    try delete(f); catch ; end;
 end;
-
 

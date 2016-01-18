@@ -4,7 +4,7 @@ function eeg_perziura(varargin)
 % eeg_perziura(EEG)
 % eeg_perziura(EEG1, EEG2)
 %
-% (C) 2015 Mindaugas Baranauskas
+% (C) 2015-2016 Mindaugas Baranauskas
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -267,7 +267,7 @@ else
 end;
 y_koef=round(36*sqrt(sqrt(mean([rms1(~isnan(rms1)) rms2(~isnan(rms2))]))));
 if or(size(y_koef) ~= [1 1], ismember(y_koef, [0 NaN])) ; 
-    y_koef=50; 
+    y_koef=600 / max(EEG1.nbchan, EEG2.nbchan); 
 end;
 setappdata(a,'y_koef',y_koef);
 
@@ -510,8 +510,8 @@ function eeg_perziura_sukurti(varargin)
 %% Naujai kurti EEG peržiūrai
 if nargin == 0; return; end;
 try g=struct(varargin{3:end}); catch; end;
-try    f=g(1).figure; 
-    if ~isobject(f); 
+try    f=g(1).figure;
+    if ~ismember(f,findobj('type','figure')); 
         f=figure('toolbar','none','menubar','none','units','normalized','outerposition',[0 0 1 1]); 
     end;
 catch; f=figure;
