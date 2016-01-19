@@ -211,6 +211,7 @@ set(handles.checkbox_epoch,'Value',0);
 
 % Kitos numatytosios reikšmės
 set(handles.edit_epoch_iv,'String','');
+set(handles.popupmenu8,'Value',3);
 
 set(handles.text_apdorotini_kanalai,'String',lokaliz('all'));
 set(handles.text_apdorotini_kanalai,'TooltipString','');
