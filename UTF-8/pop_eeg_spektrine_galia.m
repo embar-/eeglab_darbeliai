@@ -203,6 +203,10 @@ catch err;
 end;
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
+
+% Papildomos parinktys
+set(handles.checkbox76,'Value',1);
+
 parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
 try 
     drb_parinktys(hObject, eventdata, handles, 'ikelti', mfilename, g(1).preset); 
@@ -211,7 +215,6 @@ catch err;
 end;
 
 set(handles.checkbox_uzverti_pabaigus,'UserData',0);
-set(handles.checkbox76,'Value',1);
 
 tic;
 
