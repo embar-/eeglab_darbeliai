@@ -107,23 +107,28 @@ else    g=[];
 end;
 
 f=findobj('name', mfilename, 'Type','figure','Tag','Darbeliai');
-if isequal(f,handles.figure1);
+if ismember(handles.figure1,f);
     wrn=warning('off','backtrace');
     warning([mfilename ': ' lokaliz('Dialogas jau atvertas!')]);
     warning(wrn.state, 'backtrace');
     figure(f);
     if strcmp(get(handles.pushbutton4),'off') || isempty(g); return; end;
-    button = questdlg(...
-        [ lokaliz('Dialogas jau atvertas!')  ' '  lokaliz('Reload parameters?') ], ...
-        lokaliz('Dialogas jau atvertas!') , ...
-        lokaliz('Atsisakyti'), lokaliz('Reload'), lokaliz('Reload'));
-    switch button
-        case lokaliz('Reload');
-            wrn=warning('off','backtrace');
-            warning([mfilename ': ' lokaliz('Changing options in dialog!')]);
-            warning(wrn.state, 'backtrace');
-        otherwise
-            return;
+    try klausti_naujo_atverimo=~ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'});
+    catch; klausti_naujo_atverimo=1;
+    end;
+    if klausti_naujo_atverimo
+        button = questdlg(...
+            [ lokaliz('Dialogas jau atvertas!')  ' '  lokaliz('Reload parameters?') ], ...
+            lokaliz('Dialogas jau atvertas!') , ...
+            lokaliz('Atsisakyti'), lokaliz('Reload'), lokaliz('Reload'));
+        switch button
+            case lokaliz('Reload');
+                wrn=warning('off','backtrace');
+                warning([mfilename ': ' lokaliz('Changing options in dialog!')]);
+                warning(wrn.state, 'backtrace');
+            otherwise
+                return;
+        end;
     end;
 end;
 set(handles.figure1,'Name',mfilename);
