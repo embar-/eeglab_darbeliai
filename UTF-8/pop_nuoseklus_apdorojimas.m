@@ -1639,7 +1639,7 @@ for i=1:Pasirinktu_failu_N;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
 
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-
+                
                 try
 
                     EEG = vykdymas_perziureti_ICA(EEG, EEG, ...
@@ -1660,7 +1660,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_perziureti_ICA,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_perziureti_ICA_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_perziureti_ICA_,'Value') == 1 && ~TIK_PERZIURA;
+                if get(handles.checkbox_perziureti_ICA_,'Value') == 1 && ~TIK_PERZIURA && ~isempty(EEG) ;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -2258,7 +2258,7 @@ for i=1:Pasirinktu_failu_N;
 
 
         % Išsaugoti
-        if isempty(PaskRinkmIssaugKelias) && ~TIK_PERZIURA;
+        if isempty(PaskRinkmIssaugKelias) && ~TIK_PERZIURA && ~isempty(EEG);
             Poaplankis='.';
             Priesaga='';
             Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
