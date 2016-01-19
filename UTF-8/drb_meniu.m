@@ -52,6 +52,10 @@ if nargin > 4; darbas=varargin{5};
 else           darbas='';
 end;
 
+if isempty(handles); 
+    handles.figure1=gcf;
+end;
+
 switch lower(meniu)
     case {'darbeliai'}
         drb_meniu_darbeliai(hObject, eventdata, handles, darbas, varargin(6:end));
