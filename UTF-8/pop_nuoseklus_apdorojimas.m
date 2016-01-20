@@ -5991,77 +5991,10 @@ if isempty(RINKMENOS);
     return;
 end;
 set(handles.pushbutton13,'Enable','off'); drawnow;
-[~,visi_galimi_ivykiai,bendri_ivykiai]=eeg_ivykiu_sarasas (get(handles.edit1,'String'), RINKMENOS);
+[pasirinkti_ivykiai]=drb_uzklausa('ivykiai', ...
+    get(handles.edit1,'String'), RINKMENOS, get(handles.pushbutton13,'UserData'));
 set(handles.pushbutton13,'Enable','on');
-if ismember('boundary',visi_galimi_ivykiai);
-    i=find(ismember(visi_galimi_ivykiai,'boundary')==0);
-    visi_galimi_ivykiai=visi_galimi_ivykiai(i);
-end;
-if ismember('boundary',bendri_ivykiai);
-    i=find(ismember(bendri_ivykiai,'boundary')==0);
-    bendri_ivykiai=bendri_ivykiai(i);
-end;
-if isempty(visi_galimi_ivykiai);
-    warndlg(lokaliz('No events found.'),lokaliz('Selection of events'));
-    return;
-end;
-pateikiami_ivykiai={};
-pradinis_pasirinkimas=[];
-pateikiami_bendri_v=0;
-if ~isempty(bendri_ivykiai);
-    if length(RINKMENOS) == 1;
-        pateikiami_ivykiai={bendri_ivykiai{:}};
-        pateikiami_bendri_v=0;
-        pradinis_pasirinkimas=[1:length(bendri_ivykiai)];
-    else
-        pateikiami_ivykiai={lokaliz('(all common:)') bendri_ivykiai{:} };
-        pateikiami_bendri_v=1;
-        pradinis_pasirinkimas=[2:(length(bendri_ivykiai)+1)];
-    end;
-end;
-nebendri_idx=find(ismember(visi_galimi_ivykiai,bendri_ivykiai) == 0);
-pateikiami_nebendri_v=0;
-if ~isempty(nebendri_idx);
-   pateikiami_ivykiai={pateikiami_ivykiai{:} lokaliz('(not common:)') visi_galimi_ivykiai{nebendri_idx} };
-   pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_ivykiai);
-   if ~pateikiami_bendri_v;
-       pradinis_pasirinkimas=[(pateikiami_nebendri_v +1) : (length(visi_galimi_ivykiai) + pateikiami_bendri_v + 1 ) ];
-   end;
-end;
-%vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
-senas=get(handles.pushbutton13,'UserData');
-if ~isempty(senas);
-    pradinis_pasirinkimas=find(ismember(pateikiami_ivykiai,senas)==1);
-end;
-% senas=get(handles.edit_epoch_iv,'String');
-% if ~isempty(senas);
-%     senas=str2num(senas);
-%     if ~isempty(senas);
-%         senas=cellfun(@(i) {num2str(senas(i))}, num2cell([1:length(senas)]));
-%         pradinis_pasirinkimas=find(ismember(pateikiami_ivykiai,senas)==1);
-%     end;
-% end;
-if ~iscellstr(pateikiami_ivykiai);
-    warning(lokaliz('unexpected events types.'),lokaliz('Selection of events'));
-    disp(pateikiami_ivykiai);
-    return;
-end;
-pasirinkti_ivykiai_idx=listdlg('ListString', pateikiami_ivykiai,...
-    'SelectionMode','multiple',...
-    'PromptString', lokaliz('Select events:'),...
-    'InitialValue',pradinis_pasirinkimas ,...
-    'OKString',lokaliz('OK'),...
-    'CancelString',lokaliz('Cancel'));
-if isempty(pasirinkti_ivykiai_idx); return ; end;
-pasirinkti_ivykiai={};
-if ismember(pateikiami_bendri_v,pasirinkti_ivykiai_idx);
-    pasirinkti_ivykiai={pasirinkti_ivykiai{:} bendri_ivykiai{:} };
-end;
-if ismember(pateikiami_nebendri_v,pasirinkti_ivykiai_idx);
-    pasirinkti_ivykiai={pasirinkti_ivykiai{:} visi_galimi_ivykiai{nebendri_idx} };
-end;
-pasirinkti_ivykiai_idx_=pasirinkti_ivykiai_idx(find(ismember(pasirinkti_ivykiai_idx, [pateikiami_bendri_v pateikiami_nebendri_v])==0));
-pasirinkti_ivykiai=unique({pasirinkti_ivykiai{:} pateikiami_ivykiai{pasirinkti_ivykiai_idx_}});
+if isempty(pasirinkti_ivykiai); return; end;
 pasirinkti_ivykiai_str=pasirinkti_ivykiai{1};
 for i=2:length(pasirinkti_ivykiai);
     pasirinkti_ivykiai_str=[pasirinkti_ivykiai_str ' ' pasirinkti_ivykiai{i}];
