@@ -3,12 +3,12 @@
 % T.y. epochuojama pagal stimulų įvykius, po to tikrinama, ar naujose epochose yra atsakų įvykiai
 % 
 % Taip pat yra galimybė šias dideles epchas dar smulkiau epochuoti pagal stimulus ir Epochuoti_pagal_atsakus,
-% galima pašalinti jų baseline
+% galima pašalinti jų pagrindą (baseline)
 %
 % GUI versija
 %
 %
-% (C) 2014-2015 Mindaugas Baranauskas
+% (C) 2014-2016 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -204,13 +204,13 @@ end;
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 
 % reikšmės numatytosios
-set(handles.edit51,'String','-0.200 2.000 ');   % Epochavimo_intervalas_pirminis
-set(handles.edit59,'String','31:36 51:56');     % Epochuoti_pagal_stimulus_
-set(handles.edit54,'String','10');              % Epochuoti_pagal_atsakus
-set(handles.edit55,'String','-0.600 0.250');   % Epochavimo_intervalas_atsakams
-set(handles.edit56,'String','-0.600 0.000');    % Epochavimo_intervalas_atsakams_base
-set(handles.edit57,'String','-0.350 0.700');    % Epochavimo_intervalas_stimulams
-set(handles.edit58,'String','-0.350 0.000');    % Epochavimo_intervalas_stimulams_base
+set(handles.edit51,'String',''); % Epochavimo_intervalas_pirminis
+set(handles.edit59,'String',''); % Epochuoti_pagal_stimulus_
+set(handles.edit54,'String',''); % Epochuoti_pagal_atsakus
+set(handles.edit55,'String',''); % Epochavimo_intervalas_atsakams
+set(handles.edit56,'String',''); % Epochavimo_intervalas_atsakams_base
+set(handles.edit57,'String',''); % Epochavimo_intervalas_stimulams
+set(handles.edit58,'String',''); % Epochavimo_intervalas_stimulams_base
 set(handles.edit62,'String',lokaliz('big_epoch_suffix'));   %
 set(handles.pushbutton11,'UserData',{});
 set(handles.pushbutton12,'UserData',{});
@@ -1585,8 +1585,14 @@ if length(x) == 2 ;
         set(elementas,'BackgroundColor',[1 1 1]);
     end;
 end;
-set(elementas,'String',num2str(get(elementas,'UserData')));
+reiksme=num2str(get(elementas,'UserData'));
+set(elementas,'String',reiksme);
+if isempty(reiksme);
+    set(elementas,'BackgroundColor',[1 1 0]);
+end;
 edit57_Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
+
 
 % --- Executes during object creation, after setting all properties.
 function edit51_CreateFcn(hObject, eventdata, handles)
@@ -1599,8 +1605,6 @@ function edit51_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
 
 
 function edit59_Callback(hObject, eventdata, handles)
@@ -1644,7 +1648,6 @@ if ~isempty(str);
 else
     set(elementas,'BackgroundColor',[1 1 0]);
 end;
-Ar_galima_vykdyti(hObject, eventdata, handles);
 tmp_str=[ strrep(get(handles.edit59,'String'),':','-') ' ' lokaliz('with') ' ' strrep(get(handles.edit54,'String'),':','-') ];
 if ischar(tmp_str);
     tmp_str=regexprep(tmp_str, '[ ]*', ' ');
@@ -1707,7 +1710,6 @@ if ~isempty(str);
 else
     set(elementas,'BackgroundColor',[1 1 0]);
 end;
-Ar_galima_vykdyti(hObject, eventdata, handles);
 tmp_str=[ strrep(get(handles.edit59,'String'),':','-') ' ' lokaliz('with') ' ' strrep(get(handles.edit54,'String'),':','-') ];
 if ischar(tmp_str);
     tmp_str=regexprep(tmp_str, '[ ]*', ' ');
