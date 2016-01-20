@@ -1,7 +1,7 @@
 %
 %
 %
-% (C) 2014-2015 Mindaugas Baranauskas
+% (C) 2014-2016 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -4767,7 +4767,6 @@ pateikiami_kiti_v=0;
 if ~isempty(dar_kiti_kanalai);
    pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(other:)') dar_kiti_kanalai{:} };
    pateikiami_kiti_v=1+pateikiami_bendri_v + (pateikiami_nebendri_v ~= 0) + length(visi_galimi_kanalai);
-   disp(pateikiami_kiti_v);
 end;
 %vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
 % Ankstesni_kanalai=get(handles.text9,'TooltipString');
