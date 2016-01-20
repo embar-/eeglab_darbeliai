@@ -132,6 +132,9 @@ end;
 if nargin > 2; seni=varargin{3};
 else           seni={};
 end;
+if nargin > 3; rinktis_viena=varargin{4};
+else           rinktis_viena=false;
+end;
 
 pasirinkti_ivykiai={{}};
 
@@ -180,8 +183,16 @@ if ~iscellstr(pateikiami_ivykiai);
     disp(pateikiami_ivykiai);
     return;
 end;
+if rinktis_viena;
+    rinktis_kiek='single';
+    if length(pradinis_pasirinkimas) > 1;
+        pradinis_pasirinkimas=pradinis_pasirinkimas(1);
+    end;
+else
+    rinktis_kiek='multiple';
+end;
 pasirinkti_ivykiai_idx=listdlg('ListString', pateikiami_ivykiai,...
-    'SelectionMode','multiple',...
+    'SelectionMode',rinktis_kiek,...
     'PromptString', lokaliz('Select events:'),...
     'InitialValue',pradinis_pasirinkimas );
 if isempty(pasirinkti_ivykiai_idx); return ; end;
@@ -206,6 +217,9 @@ else           rinkmenos=filter_filenames('*.set;*.bdf;*.edf;*.cnt');
 end;
 if nargin > 2; seni=varargin{3};
 else           seni={};
+end;
+if nargin > 3; rinktis_viena=varargin{4};
+else           rinktis_viena=false;
 end;
 
 pasirinkti_kanalai={{}};
@@ -247,8 +261,16 @@ if ~iscellstr(pateikiami_kanalai);
     disp(pateikiami_kanalai);
     return;
 end;
+if rinktis_viena;
+    rinktis_kiek='single';
+    if length(pradinis_pasirinkimas) > 1;
+        pradinis_pasirinkimas=pradinis_pasirinkimas(1);
+    end;
+else
+    rinktis_kiek='multiple';
+end;
 pasirinkti_kanalai_idx=listdlg('ListString', pateikiami_kanalai,...
-    'SelectionMode','multiple',...
+    'SelectionMode',rinktis_kiek,...
     'PromptString', lokaliz('Select channels:'),...
     'InitialValue',pradinis_pasirinkimas );
 if isempty(pasirinkti_kanalai_idx); return ; end;
