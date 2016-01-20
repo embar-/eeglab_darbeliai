@@ -8,7 +8,7 @@
 % GUI versija
 %
 %
-% (C) 2014-2015 Mindaugas Baranauskas
+% (C) 2014-2016 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -2119,7 +2119,16 @@ function pushbutton_ivykiai_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_ivykiai (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+senas=get(handles.edit_QRS_ivykis,'String');
+if ~isempty(senas);
+    senas=str2num(senas);
+    if ~isempty(senas);
+        senas=cellfun(@(i) {num2str(senas(i))}, num2cell([1:length(senas)]));
+    end;
+end;
+if isempty(senas);
+    senas={'R' 'r' 'QRS' 'qrs'};
+end;
 RINKMENOS=get(handles.listbox1,'String');
 if isempty(RINKMENOS);
     set(handles.edit1,'BackgroundColor',[1 1 0]);
@@ -2133,88 +2142,9 @@ if isempty(RINKMENOS);
     return; 
 end;
 set(handles.pushbutton_ivykiai,'Enable','off'); drawnow;
-[~,visi_galimi_ivykiai,bendri_ivykiai]=eeg_ivykiu_sarasas (get(handles.edit1,'String'), RINKMENOS);
+[pasirinkti_ivykiai]=drb_uzklausa('ivykiai', ...
+    get(handles.edit1,'String'), RINKMENOS, senas, 1);
 set(handles.pushbutton_ivykiai,'Enable','on');
-if ismember('boundary',visi_galimi_ivykiai);
-    i=find(ismember(visi_galimi_ivykiai,'boundary')==0);
-    visi_galimi_ivykiai=visi_galimi_ivykiai(i);
-end;
-if ismember('boundary',bendri_ivykiai);
-    i=find(ismember(bendri_ivykiai,'boundary')==0);
-    bendri_ivykiai=bendri_ivykiai(i);
-end;
-if isempty(visi_galimi_ivykiai);
-    warndlg(lokaliz('No events found.'),lokaliz('Selection of events'));
-    return;
-end;
-pateikiami_ivykiai={};
-pradinis_pasirinkimas=[];
-pateikiami_bendri_v=0;
-if ~isempty(bendri_ivykiai);
-    if length(RINKMENOS) == 1;
-        pateikiami_ivykiai={bendri_ivykiai{:}};
-        pateikiami_bendri_v=0;
-        %pradinis_pasirinkimas=[1:length(bendri_ivykiai)];
-    else
-        pateikiami_ivykiai={lokaliz('(all common:)') bendri_ivykiai{:} };
-        pateikiami_bendri_v=1;
-        %pradinis_pasirinkimas=[2:length(bendri_ivykiai)+1];
-    end;
-end;
-nebendri_idx=find(ismember(visi_galimi_ivykiai,bendri_ivykiai) == 0);
-pateikiami_nebendri_v=0;
-if ~isempty(nebendri_idx);
-    pateikiami_ivykiai={pateikiami_ivykiai{:} lokaliz('(not common:)') visi_galimi_ivykiai{nebendri_idx} };
-    pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_ivykiai);
-    if ~pateikiami_bendri_v;
-        %pradinis_pasirinkimas=[(pateikiami_nebendri_v +1) : (length(visi_galimi_kanalai) + pateikiami_bendri_v + 1 ) ];
-    end;
-end;
-%vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
-senas=get(handles.edit_QRS_ivykis,'String');
-if ~isempty(senas);
-    senas=str2num(senas);
-    if ~isempty(senas);
-        senas=cellfun(@(i) {num2str(senas(i))}, num2cell([1:length(senas)]));
-        pradinis_pasirinkimas=find(ismember(pateikiami_ivykiai,senas)==1);
-    end;
-end;
-if ~iscellstr(pateikiami_ivykiai);
-    warning(lokaliz('unexpected events types.'),lokaliz('Selection of events'));
-    disp(pateikiami_ivykiai);
-    return;
-end;
-if isempty(pradinis_pasirinkimas);
-    [~,tmp]=ismember(pateikiami_ivykiai, ...
-        {'R' 'r' 'QRS' 'qrs' '300'});
-     tmpi=find(tmp>0);
-     if ~isempty(tmpi);
-%     tmpi=min(tmp(tmpi));
-%     tmpi
-%     tmp
-        pradinis_pasirinkimas=find(tmp==min(tmp(tmpi)));
-       %pradinis_pasirinkimas=find(tmp==min(tmp(find(tmp>0))));
-     end;
-end;
-if isempty(pradinis_pasirinkimas);
-    pradinis_pasirinkimas=1;
-else
-    pradinis_pasirinkimas=pradinis_pasirinkimas(1);
-end;
-pasirinkti_ivykiai_idx=listdlg('ListString', pateikiami_ivykiai,...
-    'SelectionMode','single',...
-    'PromptString', lokaliz('Select events:'),...
-    'InitialValue',pradinis_pasirinkimas );
-if isempty(pasirinkti_ivykiai_idx); return ; end;
-pasirinkti_ivykiai={};
-% if ismember(pateikiami_bendri_v,pasirinkti_ivykiai_idx);
-%     pasirinkti_ivykiai={pasirinkti_ivykiai{:} bendri_ivykiai{:} };
-% end;
-% if ismember(pateikiami_nebendri_v,pasirinkti_ivykiai_idx);
-%     pasirinkti_ivykiai={pasirinkti_ivykiai{:} visi_galimi_ivykiai{nebendri_idx} };
-% end;
-pasirinkti_ivykiai_idx_=pasirinkti_ivykiai_idx(find(ismember(pasirinkti_ivykiai_idx, [pateikiami_bendri_v pateikiami_nebendri_v])==0));
-pasirinkti_ivykiai=unique({pasirinkti_ivykiai{:} pateikiami_ivykiai{pasirinkti_ivykiai_idx_}});
 if isempty(pasirinkti_ivykiai);
     pasirinkti_ivykiai_str='';    
     set(handles.pushbutton_ivykiai,'BackgroundColor',[1 1 0]);
@@ -2234,8 +2164,13 @@ function pushbutton_kanal_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_kanal (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-
+Ankstesni_kanalai=get(handles.text_kanal,'TooltipString');
+if ~isempty(Ankstesni_kanalai);
+    Ankstesni_kanalai=textscan(Ankstesni_kanalai,'%s','delimiter',' ');
+    seni=Ankstesni_kanalai{1};
+else
+    seni={'EKG' 'ECG' 'ekg' 'ecg' 'EKG1' 'ECG1' 'EOG' 'EOGh' 'EOG1' 'EOG2' };
+end;
 RINKMENOS=get(handles.listbox1,'String');
 if isempty(RINKMENOS);
     set(handles.edit1,'BackgroundColor',[1 1 0]);
@@ -2249,78 +2184,9 @@ if isempty(RINKMENOS);
     return; 
 end;
 set(handles.pushbutton_kanal,'Enable','off'); drawnow;
-[~,visi_galimi_kanalai,bendri_kanalai]=eeg_kanalu_sarasas (get(handles.edit1,'String'), RINKMENOS);
+pasirinkti_kanalai=drb_uzklausa('kanalai', ...
+    get(handles.edit1,'String'), RINKMENOS, seni, 1);
 set(handles.pushbutton_kanal,'Enable','on');
-if isempty(visi_galimi_kanalai);
-    warndlg(lokaliz('No channels found.'),lokaliz('Selection of channels'));
-    return;
-end;
-pateikiami_kanalai={};
-pradinis_pasirinkimas=[];
-pateikiami_bendri_v=0;
-if ~isempty(bendri_kanalai);
-    if length(RINKMENOS) == 1;
-        pateikiami_kanalai={bendri_kanalai{:}};
-        pateikiami_bendri_v=0;
-        %pradinis_pasirinkimas=[1:length(bendri_kanalai)];
-    else
-        pateikiami_kanalai={lokaliz('(all common:)') bendri_kanalai{:} };
-        pateikiami_bendri_v=1;
-        %pradinis_pasirinkimas=[2:(length(bendri_kanalai)+1)];
-    end;
-end;
-nebendri_idx=find(ismember(visi_galimi_kanalai,bendri_kanalai) == 0);
-pateikiami_nebendri_v=0;
-if ~isempty(nebendri_idx);
-    pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(not common:)') visi_galimi_kanalai{nebendri_idx} };
-    pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_kanalai);
-    if ~pateikiami_bendri_v;
-        %pradinis_pasirinkimas=[(pateikiami_nebendri_v +1) : (length(visi_galimi_kanalai) + pateikiami_bendri_v + 1 ) ];
-    end;
-end;
-%vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
-Ankstesni_kanalai=get(handles.text_kanal,'TooltipString');
-if ~isempty(Ankstesni_kanalai);
-    Ankstesni_kanalai=textscan(Ankstesni_kanalai,'%s','delimiter',' ');
-    senas=Ankstesni_kanalai{1};
-    if ~isempty(senas);
-        pradinis_pasirinkimas=find(ismember(pateikiami_kanalai,senas)==1);
-    end;
-end;
-if ~iscellstr(pateikiami_kanalai);
-    warning(lokaliz('unexpected channels types.'),lokaliz('Selection of channels'));
-    disp(pateikiami_kanalai);
-    return;
-end;
-if isempty(pradinis_pasirinkimas);
-    [~,tmp]=ismember(pateikiami_kanalai, ...
-        {'EKG' 'ECG' 'ekg' 'ecg' 'EKG1' 'ECG1' 'EOG' 'EOGh' 'EOG1' 'EOG2' });
-    tmpi=find(tmp>0);
-    if ~isempty(tmpi);
-        pradinis_pasirinkimas=find(tmp==min(tmp(tmpi)));
-    end;
-    %pradinis_pasirinkimas=find(tmp==min(tmp(find(tmp>0))));
-end;
-if isempty(pradinis_pasirinkimas);
-    pradinis_pasirinkimas=1;
-else
-    pradinis_pasirinkimas=pradinis_pasirinkimas(1);
-end;
-pasirinkti_kanalai_idx=listdlg('ListString', pateikiami_kanalai,...
-    'SelectionMode','single',...
-    'PromptString', lokaliz('Select channels:'),...
-    'InitialValue',pradinis_pasirinkimas );
-if isempty(pasirinkti_kanalai_idx); return ; end;
-pasirinkti_kanalai={};
-% if ismember(pateikiami_bendri_v,pasirinkti_kanalai_idx);
-%     pasirinkti_kanalai={pasirinkti_kanalai{:} bendri_kanalai{:} };
-% end;
-% if ismember(pateikiami_nebendri_v,pasirinkti_kanalai_idx);
-%     pasirinkti_kanalai={pasirinkti_kanalai{:} visi_galimi_kanalai{nebendri_idx} };
-% end;
-pasirinkti_kanalai_idx_=pasirinkti_kanalai_idx(find(ismember(pasirinkti_kanalai_idx, ...
-    [pateikiami_bendri_v pateikiami_nebendri_v])==0));
-pasirinkti_kanalai=unique({pasirinkti_kanalai{:} pateikiami_kanalai{pasirinkti_kanalai_idx_}});
 if isempty(pasirinkti_kanalai);
     pasirinkti_kanalai_str='';
 else
