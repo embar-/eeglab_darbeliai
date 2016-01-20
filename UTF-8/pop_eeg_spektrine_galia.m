@@ -1615,6 +1615,7 @@ function pushbutton14_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton14 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+VISI_KANALAI_64={'Fp1' 'Fpz' 'Fp2' 'F7' 'F3' 'Fz' 'F4' 'F8' 'FC5' 'FC1' 'FC2' 'FC6' 'M1' 'T7' 'C3' 'Cz' 'C4' 'T8' 'M2' 'CP5' 'CP1' 'CP2' 'CP6' 'P7' 'P3' 'Pz' 'P4' 'P8' 'POz' 'O1' 'Oz' 'O2' 'AF7' 'AF3' 'AF4' 'AF8' 'F5' 'F1' 'F2' 'F6' 'FC3' 'FCz' 'FC4' 'C5' 'C1' 'C2' 'C6' 'CP3' 'CPz' 'CP4' 'P5' 'P1' 'P2' 'P6' 'PO5' 'PO3' 'PO4' 'PO6' 'FT7' 'FT8' 'TP7' 'TP8' 'PO7' 'PO8';};
 
 RINKMENOS=get(handles.listbox1,'String');
 if isempty(RINKMENOS);
@@ -1658,6 +1659,12 @@ if ~isempty(nebendri_idx);
         pradinis_pasirinkimas=[(pateikiami_nebendri_v +1) : (length(visi_galimi_kanalai) + pateikiami_bendri_v + 1 ) ];
     end;
 end;
+pateikiami_kiti_v=0;
+dar_kiti_kanalai=sort(VISI_KANALAI_64(find(ismember(VISI_KANALAI_64,visi_galimi_kanalai)==0)));
+if and(~isempty(dar_kiti_kanalai),get(handles.checkbox_interpol,'Value'));
+   pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(other:)') dar_kiti_kanalai{:} };
+   pateikiami_kiti_v=1+pateikiami_bendri_v + (pateikiami_nebendri_v ~= 0) + length(visi_galimi_kanalai);
+end;
 %vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
 Ankstesni_kanalai=get(handles.text47,'TooltipString');
 if ~isempty(Ankstesni_kanalai);
@@ -1684,7 +1691,12 @@ end;
 if ismember(pateikiami_nebendri_v,pasirinkti_kanalai_idx);
     pasirinkti_kanalai={pasirinkti_kanalai{:} visi_galimi_kanalai{nebendri_idx} };
 end;
-pasirinkti_kanalai_idx_=pasirinkti_kanalai_idx(find(ismember(pasirinkti_kanalai_idx, [pateikiami_bendri_v pateikiami_nebendri_v])==0));
+if ismember(pateikiami_kiti_v,pasirinkti_kanalai_idx);
+    pasirinkti_kanalai={pasirinkti_kanalai{:} dar_kiti_kanalai{:} };
+end;
+pasirinkti_kanalai_idx_=pasirinkti_kanalai_idx( ...
+    find(ismember(pasirinkti_kanalai_idx, ...
+    [pateikiami_bendri_v pateikiami_nebendri_v pateikiami_kiti_v])==0));
 pasirinkti_kanalai=unique({pasirinkti_kanalai{:} pateikiami_kanalai{pasirinkti_kanalai_idx_}});
 pasirinkti_kanalai_str=[pasirinkti_kanalai{1}];
 for i=2:length(pasirinkti_kanalai);
