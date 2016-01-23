@@ -699,6 +699,7 @@ eeg_perziura_atnaujinti('figure', f, 'axes', a, 'plotis', plotis);
 setappdata(a,'ribu_trauka',0.2);
 set(f,'KeyPressFcn','eeg_perziura(''atsakas'')');
 set(f,'WindowScrollWheelFcn',{@eeg_perziura,'ratukas'});
+if isempty(getappdata(a,'zymeti')); return; end;
 set(a,'ButtonDownFcn', 'eeg_perziura(''zymejimas_prasideda'');');
 setappdata(a,'MouseInMainAxesFnc',{@eeg_perziura, 'zymejimas_tesiasi'});
 set(f,'WindowButtonUpFcn', 'eeg_perziura(''zymejimas_baigiasi'');');
