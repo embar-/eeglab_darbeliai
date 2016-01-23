@@ -130,7 +130,7 @@ if EEG1.trials > 1 && EEG2.trials > 1;
             EEG2.times(li:end)=EEG2.times(li:end)+s1;
             EEG2.times_nan(li:end)=EEG2.times_nan(li:end)+s1;
         end;
-        s2=min(0-skirtumas,1000*max(0,EEG2.xmin_org-EEG1.xmin_org));
+        s2=min(skirtumas,1000*max(0,EEG2.xmin_org-EEG1.xmin_org));
         EEG2.times=EEG2.times+s2;
         for uniq_ep_i=find(ismember({EEG2.event.type},{'boundary'})==0); EEG2.event(uniq_ep_i).laikas_ms=[EEG2.event(uniq_ep_i).laikas_ms]+s2; end;
     elseif skirtumas < 0; 
