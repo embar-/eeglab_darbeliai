@@ -546,12 +546,44 @@ setappdata(a,'MouseInMainAxesFnc', {@eeg_perziura,'atstatyk_pele'});
 setappdata(a,'MouseOutMainAxesFnc',{@eeg_perziura,'atstatyk_pele'});
 
 
-% Plotis
+% Plotis ir ERP laiko žymekliai
 leisti_tarpus=0;
 plotis1=gauk_erp_ploti(EEG1,EEG2);
 if isempty(plotis1);
     plotis1=1;
     leisti_tarpus=1;
+else%if 1 == 0 % tai tik eksperimentavimui
+    ERP_N=round(max(EEG1.xmax,EEG2.xmax)/plotis1);
+    if isfield(EEG1, 'xmin_org');
+        if isfield(EEG2, 'xmin_org');
+            ERP_xmin=min([EEG1.xmin_org EEG2.xmin_org]);
+        else
+            ERP_xmin=EEG1.xmin_org;
+        end;
+    elseif isfield(EEG2, 'xmin_org');
+        ERP_xmin=EEG2.xmin_org;
+    else
+        ERP_xmin=NaN;
+    end;
+    if ~isnan(ERP_xmin);
+        ERP_x_0=plotis1 * (-1 + (1:ERP_N));
+        ERP_m_lntl=[];
+        ERP_x_lntl=[];
+        ERP_x_zgsn=0.5;
+        for ERP_x_i=[fix(ERP_xmin/ERP_x_zgsn):0 ceil(max(ERP_xmin/ERP_x_zgsn,1)):floor((ERP_xmin+plotis1)/ERP_x_zgsn)];
+            tmp=ERP_x_0 - ERP_xmin + ERP_x_i * ERP_x_zgsn;
+            ERP_x_lntl(end+1, 1:ERP_N)=tmp;
+            ERP_m_lntl(end+1, 1:ERP_N)=zeros(1,ERP_N) + ERP_x_i * ERP_x_zgsn;
+        end;
+        if ~isequal(unique(ERP_x_lntl(:)), ERP_x_lntl(:));
+            ERP_x_lntl1=ERP_x_lntl(1,1); ERP_x_lntl=ERP_x_lntl(2:end,:); ERP_x_lntl=[ERP_x_lntl1 ERP_x_lntl(:)'];
+            ERP_m_lntl1=ERP_m_lntl(1,1); ERP_m_lntl=ERP_m_lntl(2:end,:); ERP_m_lntl=[ERP_m_lntl1 ERP_m_lntl(:)'];
+        end;
+        assignin('base','ERP_x_lntl',ERP_x_lntl)
+        set(a, 'XTick', ERP_x_lntl(:));
+        set(a, 'XTickLabel', ERP_m_lntl(:));
+        %set(a, 'XMinorTick', 'off', 'XMinorGrid', 'off');
+    end;
 end;
 plotis2=ceil(5/plotis1);
 setappdata(a,'zingsnis',1/plotis2);
