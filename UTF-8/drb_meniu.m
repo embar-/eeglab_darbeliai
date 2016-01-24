@@ -125,7 +125,6 @@ switch aktyvus_darbas
         flt_slct = get(handles.edit_failu_filtras2,'String');
         files_sh = get(handles.listbox1,'String');
         files_sN = get(handles.listbox1,'Value');
-        files_sl = files_sh(files_sN);
         if ~isempty(files_sN) && ~isequal(files_sN,0);
             files_sl = files_sh(files_sN);
         else
