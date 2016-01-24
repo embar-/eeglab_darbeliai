@@ -90,6 +90,22 @@ for f=1:length(Rinkmenos);
 end;
 
 Pasirinktu_failu_N=size(Rinkmenos2,1);
+Siulomas_failu_N=NaN;
+try Siulomas_failu_N=g.siulomas_kiekis; catch; end;
+if Pasirinktu_failu_N > Siulomas_failu_N;
+    mygtukas=questdlg(...
+        [ lokaliz('Tikrai atverti tiek daug rinkmenu?') ' (' num2str(Pasirinktu_failu_N) ')' ], ...
+        lokaliz('Gausybe rinkmenu'), ...
+        lokaliz('Yes'), [lokaliz('Tik') ' ' num2str(Siulomas_failu_N) ], lokaliz('No'), lokaliz('Yes'));
+    switch mygtukas 
+        case lokaliz('Yes');
+            disp(lokaliz('Continue as is'));
+        case lokaliz('No');
+            Pasirinktu_failu_N=0;
+        otherwise
+            Pasirinktu_failu_N=Siulomas_failu_N;
+    end;
+end;
 if Pasirinktu_failu_N > 0 ;
     try
         disp(' ');
