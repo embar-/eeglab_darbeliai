@@ -582,7 +582,7 @@ else%if 1 == 0 % tai tik eksperimentavimui
         assignin('base','ERP_x_lntl',ERP_x_lntl)
         set(a, 'XTick', ERP_x_lntl(:));
         set(a, 'XTickLabel', ERP_m_lntl(:));
-        %set(a, 'XMinorTick', 'off', 'XMinorGrid', 'off');
+        set(a, 'XMinorTick', 'off', 'XMinorGrid', 'off');
     end;
 end;
 plotis2=ceil(5/plotis1);
