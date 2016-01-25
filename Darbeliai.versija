@@ -1,5 +1,13 @@
-Darbeliai v2015.12.03.1
+Darbeliai v2016.01.25.1
 
-Pranešti, jei naudojama eksperimentinė versija.
++ EEG spektro įrašymo į TXT parinktis.
++ Įspėti atveriant kelis peržiūros langus.
++ Patobulinta epochuotų įrašų peržiūra.
++ Patobulinta NKA komponenčių peržiūra.
++ Kiti smulkūs pakeitimai.
 
-Inform users, if they use experimental version.
++ Option for writing EEG spectrum into TXT.
++ Confirm opening several scroll windows.
++ More polished scroll of epoched data.
++ More polished scroll of ICA data.
++ Other minor changes.
