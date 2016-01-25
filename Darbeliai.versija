@@ -1,13 +1,13 @@
-Darbeliai v2015.11.24.1
+Darbeliai v2016.01.25.1
 
-„Nuoseklaus apdorojimo“ lange,
-NKA komponenčių peržiūroje, kai pasirinkta 
-parinktis „Laukti patvirtinimo (Darbeliai)“
-(beje, numatytoji yra „Laukti patvirtinimo (EEGLAB)“),
-suteikti mygtukams „Ne“ ir „Priimti“ tinkamas funkcijas.
++ EEG spektro įrašymo į TXT parinktis.
++ Įspėti atveriant kelis peržiūros langus.
++ Patobulinta epochuotų įrašų peržiūra.
++ Patobulinta NKA komponenčių peržiūra.
++ Kiti smulkūs pakeitimai.
 
-In "Serial processing" ICA review/reject job:
-if option "Wait for confirmation (Darbeliai)" is 
-selected (though "Wait for cnofirmation (EEGLAB)"
-is default), assign correct actions to buttons 
-"No" and "Accecpt".
++ Option for writing EEG spectrum into TXT.
++ Confirm opening several scroll windows.
++ More polished scroll of epoched data.
++ More polished scroll of ICA data.
++ Other minor changes.

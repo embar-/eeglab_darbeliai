@@ -3,12 +3,12 @@
 % T.y. epochuojama pagal stimulų įvykius, po to tikrinama, ar naujose epochose yra atsakų įvykiai
 % 
 % Taip pat yra galimybė šias dideles epchas dar smulkiau epochuoti pagal stimulus ir Epochuoti_pagal_atsakus,
-% galima pašalinti jų baseline
+% galima pašalinti jų pagrindą (baseline)
 %
 % GUI versija
 %
 %
-% (C) 2014-2015 Mindaugas Baranauskas
+% (C) 2014-2016 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -108,9 +108,29 @@ else    g=[];
 end;
 
 f=findobj('name', mfilename, 'Type','figure','Tag','Darbeliai');
-if isequal(f,handles.figure1);
-    warning(lokaliz('Dialogas jau atvertas!')); figure(f);
+if ismember(handles.figure1,f);
+    wrn=warning('off','backtrace');
+    warning([mfilename ': ' lokaliz('Dialogas jau atvertas!')]);
+    warning(wrn.state, 'backtrace');
+    figure(f);
     if strcmp(get(handles.pushbutton4),'off') || isempty(g); return; end;
+    try klausti_naujo_atverimo=~ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'});
+    catch; klausti_naujo_atverimo=1;
+    end;
+    if klausti_naujo_atverimo
+        button = questdlg(...
+            [ lokaliz('Dialogas jau atvertas!')  ' '  lokaliz('Reload parameters?') ], ...
+            lokaliz('Dialogas jau atvertas!') , ...
+            lokaliz('Atsisakyti'), lokaliz('Reload'), lokaliz('Reload'));
+        switch button
+            case lokaliz('Reload');
+                wrn=warning('off','backtrace');
+                warning([mfilename ': ' lokaliz('Changing options in dialog!')]);
+                warning(wrn.state, 'backtrace');
+            otherwise
+                return;
+        end;
+    end;
 end;
 set(handles.figure1,'Name',mfilename);
 set(handles.figure1,'Tag','Darbeliai');
@@ -184,13 +204,13 @@ end;
 atnaujink_rodomus_failus(hObject, eventdata, handles);
 
 % reikšmės numatytosios
-set(handles.edit51,'String','-0.200 2.000 ');   % Epochavimo_intervalas_pirminis
-set(handles.edit59,'String','31:36 51:56');     % Epochuoti_pagal_stimulus_
-set(handles.edit54,'String','10');              % Epochuoti_pagal_atsakus
-set(handles.edit55,'String','-0.600 0.250');   % Epochavimo_intervalas_atsakams
-set(handles.edit56,'String','-0.600 0.000');    % Epochavimo_intervalas_atsakams_base
-set(handles.edit57,'String','-0.350 0.700');    % Epochavimo_intervalas_stimulams
-set(handles.edit58,'String','-0.350 0.000');    % Epochavimo_intervalas_stimulams_base
+set(handles.edit51,'String',''); % Epochavimo_intervalas_pirminis
+set(handles.edit59,'String',''); % Epochuoti_pagal_stimulus_
+set(handles.edit54,'String',''); % Epochuoti_pagal_atsakus
+set(handles.edit55,'String',''); % Epochavimo_intervalas_atsakams
+set(handles.edit56,'String',''); % Epochavimo_intervalas_atsakams_base
+set(handles.edit57,'String',''); % Epochavimo_intervalas_stimulams
+set(handles.edit58,'String',''); % Epochavimo_intervalas_stimulams_base
 set(handles.edit62,'String',lokaliz('big_epoch_suffix'));   %
 set(handles.pushbutton11,'UserData',{});
 set(handles.pushbutton12,'UserData',{});
@@ -1565,8 +1585,14 @@ if length(x) == 2 ;
         set(elementas,'BackgroundColor',[1 1 1]);
     end;
 end;
-set(elementas,'String',num2str(get(elementas,'UserData')));
+reiksme=num2str(get(elementas,'UserData'));
+set(elementas,'String',reiksme);
+if isempty(reiksme);
+    set(elementas,'BackgroundColor',[1 1 0]);
+end;
 edit57_Callback(hObject, eventdata, handles);
+Ar_galima_vykdyti(hObject, eventdata, handles);
+
 
 % --- Executes during object creation, after setting all properties.
 function edit51_CreateFcn(hObject, eventdata, handles)
@@ -1579,8 +1605,6 @@ function edit51_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
 
 
 function edit59_Callback(hObject, eventdata, handles)
@@ -1624,7 +1648,6 @@ if ~isempty(str);
 else
     set(elementas,'BackgroundColor',[1 1 0]);
 end;
-Ar_galima_vykdyti(hObject, eventdata, handles);
 tmp_str=[ strrep(get(handles.edit59,'String'),':','-') ' ' lokaliz('with') ' ' strrep(get(handles.edit54,'String'),':','-') ];
 if ischar(tmp_str);
     tmp_str=regexprep(tmp_str, '[ ]*', ' ');
@@ -1687,7 +1710,6 @@ if ~isempty(str);
 else
     set(elementas,'BackgroundColor',[1 1 0]);
 end;
-Ar_galima_vykdyti(hObject, eventdata, handles);
 tmp_str=[ strrep(get(handles.edit59,'String'),':','-') ' ' lokaliz('with') ' ' strrep(get(handles.edit54,'String'),':','-') ];
 if ischar(tmp_str);
     tmp_str=regexprep(tmp_str, '[ ]*', ' ');
@@ -2038,7 +2060,6 @@ function pushbutton11_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton11 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
 RINKMENOS=get(handles.listbox1,'String');
 if isempty(RINKMENOS);
     set(handles.edit1,'BackgroundColor',[1 1 0]);
@@ -2052,67 +2073,10 @@ if isempty(RINKMENOS);
     return; 
 end;
 set(handles.pushbutton11,'Enable','off'); drawnow;
-[~,visi_galimi_ivykiai,bendri_ivykiai]=eeg_ivykiu_sarasas (get(handles.edit1,'String'), RINKMENOS);
+[pasirinkti_ivykiai]=drb_uzklausa('ivykiai', ...
+    get(handles.edit1,'String'), RINKMENOS, get(handles.pushbutton11,'UserData'));
 set(handles.pushbutton11,'Enable','on');
-if ismember('boundary',visi_galimi_ivykiai);
-    i=find(ismember(visi_galimi_ivykiai,'boundary')==0);
-    visi_galimi_ivykiai=visi_galimi_ivykiai(i);
-end;
-if ismember('boundary',bendri_ivykiai);
-    i=find(ismember(bendri_ivykiai,'boundary')==0);
-    bendri_ivykiai=bendri_ivykiai(i);
-end;
-if isempty(visi_galimi_ivykiai);
-    warndlg(lokaliz('No events found.'),lokaliz('Selection of events'));
-    return;
-end;
-pateikiami_ivykiai={};
-pradinis_pasirinkimas=[];
-pateikiami_bendri_v=0;
-if ~isempty(bendri_ivykiai); 
-    if length(RINKMENOS) == 1;
-        pateikiami_ivykiai={bendri_ivykiai{:}};
-        pateikiami_bendri_v=0;
-        pradinis_pasirinkimas=[1:length(bendri_ivykiai)];
-    else
-        pateikiami_ivykiai={lokaliz('(all common:)') bendri_ivykiai{:} };
-        pateikiami_bendri_v=1;
-        pradinis_pasirinkimas=[2:length(bendri_ivykiai)+1];
-    end;
-end;
-nebendri_idx=find(ismember(visi_galimi_ivykiai,bendri_ivykiai) == 0);
-pateikiami_nebendri_v=0;
-if ~isempty(nebendri_idx); 
-   pateikiami_ivykiai={pateikiami_ivykiai{:} lokaliz('(not common:)') visi_galimi_ivykiai{nebendri_idx} };
-   pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_ivykiai);
-   if ~pateikiami_bendri_v;
-       pradinis_pasirinkimas=[(pateikiami_nebendri_v +1) : (length(visi_galimi_ivykiai) + pateikiami_bendri_v + 1 ) ];
-   end;
-end;
-%vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
-senas=get(handles.pushbutton11,'UserData');
-if ~isempty(senas);
-    pradinis_pasirinkimas=find(ismember(pateikiami_ivykiai,senas)==1);
-end;
-if ~iscellstr(pateikiami_ivykiai);
-    warning(lokaliz('unexpected events types.'),lokaliz('Selection of events'));
-    disp(pateikiami_ivykiai);
-    return;
-end;
-pasirinkti_ivykiai_idx=listdlg('ListString', pateikiami_ivykiai,...
-    'SelectionMode','multiple',...
-    'PromptString', lokaliz('Select events:'),...
-    'InitialValue',pradinis_pasirinkimas );
-if isempty(pasirinkti_ivykiai_idx); return ; end;
-pasirinkti_ivykiai={};
-if ismember(pateikiami_bendri_v,pasirinkti_ivykiai_idx);
-    pasirinkti_ivykiai={pasirinkti_ivykiai{:} bendri_ivykiai{:} };
-end;
-if ismember(pateikiami_nebendri_v,pasirinkti_ivykiai_idx);
-    pasirinkti_ivykiai={pasirinkti_ivykiai{:} visi_galimi_ivykiai{nebendri_idx} };
-end;
-pasirinkti_ivykiai_idx_=pasirinkti_ivykiai_idx(find(ismember(pasirinkti_ivykiai_idx, [pateikiami_bendri_v pateikiami_nebendri_v])==0));
-pasirinkti_ivykiai=unique({pasirinkti_ivykiai{:} pateikiami_ivykiai{pasirinkti_ivykiai_idx_}});
+if isempty(pasirinkti_ivykiai); return; end;
 pasirinkti_ivykiai_str=pasirinkti_ivykiai{1};
 for i=2:length(pasirinkti_ivykiai);
     pasirinkti_ivykiai_str=[pasirinkti_ivykiai_str ' ' pasirinkti_ivykiai{i}];
@@ -2126,7 +2090,6 @@ function pushbutton12_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton12 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
 RINKMENOS=get(handles.listbox1,'String');
 if isempty(RINKMENOS);
     set(handles.edit1,'BackgroundColor',[1 1 0]);
@@ -2140,67 +2103,10 @@ if isempty(RINKMENOS);
     return; 
 end;
 set(handles.pushbutton12,'Enable','off'); drawnow;
-[~,visi_galimi_ivykiai,bendri_ivykiai]=eeg_ivykiu_sarasas (get(handles.edit1,'String'), RINKMENOS);
+[pasirinkti_ivykiai]=drb_uzklausa('ivykiai', ...
+    get(handles.edit1,'String'), RINKMENOS, get(handles.pushbutton12,'UserData'));
 set(handles.pushbutton12,'Enable','on');
-if ismember('boundary',visi_galimi_ivykiai);
-    i=find(ismember(visi_galimi_ivykiai,'boundary')==0);
-    visi_galimi_ivykiai=visi_galimi_ivykiai(i);
-end;
-if ismember('boundary',bendri_ivykiai);
-    i=find(ismember(bendri_ivykiai,'boundary')==0);
-    bendri_ivykiai=bendri_ivykiai(i);
-end;
-if isempty(visi_galimi_ivykiai);
-    warndlg(lokaliz('No events found.'),lokaliz('Selection of events'));
-    return;
-end;
-pateikiami_ivykiai={};
-pradinis_pasirinkimas=[];
-pateikiami_bendri_v=0;
-if ~isempty(bendri_ivykiai); 
-    if length(RINKMENOS) == 1;
-        pateikiami_ivykiai={bendri_ivykiai{:}};
-        pateikiami_bendri_v=0;
-        pradinis_pasirinkimas=[1:length(bendri_ivykiai)];
-    else
-        pateikiami_ivykiai={lokaliz('(all common:)') bendri_ivykiai{:} };
-        pateikiami_bendri_v=1;
-        pradinis_pasirinkimas=[2:length(bendri_ivykiai)+1];
-    end;
-end;
-nebendri_idx=find(ismember(visi_galimi_ivykiai,bendri_ivykiai) == 0);
-pateikiami_nebendri_v=0;
-if ~isempty(nebendri_idx); 
-   pateikiami_ivykiai={pateikiami_ivykiai{:} lokaliz('(not common:)') visi_galimi_ivykiai{nebendri_idx} };
-   pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_ivykiai);
-   if ~pateikiami_bendri_v;
-       pradinis_pasirinkimas=[(pateikiami_nebendri_v +1) : (length(visi_galimi_ivykiai) + pateikiami_bendri_v + 1 ) ];
-   end;
-end;
-%vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
-senas=get(handles.pushbutton12,'UserData');
-if ~isempty(senas);
-    pradinis_pasirinkimas=find(ismember(pateikiami_ivykiai,senas)==1);
-end;
-if ~iscellstr(pateikiami_ivykiai);
-    warning(lokaliz('unexpected events types.'),lokaliz('Selection of events'));
-    disp(pateikiami_ivykiai);
-    return;
-end;
-pasirinkti_ivykiai_idx=listdlg('ListString', pateikiami_ivykiai,...
-    'SelectionMode','multiple',...
-    'PromptString', lokaliz('Select events:'),...
-    'InitialValue',pradinis_pasirinkimas );
-if isempty(pasirinkti_ivykiai_idx); return ; end;
-pasirinkti_ivykiai={};
-if ismember(pateikiami_bendri_v,pasirinkti_ivykiai_idx);
-    pasirinkti_ivykiai={pasirinkti_ivykiai{:} bendri_ivykiai{:} };
-end;
-if ismember(pateikiami_nebendri_v,pasirinkti_ivykiai_idx);
-    pasirinkti_ivykiai={pasirinkti_ivykiai{:} visi_galimi_ivykiai{nebendri_idx} };
-end;
-pasirinkti_ivykiai_idx_=pasirinkti_ivykiai_idx(find(ismember(pasirinkti_ivykiai_idx, [pateikiami_bendri_v pateikiami_nebendri_v])==0));
-pasirinkti_ivykiai=unique({pasirinkti_ivykiai{:} pateikiami_ivykiai{pasirinkti_ivykiai_idx_}});
+if isempty(pasirinkti_ivykiai); return; end;
 pasirinkti_ivykiai_str=pasirinkti_ivykiai{1};
 for i=2:length(pasirinkti_ivykiai);
     pasirinkti_ivykiai_str=[pasirinkti_ivykiai_str ' ' pasirinkti_ivykiai{i}];

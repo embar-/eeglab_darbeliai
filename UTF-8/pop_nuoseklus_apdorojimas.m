@@ -1,7 +1,7 @@
 %
 %
 %
-% (C) 2014-2015 Mindaugas Baranauskas
+% (C) 2014-2016 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -100,9 +100,29 @@ else    g=[];
 end;
 
 f=findobj('name', mfilename, 'Type','figure','Tag','Darbeliai');
-if isequal(f,handles.figure1);
-    warning(lokaliz('Dialogas jau atvertas!')); figure(f);
+if ismember(handles.figure1,f);
+    wrn=warning('off','backtrace');
+    warning([mfilename ': ' lokaliz('Dialogas jau atvertas!')]);
+    warning(wrn.state, 'backtrace');
+    figure(f);
     if strcmp(get(handles.pushbutton4),'off') || isempty(g); return; end;
+    try klausti_naujo_atverimo=~ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'});
+    catch; klausti_naujo_atverimo=1;
+    end;
+    if klausti_naujo_atverimo
+        button = questdlg(...
+            [ lokaliz('Dialogas jau atvertas!')  ' '  lokaliz('Reload parameters?') ], ...
+            lokaliz('Dialogas jau atvertas!') , ...
+            lokaliz('Atsisakyti'), lokaliz('Reload'), lokaliz('Reload'));
+        switch button
+            case lokaliz('Reload');
+                wrn=warning('off','backtrace');
+                warning([mfilename ': ' lokaliz('Changing options in dialog!')]);
+                warning(wrn.state, 'backtrace');
+            otherwise
+                return;
+        end;
+    end;
 end;
 set(handles.figure1,'Name',mfilename);
 set(handles.figure1,'Tag','Darbeliai');
@@ -194,8 +214,9 @@ set(handles.checkbox_ASR,'Value',0);
 set(handles.checkbox_perziureti_ICA,'Value',0);
 set(handles.checkbox_epoch,'Value',0);
 
-% Kitos umatytosios reikšmės
+% Kitos numatytosios reikšmės
 set(handles.edit_epoch_iv,'String','');
+set(handles.popupmenu8,'Value',3);
 
 set(handles.text_apdorotini_kanalai,'String',lokaliz('all'));
 set(handles.text_apdorotini_kanalai,'TooltipString','');
@@ -1624,161 +1645,14 @@ for i=1:Pasirinktu_failu_N;
             if and(~and(get(handles.radiobutton7,'Value') == 1, DarboPorcijaAtlikta > 0), and(EEG.nbchan > 0, and(~isempty(EEG.data), EEG.pnts>1)));
 
                 Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N);
-
+                
                 try
 
-                    ICA_zr_veiksena=get(handles.popupmenu7,'Value');
-                    ICA_pt_veiksena=get(handles.popupmenu8,'Value');
-                    EEG = eeg_checkset( EEG );
-                    ICA_kiekis=length(EEG.reject.gcompreject);
-                    [~,NaujaRinkmena_be_galunes,~]=fileparts(NaujaRinkmena);
-                    uzverti_EEG_perziuru_langus; %([ '.*' NaujaRinkmena_be_galunes '.*' ]);
-                    
-                    if ICA_zr_veiksena < 8;                        
-                        try eeglab redraw;
-                        catch err; Pranesk_apie_klaida(err,'','',0);
-                        end;
-                        drawnow ;
-                    end;
-                    
-                    switch ICA_zr_veiksena
-                        case {1 2 3}
-                            EEG = pop_selectcomps(EEG, [1:ICA_kiekis]);
-                            EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(ICA_kiekis) ']);'], EEG);
-                        case {5 6 7}
-                            EEG = pop_selectcomps_MARA(EEG);
-                            EEG = eegh('EEG = pop_selectcomps_MARA(EEG);', EEG);
-                    end;
-
-                    switch ICA_zr_veiksena
-                        case 2
-                            pop_eeg_perziura(EEG, 'zymeti', 0, 'title', NaujaRinkmena_be_galunes);
-                            %pop_eegplot( EEG, 1, 1, 1);
-                        case {3 4 6}
-                            pop_eeg_perziura(EEG, 'zymeti', 0, 'title', NaujaRinkmena_be_galunes, 'ICA', 1);
-                            %pop_eegplot( EEG, 0, 1, 1);
-                        case 7
-                            if isfield(EEG.reject, 'MARAinfo');
-                                pop_visualizeMARAfeatures(EEG.reject.gcompreject, EEG.reject.MARAinfo);
-                            else
-                                warning([ lokaliz('kintamasis neegzistuoja') ': EEG.reject.MARAinfo' ] );
-                            end;
-                    end;
-
-                    %if get(handles.popupmenu8,'Value') ~= 4 ;
-                    
-                    if ICA_zr_veiksena < 8;
-                        try eeglab redraw;
-                        catch err; Pranesk_apie_klaida(err,'','',0);
-                        end;
-                        drawnow ;
-                        pause(1) ;
-                    end;
-
-                    if get(handles.checkbox_perziureti_ICA_demesio,'Value') == 0 && ICA_zr_veiksena < 8;
-
-                        while ~isempty(gauk_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]));
-                            if 1 == 0
-                                waitfor(gauk_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]));
-                                pause(1) ;
-                            end ;
-                            uiwait(gcf,3);
-                            if ICA_zr_veiksena < 8;
-                                try eeglab redraw;
-                                catch err; Pranesk_apie_klaida(err,'','',0);
-                                end;
-                            end;
-                        end ;
-
-                    else
-                        if ICA_zr_veiksena < 8;
-                            Palauk();
-                        end;
-                        uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
-                    end;
-
-                    EEG = eeg_checkset( EEG );
-
-                    gcompreject=find(EEG.reject.gcompreject);
-                    disp(gcompreject);
-                    
-                    if isempty(gcompreject);
-                        warning(lokaliz('No selected ICA components for rejection.'));
-                    else
-                        switch ICA_pt_veiksena
-                            case 1
-                                EEG = pop_subcomp( EEG, gcompreject, 0 );
-                                EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 0 );'], EEG);
-                            case 2
-                                EEG = pop_subcomp( EEG, gcompreject, 1 );
-                            case 3
-                                EEG_senas  = EEG;
-                                EEG_naujas = pop_subcomp( EEG, gcompreject, 0 );
-                                pop_eeg_perziura(EEG_naujas, EEG_senas, 'zymeti', 0, 'title', NaujaRinkmena_be_galunes);
-                                drawnow; 
-%                                 ats=questdlg({lokaliz('Please review data after rejecting ICA components:') num2str(gcompreject) ...
-%                                     lokaliz('Priimti pakeitimus?')}, lokaliz('You review ICA...'), ...
-%                                     lokaliz('Cancel'), lokaliz('Atmesti'), lokaliz('Priimti'), lokaliz('Priimti') );
-                                d = dialog('Position',[300 300 250 200],'Name',lokaliz('You review ICA...'),'WindowStyle','normal');
-                                
-                                uicontrol('Parent',d,...
-                                    'Style','text',...
-                                    'Position',[20 80 210 100],...
-                                    'HorizontalAlignment','left',...
-                                    'String',{lokaliz('Please review data after rejecting ICA components:') ...
-                                    num2str(gcompreject) lokaliz('Priimti pakeitimus?')});
-                                
-                                uicontrol('Parent',d,...
-                                    'Position',[10 20 70 25],...
-                                    'String', lokaliz('Cancel'),...
-                                    'Callback','delete(gcf)');
-                                
-                                uicontrol('Parent',d,...
-                                    'Position',[85 20 70 25],...
-                                    'String', lokaliz('No'),...
-                                    'Callback','delete(gcf); setappdata(0, ''mygtuko_pasirinkimas'', 0); ');
-                                
-                                uicontrol('Parent',d,...
-                                    'Position',[160 20 70 25],...
-                                    'String', lokaliz('Priimti'),...
-                                    'Callback','delete(gcf); setappdata(0, ''mygtuko_pasirinkimas'', 1); ');
-                                
-                                setappdata(0, 'mygtuko_pasirinkimas', NaN);
-                                uiwait(d);
-                                
-                                ats=getappdata(0, 'mygtuko_pasirinkimas');
-                                switch ats
-                                    case { 1 lokaliz('Priimti') lokaliz('Yes') }
-                                        EEG = EEG_naujas;
-                                    case { 0 lokaliz('Atmesti') lokaliz('No') }
-                                        EEG = EEG_senas;
-                                    otherwise
-                                        uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
-                                        error(lokaliz('Nutraukta'));
-                                end;
-                                EEG_senas=[]; EEG_naujas=[]; %#ok
-                        end;
-                        
-                        switch ICA_pt_veiksena
-                            case {2 3}
-                                if ~isfield(EEG.reject,'gcompreject');
-                                    EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 1 );'], EEG);
-                                elseif ~isequal(gcompreject,find(EEG.reject.gcompreject));
-                                    EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 1 );'], EEG);
-                                end;
-                        end;
-                    end;
-                    
-                    if ICA_zr_veiksena < 8;
-                        try eeglab redraw;
-                        catch err; Pranesk_apie_klaida(err,'','',0);
-                        end;
-                        drawnow ;
-                        pause(1) ;
-                    end;
-                    
-                    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
-                    EEG = eeg_checkset( EEG );
+                    EEG = vykdymas_perziureti_ICA(EEG, EEG, ...
+                        get(handles.popupmenu7,'Value'), ...
+                        get(handles.popupmenu8,'Value'), ...
+                        get(handles.checkbox_perziureti_ICA_demesio,'Value'), ...
+                        NaujaRinkmena);
 
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('ICA review'), NaujaRinkmena);
@@ -1792,7 +1666,7 @@ for i=1:Pasirinktu_failu_N;
                 Priesaga=(get(handles.edit_perziureti_ICA,'String')) ;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_perziureti_ICA_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
-                if get(handles.checkbox_perziureti_ICA_,'Value') == 1 && ~TIK_PERZIURA;
+                if get(handles.checkbox_perziureti_ICA_,'Value') == 1 && ~TIK_PERZIURA && ~isempty(EEG) ;
                     Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
@@ -2390,7 +2264,7 @@ for i=1:Pasirinktu_failu_N;
 
 
         % Išsaugoti
-        if isempty(PaskRinkmIssaugKelias) && ~TIK_PERZIURA;
+        if isempty(PaskRinkmIssaugKelias) && ~TIK_PERZIURA && ~isempty(EEG);
             Poaplankis='.';
             Priesaga='';
             Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
@@ -2642,6 +2516,197 @@ langai=gauk_EEG_perziuru_langus(varargin);
 for i=1:length(langai);
     try close(langai(i)) ; catch; end;
 end;
+
+
+function EEG_perduot = vykdymas_perziureti_ICA(EEG_senas, EEG_darbinis, ICA_zr_veiksena, ICA_pt_veiksena, ICA_demesio, NaujaRinkmena)
+% ICA_zr_veiksena = get(handles.popupmenu7,'Value')
+% ICA_pt_veiksena = get(handles.popupmenu8,'Value')
+% ICA_demesio = get(handles.checkbox_perziureti_ICA_demesio,'Value')
+% NaujaRinkmena = 'bet koks pavadinimas'
+
+EEG_perduot=[]; 
+global STUDY CURRENTSTUDY ALLEEG EEG CURRENTSET;
+STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; CURRENTSET=[];
+EEG = eeg_checkset( EEG_darbinis );
+EEG_darbinis=[]; % nebereikalingas
+ICA_kiekis=length(EEG.reject.gcompreject);
+[~,NaujaRinkmena_be_galunes,~]=fileparts(NaujaRinkmena);
+uzverti_EEG_perziuru_langus; %([ '.*' NaujaRinkmena_be_galunes '.*' ]);
+
+if ICA_zr_veiksena < 8;
+    try eeglab redraw;
+    catch err; Pranesk_apie_klaida(err,'','',0);
+    end;
+    drawnow ;
+end;
+
+switch ICA_zr_veiksena
+    case 2
+        pop_eeg_perziura(EEG, 'zymeti', 0, 'title', NaujaRinkmena_be_galunes);
+        %pop_eegplot( EEG, 1, 1, 1);
+    case {3 4 6}
+        pop_eeg_perziura(EEG, 'zymeti', 0, 'title', NaujaRinkmena_be_galunes, 'ICA', 1);
+        %pop_eegplot( EEG, 0, 1, 1);
+    case 7
+        if isfield(EEG.reject, 'MARAinfo');
+            pop_visualizeMARAfeatures(EEG.reject.gcompreject, EEG.reject.MARAinfo);
+        else
+            warning([ lokaliz('kintamasis neegzistuoja') ': EEG.reject.MARAinfo' ] );
+        end;
+end;
+
+switch ICA_zr_veiksena
+    case {1 2 3}
+        EEG = pop_selectcomps(EEG, [1:ICA_kiekis]);
+        EEG = eegh(['EEG = pop_selectcomps(EEG, [1:' num2str(ICA_kiekis) ']);'], EEG);
+    case {5 6 7}
+        EEG = pop_selectcomps_MARA(EEG);
+        EEG = eegh('EEG = pop_selectcomps_MARA(EEG);', EEG);
+end;
+
+%if get(handles.popupmenu8,'Value') ~= 4 ;
+
+if ICA_zr_veiksena < 8;
+    try eeglab redraw;
+    catch err; Pranesk_apie_klaida(err,'','',0);
+    end;
+    drawnow ;
+    pause(1) ;
+end;
+
+if ICA_demesio == 0 && ICA_zr_veiksena < 8;
+    
+    while ~isempty(gauk_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]));
+        if 1 == 0
+            waitfor(gauk_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]));
+            pause(1) ;
+        end ;
+        uiwait(gcf,3);
+        if ICA_zr_veiksena < 8;
+            try eeglab redraw;
+            catch err; Pranesk_apie_klaida(err,'','',0);
+            end;
+        end;
+    end ;
+    
+else
+    if ICA_zr_veiksena < 8;
+        Palauk();
+    end;
+    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
+end;
+
+EEG = eeg_checkset( EEG );
+
+gcompreject=find(EEG.reject.gcompreject);
+disp(gcompreject);
+
+if isempty(gcompreject);
+    button = questdlg(...
+        [ lokaliz('No selected ICA components for rejection.') ' ' lokaliz('Grazinti pradinius duomenis?') ], lokaliz('No selected ICA components for rejection.') , ...
+        lokaliz('Abort'), lokaliz('Keisti'), lokaliz('Yes'), lokaliz('Yes'));
+    switch button
+        case lokaliz('Yes');
+            EEG=EEG_senas;
+        case lokaliz('Abort');
+            return; %error(lokaliz('Nutraukta'));
+        otherwise
+            EEG_perduot = vykdymas_perziureti_ICA(EEG_senas, EEG, ICA_zr_veiksena, ICA_pt_veiksena, ICA_demesio, NaujaRinkmena);
+            return;
+    end;
+else
+    switch ICA_pt_veiksena
+        case 1
+            EEG = pop_subcomp( EEG, gcompreject, 0 );
+            EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 0 );'], EEG);
+        case 2
+            EEG = pop_subcomp( EEG, gcompreject, 1 );
+        case 3
+            EEG_naujas = pop_subcomp( EEG, gcompreject, 0 );
+            pop_eeg_perziura(EEG_naujas, EEG_senas, 'zymeti', 0, 'title', NaujaRinkmena_be_galunes);
+            drawnow;
+            %                                 ats=questdlg({lokaliz('Please review data after rejecting ICA components:') num2str(gcompreject) ...
+            %                                     lokaliz('Priimti pakeitimus?')}, lokaliz('You review ICA...'), ...
+            %                                     lokaliz('Cancel'), lokaliz('Atmesti'), lokaliz('Priimti'), lokaliz('Priimti') );
+            d = dialog('Position',[300 300 250 200],'Name',lokaliz('You review ICA...'),'WindowStyle','normal');
+            
+            uicontrol('Parent',d,...
+                'Style','text',...
+                'Position',[20 80 210 100],...
+                'HorizontalAlignment','left',...
+                'String',{lokaliz('Please review data after rejecting ICA components:') ...
+                num2str(gcompreject) lokaliz('Priimti pakeitimus?')});
+            
+            uicontrol('Parent',d,...
+                'Position',[10 20 70 25],...
+                'String', lokaliz('Baigti'),...
+                'Callback','delete(gcf); setappdata(0, ''mygtuko_pasirinkimas'', 0); ');
+            
+            uicontrol('Parent',d,...
+                'Position',[85 20 70 25],...
+                'String', lokaliz('Tobulinti'),...
+                'Callback','delete(gcf)');
+            
+            uicontrol('Parent',d,...
+                'Position',[160 20 70 25],...
+                'String', lokaliz('Priimti'),...
+                'Callback','delete(gcf); setappdata(0, ''mygtuko_pasirinkimas'', 1); ');
+            
+            setappdata(0, 'mygtuko_pasirinkimas', NaN);
+            uiwait(d);
+            
+            ats=getappdata(0, 'mygtuko_pasirinkimas');
+            switch ats
+                case { 1 lokaliz('Priimti') lokaliz('Yes') }
+                    EEG = EEG_naujas;
+                case { 0 lokaliz('Atmesti') lokaliz('No') }
+                    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
+                    button = questdlg(...
+                        [ lokaliz('Grazinti pradinius duomenis?') ], lokaliz('Grazinti pradinius duomenis?') , ...
+                        lokaliz('Abort'), lokaliz('Yes'), lokaliz('Yes'));
+                    switch button
+                        case lokaliz('Yes');
+                            EEG = EEG_senas;
+                        otherwise
+                            return; % error(lokaliz('Nutraukta'));
+                    end;
+                otherwise
+                    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
+                    button = questdlg(...
+                        [ lokaliz('Ikelti pradinius duomenis?') ], lokaliz('Ikelti pradinius duomenis?') , ...
+                        lokaliz('No'), lokaliz('Reload'), lokaliz('Reload'));
+                    switch button
+                        case lokaliz('Reload');
+                            EEG_perduot = vykdymas_perziureti_ICA(EEG_senas, EEG_senas, ICA_zr_veiksena, ICA_pt_veiksena, ICA_demesio, NaujaRinkmena);
+                        otherwise
+                            EEG_perduot = vykdymas_perziureti_ICA(EEG_senas, EEG, ICA_zr_veiksena, ICA_pt_veiksena, ICA_demesio, NaujaRinkmena);
+                    end;
+                    return;
+            end;
+            EEG_senas=[]; EEG_naujas=[]; %#ok
+    end;
+    
+    switch ICA_pt_veiksena
+        case {2 3}
+            if ~isfield(EEG.reject,'gcompreject');
+                EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 1 );'], EEG);
+            elseif ~isequal(gcompreject,find(EEG.reject.gcompreject));
+                EEG = eegh(['EEG = pop_subcomp( EEG, [' num2str(gcompreject) '] , 1 );'], EEG);
+            end;
+    end;
+end;
+
+if ICA_zr_veiksena < 8;
+    try eeglab redraw;
+    catch err; Pranesk_apie_klaida(err,'','',0);
+    end;
+    drawnow ;
+    pause(1) ;
+end;
+
+uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
+EEG_perduot = eeg_checkset( EEG );
+
 
 
 % --- Executes on button press in pushbutton2.
@@ -4702,7 +4767,6 @@ pateikiami_kiti_v=0;
 if ~isempty(dar_kiti_kanalai);
    pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(other:)') dar_kiti_kanalai{:} };
    pateikiami_kiti_v=1+pateikiami_bendri_v + (pateikiami_nebendri_v ~= 0) + length(visi_galimi_kanalai);
-   disp(pateikiami_kiti_v);
 end;
 %vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
 % Ankstesni_kanalai=get(handles.text9,'TooltipString');
@@ -5926,77 +5990,10 @@ if isempty(RINKMENOS);
     return;
 end;
 set(handles.pushbutton13,'Enable','off'); drawnow;
-[~,visi_galimi_ivykiai,bendri_ivykiai]=eeg_ivykiu_sarasas (get(handles.edit1,'String'), RINKMENOS);
+[pasirinkti_ivykiai]=drb_uzklausa('ivykiai', ...
+    get(handles.edit1,'String'), RINKMENOS, get(handles.pushbutton13,'UserData'));
 set(handles.pushbutton13,'Enable','on');
-if ismember('boundary',visi_galimi_ivykiai);
-    i=find(ismember(visi_galimi_ivykiai,'boundary')==0);
-    visi_galimi_ivykiai=visi_galimi_ivykiai(i);
-end;
-if ismember('boundary',bendri_ivykiai);
-    i=find(ismember(bendri_ivykiai,'boundary')==0);
-    bendri_ivykiai=bendri_ivykiai(i);
-end;
-if isempty(visi_galimi_ivykiai);
-    warndlg(lokaliz('No events found.'),lokaliz('Selection of events'));
-    return;
-end;
-pateikiami_ivykiai={};
-pradinis_pasirinkimas=[];
-pateikiami_bendri_v=0;
-if ~isempty(bendri_ivykiai);
-    if length(RINKMENOS) == 1;
-        pateikiami_ivykiai={bendri_ivykiai{:}};
-        pateikiami_bendri_v=0;
-        pradinis_pasirinkimas=[1:length(bendri_ivykiai)];
-    else
-        pateikiami_ivykiai={lokaliz('(all common:)') bendri_ivykiai{:} };
-        pateikiami_bendri_v=1;
-        pradinis_pasirinkimas=[2:(length(bendri_ivykiai)+1)];
-    end;
-end;
-nebendri_idx=find(ismember(visi_galimi_ivykiai,bendri_ivykiai) == 0);
-pateikiami_nebendri_v=0;
-if ~isempty(nebendri_idx);
-   pateikiami_ivykiai={pateikiami_ivykiai{:} lokaliz('(not common:)') visi_galimi_ivykiai{nebendri_idx} };
-   pateikiami_nebendri_v=1+pateikiami_bendri_v + length(bendri_ivykiai);
-   if ~pateikiami_bendri_v;
-       pradinis_pasirinkimas=[(pateikiami_nebendri_v +1) : (length(visi_galimi_ivykiai) + pateikiami_bendri_v + 1 ) ];
-   end;
-end;
-%vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
-senas=get(handles.pushbutton13,'UserData');
-if ~isempty(senas);
-    pradinis_pasirinkimas=find(ismember(pateikiami_ivykiai,senas)==1);
-end;
-% senas=get(handles.edit_epoch_iv,'String');
-% if ~isempty(senas);
-%     senas=str2num(senas);
-%     if ~isempty(senas);
-%         senas=cellfun(@(i) {num2str(senas(i))}, num2cell([1:length(senas)]));
-%         pradinis_pasirinkimas=find(ismember(pateikiami_ivykiai,senas)==1);
-%     end;
-% end;
-if ~iscellstr(pateikiami_ivykiai);
-    warning(lokaliz('unexpected events types.'),lokaliz('Selection of events'));
-    disp(pateikiami_ivykiai);
-    return;
-end;
-pasirinkti_ivykiai_idx=listdlg('ListString', pateikiami_ivykiai,...
-    'SelectionMode','multiple',...
-    'PromptString', lokaliz('Select events:'),...
-    'InitialValue',pradinis_pasirinkimas ,...
-    'OKString',lokaliz('OK'),...
-    'CancelString',lokaliz('Cancel'));
-if isempty(pasirinkti_ivykiai_idx); return ; end;
-pasirinkti_ivykiai={};
-if ismember(pateikiami_bendri_v,pasirinkti_ivykiai_idx);
-    pasirinkti_ivykiai={pasirinkti_ivykiai{:} bendri_ivykiai{:} };
-end;
-if ismember(pateikiami_nebendri_v,pasirinkti_ivykiai_idx);
-    pasirinkti_ivykiai={pasirinkti_ivykiai{:} visi_galimi_ivykiai{nebendri_idx} };
-end;
-pasirinkti_ivykiai_idx_=pasirinkti_ivykiai_idx(find(ismember(pasirinkti_ivykiai_idx, [pateikiami_bendri_v pateikiami_nebendri_v])==0));
-pasirinkti_ivykiai=unique({pasirinkti_ivykiai{:} pateikiami_ivykiai{pasirinkti_ivykiai_idx_}});
+if isempty(pasirinkti_ivykiai); return; end;
 pasirinkti_ivykiai_str=pasirinkti_ivykiai{1};
 for i=2:length(pasirinkti_ivykiai);
     pasirinkti_ivykiai_str=[pasirinkti_ivykiai_str ' ' pasirinkti_ivykiai{i}];
@@ -6491,7 +6488,9 @@ if length(x) == n ;
         set(id,'UserData',regexprep(num2str(x), '[ ]*', ' '));
     end;
 end;
-set(id,'String',get(id,'UserData'));
+d=get(id,'UserData');
+if ~ischar(d); d=regexprep(num2str(d), '[ ]*', ' '); end;
+set(id,'String',d);
 set(id,'BackgroundColor',[1 1 1]);
 
 

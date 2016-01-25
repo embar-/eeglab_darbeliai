@@ -513,6 +513,15 @@ if and(Darbeliai_nuostatos.meniu_ragu,(exist('Ragu.m','file') == 2 )) ;
          'ragu_diegimas ;'  );		
 end;
 
+% Eksperimentinė versija?
+if ~Darbeliai_nuostatos.stabili_versija ;
+    warning('off','backtrace');
+    warning(sprintf( [ '\n' vers ' ' lokaliz('Trunk version') '!\n' ...
+        lokaliz('Eikite meniu') ':\n'  main_menu_name ' -> ' ...
+        lokaliz('Nuostatos') ' (kalba/language) -> '  lokaliz('Stable version') ] ));
+    warning('on','backtrace');
+end;
+
 return;
 
 % Svarbi informacija apie naują versiją

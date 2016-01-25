@@ -8,7 +8,7 @@
 % GUI versija
 %
 %
-% (C) 2014-2015 Mindaugas Baranauskas
+% (C) 2014-2016 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -108,9 +108,29 @@ else    g=[];
 end;
 
 f=findobj('name', mfilename, 'Type','figure','Tag','Darbeliai');
-if isequal(f,handles.figure1);
-    warning(lokaliz('Dialogas jau atvertas!')); figure(f);
+if ismember(handles.figure1,f);
+    wrn=warning('off','backtrace');
+    warning([mfilename ': ' lokaliz('Dialogas jau atvertas!')]);
+    warning(wrn.state, 'backtrace');
+    figure(f);
     if strcmp(get(handles.pushbutton4),'off') || isempty(g); return; end;
+    try klausti_naujo_atverimo=~ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'});
+    catch; klausti_naujo_atverimo=1;
+    end;
+    if klausti_naujo_atverimo
+        button = questdlg(...
+            [ lokaliz('Dialogas jau atvertas!')  ' '  lokaliz('Reload parameters?') ], ...
+            lokaliz('Dialogas jau atvertas!') , ...
+            lokaliz('Atsisakyti'), lokaliz('Reload'), lokaliz('Reload'));
+        switch button
+            case lokaliz('Reload');
+                wrn=warning('off','backtrace');
+                warning([mfilename ': ' lokaliz('Changing options in dialog!')]);
+                warning(wrn.state, 'backtrace');
+            otherwise
+                return;
+        end;
+    end;
 end;
 set(handles.figure1,'Name',mfilename);
 set(handles.figure1,'Tag','Darbeliai');
@@ -188,6 +208,10 @@ catch err;
 end;
 
 atnaujink_rodomus_failus(hObject, eventdata, handles);
+
+% Papildomos parinktys
+set(handles.checkbox76,'Value',1);
+
 parinktis_irasyti(hObject, eventdata, handles, 'numatytas','');
 try 
     drb_parinktys(hObject, eventdata, handles, 'ikelti', mfilename, g(1).preset); 
@@ -213,6 +237,7 @@ try
   if ~isempty(g(1).mode);
     agv=strcmp(get(handles.pushbutton1,'Enable'),'on');
     if agv; agv=Ar_galima_vykdyti2(hObject, eventdata, handles); end;
+    %if agv; agv=Ar_galima_vykdyti3(hObject, eventdata, handles, 1); end;
     if or(ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'}),...
       and(ismember(g(1).mode,{'tryforce'}),agv));
         set(handles.checkbox_uzverti_pabaigus,'Enable','off');
@@ -455,8 +480,18 @@ drawnow;
 
 
 function Ar_galima_vykdyti(hObject, eventdata, handles)
-
 set(handles.pushbutton1,'Enable','off');
+if ~Ar_galima_vykdyti1(hObject, eventdata, handles, 1);
+    drawnow; return;
+end;
+if ~Ar_galima_vykdyti3(hObject, eventdata, handles, 1);
+    drawnow; return;
+end;
+set(handles.pushbutton1,'Enable','on');
+drawnow;
+
+function Galima=Ar_galima_vykdyti1(hObject, eventdata, handles, blykcioti)
+Galima=false;
 if isempty(get(handles.listbox1,'String'));
     drawnow; return;
 end;
@@ -465,8 +500,10 @@ if get(handles.listbox1,'Value') == 0;
 end;
 Pasirinkti_failu_indeksai=(get(handles.listbox1,'Value'));
 if isempty(Pasirinkti_failu_indeksai);
-    set(handles.listbox1,'BackgroundColor', [1 1 0]); pause(1);
-    set(handles.listbox1,'BackgroundColor', [1 1 1]); 
+    if blykcioti;
+        set(handles.listbox1,'BackgroundColor', [1 1 0]); pause(1);
+        set(handles.listbox1,'BackgroundColor', [1 1 1]);
+    end;
     drawnow; return;
 end;
 if get(handles.edit1,'BackgroundColor') == [1 1 0];
@@ -489,12 +526,6 @@ if isempty(get(handles.edit_fft_langas,'String'));
     set(handles.edit_fft_langas,'BackgroundColor', [1 1 0]);
     return;
 end;
-if ~( get(handles.checkbox75,'Value') || get(handles.checkbox76,'Value') || get(handles.checkbox77,'Value') );
-    set([handles.checkbox75 handles.checkbox76 handles.checkbox77],'BackgroundColor', [1 1 0]); pause(1);
-    set([handles.checkbox75 handles.checkbox76 handles.checkbox77],'BackgroundColor', 'remove'); 
-    return;
-end;
-
 
 naudotojo_lentele=[[{lokaliz('visa')} ...
     num2cell(str2num(get(handles.edit51,'String')))];...
@@ -522,10 +553,8 @@ else
     set(handles.uitable1,'BackgroundColor', [1 1 1]);
 end;
 
-
-set(handles.pushbutton1,'Enable','on');
-drawnow;
-
+% Vykdyti galima
+Galima=true;
 
 function Galima=Ar_galima_vykdyti2(hObject, eventdata, handles)
 Galima=false;
@@ -555,9 +584,20 @@ if isempty(find(ismember(Pasirinkti_kanalai,visi_galimi_kanalai)));
     warning(lokaliz('No selected channels found in selected files.'));
     set(handles.pushbutton14,'Backgroundcolor',[1 1 0]) ; drawnow; pause(1);
     set(handles.pushbutton14,'Backgroundcolor','remove'); drawnow;
-else
-    Galima=true;
+    return;
 end;
+Galima=true;
+
+function Galima=Ar_galima_vykdyti3(hObject, eventdata, handles, blykcioti)
+Galima=false;
+if ~( get(handles.checkbox75,'Value') || get(handles.checkbox76,'Value') || get(handles.checkbox77,'Value') );
+    if blykcioti;
+        set([handles.checkbox75 handles.checkbox76 handles.checkbox77],'BackgroundColor', [1 1 0]); pause(1);
+        set([handles.checkbox75 handles.checkbox76 handles.checkbox77],'BackgroundColor', 'remove');
+    end;
+    return;
+end;
+Galima=true;
 
 
 function Darbo_eigos_busena(handles, Darbo_apibudinimas, DarboNr, i, Pasirinktu_failu_N)
@@ -689,6 +729,8 @@ leisti_interpoliuoti=get(handles.checkbox_interpol,'Value');
 ribos=str2num(get(handles.edit51,'String'));%*1000;
 Ar_reikia_galios_absoliucios=get(handles.checkbox76,'Value');
 Ar_reikia_galios_santykines=get(handles.checkbox77,'Value');
+Ar_reikia_spekro_absol=0; % FIXME: leisti pasirinkti
+Ar_reikia_spekro_db=get(handles.checkbox75,'Value');
 
 [~,ALLEEG_,~]=pop_newset([],[],[]);
 ALLEEG_=setfield(ALLEEG_,'datfile',[]);
@@ -746,7 +788,7 @@ legendoje={};
                     
                     axes(handles.axes1);
                     
-                    [DUOMENYS]=EEG_spektr_galia(...
+                    [DUOMENYS]=eeg_spektr_galia(...
                         KELIAS, Pasirinkti_failu_pavadinimai,...
                         get(handles.edit2,'String'), Doc_pvd, Doc_tp, ...
                         Pasirinkti_kanalai,leisti_interpoliuoti,...
@@ -757,8 +799,10 @@ legendoje={};
                         fft_lango_ilgis_sekundemis(1),...
                         fft_tasku_herce, ...
                         Ar_reikia_galios_absoliucios, ...
-                        Ar_reikia_galios_santykines);
-                    assignin('base','DUOMENYS',DUOMENYS);
+                        Ar_reikia_galios_santykines, ...
+                        Ar_reikia_spekro_absol, ...
+                        Ar_reikia_spekro_db);
+                    %assignin('base','DUOMENYS',DUOMENYS);
                     Apdoroti_visi_tiriamieji=1;
                     DarboPorcijaAtlikta = 1;
                     PaskutinioIssaugotoDarboNr=DarboNr;
@@ -1571,6 +1615,7 @@ function pushbutton14_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton14 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+VISI_KANALAI_64={'Fp1' 'Fpz' 'Fp2' 'F7' 'F3' 'Fz' 'F4' 'F8' 'FC5' 'FC1' 'FC2' 'FC6' 'M1' 'T7' 'C3' 'Cz' 'C4' 'T8' 'M2' 'CP5' 'CP1' 'CP2' 'CP6' 'P7' 'P3' 'Pz' 'P4' 'P8' 'POz' 'O1' 'Oz' 'O2' 'AF7' 'AF3' 'AF4' 'AF8' 'F5' 'F1' 'F2' 'F6' 'FC3' 'FCz' 'FC4' 'C5' 'C1' 'C2' 'C6' 'CP3' 'CPz' 'CP4' 'P5' 'P1' 'P2' 'P6' 'PO5' 'PO3' 'PO4' 'PO6' 'FT7' 'FT8' 'TP7' 'TP8' 'PO7' 'PO8';};
 
 RINKMENOS=get(handles.listbox1,'String');
 if isempty(RINKMENOS);
@@ -1614,6 +1659,12 @@ if ~isempty(nebendri_idx);
         pradinis_pasirinkimas=[(pateikiami_nebendri_v +1) : (length(visi_galimi_kanalai) + pateikiami_bendri_v + 1 ) ];
     end;
 end;
+pateikiami_kiti_v=0;
+dar_kiti_kanalai=sort(VISI_KANALAI_64(find(ismember(VISI_KANALAI_64,visi_galimi_kanalai)==0)));
+if and(~isempty(dar_kiti_kanalai),get(handles.checkbox_interpol,'Value'));
+   pateikiami_kanalai={pateikiami_kanalai{:} lokaliz('(other:)') dar_kiti_kanalai{:} };
+   pateikiami_kiti_v=1+pateikiami_bendri_v + (pateikiami_nebendri_v ~= 0) + length(visi_galimi_kanalai);
+end;
 %vis tik nepaisyti pradinis_pasirinkimas, jei netuščias ankstesnis pasirinkimas
 Ankstesni_kanalai=get(handles.text47,'TooltipString');
 if ~isempty(Ankstesni_kanalai);
@@ -1640,7 +1691,12 @@ end;
 if ismember(pateikiami_nebendri_v,pasirinkti_kanalai_idx);
     pasirinkti_kanalai={pasirinkti_kanalai{:} visi_galimi_kanalai{nebendri_idx} };
 end;
-pasirinkti_kanalai_idx_=pasirinkti_kanalai_idx(find(ismember(pasirinkti_kanalai_idx, [pateikiami_bendri_v pateikiami_nebendri_v])==0));
+if ismember(pateikiami_kiti_v,pasirinkti_kanalai_idx);
+    pasirinkti_kanalai={pasirinkti_kanalai{:} dar_kiti_kanalai{:} };
+end;
+pasirinkti_kanalai_idx_=pasirinkti_kanalai_idx( ...
+    find(ismember(pasirinkti_kanalai_idx, ...
+    [pateikiami_bendri_v pateikiami_nebendri_v pateikiami_kiti_v])==0));
 pasirinkti_kanalai=unique({pasirinkti_kanalai{:} pateikiami_kanalai{pasirinkti_kanalai_idx_}});
 pasirinkti_kanalai_str=[pasirinkti_kanalai{1}];
 for i=2:length(pasirinkti_kanalai);
@@ -1764,8 +1820,7 @@ if strcmp(get(handles.checkbox_perziura,'Enable'),'off');
     return;
 end;
 
-Ar_galima_vykdyti(hObject, eventdata, handles);
-if strcmp(get(handles.pushbutton1,'Enable'),'off');
+if ~Ar_galima_vykdyti1(hObject, eventdata, handles, 0);
     return;
 end;
 if ~Ar_galima_vykdyti2(hObject, eventdata, handles);
@@ -1828,7 +1883,7 @@ try
     fft_lango_ilgis_sekundemis=str2num(get(handles.edit_fft_langas,'String'));
     fft_tasku_herce=str2num(get(handles.edit_tikslumas,'String'));
         
-    [DUOMENYS]=EEG_spektr_galia(...
+    [DUOMENYS]=eeg_spektr_galia(...
         KELIAS, Pasirinkti_failu_pavadinimai,...
         get(handles.edit2,'String'), '', 'pseudo', ...
         Pasirinkti_kanalai,leisti_interpoliuoti,...
@@ -1838,8 +1893,8 @@ try
         0,...
         fft_lango_ilgis_sekundemis(1),...
         fft_tasku_herce,...
-        0, 0);
-    assignin('base','DUOMENYS',DUOMENYS);
+        0, 0, 0, 0);
+    %assignin('base','DUOMENYS',DUOMENYS);
     
     
     axes(handles.axes1);
@@ -1855,7 +1910,7 @@ try
         tmp_lab=get(handles.axes1,'XTickLabel');
         try
             set(handles.axes1,'XTickLabel', [ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab(end,:) ' Hz' ]} ]); % MATLAB R2014a
-        catch err;
+        catch
             set(handles.axes1,'XTickLabel', [ (tmp_lab(1:end-1,:)) ; {[ ' ' tmp_lab{end,:} ' Hz' ]} ]); % MATLAB R2015a
         end;
         hold('on');
@@ -2143,13 +2198,13 @@ function popupmenu_doc_Callback(hObject, eventdata, handles)
 busena=get(handles.popupmenu_doc,'Enable');
 switch get(handles.popupmenu_doc,'Value')
     case 1
-        set(handles.checkbox75, 'Value',1, 'Enable', 'off', 'Visible', 'on');
-        set(handles.checkbox76, 'Value',1, 'Enable', 'off');
-        set(handles.checkbox77, 'Value',1, 'Enable', 'off');
+        set(handles.checkbox75, 'Visible', 'on', 'Enable', 'off', 'Value', 1);
+        set(handles.checkbox76, 'Visible', 'on', 'Enable', 'off', 'Value', 1);
+        set(handles.checkbox77, 'Visible', 'on', 'Enable', 'off', 'Value', 1);
     case 2
-        set(handles.checkbox75, 'Value',0, 'Enable', 'off', 'Visible', 'off');
-        set(handles.checkbox76, 'Enable', busena);
-        set(handles.checkbox77, 'Enable', busena);
+        set(handles.checkbox75, 'Visible', 'on', 'Enable', busena);
+        set(handles.checkbox76, 'Visible', 'on', 'Enable', busena);
+        set(handles.checkbox77, 'Visible', 'on', 'Enable', busena);
 end;
 
 % --- Executes during object creation, after setting all properties.

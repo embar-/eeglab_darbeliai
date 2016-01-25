@@ -1,6 +1,21 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2016.01.25.1
+% 
+% + EEG spektro įrašymo į TXT parinktis.
+% ~ EEG spektrinės galios skaičiavimo dialoge leisti 
+%   interpoliavimui pasirinkti nesančius kanalus.
+% + Įspėti iš naujo atveriant Darbelių langą.
+% + Įspėti atveriant kelis peržiūros langus.
+% ~ Patobulinta EEG peržiūra senesnėse MATLAB versijose.
+% ~ Patobulinta epochuotų įrašų peržiūra, lygiuojant įvykius ir nurodant laiką.
+% ~ Patobulinta NKA komponenčių peržiūra, leidžiant 
+%   grįžti atgal prie atmestinų komponenčių pasirinkimo.
+% ~ Numatytuoju atveju po darbų neįkelti į EEGLAB.
+% ~ Didesnis ir išsamesnis dialogas katalogo pasirinkimui iš sąrašo.
+% ~ Kiti smulkūs pakeitimai.
+%
 % v2015.11.24.1
 % ~ „Nuoseklaus apdorojimo“ lange,
 %   NKA komponenčių peržiūroje, kai pasirinkta 

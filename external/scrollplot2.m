@@ -547,7 +547,11 @@ function processArgs(pvPairs,hScroll)
                         % Update the parent axes with the new limit
                         hAx = getappdata(get(thisPatch,'Parent'), 'parent');
                         lim = get(hAx, limStr);
-                        set(hAx, limStr,[paramValue,lim(2)]);
+                        if lim(2) <= paramValue;
+                            set(hAx, limStr, paramValue + [0 diff(lim)]);
+                        else 
+                            set(hAx, limStr, [paramValue,lim(2)]);
+                        end;
                     end
                     minLim = paramValue;
 
@@ -557,15 +561,19 @@ function processArgs(pvPairs,hScroll)
                         thisPatch = hScrollPatches(patchIdx);
                         data = get(thisPatch, dataStr);
                         if strcmpi(axName,'x')
-                            set(thisPatch, dataStr,[data([1,1]); paramValue([1;1])]);
+                            set(thisPatch, dataStr, [data([1,1]); paramValue([1;1])]);
                         else  % Y scroll
-                            set(thisPatch, dataStr,[data(1); paramValue([1;1]); data(1)]);
+                            set(thisPatch, dataStr, [data(1); paramValue([1;1]); data(1)]);
                         end
 
                         % Update the parent axes with the new limit
                         hAx = getappdata(get(thisPatch,'Parent'), 'parent');
                         lim = get(hAx, limStr);
-                        set(hAx, limStr,[lim(1),paramValue]);
+                        if lim(1) >= paramValue;
+                            set(hAx, limStr, paramValue - [diff(lim) 0]);
+                        else
+                            set(hAx, limStr, [lim(1),paramValue]);
+                        end;
                     end
                     maxLim = paramValue;
 
@@ -623,7 +631,7 @@ function processArgs(pvPairs,hScroll)
 
             end  % switch paramName
         end  % loop pvPairs
-    catch %err;
+    catch
         if ~isempty(paramName),  paramName = [' ''' paramName ''''];  end
         myError('YMA:scrollplot:invalidHandle',['Error setting scrollplot property' paramName ':' char(10) lasterr]);
     end

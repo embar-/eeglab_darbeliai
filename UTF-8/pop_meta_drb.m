@@ -5,7 +5,7 @@
 % GUI versija
 %
 %
-% (C) 2014-2015 Mindaugas Baranauskas
+% (C) 2014-2016 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -105,9 +105,29 @@ else    g=[];
 end;
 
 f=findobj('name', mfilename, 'Type','figure','Tag','Darbeliai');
-if isequal(f,handles.figure1);
-    warning(lokaliz('Dialogas jau atvertas!')); figure(f);
+if ismember(handles.figure1,f);
+    wrn=warning('off','backtrace');
+    warning([mfilename ': ' lokaliz('Dialogas jau atvertas!')]);
+    warning(wrn.state, 'backtrace');
+    figure(f);
     if strcmp(get(handles.pushbutton4),'off') || isempty(g); return; end;
+    try klausti_naujo_atverimo=~ismember(g(1).mode,{'f' 'force' 'forceexec' 'force_exec'});
+    catch; klausti_naujo_atverimo=1;
+    end;
+    if klausti_naujo_atverimo
+        button = questdlg(...
+            [ lokaliz('Dialogas jau atvertas!')  ' '  lokaliz('Reload parameters?') ], ...
+            lokaliz('Dialogas jau atvertas!') , ...
+            lokaliz('Atsisakyti'), lokaliz('Reload'), lokaliz('Reload'));
+        switch button
+            case lokaliz('Reload');
+                wrn=warning('off','backtrace');
+                warning([mfilename ': ' lokaliz('Changing options in dialog!')]);
+                warning(wrn.state, 'backtrace');
+            otherwise
+                return;
+        end;
+    end;
 end;
 set(handles.figure1,'Name',mfilename);
 set(handles.figure1,'Tag','Darbeliai');
@@ -128,7 +148,7 @@ tic;
 lokalizuoti(hObject, eventdata, handles);
 atstatyk_darbu_id(hObject, eventdata, handles, 1:10);
 drb_meniu(hObject, eventdata, handles, 'visas', mfilename);
-set(handles.checkbox_pabaigus_atverti,'Value',1);
+set(handles.checkbox_pabaigus_atverti,'Value',0);
 
 %Pabandyk įkelti senąjį kelią
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );

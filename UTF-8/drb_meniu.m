@@ -52,6 +52,10 @@ if nargin > 4; darbas=varargin{5};
 else           darbas='';
 end;
 
+if isempty(handles); 
+    handles.figure1=gcf;
+end;
+
 switch lower(meniu)
     case {'darbeliai'}
         drb_meniu_darbeliai(hObject, eventdata, handles, darbas, varargin(6:end));
@@ -121,7 +125,6 @@ switch aktyvus_darbas
         flt_slct = get(handles.edit_failu_filtras2,'String');
         files_sh = get(handles.listbox1,'String');
         files_sN = get(handles.listbox1,'Value');
-        files_sl = files_sh(files_sN);
         if ~isempty(files_sN) && ~isequal(files_sN,0);
             files_sl = files_sh(files_sN);
         else
@@ -321,10 +324,11 @@ uimenu(handles.meniu_veiksmai,'Label',lokaliz('Vykdyti nesaugant ir palyginti'),
 end;
 
 uimenu(handles.meniu_veiksmai, 'Accelerator','O', 'separator','on', 'Label', lokaliz('Vizualizuoti duomenis'), ...
-    'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab', 'reikia_EEGLAB', 0, 'command', ...
-    'pop_eeg_perziura(EEG(end), ''zymeti'', 0);' });
+    'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab', ...
+    'reikia_EEGLAB', 0, 'siulomas_kiekis', 1, 'command', 'pop_eeg_perziura(EEG(end), ''zymeti'', 0);' });
 uimenu(handles.meniu_veiksmai, 'Accelerator','K', 'Label', lokaliz('Palyginti duomenis 2'), ...
-    'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab', 'reikia_EEGLAB', 0, 'command', ...
+    'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab', ...
+    'reikia_EEGLAB', 0, 'siulomas_kiekis', 2, 'command', ...
     'if length(ALLEEG) > 1; pop_eeg_perziura(ALLEEG(end),ALLEEG(end-1), ''zymeti'', 0); end; ' });
 
 if ~ismember(darbas, {'pop_pervadinimas'})
@@ -346,7 +350,8 @@ handles.meniu_veiksmai_eeglab=uimenu(handles.meniu_veiksmai, 'separator','on', '
 uimenu(handles.meniu_veiksmai_eeglab, 'Accelerator','L', 'Label', lokaliz('Ikelti'), ...
     'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab'}  );
 uimenu(handles.meniu_veiksmai_eeglab, 'Accelerator','P', 'Label', lokaliz('Vizualizuoti duomenis'), ...
-    'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab', 'reikia_EEGLAB', 0, 'command', ...
+    'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab', ...
+    'reikia_EEGLAB', 0, 'siulomas_kiekis', 1, 'command', ...
     'eegplot( EEG(end).data, ''srate'', EEG(end).srate, ''eloc_file'', EEG(end).chanlocs, ''events'', EEG.event, ''title'', EEG(end).setname, ''submean'',''on''); '  });
 lcm=strrep(lokaliz('Custom command'),'.','');
 uimenu(handles.meniu_veiksmai_eeglab, 'separator','on', 'Label', lcm, ...
@@ -433,7 +438,7 @@ end;
 
 msg={Darbeliu_versija 
     ' ' 
-    '(c) 2014-2015 Mindaugas Baranauskas'
+    '(c) 2014-2016 Mindaugas Baranauskas'
     ['' 109 105 110 100 97 117 103 97 115 46 98 97 114 97 110 97 117 115  107 97 115 64 103 102 46 118 117 46 108 116] };
 
 % % Ženkliukas
