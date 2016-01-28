@@ -1901,7 +1901,7 @@ try
     cla;
     
     if get(handles.radiobutton_spektras,'Value');
-        ylabel('log_{10}(\muV^{2}/Hz)','FontSize',10);
+        ylabel('10 * log_{10}(\muV^{2}/Hz)','FontSize',10);
         set(handles.axes1,'XLim',str2num(get(handles.edit51,'String')));
         set(handles.axes1,'XTickMode', 'auto');
         set(handles.axes1,'XTickLabelMode', 'auto');
@@ -1921,7 +1921,7 @@ try
                 l=size(legendoje,1);
                 legendoje{l+1,1}=regexprep(DUOMENYS.VISU.failai{i},'.set$','');
                 legendoje{l+1,2}=DUOMENYS.VISU.KANALAI{k};
-                TMP_SPEKTR((k-1)*DUOMENYS.VISU.Tiriamuju_N + i,:)=log10(DUOMENYS.VISU.SPEKTRAS_LENTELESE_microV2_Hz{i,1}(k,1:dazniu_tasku_N));
+                TMP_SPEKTR((k-1)*DUOMENYS.VISU.Tiriamuju_N + i,:)=DUOMENYS.VISU.SPEKTRAS_LENTELESE_dB{i,1}(k,1:dazniu_tasku_N);
             end;
         end;
         for i=1:size(TMP_SPEKTR,1);
