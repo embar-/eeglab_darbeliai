@@ -208,7 +208,7 @@ atnaujink_rodomus_failus(hObject, eventdata, handles);
 
 
 % reikšmės numatytosios
-set(handles.checkbox57,'Value',1);%Peržiūra
+set(handles.checkbox57,'Value',0);%Peržiūra
 set(handles.checkbox58,'Enable','on'); % Failų vidurkis
 set(handles.checkbox58,'Visible','on');
 set(handles.checkbox59,'Value',1);%Kanalų vidurkis
