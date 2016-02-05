@@ -1817,12 +1817,42 @@ function EEG=eval2(com,EEG, KELIAS_,NaujaRinkmena,laiko_intervalas,...
                         Pasirinkti_ivykiai,...
                         handles)
 % Leisti naudoti trumpinius:
-T=laiko_intervalas;
-K=Pasirinkti_kanalai;
-C=Pasirinkti_kanalai_yra;
-N=Pasirinkti_kanalai_yra_Nr;
-E=Pasirinkti_ivykiai;
-eval(com);
+nesikartoja=0;
+while ~nesikartoja;
+    fjam = [ tempname '.m' ];
+    if ~exist(fjam, 'file');
+        nesikartoja=1;
+    end;
+end;
+[~,fja,~]=fileparts(fjam);
+try
+    fileID = fopen(fjam, 'w');
+    fprintf(fileID, '%s\n', ...
+        [ 'function EEG='  fja '(EEG, darbinis_kelias, laiko_intervalas, Pasirinkti_kanalai, Pasirinkti_kanalai_yra, Pasirinkti_kanalai_yra_Nr, Pasirinkti_ivykiai)'], ...
+        'cd(darbinis_kelias)', ['% KELIAS_=' KELIAS_ ], ['% NaujaRinkmena=' NaujaRinkmena],...
+        'T=laiko_intervalas;', 'K=Pasirinkti_kanalai;', 'C=Pasirinkti_kanalai_yra;', 'N=Pasirinkti_kanalai_yra_Nr;', 'E=Pasirinkti_ivykiai;', ...
+        '', com);
+    fclose(fileID);
+catch
+    T=laiko_intervalas;
+    K=Pasirinkti_kanalai;
+    C=Pasirinkti_kanalai_yra;
+    N=Pasirinkti_kanalai_yra_Nr;
+    E=Pasirinkti_ivykiai;
+    eval(com);
+    return;
+end;
+darbinis_kelias=pwd;
+evalstr= [ fja '(EEG, darbinis_kelias, laiko_intervalas, Pasirinkti_kanalai, Pasirinkti_kanalai_yra, Pasirinkti_kanalai_yra_Nr, Pasirinkti_ivykiai)' ];
+try
+    cd(tempdir);
+    eval(evalstr);
+catch err;
+    cd(darbinis_kelias);
+    rethrow(err);
+end;
+cd(darbinis_kelias);
+try delete(fjam); catch; end;
 
 
 function parinktis_irasyti(hObject, eventdata, handles, varargin)
