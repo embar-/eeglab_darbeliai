@@ -1833,6 +1833,12 @@ try
         'T=laiko_intervalas;', 'K=Pasirinkti_kanalai;', 'C=Pasirinkti_kanalai_yra;', 'N=Pasirinkti_kanalai_yra_Nr;', 'E=Pasirinkti_ivykiai;', ...
         '', com);
     fclose(fileID);
+    dir_ats=dir(fjam);
+    if dir_ats(1).bytes == 0;
+        vidine_klaida=[lokaliz('Diske truksta vietos!') ' ' tempdir];
+        warning(vidine_klaida);
+        error(vidine_klaida);
+    end;
 catch
     T=laiko_intervalas;
     K=Pasirinkti_kanalai;
