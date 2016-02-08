@@ -1849,7 +1849,7 @@ catch
     return;
 end;
 darbinis_kelias=pwd;
-evalstr= [ fja '(EEG, darbinis_kelias, laiko_intervalas, Pasirinkti_kanalai, Pasirinkti_kanalai_yra, Pasirinkti_kanalai_yra_Nr, Pasirinkti_ivykiai)' ];
+evalstr= [ 'EEG = ' fja '(EEG, darbinis_kelias, laiko_intervalas, Pasirinkti_kanalai, Pasirinkti_kanalai_yra, Pasirinkti_kanalai_yra_Nr, Pasirinkti_ivykiai) ;' ];
 try
     cd(tempdir);
     eval(evalstr);
