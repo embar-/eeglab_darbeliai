@@ -492,9 +492,16 @@ if isempty(getappdata(a,'zymeti'));
      set(kmk,'Enable','on');
 else set(kmk,'Enable','off');
 end;
-
-set(findobj(f,'tag','scrollAx','userdata','x'),'XLim',[min(EEG1.xmin,EEG2.xmin)-plotis1 plotis1+max(EEG1.xmax,EEG2.xmax)]);
-set(findobj(f,'tag','scrollAx','userdata','y'),'YLim',[0.1 max(EEG1.nbchan,EEG2.nbchan)+0.9]);
+XLim_tmp=[min(EEG1.xmin,EEG2.xmin) max(EEG1.xmax,EEG2.xmax)];
+if length(XLim_tmp) ~= 2 || isequal(XLim_tmp, [0 0]) || any(isnan(XLim_tmp));
+    XLim=[0 5];
+else
+    XLim=[min(EEG1.xmin,EEG2.xmin)-plotis1 plotis1+max(EEG1.xmax,EEG2.xmax)];
+end;
+YLim=[0.1 max(EEG1.nbchan,EEG2.nbchan)+0.9];
+set(a,'YLim',YLim);
+set(findobj(f,'tag','scrollAx','userdata','y'),'YLim',YLim);
+set(findobj(f,'tag','scrollAx','userdata','x'),'XLim',XLim);
 scrl_lin=findobj(findobj(f,'tag','scrollAx','userdata','x'),'tag','scrollDataLine');
 set(scrl_lin(1),'color','k','xdata',0.001*EEG1.times_nan,'ydata',max(EEG1.nbchan,EEG2.nbchan)*2/3+zeros(size(EEG1.times)));
 set(scrl_lin(2),'color','r','xdata',0.001*EEG2.times_nan,'ydata',max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(EEG2.times)));
@@ -596,6 +603,9 @@ if isempty(EEG1.times);
 else
     minx=0.001*min(EEG1.times_nan);
 end;
+if isempty(minx);
+    minx=0;
+end;
 scrl_lin1y=max(EEG1.nbchan,EEG2.nbchan)*2/3+zeros(size(EEG1.times));
 if isempty(getappdata(a,'zymeti'));
     scrl_lin2y=max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(EEG2.times));
@@ -612,7 +622,13 @@ scrollHandles = scrollplot2(a,'Axis','XY', ...
     'MinX', minx, ...
     'MaxX', minx+5);
 axes(asis_pradine);
-set(scrollHandles(1),'XLim',[min(EEG1.xmin,EEG2.xmin)-plotis1 plotis1+max(EEG1.xmax,EEG2.xmax)]);
+XLim_tmp=[min(EEG1.xmin,EEG2.xmin) max(EEG1.xmax,EEG2.xmax)];
+if length(XLim_tmp) ~= 2 || isequal(XLim_tmp, [0 0]) || any(isnan(XLim_tmp));
+    XLim=[0 5];
+else
+    XLim=[min(EEG1.xmin,EEG2.xmin)-plotis1 plotis1+max(EEG1.xmax,EEG2.xmax)];
+end;
+set(scrollHandles(1),'XLim',XLim);
 set(scrollHandles(2),'YLim',[0.1 max(EEG1.nbchan,EEG2.nbchan)+0.9]);
 scrl_lin=findobj(findobj(f,'tag','scrollAx','userdata','x'),'tag','scrollDataLine');
 if length(scrl_lin) > 1;
