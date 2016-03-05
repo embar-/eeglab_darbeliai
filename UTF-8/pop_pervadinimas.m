@@ -660,6 +660,7 @@ set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') KELIAS {pwd}]));
 cd(KELIAS);
 set(handles.edit_siulomi,'BackgroundColor',[1 1 1]);
+edit_siulomi_Callback(hObject, eventdata, handles);
 
 
 % --- Executes on key press with focus on edit_tikri and none of its controls.
@@ -1830,4 +1831,5 @@ set(handles.edit_siulomi,'TooltipString',a);
 set(handles.pushbutton_v2,'UserData',...
     unique([get(handles.pushbutton_v2,'UserData') {s} {a}]));
 set(handles.edit_siulomi,'BackgroundColor',[1 1 1]);
+edit_siulomi_Callback(hObject, eventdata, handles);
 
