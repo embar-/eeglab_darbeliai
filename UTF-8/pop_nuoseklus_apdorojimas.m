@@ -2530,6 +2530,9 @@ STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; CURRENTSET=[];
 EEG = eeg_checkset( EEG_darbinis );
 EEG_darbinis=[]; % nebereikalingas
 ICA_kiekis=length(EEG.reject.gcompreject);
+if ICA_kiekis == 0;
+    error(lokaliz('NKA nerasta'));
+end;
 [~,NaujaRinkmena_be_galunes,~]=fileparts(NaujaRinkmena);
 uzverti_EEG_perziuru_langus; %([ '.*' NaujaRinkmena_be_galunes '.*' ]);
 
