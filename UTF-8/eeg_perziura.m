@@ -93,10 +93,12 @@ if nargin > 2; % EEG2 - senas, raudonas
 else EEG2=[];
 end;
 
+reikia_ribozenkliu=~isempty(getappdata(a,'reikia_ribozenkliu'));
+
 if ~isempty(EEG1); disp('EEG1 perkeitimas...'); end;
-EEG1=perkeisk_eeg2(EEG1);
+EEG1=perkeisk_eeg2(EEG1, reikia_ribozenkliu);
 if ~isempty(EEG2); disp('EEG2 perkeitimas...'); end;
-EEG2=perkeisk_eeg2(EEG2);
+EEG2=perkeisk_eeg2(EEG2, reikia_ribozenkliu);
 
 sukeisk=0;
 if EEG1.trials == 1 && EEG2.trials > 1 && length(EEG2.times)/EEG2.srate/EEG2.trials < length(EEG1.times)/EEG1.srate ;
@@ -721,7 +723,7 @@ setappdata(a,'MouseInMainAxesFnc',{@eeg_perziura, 'zymejimas_tesiasi'});
 set(f,'WindowButtonUpFcn', 'eeg_perziura(''zymejimas_baigiasi'');');
 
 
-function EEG=perkeisk_eeg2(EEG)
+function EEG=perkeisk_eeg2(EEG, reikia_ribozenkliu)
 if isempty(EEG);
     [~, EEG] = pop_newset([],[],[]);
 end;
@@ -767,7 +769,6 @@ EEG.xmax=0.001*max(EEG.times); if isempty(EEG.xmax); EEG.xmax=0; end;
 if size(EEG.data,2) ~= length(EEG.times) && isfield(EEG, 'times_nan');
     EEG.data=EEG.data(:,~isnan(EEG.times_nan));
 end;
-reikia_ribozenkliu=~isempty(getappdata(gca,'reikia_ribozenkliu'));
 [ivLaikai, ivTipai, ivRodykles, ~, EEG.times_bnd] = eeg_ivykiu_latenc(EEG, 'boundary', ~reikia_ribozenkliu);
 for i=ivRodykles;
     EEG.event(i).laikas_ms=ivLaikai(i);
