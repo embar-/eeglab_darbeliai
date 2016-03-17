@@ -821,6 +821,7 @@ parentAx_pos=get(parentAx,'position');
 set(parentAx,'units',parentAx_unt);
 try
     LY=get(parentAx, 'YLim');
+    if LY(1) <= 0; LY(1)=0.01; end;
     LX=get(parentAx, 'XLim');
 catch; return;
 end;
