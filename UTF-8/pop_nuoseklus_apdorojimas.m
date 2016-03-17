@@ -2534,6 +2534,7 @@ if ICA_kiekis == 0;
     error(lokaliz('NKA nerasta'));
 end;
 [~,NaujaRinkmena_be_galunes,~]=fileparts(NaujaRinkmena);
+NaujaRinkmena_be_galunes_re=strrep(NaujaRinkmena_be_galunes,'+','\+');
 uzverti_EEG_perziuru_langus; %([ '.*' NaujaRinkmena_be_galunes '.*' ]);
 
 if ICA_zr_veiksena < 8;
@@ -2596,7 +2597,7 @@ else
     if ICA_zr_veiksena < 8;
         Palauk();
     end;
-    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
+    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes_re '.*' ]);
 end;
 
 EEG = eeg_checkset( EEG );
@@ -2663,7 +2664,7 @@ else
                 case { 1 lokaliz('Priimti') lokaliz('Yes') }
                     EEG = EEG_naujas;
                 case { 0 lokaliz('Atmesti') lokaliz('No') }
-                    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
+                    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes_re '.*' ]);
                     button = questdlg(...
                         [ lokaliz('Grazinti pradinius duomenis?') ], lokaliz('Grazinti pradinius duomenis?') , ...
                         lokaliz('Abort'), lokaliz('Yes'), lokaliz('Yes'));
@@ -2674,7 +2675,7 @@ else
                             return; % error(lokaliz('Nutraukta'));
                     end;
                 otherwise
-                    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes '.*' ]);
+                    uzverti_EEG_perziuru_langus([ '.*' NaujaRinkmena_be_galunes_re '.*' ]);
                     button = questdlg(...
                         [ lokaliz('Ikelti pradinius duomenis?') ], lokaliz('Ikelti pradinius duomenis?') , ...
                         lokaliz('No'), lokaliz('Reload'), lokaliz('Reload'));
