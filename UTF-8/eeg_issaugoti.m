@@ -1,4 +1,4 @@
-function RinkmenaSaugojimuiSuKeliu=eeg_issaugoti(EEG, KELIAS_SAUGOJIMUI, RINKMENA_SAUGOJIMUI)
+function eeg_issaugoti(EEG, KELIAS_SAUGOJIMUI, RINKMENA_SAUGOJIMUI)
 % (C) 2014-2016 Mindaugas Baranauskas
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,7 +71,7 @@ catch err;
             lokaliz('Atsisakyti'), vel, vel);
         switch button
             case vel;
-                RinkmenaSaugojimuiSuKeliu=eeg_issaugoti(EEG, KELIAS_SAUGOJIMUI, RINKMENA_SAUGOJIMUI);
+                eeg_issaugoti(EEG, KELIAS_SAUGOJIMUI, RINKMENA_SAUGOJIMUI);
             otherwise
                 return;
         end;
