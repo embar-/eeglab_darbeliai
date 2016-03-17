@@ -951,26 +951,6 @@ end;
 naujas_duomuo = duomuo;
 
 
-
-function [RinkmenaSaugojimuiSuKeliu]=Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,POAPLANKIS,RinkmenaSaugojimui)
-if isempty(EEG) ;
-    return ;
-end;
-if or(EEG.nbchan==0,isempty(EEG.data));
-    return ;
-end;
-NaujasKelias=fullfile(KELIAS_SAUGOJIMUI,POAPLANKIS);
-if ~isdir(NaujasKelias)
-    mkdir(NaujasKelias);
-end;
-NaujasKelias=Tikras_Kelias(NaujasKelias);
-RinkmenaSaugojimuiSuKeliu=fullfile(NaujasKelias, RinkmenaSaugojimui);
-disp(RinkmenaSaugojimuiSuKeliu);
-[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
-    'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
-    'savenew',RinkmenaSaugojimuiSuKeliu);
-
-
 % --- Executes on button press in pushbutton2.
 function pushbutton2_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton2 (see GCBO)
@@ -1901,7 +1881,7 @@ try
     cla;
     
     if get(handles.radiobutton_spektras,'Value');
-        ylabel('10 * log_{10}(\muV^{2}/Hz)','FontSize',10);
+        ylabel('10 * lg(\muV^{2}/Hz)','FontSize',10);
         set(handles.axes1,'XLim',str2num(get(handles.edit51,'String')));
         set(handles.axes1,'XTickMode', 'auto');
         set(handles.axes1,'XTickLabelMode', 'auto');
