@@ -1418,10 +1418,10 @@ for i=1:Pasirinktu_failu_N;
     try
         RinkmenaSaugojimuiSuKeliu=fullfile(KELIAS_SAUGOJIMUI, RinkmenaSaugojimui);
         TikrasSaugojimoKelias=fileparts(RinkmenaSaugojimuiSuKeliu);
-        if exist(TikrasSaugojimoKelias,'dir') ~= 7; try mkdir(TikrasSaugojimoKelias); catch err ; end; end;
-        [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
+        if exist(TikrasSaugojimoKelias,'dir') ~= 7; try mkdir(TikrasSaugojimoKelias); catch; end; end;
+        [~, ~, ~] = pop_newset(ALLEEG, EEG, 0, ...
             'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
-            'savenew',RinkmenaSaugojimuiSuKeliu);
+            'savenew', RinkmenaSaugojimuiSuKeliu);
         
         % ištrinti seną
         if and(~get(handles.checkbox2,'Value'),~strcmp(RinkmenaAtverimuiSuKeliu,RinkmenaSaugojimuiSuKeliu));
@@ -1471,19 +1471,6 @@ end;
 susildyk(hObject, eventdata, handles);
 uiresume(handles.figure1);
 pushbutton5_Callback(hObject, eventdata, handles);
-
-
-function [RinkmenaSaugojimuiSuKeliu]=Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,POAPLANKIS,RinkmenaSaugojimui)
-NaujasKelias=fullfile(KELIAS_SAUGOJIMUI,POAPLANKIS);
-if ~isdir(NaujasKelias)
-    mkdir(NaujasKelias);
-end;
-NaujasKelias=Tikras_Kelias(NaujasKelias);
-RinkmenaSaugojimuiSuKeliu=fullfile(NaujasKelias, RinkmenaSaugojimui);
-disp(RinkmenaSaugojimuiSuKeliu);
-[ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''),'savenew',RinkmenaSaugojimuiSuKeliu);
-%uiwait(gcf,1);
-
 
 
 function edit11_Callback(hObject, eventdata, handles)
