@@ -816,6 +816,10 @@ try
     EEG2=getappdata(parentAx,'EEG2');
 catch; return;
 end;
+if isempty(EEG1.data) && isempty(EEG2.data);
+    return;
+end;
+
 parentAx_unt=get(parentAx,'units');
 set(parentAx,'units','pixels');
 parentAx_pos=get(parentAx,'position');
