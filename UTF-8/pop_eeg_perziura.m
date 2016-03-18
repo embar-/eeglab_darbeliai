@@ -70,12 +70,15 @@ end;
 
 if isfield(g,'ICA');
     if g.ICA;
-        if isfield(EEG1,'icaact');
-            EEG1.data=EEG1.icaact;
-        else
+        if ~isfield(EEG1,'icaact');
             disp([lokaliz('nerasta') ': EEG.icaact']);
             return;
         end;
+        if isempty(EEG1.icaact);
+            disp([lokaliz('nerasta') ': EEG.icaact']);
+            return;
+        end;
+        EEG1.data=EEG1.icaact;
         EEG1.nbchan=size(EEG1.data,1);
         EEG1.chanlocs=[];
         EEG2=[]; % neleisti lyginti
