@@ -1,8 +1,15 @@
 %
 % Pakeitimai:
 % ------------------------
+%
+% v2016.03.19.1
+% + Nepavykus įrašyti *.set, pasiūlyti pamėginti vėl.
+% + Eksperimentinė pop_eeg_peržiūra parinktis rodyti 
+%   vieną (peržiūrai) arba dvi (palyginimui) rinkmenų naršykles.
+% ~ Labiau nugludintas eeg_peržiūra varikliukas.
+% ~ Kiti smulkūs pakeitimai.
+%
 % v2016.01.25.1
-% 
 % + EEG spektro įrašymo į TXT parinktis.
 % ~ EEG spektrinės galios skaičiavimo dialoge leisti 
 %   interpoliavimui pasirinkti nesančius kanalus.
@@ -63,7 +70,7 @@
 % ~ Nenulūžti rodant būsenos langelį, kai naudojama MATLAB R2015b.
 %
 % v2015.09.14.1
-% ~MATLAB R2015b nerodys beprasmių pranešimų.
+% ~ MATLAB R2015b nerodys beprasmių pranešimų.
 %
 % v2015.09.03.1
 % ~ Neepocuotų EEG įrašų lyginimo patobulinimai.

@@ -1,13 +1,5 @@
-Darbeliai v2016.01.25.1
+Darbeliai v2016.03.19.1
 
-+ EEG spektro įrašymo į TXT parinktis.
-+ Įspėti atveriant kelis peržiūros langus.
-+ Patobulinta epochuotų įrašų peržiūra.
-+ Patobulinta NKA komponenčių peržiūra.
-+ Kiti smulkūs pakeitimai.
++ LT: Jokių esminių pakeitimų, tik dar geriau nugludinta.
 
-+ Option for writing EEG spectrum into TXT.
-+ Confirm opening several scroll windows.
-+ More polished scroll of epoched data.
-+ More polished review of ICA data.
-+ Other minor changes.
++ EN: Polishing.
