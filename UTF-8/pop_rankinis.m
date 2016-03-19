@@ -735,7 +735,7 @@ for i=1:Pasirinktu_failu_N;
             end;
             Priesaga=get(handles.edit_priesaga,'String');
             [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[NaujaRinkmena Priesaga '.set'];
-            Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
+            eeg_issaugoti(EEG, fullfile(KELIAS_SAUGOJIMUI,Poaplankis), NaujaRinkmena);
             PaskRinkmIssaugKelias=Tikras_Kelias(fullfile(KELIAS_SAUGOJIMUI,Poaplankis));
             DarboPorcijaAtlikta = 1;
         %else   disp('Duomenys jau įrašyti');
@@ -936,33 +936,6 @@ while isnumeric(duomuo);
     duomuo=sprintf('%.12f',duomuo);
 end;
 naujas_duomuo = duomuo;
-
-
-
-function [RinkmenaSaugojimuiSuKeliu]=Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,POAPLANKIS,RinkmenaSaugojimui)
-if isempty(EEG) ;
-    return ;
-end;
-try
-    if or(EEG.nbchan==0,isempty(EEG.data));
-        return ;
-    end;
-    if EEG.pnts<=1;
-        return ;
-    end;
-    NaujasKelias=fullfile(KELIAS_SAUGOJIMUI,POAPLANKIS);
-    if ~isdir(NaujasKelias)
-        mkdir(NaujasKelias);
-    end;
-    NaujasKelias=Tikras_Kelias(NaujasKelias);
-    RinkmenaSaugojimuiSuKeliu=fullfile(NaujasKelias, RinkmenaSaugojimui);
-    disp(RinkmenaSaugojimuiSuKeliu);
-    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
-        'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
-        'savenew',RinkmenaSaugojimuiSuKeliu);
-catch err;
-    Pranesk_apie_klaida(err,lokaliz('Save file'),RinkmenaSaugojimui);
-end;
 
 
 % --- Executes on button press in pushbutton2.
@@ -1817,12 +1790,48 @@ function EEG=eval2(com,EEG, KELIAS_,NaujaRinkmena,laiko_intervalas,...
                         Pasirinkti_ivykiai,...
                         handles)
 % Leisti naudoti trumpinius:
-T=laiko_intervalas;
-K=Pasirinkti_kanalai;
-C=Pasirinkti_kanalai_yra;
-N=Pasirinkti_kanalai_yra_Nr;
-E=Pasirinkti_ivykiai;
-eval(com);
+nesikartoja=0;
+while ~nesikartoja;
+    fjam = [ tempname '.m' ];
+    if ~exist(fjam, 'file');
+        nesikartoja=1;
+    end;
+end;
+[~,fja,~]=fileparts(fjam);
+try
+    fileID = fopen(fjam, 'w');
+    fprintf(fileID, '%s\n', ...
+        [ 'function EEG='  fja '(EEG, darbinis_kelias, laiko_intervalas, Pasirinkti_kanalai, Pasirinkti_kanalai_yra, Pasirinkti_kanalai_yra_Nr, Pasirinkti_ivykiai)'], ...
+        'cd(darbinis_kelias)', ['% KELIAS_=' KELIAS_ ], ['% NaujaRinkmena=' NaujaRinkmena],...
+        'T=laiko_intervalas;', 'K=Pasirinkti_kanalai;', 'C=Pasirinkti_kanalai_yra;', 'N=Pasirinkti_kanalai_yra_Nr;', 'E=Pasirinkti_ivykiai;', ...
+        '', com);
+    fclose(fileID);
+    dir_ats=dir(fjam);
+    if dir_ats(1).bytes == 0;
+        vidine_klaida=[lokaliz('Diske truksta vietos!') ' ' tempdir];
+        warning(vidine_klaida);
+        error(vidine_klaida);
+    end;
+catch
+    T=laiko_intervalas;
+    K=Pasirinkti_kanalai;
+    C=Pasirinkti_kanalai_yra;
+    N=Pasirinkti_kanalai_yra_Nr;
+    E=Pasirinkti_ivykiai;
+    eval(com);
+    return;
+end;
+darbinis_kelias=pwd;
+evalstr= [ 'EEG = ' fja '(EEG, darbinis_kelias, laiko_intervalas, Pasirinkti_kanalai, Pasirinkti_kanalai_yra, Pasirinkti_kanalai_yra_Nr, Pasirinkti_ivykiai) ;' ];
+try
+    cd(tempdir);
+    eval(evalstr);
+catch err;
+    cd(darbinis_kelias);
+    rethrow(err);
+end;
+cd(darbinis_kelias);
+try delete(fjam); catch; end;
 
 
 function parinktis_irasyti(hObject, eventdata, handles, varargin)

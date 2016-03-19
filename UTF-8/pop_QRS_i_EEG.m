@@ -896,7 +896,7 @@ for i=1:Pasirinktu_failu_N;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_QRS_aptikimas_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
                 if get(handles.checkbox_QRS_aptikimas_,'Value') == 1 ;
-                    Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
+                    eeg_issaugoti(EEG, fullfile(KELIAS_SAUGOJIMUI,Poaplankis), NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
                     SaugomoNr = SaugomoNr +1;
@@ -999,7 +999,7 @@ for i=1:Pasirinktu_failu_N;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_QRS_korekcija_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
                 if get(handles.checkbox_QRS_korekcija_,'Value') == 1 ;
-                    Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
+                    eeg_issaugoti(EEG, fullfile(KELIAS_SAUGOJIMUI,Poaplankis), NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
                     SaugomoNr = SaugomoNr +1;
@@ -1183,7 +1183,7 @@ for i=1:Pasirinktu_failu_N;
                 Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_trint_EKG_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
                 if get(handles.checkbox_trint_EKG_,'Value') == 1 ;
-                    Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
+                    eeg_issaugoti(EEG, fullfile(KELIAS_SAUGOJIMUI,Poaplankis), NaujaRinkmena);
                     PaskutinioIssaugotoDarboNr=DarboNr;
                     DarboPorcijaAtlikta = 1;
                     SaugomoNr = SaugomoNr +1;
@@ -1216,7 +1216,7 @@ for i=1:Pasirinktu_failu_N;
         if isempty(PaskRinkmIssaugKelias);
             Poaplankis='.';
             Priesaga='';
-            Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,Poaplankis,NaujaRinkmena);
+            eeg_issaugoti(EEG, fullfile(KELIAS_SAUGOJIMUI,Poaplankis), NaujaRinkmena);
             PaskRinkmIssaugKelias=Tikras_Kelias(fullfile(KELIAS_SAUGOJIMUI,Poaplankis));
             DarboPorcijaAtlikta = 1;
             %else   disp('Duomenys jau įrašyti');
@@ -1419,33 +1419,6 @@ while isnumeric(duomuo);
     duomuo=sprintf('%.12f',duomuo);
 end;
 naujas_duomuo = duomuo;
-
-
-
-function [RinkmenaSaugojimuiSuKeliu]=Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,POAPLANKIS,RinkmenaSaugojimui)
-if isempty(EEG) ;
-    return ;
-end;
-try
-    if or(EEG.nbchan==0,isempty(EEG.data));
-        return ;
-    end;
-    if EEG.pnts<=1;
-        return ;
-    end;
-    NaujasKelias=fullfile(KELIAS_SAUGOJIMUI,POAPLANKIS);
-    if ~isdir(NaujasKelias)
-        mkdir(NaujasKelias);
-    end;
-    NaujasKelias=Tikras_Kelias(NaujasKelias);
-    RinkmenaSaugojimuiSuKeliu=fullfile(NaujasKelias, RinkmenaSaugojimui);
-    disp(RinkmenaSaugojimuiSuKeliu);
-    [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ...
-        'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
-        'savenew',RinkmenaSaugojimuiSuKeliu);
-catch err;
-    Pranesk_apie_klaida(err,lokaliz('Save file'),RinkmenaSaugojimui);
-end;
 
 
 % --- Executes on button press in pushbutton2.

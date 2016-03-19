@@ -2385,7 +2385,7 @@ else
                   2 'RRI_laikai' 'RRI laikai' 'QRS_laikai' 'QRS laikai' 'laikai'}
                 dlmwrite(fullfile(p,f), num2cell(d), 'precision',t, 'newline', 'pc') ;
             case {3 'EEGLAB'}
-                [ALLEEG, EEG] = pop_newset([],[],[]);
+                [~, EEG] = pop_newset([],[],[]);
                 EEG.chanlocs.labels='EKG';
                 EEG.data=handles.EKG';
                 EEG.times=1000*handles.EKG_laikai';
@@ -2398,7 +2398,7 @@ else
                     'latency',num2cell(0.001*handles.EKG_Hz*R_laikai'),...
                     'urevent',num2cell(1:length(R_laikai)));
                 EEG = eeg_checkset(EEG);
-                pop_newset(ALLEEG, EEG, 0, 'setname', f, 'savenew', fullfile(p,f));
+                eeg_issaugoti(EEG, p, f);
         end;
     catch err;
         Pranesk_apie_klaida(err,mfilename,f,1,1);

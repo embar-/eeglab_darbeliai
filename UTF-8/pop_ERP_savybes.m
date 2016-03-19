@@ -208,7 +208,7 @@ atnaujink_rodomus_failus(hObject, eventdata, handles);
 
 
 % reikšmės numatytosios
-set(handles.checkbox57,'Value',1);%Peržiūra
+set(handles.checkbox57,'Value',0);%Peržiūra
 set(handles.checkbox58,'Enable','on'); % Failų vidurkis
 set(handles.checkbox58,'Visible','on');
 set(handles.checkbox59,'Value',1);%Kanalų vidurkis
@@ -1498,28 +1498,6 @@ while isnumeric(duomuo);
     duomuo=sprintf('%.12f',duomuo);
 end;
 naujas_duomuo = duomuo;
-
-
-
-function [RinkmenaSaugojimuiSuKeliu]=Issaugoti(ALLEEG,EEG,KELIAS_SAUGOJIMUI,POAPLANKIS,RinkmenaSaugojimui)
-if isempty(EEG) ;
-    return ;
-end;
-if or(EEG.nbchan==0,isempty(EEG.data));
-    return ;
-end;
-NaujasKelias=fullfile(KELIAS_SAUGOJIMUI,POAPLANKIS);
-if ~isdir(NaujasKelias)
-    mkdir(NaujasKelias);
-end;
-NaujasKelias=Tikras_Kelias(NaujasKelias);
-RinkmenaSaugojimuiSuKeliu=fullfile(NaujasKelias, RinkmenaSaugojimui);
-disp(RinkmenaSaugojimuiSuKeliu);
-[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0, ... 
-   'setname', regexprep(regexprep(RinkmenaSaugojimui,'.cnt$',''),'.set$',''), ...
-   'savenew',RinkmenaSaugojimuiSuKeliu);
-
-
 
 
 % --- Executes on button press in pushbutton2.

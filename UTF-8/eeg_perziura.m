@@ -93,10 +93,12 @@ if nargin > 2; % EEG2 - senas, raudonas
 else EEG2=[];
 end;
 
+reikia_ribozenkliu=~isempty(getappdata(a,'reikia_ribozenkliu'));
+
 if ~isempty(EEG1); disp('EEG1 perkeitimas...'); end;
-EEG1=perkeisk_eeg2(EEG1);
+EEG1=perkeisk_eeg2(EEG1, reikia_ribozenkliu);
 if ~isempty(EEG2); disp('EEG2 perkeitimas...'); end;
-EEG2=perkeisk_eeg2(EEG2);
+EEG2=perkeisk_eeg2(EEG2, reikia_ribozenkliu);
 
 sukeisk=0;
 if EEG1.trials == 1 && EEG2.trials > 1 && length(EEG2.times)/EEG2.srate/EEG2.trials < length(EEG1.times)/EEG1.srate ;
@@ -450,7 +452,16 @@ end;
 
 if nargin == 0;
     [EEG1,EEG2]=perkeisk_eeg(a, getappdata(a,'EEG1'), getappdata(a,'EEG2'));
-else    
+else
+    try EEG1=varargin{1};
+        EEG2=varargin{2};
+        if isequal(EEG1.times,EEG2.times);
+            setappdata(a,'reikia_ribozenkliu',1);
+        else
+            setappdata(a,'reikia_ribozenkliu',[]);
+        end;
+    catch; setappdata(a,'reikia_ribozenkliu',1);
+    end;
     [EEG1,EEG2]=perkeisk_eeg(a, varargin{:});
 end;
 setappdata(a,'EEG1',EEG1);
@@ -492,12 +503,21 @@ if isempty(getappdata(a,'zymeti'));
      set(kmk,'Enable','on');
 else set(kmk,'Enable','off');
 end;
-
-set(findobj(f,'tag','scrollAx','userdata','x'),'XLim',[min(EEG1.xmin,EEG2.xmin)-plotis1 plotis1+max(EEG1.xmax,EEG2.xmax)]);
-set(findobj(f,'tag','scrollAx','userdata','y'),'YLim',[0.1 max(EEG1.nbchan,EEG2.nbchan)+0.9]);
-scrl_lin=findobj(findobj(f,'tag','scrollAx','userdata','x'),'tag','scrollDataLine');
-set(scrl_lin(1),'color','k','xdata',0.001*EEG1.times_nan,'ydata',max(EEG1.nbchan,EEG2.nbchan)*2/3+zeros(size(EEG1.times)));
-set(scrl_lin(2),'color','r','xdata',0.001*EEG2.times_nan,'ydata',max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(EEG2.times)));
+XLim_tmp=[min(EEG1.xmin,EEG2.xmin) max(EEG1.xmax,EEG2.xmax)];
+if length(XLim_tmp) ~= 2 || isequal(XLim_tmp, [0 0]) || any(isnan(XLim_tmp));
+    XLim=[0 5];
+else
+    XLim=[min(EEG1.xmin,EEG2.xmin)-plotis1 plotis1+max(EEG1.xmax,EEG2.xmax)];
+end;
+YLim=[0.1 max(EEG1.nbchan,EEG2.nbchan)+0.9];
+set(a,'YLim',YLim);
+set(findobj(f,'tag','scrollAx','userdata','y'),'YLim',YLim);
+set(findobj(f,'tag','scrollAx','userdata','x'),'XLim',XLim);
+scrl_a_x=findobj(f,'tag','scrollAx','userdata','x');
+set(scrl_a_x,'YLim',[0 1]);
+scrl_lin=findobj(scrl_a_x,'tag','scrollDataLine');
+set(scrl_lin(1),'color','k','xdata',0.001*EEG1.times_nan,'ydata',2/3+zeros(size(EEG1.times)));
+set(scrl_lin(2),'color','r','xdata',0.001*EEG2.times_nan,'ydata',1/2+zeros(size(EEG2.times)));
 atnaujinti=1; try atnaujinti=g(1).atnaujinti; catch; end;
 
 
@@ -596,13 +616,17 @@ if isempty(EEG1.times);
 else
     minx=0.001*min(EEG1.times_nan);
 end;
-scrl_lin1y=max(EEG1.nbchan,EEG2.nbchan)*2/3+zeros(size(EEG1.times));
+if isempty(minx);
+    minx=0;
+end;
+%max(EEG1.nbchan,EEG2.nbchan)
+scrl_lin1y=2/3+zeros(size(EEG1.times));
 if isempty(getappdata(a,'zymeti'));
-    scrl_lin2y=max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(EEG2.times));
+    scrl_lin2y=1/2+zeros(size(EEG2.times));
 else
     n=find(isnan(EEG1.times-EEG1.times_nan)-isnan(EEG1.times));
     scrl_lin2y=nan(size(EEG2.times_nan));
-    scrl_lin2y(n)=max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(n));
+    scrl_lin2y(n)=1/2+zeros(size(n));
 end;
 asis_pradine=gca;
 axes(a);
@@ -612,9 +636,17 @@ scrollHandles = scrollplot2(a,'Axis','XY', ...
     'MinX', minx, ...
     'MaxX', minx+5);
 axes(asis_pradine);
-set(scrollHandles(1),'XLim',[min(EEG1.xmin,EEG2.xmin)-plotis1 plotis1+max(EEG1.xmax,EEG2.xmax)]);
+XLim_tmp=[min(EEG1.xmin,EEG2.xmin) max(EEG1.xmax,EEG2.xmax)];
+if length(XLim_tmp) ~= 2 || isequal(XLim_tmp, [0 0]) || any(isnan(XLim_tmp));
+    XLim=[0 5];
+else
+    XLim=[min(EEG1.xmin,EEG2.xmin)-plotis1 plotis1+max(EEG1.xmax,EEG2.xmax)];
+end;
+set(scrollHandles(1),'XLim',XLim);
 set(scrollHandles(2),'YLim',[0.1 max(EEG1.nbchan,EEG2.nbchan)+0.9]);
-scrl_lin=findobj(findobj(f,'tag','scrollAx','userdata','x'),'tag','scrollDataLine');
+scrl_a_x=findobj(f,'tag','scrollAx','userdata','x');
+set(scrl_a_x,'YLim',[0 1]);
+scrl_lin=findobj(scrl_a_x,'tag','scrollDataLine');
 if length(scrl_lin) > 1;
     set(scrl_lin(1),'color','k','xdata',0.001*EEG1.times_nan,'ydata',scrl_lin1y,'hittest','off');
     set(scrl_lin(2),'color','r','xdata',0.001*EEG2.times_nan,'ydata',scrl_lin2y,'hittest','off');
@@ -705,7 +737,7 @@ setappdata(a,'MouseInMainAxesFnc',{@eeg_perziura, 'zymejimas_tesiasi'});
 set(f,'WindowButtonUpFcn', 'eeg_perziura(''zymejimas_baigiasi'');');
 
 
-function EEG=perkeisk_eeg2(EEG)
+function EEG=perkeisk_eeg2(EEG, reikia_ribozenkliu)
 if isempty(EEG);
     [~, EEG] = pop_newset([],[],[]);
 end;
@@ -751,7 +783,6 @@ EEG.xmax=0.001*max(EEG.times); if isempty(EEG.xmax); EEG.xmax=0; end;
 if size(EEG.data,2) ~= length(EEG.times) && isfield(EEG, 'times_nan');
     EEG.data=EEG.data(:,~isnan(EEG.times_nan));
 end;
-reikia_ribozenkliu=~isempty(getappdata(gca,'reikia_ribozenkliu'));
 [ivLaikai, ivTipai, ivRodykles, ~, EEG.times_bnd] = eeg_ivykiu_latenc(EEG, 'boundary', ~reikia_ribozenkliu);
 for i=ivRodykles;
     EEG.event(i).laikas_ms=ivLaikai(i);
@@ -799,12 +830,22 @@ try
     EEG2=getappdata(parentAx,'EEG2');
 catch; return;
 end;
+if isempty(EEG1.data) && isempty(EEG2.data);
+    for i=1:2;
+    set(getappdata(parentAx,['grafikas' num2str(i)]),'XData', [], 'YData', []);
+    delete(findobj(parentAx,'tag',['zymekliaiA' num2str(i)]));
+    delete(findobj(parentAx,'tag',['zymekliaiB' num2str(i)]));
+    end;
+    return;
+end;
+
 parentAx_unt=get(parentAx,'units');
 set(parentAx,'units','pixels');
 parentAx_pos=get(parentAx,'position');
 set(parentAx,'units',parentAx_unt);
 try
     LY=get(parentAx, 'YLim');
+    if LY(1) <= 0; LY(1)=0.01; end;
     LX=get(parentAx, 'XLim');
 catch; return;
 end;
@@ -931,9 +972,9 @@ for i=[1 2];
     end;
     grafikas=getappdata(parentAx,['grafikas' num2str(i)]);
     set(grafikas,'XData', EEG.grafikoX, 'YData', EEG.grafikoY);
+    delete(findobj(parentAx,'tag',['zymekliaiA' num2str(i)]));
+    delete(findobj(parentAx,'tag',['zymekliaiB' num2str(i)]));
     if isfield(EEG.event, 'laikas_ms') %&& ~and( ~isempty(getappdata(parentAx,'zymeti')) , i == 1 );
-        delete(findobj(parentAx,'tag',['zymekliaiA' num2str(i)]));
-        delete(findobj(parentAx,'tag',['zymekliaiB' num2str(i)]));
         zi=find([EEG.event(find([EEG.event.laikas_ms] <= LX(2)*1000)).laikas_ms] >= LX(1)*1000);
         zx=0.001 * [EEG.event(zi).laikas_ms]'; zx_=[zx zx zx]'; zx_=zx_(:);
         if (isequal(i,1) - 0.5) * (0.5 - zymekliu_sukeitimas) > 0 ;
