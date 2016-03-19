@@ -452,7 +452,16 @@ end;
 
 if nargin == 0;
     [EEG1,EEG2]=perkeisk_eeg(a, getappdata(a,'EEG1'), getappdata(a,'EEG2'));
-else    
+else
+    try EEG1=varargin{1};
+        EEG2=varargin{2};
+        if isequal(EEG1.times,EEG2.times);
+            setappdata(a,'reikia_ribozenkliu',1);
+        else
+            setappdata(a,'reikia_ribozenkliu',[]);
+        end;
+    catch; setappdata(a,'reikia_ribozenkliu',1);
+    end;
     [EEG1,EEG2]=perkeisk_eeg(a, varargin{:});
 end;
 setappdata(a,'EEG1',EEG1);
