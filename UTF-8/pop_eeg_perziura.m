@@ -5,8 +5,8 @@ function pop_eeg_perziura(varargin)
 % pop_eeg_perziura(EEG1, EEG2, 'title', 'Savitas lango pavadinimas')
 % pop_eeg_perziura(EEG1, [], 'ICA', 1) - rodyti ne kanalo signalą, bet NKA kompoenentes
 % pop_eeg_perziura(EEG1, EEG2, 'zymeti', 1) - eksperimentinis laiko atkarpų žymėjimas
-% pop_eeg_perziura(EEG1, EEG2, 'narsyti', 1) - eksperimentinė rinkmenų naršyklė šone (vieno įkeltino įrašo pasirinkimas)
-% pop_eeg_perziura(EEG1, EEG2, 'narsyti', 2) - dvi eksperimentinės rinkmenų naršyklės šone (dviejų palygintinų įrašų pasirinkimas)
+% pop_eeg_perziura('narsyti', 1) - eksperimentinė rinkmenų naršyklė šone (vieno įkeltino įrašo pasirinkimas)
+% pop_eeg_perziura('narsyti', 2) - dvi eksperimentinės rinkmenų naršyklės šone (dviejų palygintinų įrašų pasirinkimas)
 %
 % (C) 2015-2016 Mindaugas Baranauskas
 
@@ -236,7 +236,11 @@ else
 end;
 
 eeg_perziura('perkurti', EEG, EEG2, 'f', handles.figure1, 'a', handles.axes1);
-set(handles.figure1,'Name',Rinkmena);
+if isempty(Rinkmena2);
+    set(handles.figure1,'Name',Rinkmena);
+else
+    set(handles.figure1,'Name', [Rinkmena ' + ' Rinkmena2]);
+end;
 
 function listbox2_Callback(hObject, eventdata, handles)
 id2=get(handles.listbox2,'Value');
@@ -248,8 +252,9 @@ Rinkmena2=Rinkmenos2{id2};
 if isempty(EEG2); return; end;
 
 id=get(handles.listbox1,'Value');
-if isempty(id); 
-    EEG=[]; 
+if isempty(id);
+    EEG=[];
+    Rinkmena='';
 else
     Kelias=get(handles.edit1,'String');
     Rinkmenos=get(handles.listbox1,'String');
@@ -258,7 +263,7 @@ else
 end;
 
 eeg_perziura('perkurti', EEG, EEG2, 'f', handles.figure1, 'a', handles.axes1);
-set(handles.figure1,'Name', [Rinkmena '+' Rinkmena2]);
+set(handles.figure1,'Name', [Rinkmena ' + ' Rinkmena2]);
 
 function pushbutton_v1_Callback(hObject, eventdata, handles)
 i=get(handles.edit1,'String'); % įkėlimo
