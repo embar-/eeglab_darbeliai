@@ -5,7 +5,8 @@ function pop_eeg_perziura(varargin)
 % pop_eeg_perziura(EEG1, EEG2, 'title', 'Savitas lango pavadinimas')
 % pop_eeg_perziura(EEG1, [], 'ICA', 1) - rodyti ne kanalo signalą, bet NKA kompoenentes
 % pop_eeg_perziura(EEG1, EEG2, 'zymeti', 1) - eksperimentinis laiko atkarpų žymėjimas
-% pop_eeg_perziura(EEG1, EEG2, 'narsyti', 1) - eksperimentinis rinkmenų naršymo langelis
+% pop_eeg_perziura(EEG1, EEG2, 'narsyti', 1) - eksperimentinė rinkmenų naršyklė šone (vieno įkeltino įrašo pasirinkimas)
+% pop_eeg_perziura(EEG1, EEG2, 'narsyti', 2) - dvi eksperimentinės rinkmenų naršyklės šone (dviejų palygintinų įrašų pasirinkimas)
 %
 % (C) 2015-2016 Mindaugas Baranauskas
 

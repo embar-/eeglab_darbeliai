@@ -831,6 +831,11 @@ try
 catch; return;
 end;
 if isempty(EEG1.data) && isempty(EEG2.data);
+    for i=1:2;
+    set(getappdata(parentAx,['grafikas' num2str(i)]),'XData', [], 'YData', []);
+    delete(findobj(parentAx,'tag',['zymekliaiA' num2str(i)]));
+    delete(findobj(parentAx,'tag',['zymekliaiB' num2str(i)]));
+    end;
     return;
 end;
 
