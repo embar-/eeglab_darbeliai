@@ -513,9 +513,11 @@ YLim=[0.1 max(EEG1.nbchan,EEG2.nbchan)+0.9];
 set(a,'YLim',YLim);
 set(findobj(f,'tag','scrollAx','userdata','y'),'YLim',YLim);
 set(findobj(f,'tag','scrollAx','userdata','x'),'XLim',XLim);
-scrl_lin=findobj(findobj(f,'tag','scrollAx','userdata','x'),'tag','scrollDataLine');
-set(scrl_lin(1),'color','k','xdata',0.001*EEG1.times_nan,'ydata',max(EEG1.nbchan,EEG2.nbchan)*2/3+zeros(size(EEG1.times)));
-set(scrl_lin(2),'color','r','xdata',0.001*EEG2.times_nan,'ydata',max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(EEG2.times)));
+scrl_a_x=findobj(f,'tag','scrollAx','userdata','x');
+set(scrl_a_x,'YLim',[0 1]);
+scrl_lin=findobj(scrl_a_x,'tag','scrollDataLine');
+set(scrl_lin(1),'color','k','xdata',0.001*EEG1.times_nan,'ydata',2/3+zeros(size(EEG1.times)));
+set(scrl_lin(2),'color','r','xdata',0.001*EEG2.times_nan,'ydata',1/2+zeros(size(EEG2.times)));
 atnaujinti=1; try atnaujinti=g(1).atnaujinti; catch; end;
 
 
@@ -617,13 +619,14 @@ end;
 if isempty(minx);
     minx=0;
 end;
-scrl_lin1y=max(EEG1.nbchan,EEG2.nbchan)*2/3+zeros(size(EEG1.times));
+%max(EEG1.nbchan,EEG2.nbchan)
+scrl_lin1y=2/3+zeros(size(EEG1.times));
 if isempty(getappdata(a,'zymeti'));
-    scrl_lin2y=max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(EEG2.times));
+    scrl_lin2y=1/2+zeros(size(EEG2.times));
 else
     n=find(isnan(EEG1.times-EEG1.times_nan)-isnan(EEG1.times));
     scrl_lin2y=nan(size(EEG2.times_nan));
-    scrl_lin2y(n)=max(EEG1.nbchan,EEG2.nbchan)*1/2+zeros(size(n));
+    scrl_lin2y(n)=1/2+zeros(size(n));
 end;
 asis_pradine=gca;
 axes(a);
@@ -641,7 +644,9 @@ else
 end;
 set(scrollHandles(1),'XLim',XLim);
 set(scrollHandles(2),'YLim',[0.1 max(EEG1.nbchan,EEG2.nbchan)+0.9]);
-scrl_lin=findobj(findobj(f,'tag','scrollAx','userdata','x'),'tag','scrollDataLine');
+scrl_a_x=findobj(f,'tag','scrollAx','userdata','x');
+set(scrl_a_x,'YLim',[0 1]);
+scrl_lin=findobj(scrl_a_x,'tag','scrollDataLine');
 if length(scrl_lin) > 1;
     set(scrl_lin(1),'color','k','xdata',0.001*EEG1.times_nan,'ydata',scrl_lin1y,'hittest','off');
     set(scrl_lin(2),'color','r','xdata',0.001*EEG2.times_nan,'ydata',scrl_lin2y,'hittest','off');
