@@ -1367,24 +1367,25 @@ end;
 STUDY = []; CURRENTSTUDY = 0;
 
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko
-tic
-
+tici=tic;
+f=statusbar(get(handles.pushbutton1,'String'));
+statusbar('off',f);
 
 for i=1:Pasirinktu_failu_N;
     Rinkmena=Pasirinkti_failu_pavadinimai{i};
     [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(KELIAS,Rinkmena);
     RinkmenaAtverimuiSuKeliu=fullfile(KELIAS_, Rinkmena_);
+    % statusbar
+    tok=toc(tici);
+    p=i/Pasirinktu_failu_N;
+    if and(tok>1,p<0.5);
+        statusbar('on',f);
+    end;
+    if isempty(statusbar(p,f));
+        break;
+    end;
     fprintf('\n === %s %d/%d (%.2f%%) ===\n%s\n', lokaliz('Opened file'), i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100, RinkmenaAtverimuiSuKeliu);
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
-    %SaugomoNr=1+str2num(get(handles.text_atlikta_darbu,'String'));
-    %DarboNr=0;
-    %DarboPorcijaAtlikta=0;
-    %PaskutinioIssaugotoDarboNr=0;
-    %PaskRinkmIssaugKelias=pwd;
-    
-    %guidata(hObject, handles);
-    
-    %Darbo_eigos_busena(handles, 'Įkeliami duomenys...', DarboNr, i, Pasirinktu_failu_N);
     
     % Ikelti
     [ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
@@ -1447,9 +1448,13 @@ end;
  % Parodyk, kiek laiko uztruko
     disp(' ');
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
-    toc ;
-    disp(['Atlikta']);
+    toc(tici);
+    disp(lokaliz('Done'));
     
+if ishandle(f)
+    delete(f);
+end;
+
 % Grąžinti senuosius EEGLAB kintamuosius ir atnaujinti langą
     %if atnaujinti_eeglab;
         try
