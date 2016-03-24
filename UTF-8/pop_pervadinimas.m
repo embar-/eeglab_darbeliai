@@ -1377,7 +1377,7 @@ for i=1:Pasirinktu_failu_N;
     RinkmenaAtverimuiSuKeliu=fullfile(KELIAS_, Rinkmena_);
     % statusbar
     tok=toc(tici);
-    p=i/Pasirinktu_failu_N;
+    p=(i-1)/Pasirinktu_failu_N;
     if and(tok>1,p<0.5);
         statusbar('on',f);
     end;
