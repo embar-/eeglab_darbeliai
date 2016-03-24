@@ -106,6 +106,7 @@ guidata(hObject, handles);
 switch darbas
     case {'pop_pervadinimas'}
         try eval([ darbas '(''edit4_Callback'',hObject, eventdata, handles);' ]) ; catch; end;
+        try eval([ darbas '(''checkbox2_Callback'',hObject, eventdata, handles);' ]) ; catch; end;
     case {'pop_nuoseklus_apdorojimas'}
         try eval([ darbas '(''popupmenu12_Callback'',hObject, eventdata, handles);' ]) ; catch; end;
         if ar_senesne_versija(versija_par,'Darbeliai v2015.10.05.3');
