@@ -3895,11 +3895,11 @@ set(handles.text47,  'String',        pradiniai_kanalai3);
 ERP_perziura(hObject, eventdata, handles);
 
 
-function spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveisklai, pavadinimas, xlim, ylim)
+function spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveikslai, pavadinimas, xlim, ylim)
     set(handles.pushbutton14, 'UserData', kanalai);
     set(handles.text47,'TooltipString', pavadinimas);
     ERP_perziura(hObject, eventdata, handles);
-    setappdata(handles.axes1, 'spausdinti', paveisklai);
+    setappdata(handles.axes1, 'spausdinti', paveikslai);
     if ~isempty(xlim);
         set(handles.axes1, 'XLim', xlim);
     end;
