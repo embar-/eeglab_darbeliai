@@ -3879,13 +3879,13 @@ paveikslu_id=listdlg('OKString',lokaliz('OK'),'CancelString',lokaliz('Cancel'), 
     'SelectionMode','multiple','ListString',paveikslu_sar,'InitialValue',3);
 if ~isempty(paveikslu_id);
     paveikslu_spausd={'-dbmp' '-djpeg' '-dpng' '-dtiff' '-depsc' '-deps' '-dpdf' '-dpsc' '-dps' '-dsvg'};
-    paveisklai=paveikslu_spausd(paveikslu_id);
+    paveikslai=paveikslu_spausd(paveikslu_id);
     set(handles.checkbox57, 'Value', 1);
-    spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveisklai, lokaliz('all'), [], []);
+    spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveikslai, lokaliz('all'), [], []);
     xlim=get(handles.axes1, 'XLim');
     ylim=get(handles.axes1, 'YLim');
     for i=1:length(kanalai);
-        spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai(i), paveisklai, kanalai{i}, xlim, ylim);
+        spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai(i), paveikslai, kanalai{i}, xlim, ylim);
     end;
     set(handles.checkbox57, 'Value', 0); % pradinis_rodymas
 end;
