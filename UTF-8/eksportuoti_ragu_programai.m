@@ -327,7 +327,7 @@ for i=1:length(ALLEEG) ;
         for index = 1:x_n;
             lbl=TMPEEG.chanlocs(index).labels;
             nr=find(ismember(ChanLocs,lbl));
-            disp({index lbl '>' nr});
+            % disp({index lbl '>' nr});
             if length(nr) == 1;
                 lentele(nr,:)=x(index,:);
             else
