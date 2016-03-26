@@ -866,7 +866,7 @@ for i=1:Pasirinktu_failu_N;
         else
             EEGTMP = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_,'loadmode','info');
             EEGTMP.file=Rinkmena;
-			if isempty(EEGTMP.epoch);
+            if isempty(EEGTMP.epoch);
 			    [ALLEEGTMP, EEGTMP, ~] = eeg_store(ALLEEGTMP, EEGTMP,i);
 				set(handles.listbox1,'UserData',ALLEEGTMP); 
                 error(lokaliz('Not epoched data!'));
@@ -3858,7 +3858,7 @@ spausdinti=getappdata(handles.axes1, 'spausdinti');
 if ~isempty(spausdinti);
     pavad=fullfile(get(handles.edit2,'String'), getappdata(handles.axes1, 'pavadinimas'));
     for i=1:length(spausdinti);
-        try print(h2,pavad,spausdinti{i}); catch err; Pranesk_apie_klaida(err,0,0) ;end;
+        try print(h2,pavad,spausdinti{i}); catch err; Pranesk_apie_klaida(err,'','',0) ;end;
     end;
     %pause(1);
     delete(h2);
