@@ -3856,9 +3856,9 @@ set(h2,'Visible','on');
 drawnow;
 spausdinti=getappdata(handles.axes1, 'spausdinti');
 if ~isempty(spausdinti);
-    pavad=fullfile(get(handles.edit2,'String'), get(handles.text47,'TooltipString'));
+    pavad=fullfile(get(handles.edit2,'String'), getappdata(handles.axes1, 'pavadinimas'));
     for i=1:length(spausdinti);
-        print(h2,pavad,spausdinti{i});
+        try print(h2,pavad,spausdinti{i}); catch err; Pranesk_apie_klaida(err,0,0) ;end;
     end;
     %pause(1);
     delete(h2);
@@ -3867,13 +3867,29 @@ end;
 
 
 function spausdinimas_pagal_kanalus(hObject, eventdata, handles)
-%pradinis_rodymas=get(handles.checkbox57, 'Value');
-pradiniai_kanalai1=get(handles.pushbutton14, 'UserData');
-pradiniai_kanalai2=get(handles.text47, 'TooltipString');
-pradiniai_kanalai3=get(handles.text47, 'String');
+spausdinimas_pagal(hObject, eventdata, handles, 'kanalai')
+
+function spausdinimas_pagal_tiriamuosius(hObject, eventdata, handles)
+spausdinimas_pagal(hObject, eventdata, handles, 'tiriamieji')
+
+function spausdinimas_pagal(hObject, eventdata, handles, raktas)
+% raktas - 'kanalai' | 'tiriamieji'
+Rinkmenu_id=get(handles.listbox1,'Value');
+if isempty(Rinkmenu_id); return; end;
+% pradinis_rodymas=get(handles.checkbox57, 'Value');
 set(handles.checkbox57, 'Value', 0);
-pushbutton14_Callback(hObject, eventdata, handles);
-kanalai=get(handles.pushbutton14, 'UserData');
+switch raktas;
+    case {'kanalai'};
+        pradiniai_kanalai1=get(handles.pushbutton14, 'UserData');
+        pradiniai_kanalai2=get(handles.text47, 'TooltipString');
+        pradiniai_kanalai3=get(handles.text47, 'String');
+        pushbutton14_Callback(hObject, eventdata, handles);
+        kanalai=get(handles.pushbutton14, 'UserData');
+        rakto_nariai=kanalai;
+    otherwise
+        kanalai=[];
+        % rakto_nariai apibrėžti toliau
+end;
 paveikslu_sar={'BMP' 'JPEG' 'PNG' 'TIFF' 'EPS' 'EPS mono' 'PDF' 'PS' 'PS mono' 'SVG' };
 paveikslu_id=listdlg('OKString',lokaliz('OK'),'CancelString',lokaliz('Cancel'), ...
     'SelectionMode','multiple','ListString',paveikslu_sar,'InitialValue',3);
@@ -3881,25 +3897,46 @@ if ~isempty(paveikslu_id);
     paveikslu_spausd={'-dbmp' '-djpeg' '-dpng' '-dtiff' '-depsc' '-deps' '-dpdf' '-dpsc' '-dps' '-dsvg'};
     paveikslai=paveikslu_spausd(paveikslu_id);
     set(handles.checkbox57, 'Value', 1);
-    spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveikslai, lokaliz('all'), [], []);
+    spausdinimo_zingsnelis(hObject, eventdata, handles, kanalai, paveikslai, lokaliz('all'), [], []);
+    switch raktas
+        case {'tiriamieji'}
+            ALLEEG_=get(handles.listbox1,'UserData');
+            if isempty(ALLEEG_); return; end;
+            tiriamieji_kart={ALLEEG_(Rinkmenu_id).subject};
+            rakto_nariai=unique(tiriamieji_kart);
+    end;
     xlim=get(handles.axes1, 'XLim');
     ylim=get(handles.axes1, 'YLim');
-    for i=1:length(kanalai);
-        spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai(i), paveikslai, kanalai{i}, xlim, ylim);
+    for i=1:length(rakto_nariai);
+        switch raktas
+            case {'kanalai'};
+                spausdinimo_zingsnelis(hObject, eventdata, handles, kanalai(i), paveikslai, kanalai{i}, xlim, ylim);
+            case {'tiriamieji'}
+                set(handles.listbox1,'Value',Rinkmenu_id(find(ismember(tiriamieji_kart,rakto_nariai{i}))));
+                spausdinimo_zingsnelis(hObject, eventdata, handles, [], paveikslai, rakto_nariai{i}, xlim, ylim);
+        end;
     end;
     set(handles.checkbox57, 'Value', 0); % pradinis_rodymas
 end;
-set(handles.pushbutton14, 'UserData', pradiniai_kanalai1);
-set(handles.text47,  'TooltipString', pradiniai_kanalai2);
-set(handles.text47,  'String',        pradiniai_kanalai3);
+switch raktas;
+    case {'kanalai'};
+        set(handles.pushbutton14, 'UserData', pradiniai_kanalai1);
+        set(handles.text47,  'TooltipString', pradiniai_kanalai2);
+        set(handles.text47,  'String',        pradiniai_kanalai3);
+    case {'tiriamieji'}
+        set(handles.listbox1,'Value',Rinkmenu_id);
+end;
 ERP_perziura(hObject, eventdata, handles);
 
 
-function spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveikslai, pavadinimas, xlim, ylim)
-    set(handles.pushbutton14, 'UserData', kanalai);
-    set(handles.text47,'TooltipString', pavadinimas);
+function spausdinimo_zingsnelis(hObject, eventdata, handles, kanalai, paveikslai, pavadinimas, xlim, ylim)
+    if ~isempty(kanalai);
+       set(handles.pushbutton14, 'UserData', kanalai);
+       set(handles.text47,'TooltipString', pavadinimas);
+    end;    
     ERP_perziura(hObject, eventdata, handles);
     setappdata(handles.axes1, 'spausdinti', paveikslai);
+    setappdata(handles.axes1, 'pavadinimas', pavadinimas);
     if ~isempty(xlim);
         set(handles.axes1, 'XLim', xlim);
     end;
@@ -3908,6 +3945,7 @@ function spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, pavei
     end;
     axes1_ButtonDownFcn(hObject, eventdata, handles);
     setappdata(handles.axes1, 'spausdinti', []);
+    setappdata(handles.axes1, 'pavadinimas', '');
 
 
 % --- Executes on selection change in popupmenu11.
