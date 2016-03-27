@@ -3891,11 +3891,15 @@ switch raktas;
         pradiniai_kanalai1=get(handles.pushbutton14, 'UserData');
         pradiniai_kanalai2=get(handles.text47, 'TooltipString');
         pradiniai_kanalai3=get(handles.text47, 'String');
+        pradiniai_kanalai4=get(handles.checkbox59, 'Value');
+        set(handles.checkbox59, 'Value',0);
         pushbutton14_Callback(hObject, eventdata, handles);
         kanalai=get(handles.pushbutton14, 'UserData');
         rakto_nariai=kanalai;
     otherwise
-        kanalai=[];
+        pradinis_vidurkinimas=get(handles.checkbox58, 'Value');
+        % visuminį paveikslą spausdinsime dukart: mastelio parinkimui ir pg. parinktis
+        set(handles.checkbox58, 'Value',0);
         % rakto_nariai apibrėžti toliau
 end;
 paveikslu_sar={'BMP' 'JPEG' 'PNG' 'TIFF' 'EPS' 'EPS mono' 'PDF' 'PS' 'PS mono' 'SVG' };
@@ -3905,7 +3909,17 @@ if ~isempty(paveikslu_id);
     paveikslu_spausd={'-dbmp' '-djpeg' '-dpng' '-dtiff' '-depsc' '-deps' '-dpdf' '-dpsc' '-dps' '-dsvg'};
     paveikslai=paveikslu_spausd(paveikslu_id);
     set(handles.checkbox57, 'Value', 1);
-    spausdinimo_zingsnelis(hObject, eventdata, handles, kanalai, paveikslai, lokaliz('all'), [], []);
+    if strcmpi(raktas,'kanalai');
+        spausdinimo_zingsnelis(hObject, eventdata, handles, kanalai, paveikslai, lokaliz('all'), [], []);
+        xlim=get(handles.axes1, 'XLim');
+        ylim=get(handles.axes1, 'YLim');
+    else
+        ERP_perziura(hObject, eventdata, handles);
+        xlim=get(handles.axes1, 'XLim');
+        ylim=get(handles.axes1, 'YLim');
+        set(handles.checkbox58, 'Value',pradinis_vidurkinimas);
+        spausdinimo_zingsnelis(hObject, eventdata, handles, [], paveikslai, lokaliz('all'), xlim, ylim);
+    end;
     switch raktas
         case {'tiriamieji'}
             ALLEEG_=get(handles.listbox1,'UserData');
@@ -3913,8 +3927,6 @@ if ~isempty(paveikslu_id);
             tiriamieji_kart={ALLEEG_(Rinkmenu_id).subject};
             rakto_nariai=unique(tiriamieji_kart);
     end;
-    xlim=get(handles.axes1, 'XLim');
-    ylim=get(handles.axes1, 'YLim');
     for i=1:length(rakto_nariai);
         switch raktas
             case {'kanalai'};
@@ -3930,7 +3942,8 @@ switch raktas;
     case {'kanalai'};
         set(handles.pushbutton14, 'UserData', pradiniai_kanalai1);
         set(handles.text47,  'TooltipString', pradiniai_kanalai2);
-        set(handles.text47,  'String',        pradiniai_kanalai3);
+        set(handles.text47,       'String',   pradiniai_kanalai3);
+        set(handles.checkbox59,   'Value',    pradiniai_kanalai4);
     case {'tiriamieji'}
         set(handles.listbox1,'Value',Rinkmenu_id);
 end;
