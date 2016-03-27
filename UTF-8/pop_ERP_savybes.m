@@ -3355,6 +3355,7 @@ try
     end;
     
     Fsi2=get(handles.listbox1,'Value');
+    rodyti_ypatingas_grupes=(get(handles.checkbox58, 'Value') && (get(handles.popupmenu11,'Value') > 1));
     
     if length(ALLEEG_)>1;
         if get(handles.checkbox58, 'Value');
@@ -3369,6 +3370,7 @@ try
                         grpsar={lokaliz('mean')} ;
                         grpN=length(grpsar);
                         grpnar{1}=1:length(ALLEEG_);
+                        rodyti_ypatingas_grupes=0;  % išimtis visuotiniam vidurkinimui
                     case 2
                         grpsar=unique({ALLEEG_.subject});
                         grpN=length(grpsar);
@@ -3408,7 +3410,7 @@ try
                                 grpnar{grpid}=grpnar_';
                             end;                            
                         else
-                            grpsar=unique({lokaliz('mean')});
+                            grpsar={lokaliz('mean')};
                             grpN=length(grpsar);
                             grpnar{1}=1:length(ALLEEG_);
                         end;
@@ -3454,6 +3456,10 @@ try
                 ALLEEG_=ALLEEG__;
                 
             else
+                wrn=warning('off','backtrace');
+                warning([mfilename ': ' lokaliz('ERP grupe nevidurkintina: ERP laikai nesuderinami!')]);
+                warning(wrn.state, 'backtrace');
+                rodyti_ypatingas_grupes=0;
                 for d=1:length(ALLEEG_);
                    [ERP_savyb(d).plotas,     ERP_savyb(d).vid_ampl,...
                     ERP_savyb(d).pusplocio_x,ERP_savyb(d).pusplocio_y,...
@@ -3464,11 +3470,34 @@ try
             end;
         end;
     elseif ~isempty(ALLEEG_(1).file);
+        
                    [ERP_savyb(1).plotas,     ERP_savyb(1).vid_ampl,...
                     ERP_savyb(1).pusplocio_x,ERP_savyb(1).pusplocio_y,...
                     ERP_savyb(1).min_x,      ERP_savyb(1).min_y,...
                     ERP_savyb(1).max_x,      ERP_savyb(1).max_y...
                     ]=ERP_savybes(ALLEEG_(1),ribos);
+                
+                if get(handles.checkbox58, 'Value');
+                    switch get(handles.popupmenu11,'Value');
+                        case 2;
+                            legendoje{1,1}=ALLEEG_(1).subject;
+                        case 3;
+                            legendoje{1,1}=ALLEEG_(1).group;
+                        case 4;
+                            legendoje{1,1}=ALLEEG_(1).condition;
+                        case 5;
+                            legendoje{1,1}=ALLEEG_(1).session;
+                    end;
+                    if isempty(legendoje{1,1});
+                        legendoje{1,1}='?';
+                    end;
+                    if isnumeric(legendoje{1,1});
+                        legendoje{1,1}=num2str(legendoje{1,1});
+                    end;
+                    for lgndi=2:size(legendoje,1);
+                        legendoje{lgndi,1}=legendoje{1,1};
+                    end;
+                end;
     end;
         
     set(handles.edit64, 'String', mean(mean([ERP_savyb.vid_ampl]))); % vid ampl
@@ -3540,7 +3569,8 @@ try
                 %lni=1+mod(lni,length(linijos));
             end;
             %end;
-            if size(legendoje,1)==1;
+            
+            if (size(legendoje,1)==1) && ~rodyti_ypatingas_grupes;
                 %plot(mast*[ERP_savyb.pusplocio_x],[ERP_savyb.pusplocio_y],'*','Color','g');
                 %plot(mast*[ERP_savyb.max_x],[ERP_savyb.max_y],'+','Color',[1 0 0.6]);
                 %plot(mast*[ERP_savyb.min_x],[ERP_savyb.min_y],'+','Color',[1 0.5 0]);
@@ -3549,17 +3579,15 @@ try
                 plot([ERP_savyb.min_x],[ERP_savyb.min_y],'+','Color',[1 0.6 0]);
                 legend({lokaliz('ERP') lokaliz('half_area') lokaliz('maximum_short') lokaliz('minimum_short')},'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
                 set(handles.axes1, 'UserData', 4);
-            else
-                if and(get(handles.checkbox58,'Value'),strcmp(get(handles.checkbox58,'Enable'),'on'));
+            elseif and(get(handles.checkbox58,'Value'),strcmp(get(handles.checkbox58,'Enable'),'on'));
                     %if isequal(ALLEEG_.times);
-                    %plot(mast*ALLEEG_(1).times,mean(ALLEEG_.erp_data));
-                    % plot(ALLEEG_(1).times,mean(cell2mat({ALLEEG_.erp_data}')),'LineWidth',3,'color','k');
-                    %                 else
-                    %                     warning('Nesutampa duomenų laikai');
-                    %                     %set(handles.checkbox58,'Value',0);
-                    %                     %drawnow;
-                    %                 end;
-                end;
+                    %    plot(mast*ALLEEG_(1).times,mean(ALLEEG_.erp_data));
+                    %    plot(ALLEEG_(1).times,mean(cell2mat({ALLEEG_.erp_data}')),'LineWidth',3,'color','k');
+                    %else
+                    %    warning('Nesutampa duomenų laikai');
+                    %    %set(handles.checkbox58,'Value',0);
+                    %    %drawnow;
+                    %end;
             end;
             %disp([xmin_ xmax_ ymin_ ymax_]);
             if length(ribos) == 2 ;
@@ -3585,26 +3613,20 @@ try
             %set(gca,'XLim',mast*[xmin_ xmax_],'YLim',[ymin_ ymax_]);
             set(gca,'XLim',[xmin_ xmax_],'YLim',[ymin_ ymax_]);
             %set(handles.listbox1,'UserData',d);
-            if size(legendoje,1) > 1;
-                %disp(legendoje);
+            if (size(legendoje,1)>1) || rodyti_ypatingas_grupes;
+                %legendoje
+                legendos_param={'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none'};
                 skirtingu_failu=length(unique(legendoje(:,1)'));
                 skirtingu_kanalu=length(unique(legendoje(:,2)'));
-                if skirtingu_kanalu==1;
-                    %disp(2);
-                    legend(legendoje(:,1),'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
-                    legend('show');
-                end;
-                if skirtingu_failu==1;
-                    %disp(1);
-                    legend(legendoje(:,2),'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
-                    legend('show');
-                end;
                 if and(skirtingu_failu > 1, skirtingu_kanalu > 1);
-                    %disp(3);
-                    tmp=cellfun(@(z) sprintf('%s: %s', legendoje{z,1},legendoje{z,2}), num2cell(1:size(legendoje,1)),'UniformOutput',false);
-                    legend(tmp,'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
-                    legend('show');
+                    legendos_irasai=cellfun(@(z) sprintf('%s: %s', legendoje{z,1},legendoje{z,2}), num2cell(1:size(legendoje,1)),'UniformOutput',false);
+                elseif (skirtingu_kanalu==1);
+                    legendos_irasai=legendoje(:,1);
+                else%if (skirtingu_failu==1);
+                    legendos_irasai=legendoje(:,2);
                 end;
+                legend(legendos_irasai,legendos_param{:});
+                legend('show');
             end;
             if or(size(legendoje,1)==0,~get(handles.checkbox60, 'Value'));
                 legend('off');
