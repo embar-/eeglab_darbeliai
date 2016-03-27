@@ -604,7 +604,7 @@ if and(get(handles.checkbox58,'Value'),...
     if strcmp(button,use_mean);
         set(handles.checkbox69,'Value',0);
         checkbox69_Callback(hObject, eventdata, handles);
-    elseif strcmp(button,use_eksp);
+    else%if strcmp(button,use_eksp);
         set(handles.checkbox58,'Value',0);
         checkbox58_Callback(hObject, eventdata, handles);
     end;
@@ -622,7 +622,7 @@ if and(get(handles.checkbox59,'Value'), and(...
         set(handles.popupmenu10,'Value',2);
         set(handles.checkbox69,'Value',0);
         checkbox69_Callback(hObject, eventdata, handles);
-    elseif strcmp(button,use_ragu);
+    else%if strcmp(button,use_ragu);
         set(handles.checkbox59,'Value',0);
         checkbox59_Callback(hObject, eventdata, handles);
     end;
@@ -2995,6 +2995,10 @@ else
 end;
 
 if and(get(handles.checkbox58,'Value'),...
+    get(handles.checkbox69,'Value'));
+    Ar_galima_vykdyti(hObject, eventdata, handles);
+end;
+if and(get(handles.checkbox59,'Value'),...
     get(handles.checkbox69,'Value'));
     Ar_galima_vykdyti(hObject, eventdata, handles);
 end;
