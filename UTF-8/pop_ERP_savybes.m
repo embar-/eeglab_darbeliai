@@ -3416,9 +3416,12 @@ try
                                 
                 for grpid=1:grpN;
                     
+                    if isempty(grpsar{grpid});
+                        grpsar{grpid}='?';
+                    end;
+                    ALLEEG__(grpid).file=grpsar{grpid};
                     ALLEEG__(grpid).times=ALLEEG_(grpid).times;
                     ALLEEG__(grpid).srate=ALLEEG_(grpid).srate;
-                    ALLEEG__(grpid).file=grpsar{grpid};
                     for k=1:uniq_kan_N;
                         tmp=[];
                         di=1;
