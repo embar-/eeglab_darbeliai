@@ -3388,6 +3388,11 @@ try
                             grpnar{grpid}=find(ismember({ALLEEG_.condition},grpsar{grpid}));
                         end;
                     case 5
+                        for sesid=1:length(ALLEEG_);
+                            if ~ischar(ALLEEG_(sesid).session);
+                                ALLEEG_(sesid).session=num2str(ALLEEG_(sesid).session);
+                            end;
+                        end;
                         grpsar=unique({ALLEEG_.session});
                         grpN=length(grpsar);
                         for grpid=1:grpN;
