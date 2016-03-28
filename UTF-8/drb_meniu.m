@@ -343,7 +343,9 @@ end;
 
 if ismember(darbas, {'pop_ERP_savybes'})
 uimenu(handles.meniu_veiksmai, 'separator','on', 'Label', lokaliz('Saugoti grafikus pagal kanalus'),...
-    'Callback',{@nukreipimas_gui2, handles, darbas, 'spausdinimas_pagal_kanalus'});    
+    'Callback',{@nukreipimas_gui2, handles, darbas, 'spausdinimas_pagal_kanalus'});
+uimenu(handles.meniu_veiksmai, 'separator','off', 'Label', lokaliz('Saugoti grafikus pagal tiriamuosius'),...
+    'Callback',{@nukreipimas_gui2, handles, darbas, 'spausdinimas_pagal_tiriamuosius'});
 end;
 
 handles.meniu_veiksmai_eeglab=uimenu(handles.meniu_veiksmai, 'separator','on', 'Label', lokaliz('EEGLABeje'));

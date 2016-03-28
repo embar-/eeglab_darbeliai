@@ -28,7 +28,12 @@ if nargin > 0; naujausia=varargin{1};
 else           naujausia=0;
 end;
 drbst=struct('versija','','url_versijai','','url_atnaujinimui','','komentaras','');
-[s,gitst]=github_releases('embar-','eeglab_darbeliai','application/zip',naujausia);
+try [s,gitst]=github_releases('embar-','eeglab_darbeliai','application/zip',naujausia);
+catch
+    disp('Patikrinkite interneto ryšį!');
+    s=[]; gitst=[];
+    return;
+end;
 for i=1:length(s);
     switch s(i).branch
         case {'stable'}

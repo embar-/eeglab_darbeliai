@@ -2,6 +2,13 @@
 % Pakeitimai:
 % ------------------------
 %
+% v2016.03.28.1
+% + Ištaisytas SĮSP eksportavimas į Ragu, kai
+%   EEGLAB duomenų rinkinų kanalų eiliškumas skiriasi
+%   (tvarka suvienodinama eksportuojant pagal pirmąjį).
+% + SĮSP grafiko įrašymas kiekvienam tiriamajam atskirai. 
+% ~ Kiti smulkūs pakeitimai.
+%
 % v2016.03.19.1
 % + Nepavykus įrašyti *.set, pasiūlyti pamėginti vėl.
 % + Eksperimentinė pop_eeg_peržiūra parinktis rodyti 
@@ -73,7 +80,7 @@
 % ~ MATLAB R2015b nerodys beprasmių pranešimų.
 %
 % v2015.09.03.1
-% ~ Neepocuotų EEG įrašų lyginimo patobulinimai.
+% ~ Neepochuotų EEG įrašų lyginimo patobulinimai.
 %
 % v2015.08.24.1
 % ~ EEG įrašų peržiūros ir lyginimo patobulinimai.
@@ -125,7 +132,7 @@
 %
 % v2015.06.28.1
 % + Papildyti EEG.history pakeitus EEG.
-% ~ Ištaisytas EEGLAB nenulūs į EEGLAB neįkėlus
+% ~ EEGLAB nenulūs į EEGLAB neįkėlus
 %   naujų EEG duomenų po atliktų darbų.
 %
 % v2015.06.24.1
@@ -165,8 +172,8 @@
 % + „Nuoseklus apdorojimas“ nenulūš užvėrus kanalų pasirinkimo interpoliavimui dialogą.
 %
 % v2015.02.24.1
-% + Eksportuojant į Ragu, EEGLAB duomenų rinkinio kanalai gali būti ne iš eilės
-%   (tvarka suvienodinama eksportuojant pagal pirmąjį).
+% ! Eksportuojant į Ragu, EEGLAB duomenų rinkinio kanalų
+%   eiliškumas netikrinamas.
 %
 % v2015.02.14.1
 % + Galima rinktis savus kanalus atskaitos sistemai.

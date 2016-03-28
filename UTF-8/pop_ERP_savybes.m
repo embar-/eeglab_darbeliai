@@ -604,7 +604,7 @@ if and(get(handles.checkbox58,'Value'),...
     if strcmp(button,use_mean);
         set(handles.checkbox69,'Value',0);
         checkbox69_Callback(hObject, eventdata, handles);
-    elseif strcmp(button,use_eksp);
+    else%if strcmp(button,use_eksp);
         set(handles.checkbox58,'Value',0);
         checkbox58_Callback(hObject, eventdata, handles);
     end;
@@ -622,7 +622,7 @@ if and(get(handles.checkbox59,'Value'), and(...
         set(handles.popupmenu10,'Value',2);
         set(handles.checkbox69,'Value',0);
         checkbox69_Callback(hObject, eventdata, handles);
-    elseif strcmp(button,use_ragu);
+    else%if strcmp(button,use_ragu);
         set(handles.checkbox59,'Value',0);
         checkbox59_Callback(hObject, eventdata, handles);
     end;
@@ -866,7 +866,7 @@ for i=1:Pasirinktu_failu_N;
         else
             EEGTMP = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_,'loadmode','info');
             EEGTMP.file=Rinkmena;
-			if isempty(EEGTMP.epoch);
+            if isempty(EEGTMP.epoch);
 			    [ALLEEGTMP, EEGTMP, ~] = eeg_store(ALLEEGTMP, EEGTMP,i);
 				set(handles.listbox1,'UserData',ALLEEGTMP); 
                 error(lokaliz('Not epoched data!'));
@@ -2998,6 +2998,10 @@ if and(get(handles.checkbox58,'Value'),...
     get(handles.checkbox69,'Value'));
     Ar_galima_vykdyti(hObject, eventdata, handles);
 end;
+if and(get(handles.checkbox59,'Value'),...
+    get(handles.checkbox69,'Value'));
+    Ar_galima_vykdyti(hObject, eventdata, handles);
+end;
 
 % --- Executes on button press in checkbox70.
 function checkbox70_Callback(hObject, eventdata, handles)
@@ -3355,6 +3359,7 @@ try
     end;
     
     Fsi2=get(handles.listbox1,'Value');
+    rodyti_ypatingas_grupes=(get(handles.checkbox58, 'Value') && (get(handles.popupmenu11,'Value') > 1));
     
     if length(ALLEEG_)>1;
         if get(handles.checkbox58, 'Value');
@@ -3369,6 +3374,7 @@ try
                         grpsar={lokaliz('mean')} ;
                         grpN=length(grpsar);
                         grpnar{1}=1:length(ALLEEG_);
+                        rodyti_ypatingas_grupes=0;  % išimtis visuotiniam vidurkinimui
                     case 2
                         grpsar=unique({ALLEEG_.subject});
                         grpN=length(grpsar);
@@ -3388,6 +3394,11 @@ try
                             grpnar{grpid}=find(ismember({ALLEEG_.condition},grpsar{grpid}));
                         end;
                     case 5
+                        for sesid=1:length(ALLEEG_);
+                            if ~ischar(ALLEEG_(sesid).session);
+                                ALLEEG_(sesid).session=num2str(ALLEEG_(sesid).session);
+                            end;
+                        end;
                         grpsar=unique({ALLEEG_.session});
                         grpN=length(grpsar);
                         for grpid=1:grpN;
@@ -3403,7 +3414,7 @@ try
                                 grpnar{grpid}=grpnar_';
                             end;                            
                         else
-                            grpsar=unique({lokaliz('mean')});
+                            grpsar={lokaliz('mean')};
                             grpN=length(grpsar);
                             grpnar{1}=1:length(ALLEEG_);
                         end;
@@ -3416,9 +3427,12 @@ try
                                 
                 for grpid=1:grpN;
                     
+                    if isempty(grpsar{grpid});
+                        grpsar{grpid}='?';
+                    end;
+                    ALLEEG__(grpid).file=grpsar{grpid};
                     ALLEEG__(grpid).times=ALLEEG_(grpid).times;
                     ALLEEG__(grpid).srate=ALLEEG_(grpid).srate;
-                    ALLEEG__(grpid).file=grpsar{grpid};
                     for k=1:uniq_kan_N;
                         tmp=[];
                         di=1;
@@ -3446,6 +3460,10 @@ try
                 ALLEEG_=ALLEEG__;
                 
             else
+                wrn=warning('off','backtrace');
+                warning([mfilename ': ' lokaliz('ERP grupe nevidurkintina: ERP laikai nesuderinami!')]);
+                warning(wrn.state, 'backtrace');
+                rodyti_ypatingas_grupes=0;
                 for d=1:length(ALLEEG_);
                    [ERP_savyb(d).plotas,     ERP_savyb(d).vid_ampl,...
                     ERP_savyb(d).pusplocio_x,ERP_savyb(d).pusplocio_y,...
@@ -3456,11 +3474,34 @@ try
             end;
         end;
     elseif ~isempty(ALLEEG_(1).file);
+        
                    [ERP_savyb(1).plotas,     ERP_savyb(1).vid_ampl,...
                     ERP_savyb(1).pusplocio_x,ERP_savyb(1).pusplocio_y,...
                     ERP_savyb(1).min_x,      ERP_savyb(1).min_y,...
                     ERP_savyb(1).max_x,      ERP_savyb(1).max_y...
                     ]=ERP_savybes(ALLEEG_(1),ribos);
+                
+                if get(handles.checkbox58, 'Value');
+                    switch get(handles.popupmenu11,'Value');
+                        case 2;
+                            legendoje{1,1}=ALLEEG_(1).subject;
+                        case 3;
+                            legendoje{1,1}=ALLEEG_(1).group;
+                        case 4;
+                            legendoje{1,1}=ALLEEG_(1).condition;
+                        case 5;
+                            legendoje{1,1}=ALLEEG_(1).session;
+                    end;
+                    if isempty(legendoje{1,1});
+                        legendoje{1,1}='?';
+                    end;
+                    if isnumeric(legendoje{1,1});
+                        legendoje{1,1}=num2str(legendoje{1,1});
+                    end;
+                    for lgndi=2:size(legendoje,1);
+                        legendoje{lgndi,1}=legendoje{1,1};
+                    end;
+                end;
     end;
         
     set(handles.edit64, 'String', mean(mean([ERP_savyb.vid_ampl]))); % vid ampl
@@ -3532,7 +3573,8 @@ try
                 %lni=1+mod(lni,length(linijos));
             end;
             %end;
-            if size(legendoje,1)==1;
+            
+            if (size(legendoje,1)==1) && ~rodyti_ypatingas_grupes;
                 %plot(mast*[ERP_savyb.pusplocio_x],[ERP_savyb.pusplocio_y],'*','Color','g');
                 %plot(mast*[ERP_savyb.max_x],[ERP_savyb.max_y],'+','Color',[1 0 0.6]);
                 %plot(mast*[ERP_savyb.min_x],[ERP_savyb.min_y],'+','Color',[1 0.5 0]);
@@ -3541,17 +3583,15 @@ try
                 plot([ERP_savyb.min_x],[ERP_savyb.min_y],'+','Color',[1 0.6 0]);
                 legend({lokaliz('ERP') lokaliz('half_area') lokaliz('maximum_short') lokaliz('minimum_short')},'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
                 set(handles.axes1, 'UserData', 4);
-            else
-                if and(get(handles.checkbox58,'Value'),strcmp(get(handles.checkbox58,'Enable'),'on'));
+            elseif and(get(handles.checkbox58,'Value'),strcmp(get(handles.checkbox58,'Enable'),'on'));
                     %if isequal(ALLEEG_.times);
-                    %plot(mast*ALLEEG_(1).times,mean(ALLEEG_.erp_data));
-                    % plot(ALLEEG_(1).times,mean(cell2mat({ALLEEG_.erp_data}')),'LineWidth',3,'color','k');
-                    %                 else
-                    %                     warning('Nesutampa duomenų laikai');
-                    %                     %set(handles.checkbox58,'Value',0);
-                    %                     %drawnow;
-                    %                 end;
-                end;
+                    %    plot(mast*ALLEEG_(1).times,mean(ALLEEG_.erp_data));
+                    %    plot(ALLEEG_(1).times,mean(cell2mat({ALLEEG_.erp_data}')),'LineWidth',3,'color','k');
+                    %else
+                    %    warning('Nesutampa duomenų laikai');
+                    %    %set(handles.checkbox58,'Value',0);
+                    %    %drawnow;
+                    %end;
             end;
             %disp([xmin_ xmax_ ymin_ ymax_]);
             if length(ribos) == 2 ;
@@ -3577,26 +3617,20 @@ try
             %set(gca,'XLim',mast*[xmin_ xmax_],'YLim',[ymin_ ymax_]);
             set(gca,'XLim',[xmin_ xmax_],'YLim',[ymin_ ymax_]);
             %set(handles.listbox1,'UserData',d);
-            if size(legendoje,1) > 1;
-                %disp(legendoje);
+            if (size(legendoje,1)>1) || rodyti_ypatingas_grupes;
+                %legendoje
+                legendos_param={'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none'};
                 skirtingu_failu=length(unique(legendoje(:,1)'));
                 skirtingu_kanalu=length(unique(legendoje(:,2)'));
-                if skirtingu_kanalu==1;
-                    %disp(2);
-                    legend(legendoje(:,1),'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
-                    legend('show');
-                end;
-                if skirtingu_failu==1;
-                    %disp(1);
-                    legend(legendoje(:,2),'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
-                    legend('show');
-                end;
                 if and(skirtingu_failu > 1, skirtingu_kanalu > 1);
-                    %disp(3);
-                    tmp=cellfun(@(z) sprintf('%s: %s', legendoje{z,1},legendoje{z,2}), num2cell(1:size(legendoje,1)),'UniformOutput',false);
-                    legend(tmp,'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
-                    legend('show');
+                    legendos_irasai=cellfun(@(z) sprintf('%s: %s', legendoje{z,1},legendoje{z,2}), num2cell(1:size(legendoje,1)),'UniformOutput',false);
+                elseif (skirtingu_kanalu==1);
+                    legendos_irasai=legendoje(:,1);
+                else%if (skirtingu_failu==1);
+                    legendos_irasai=legendoje(:,2);
                 end;
+                legend(legendos_irasai,legendos_param{:});
+                legend('show');
             end;
             if or(size(legendoje,1)==0,~get(handles.checkbox60, 'Value'));
                 legend('off');
@@ -3856,9 +3890,9 @@ set(h2,'Visible','on');
 drawnow;
 spausdinti=getappdata(handles.axes1, 'spausdinti');
 if ~isempty(spausdinti);
-    pavad=fullfile(get(handles.edit2,'String'), get(handles.text47,'TooltipString'));
+    pavad=fullfile(get(handles.edit2,'String'), getappdata(handles.axes1, 'pavadinimas'));
     for i=1:length(spausdinti);
-        print(h2,pavad,spausdinti{i});
+        try print(h2,pavad,spausdinti{i}); catch err; Pranesk_apie_klaida(err,'','',0) ;end;
     end;
     %pause(1);
     delete(h2);
@@ -3867,39 +3901,89 @@ end;
 
 
 function spausdinimas_pagal_kanalus(hObject, eventdata, handles)
-%pradinis_rodymas=get(handles.checkbox57, 'Value');
-pradiniai_kanalai1=get(handles.pushbutton14, 'UserData');
-pradiniai_kanalai2=get(handles.text47, 'TooltipString');
-pradiniai_kanalai3=get(handles.text47, 'String');
+spausdinimas_pagal(hObject, eventdata, handles, 'kanalai')
+
+function spausdinimas_pagal_tiriamuosius(hObject, eventdata, handles)
+spausdinimas_pagal(hObject, eventdata, handles, 'tiriamieji')
+
+function spausdinimas_pagal(hObject, eventdata, handles, raktas)
+% raktas - 'kanalai' | 'tiriamieji'
+Rinkmenu_id=get(handles.listbox1,'Value');
+if isempty(Rinkmenu_id); return; end;
+% pradinis_rodymas=get(handles.checkbox57, 'Value');
 set(handles.checkbox57, 'Value', 0);
-pushbutton14_Callback(hObject, eventdata, handles);
-kanalai=get(handles.pushbutton14, 'UserData');
+switch raktas;
+    case {'kanalai'};
+        pradiniai_kanalai1=get(handles.pushbutton14, 'UserData');
+        pradiniai_kanalai2=get(handles.text47, 'TooltipString');
+        pradiniai_kanalai3=get(handles.text47, 'String');
+        pradiniai_kanalai4=get(handles.checkbox59, 'Value');
+        set(handles.checkbox59, 'Value',0);
+        pushbutton14_Callback(hObject, eventdata, handles);
+        kanalai=get(handles.pushbutton14, 'UserData');
+        rakto_nariai=kanalai;
+    otherwise
+        pradinis_vidurkinimas=get(handles.checkbox58, 'Value');
+        % visuminį paveikslą spausdinsime dukart: mastelio parinkimui ir pg. parinktis
+        set(handles.checkbox58, 'Value',0);
+        % rakto_nariai apibrėžti toliau
+end;
 paveikslu_sar={'BMP' 'JPEG' 'PNG' 'TIFF' 'EPS' 'EPS mono' 'PDF' 'PS' 'PS mono' 'SVG' };
 paveikslu_id=listdlg('OKString',lokaliz('OK'),'CancelString',lokaliz('Cancel'), ...
     'SelectionMode','multiple','ListString',paveikslu_sar,'InitialValue',3);
 if ~isempty(paveikslu_id);
     paveikslu_spausd={'-dbmp' '-djpeg' '-dpng' '-dtiff' '-depsc' '-deps' '-dpdf' '-dpsc' '-dps' '-dsvg'};
-    paveisklai=paveikslu_spausd(paveikslu_id);
+    paveikslai=paveikslu_spausd(paveikslu_id);
     set(handles.checkbox57, 'Value', 1);
-    spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveisklai, lokaliz('all'), [], []);
-    xlim=get(handles.axes1, 'XLim');
-    ylim=get(handles.axes1, 'YLim');
-    for i=1:length(kanalai);
-        spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai(i), paveisklai, kanalai{i}, xlim, ylim);
+    if strcmpi(raktas,'kanalai');
+        spausdinimo_zingsnelis(hObject, eventdata, handles, kanalai, paveikslai, lokaliz('all'), [], []);
+        xlim=get(handles.axes1, 'XLim');
+        ylim=get(handles.axes1, 'YLim');
+    else
+        ERP_perziura(hObject, eventdata, handles);
+        xlim=get(handles.axes1, 'XLim');
+        ylim=get(handles.axes1, 'YLim');
+        set(handles.checkbox58, 'Value',pradinis_vidurkinimas);
+        spausdinimo_zingsnelis(hObject, eventdata, handles, [], paveikslai, lokaliz('all'), xlim, ylim);
+    end;
+    switch raktas
+        case {'tiriamieji'}
+            ALLEEG_=get(handles.listbox1,'UserData');
+            if isempty(ALLEEG_); return; end;
+            tiriamieji_kart={ALLEEG_(Rinkmenu_id).subject};
+            rakto_nariai=unique(tiriamieji_kart);
+    end;
+    for i=1:length(rakto_nariai);
+        switch raktas
+            case {'kanalai'};
+                spausdinimo_zingsnelis(hObject, eventdata, handles, kanalai(i), paveikslai, kanalai{i}, xlim, ylim);
+            case {'tiriamieji'}
+                set(handles.listbox1,'Value',Rinkmenu_id(find(ismember(tiriamieji_kart,rakto_nariai{i}))));
+                spausdinimo_zingsnelis(hObject, eventdata, handles, [], paveikslai, rakto_nariai{i}, xlim, ylim);
+        end;
     end;
     set(handles.checkbox57, 'Value', 0); % pradinis_rodymas
 end;
-set(handles.pushbutton14, 'UserData', pradiniai_kanalai1);
-set(handles.text47,  'TooltipString', pradiniai_kanalai2);
-set(handles.text47,  'String',        pradiniai_kanalai3);
+switch raktas;
+    case {'kanalai'};
+        set(handles.pushbutton14, 'UserData', pradiniai_kanalai1);
+        set(handles.text47,  'TooltipString', pradiniai_kanalai2);
+        set(handles.text47,       'String',   pradiniai_kanalai3);
+        set(handles.checkbox59,   'Value',    pradiniai_kanalai4);
+    case {'tiriamieji'}
+        set(handles.listbox1,'Value',Rinkmenu_id);
+end;
 ERP_perziura(hObject, eventdata, handles);
 
 
-function spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, paveisklai, pavadinimas, xlim, ylim)
-    set(handles.pushbutton14, 'UserData', kanalai);
-    set(handles.text47,'TooltipString', pavadinimas);
+function spausdinimo_zingsnelis(hObject, eventdata, handles, kanalai, paveikslai, pavadinimas, xlim, ylim)
+    if ~isempty(kanalai);
+       set(handles.pushbutton14, 'UserData', kanalai);
+       set(handles.text47,'TooltipString', pavadinimas);
+    end;    
     ERP_perziura(hObject, eventdata, handles);
-    setappdata(handles.axes1, 'spausdinti', paveisklai);
+    setappdata(handles.axes1, 'spausdinti', paveikslai);
+    setappdata(handles.axes1, 'pavadinimas', pavadinimas);
     if ~isempty(xlim);
         set(handles.axes1, 'XLim', xlim);
     end;
@@ -3908,6 +3992,7 @@ function spausdinimas_pagal_kanalus2(hObject, eventdata, handles, kanalai, pavei
     end;
     axes1_ButtonDownFcn(hObject, eventdata, handles);
     setappdata(handles.axes1, 'spausdinti', []);
+    setappdata(handles.axes1, 'pavadinimas', '');
 
 
 % --- Executes on selection change in popupmenu11.
