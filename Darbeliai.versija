@@ -1,6 +1,8 @@
-Darbeliai v2016.03.19.1
+Darbeliai v2016.03.28.1
 
-LT: Jokių esminių pakeitimų, 
-    tik dar geriau nugludinta.
+LT: Ištaisytas SĮSP eksportavimas į Ragu, kai
+EEGLAB duomenų rinkinų kanalų eiliškumas skiriasi
+(tvarka suvienodinama eksportuojant pagal pirmąjį).
 
-EN: Polishing.
+EN: Fix ERP export into Ragu, then order of 
+channels is not consistent across EEGLAB datasets.
