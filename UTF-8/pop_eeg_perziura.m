@@ -152,13 +152,18 @@ if narsyti;
     set(handles.pushbutton_1, 'callback', {@pushbutton_1_Callback, handles} );
     set(handles.pushbutton_v1, 'callback', {@pushbutton_v1_Callback, handles} );
     set(handles.edit_failu_filtras1, 'callback', {@atnaujink_rodoma_kelia_ir_failus, handles} );
+    try set(handles.edit_failu_filtras1,'String',g(1).flt_show); catch; end;
     set(handles.edit1, 'callback', {@atnaujink_rodoma_kelia_ir_failus1, handles} );
+    try set(handles.edit1,'String',g(1).path);   catch; end;
+    try set(handles.edit1,'String',g(1).pathin); catch; end;
     if narsyti == 2
         set(handles.listbox1, 'callback', {@listbox1B_Callback, handles} );
         set(handles.pushbutton_2, 'callback', {@pushbutton_2_Callback, handles} );
         set(handles.pushbutton_v2, 'callback', {@pushbutton_v2_Callback, handles} );
         set(handles.listbox2, 'callback', {@listbox2_Callback, handles} );
         set(handles.edit2, 'callback', {@atnaujink_rodoma_kelia_ir_failus2, handles} );
+        try set(handles.edit2,'String',g(1).path);    catch; end;
+        try set(handles.edit2,'String',g(1).pathout); catch; end;
         atnaujink_rodoma_kelia_ir_failus2(handles.edit2, [], handles);
     else
         set(handles.listbox1, 'callback', {@listbox1A_Callback, handles} );
