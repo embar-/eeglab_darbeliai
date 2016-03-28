@@ -222,12 +222,11 @@ if isempty(id); return; end;
 Kelias=get(handles.edit1,'String');
 Rinkmenos=get(handles.listbox1,'String');
 Rinkmena=Rinkmenos{id};
-[EEG]=eeg_ikelk(Kelias, Rinkmena);
-if isempty(EEG); return; end;
-
 Kelias2=get(handles.edit2,'String');
 Rinkmenos2=get(handles.listbox2,'String');
 [Rinkmena2,id2]=rask_panasiausia(Rinkmena,Rinkmenos2);
+[EEG]=eeg_ikelk(Kelias, Rinkmena);
+if isempty(EEG); return; end;
 if isempty(Rinkmena2);
     EEG2=[];
 else
