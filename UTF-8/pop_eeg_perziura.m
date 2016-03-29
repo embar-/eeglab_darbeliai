@@ -169,6 +169,10 @@ if narsyti;
         set(handles.listbox1, 'callback', {@listbox1A_Callback, handles} );
     end;
     atnaujink_rodoma_kelia_ir_failus1(handles.edit1, [], handles);
+    try tmp=find(ismember(get(handles.listbox1,'String'), {g.files})); 
+        set(handles.listbox1,'Value',tmp(1));
+    catch
+    end;
 else
     a=axes('units','normalized','position',[0.08 0.05 0.9 0.9 ]);
 end;
@@ -196,6 +200,14 @@ if isempty(EEG2)
     end;
 else
         eeg_perziura(EEG1, EEG2, 'figure', f, 'axes', a);
+end;
+
+if isempty(EEG1.data);
+    if narsyti == 1;
+        listbox1A_Callback(handles.listbox1, [], handles);
+    elseif narsyti == 2;
+        listbox1B_Callback(handles.listbox1, [], handles)
+    end;
 end;
 
 if isempty(getappdata(a,'EEG1'));
