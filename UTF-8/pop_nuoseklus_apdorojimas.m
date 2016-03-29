@@ -2019,6 +2019,9 @@ for i=1:Pasirinktu_failu_N;
                         EEG = eegh(LASTCOM, EEG);
                     end;
 
+                    % Išmesti ICA struktūras
+                    EEG.specicaact=[]; EEG.icaact=[]; EEG.icawinv=[]; EEG.icasphere=[]; EEG.icaweights=[]; EEG.icachansind=[];
+                    
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Channel selection and interpolation'), NaujaRinkmena) ;
                     DarboPorcijaAtlikta=1;
