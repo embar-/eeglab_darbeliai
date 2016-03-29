@@ -3510,16 +3510,12 @@ try
     set(handles.edit69, 'String', mean(mean([ERP_savyb.pusplocio_y]))); % ampl puei ploto
     set(handles.edit67, 'String', mean(mean([ERP_savyb.min_y]))); % min
     set(handles.edit68, 'String', mean(mean([ERP_savyb.max_y]))); % max
-
-    
-    %ERP_savyb.min_x
-    %ERP_savyb.min_y
-    %ERP_savyb.max_x
-    %ERP_savyb.max_y
     
     % Išvalyti seną paveikslą
     axes(handles.axes1);
     cla;
+    
+    % Naujas paveikslas
     linijos={'-' '--' '-.'};
     colormap('colorcube');   spalvos1=colormap;
     spalvos1=spalvos1([1:63],:);
