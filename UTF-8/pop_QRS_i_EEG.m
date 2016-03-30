@@ -784,7 +784,7 @@ for i=1:Pasirinktu_failu_N;
                             QRS_kelias=get(handles.edit_QRS_saltinis,'String');
                             QRS_rinkmenos_galas=get(handles.popupmenu_QRS_saltinio_galune,'TooltipString');
                             
-                            [~,QRS_rinkmena1,~]=fileparts(NaujaRinkmena); % fileparts(Rinkmena_);
+                            [~,QRS_rinkmena1,galune]=fileparts(NaujaRinkmena); % fileparts(Rinkmena_);
                             QRS_rinkmena2=fullfile(QRS_kelias, QRS_rinkmena1  )  ;  
                             
                             QRS_rinkmena=[QRS_rinkmena2 QRS_rinkmenos_galas];
@@ -799,7 +799,6 @@ for i=1:Pasirinktu_failu_N;
                                 netinkami={};
                                 for y=1:length(netinkami_regexp);
                                     netinkami_tmp=regexp(QRS_rinkmenos_galai,netinkami_regexp{y},'match');
-                                    netinkami_tmp=[netinkami_tmp{:}];
                                     netinkami={netinkami{:} netinkami_tmp{:}};
                                 end;
                                 QRS_rinkmenos_galai=QRS_rinkmenos_galai(find(...
