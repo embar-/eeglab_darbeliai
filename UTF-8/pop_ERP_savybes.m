@@ -1349,7 +1349,7 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
                     laksto_pav=ERP_lentele{1,1}(1:min(length(ERP_lentele{1,1}),31));
                 else
                     laksto_pav=num2str(i);
-                end;ERP_lentele
+                end;
                 %if ispc
                     xlswrite(excel_dokumentas_erp, ERP_lentele, laksto_pav );
                     disp(excel_dokumentas_erp);
