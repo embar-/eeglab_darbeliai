@@ -3696,7 +3696,7 @@ try
         disp(' ');
         for i=1:length(kor_lent_h);
             for kor_p_i=find(kor_p(i,:)<0.05);
-                fprintf('r = %1.3f, p = %1.4f - %s <-> %s\n', kor_r(i,kor_p_i), kor_p(i,kor_p_i), kor_lent_h{i}, legendoje{kor_p_i,2});
+                fprintf('r = %1.3f, p = %1.4f - %s <-> %s\n', kor_r(i,kor_p_i), kor_p(i,kor_p_i), kor_lent_h{i}, kor_lent_k{kor_p_i});
                 kor_r_{i,kor_p_i}=['<html><table bgcolor=yellow><tr><td>' num2str(kor_r(i,kor_p_i)) '</td></tr></table><html>' ];
             end;
         end;
