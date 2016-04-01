@@ -2008,6 +2008,7 @@ for i=1:Pasirinktu_failu_N;
                 % Interpoliuok pagal EEG.chanlocs2 struktura
                 try
                     [EEG, LASTCOM] = pop_interp(EEG, [EEG.chanlocs2], 'spherical');
+
                     EEG = eegh(LASTCOM, EEG);
 
                     % Pasalink visus kanalus, isskyrus tuos N ;
@@ -2020,7 +2021,7 @@ for i=1:Pasirinktu_failu_N;
                     end;
 
                     % Išmesti ICA struktūras
-                    EEG.specicaact=[]; EEG.icaact=[]; EEG.icawinv=[]; EEG.icasphere=[]; EEG.icaweights=[]; EEG.icachansind=[];
+                    %EEG.specicaact=[]; EEG.icaact=[]; EEG.icawinv=[]; EEG.icasphere=[]; EEG.icaweights=[]; EEG.icachansind=[];
                     
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Channel selection and interpolation'), NaujaRinkmena) ;
