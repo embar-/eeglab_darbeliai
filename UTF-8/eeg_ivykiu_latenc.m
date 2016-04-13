@@ -68,7 +68,7 @@ tipas_ir_latencija=[Ivykiai', {EEG.event.latency}', num2cell(ivRodykles)'];
 
 try ivRodykles=find(ismember(ivRodykles,[g(1).index])); catch; end;
 
-Ivykiai2={}; try Ivykiai2={g(1).type}; catch; end; % YRA ĮVYKIAI
+Ivykiai2={}; try Ivykiai2={g.type}; catch; end; % YRA ĮVYKIAI
 if ~isempty(Ivykiai2)
     rodykles2=ismember(tipas_ir_latencija(ivRodykles,1),Ivykiai2) ;
     if ~any(rodykles2);
