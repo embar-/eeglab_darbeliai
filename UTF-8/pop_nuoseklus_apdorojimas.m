@@ -2177,12 +2177,14 @@ for i=1:Pasirinktu_failu_N;
                         Epochos_laiko_intervalas_alt= [ ...
                            max(Epochos_laiko_intervalas(1), EEG.xmin) ...
                            min(Epochos_laiko_intervalas(2), EEG.xmax) ];
-                        if isempty(find(Epochos_laiko_intervalas == Epochos_laiko_intervalas_alt));
+                       if isempty(find(Epochos_laiko_intervalas == Epochos_laiko_intervalas_alt));
+                           wrn=warning('off','backtrace');
                            warning(sprintf( [ '\n' ...
-                             lokaliz('You use already epoched data.') '\n' ...
-                             lokaliz('Your selected epoch interval may be too big.') '\n' ...
-                             lokaliz('Consider to use') '\n'  ...
-                             ' [' num2str(Epochos_laiko_intervalas_alt)  '] \n' ]));
+                               lokaliz('You use already epoched data.') '\n' ...
+                               lokaliz('Your selected epoch interval may be too big.') '\n' ...
+                               lokaliz('Consider to use') '\n'  ...
+                               ' [' num2str(Epochos_laiko_intervalas_alt)  '] \n' ]));
+                           warning(wrn.state, 'backtrace');
                             %EEG_pries=EEG;
                         end;
 
@@ -2195,11 +2197,13 @@ for i=1:Pasirinktu_failu_N;
                         'epochinfo', 'yes');
 
                     EEG = eeg_checkset( EEG );
-
+                    
                     if and(isempty(EEG.data), exist('EEG_pries','var'));
-                       warning(sprintf(['\n' lokaliz('Empty dataset') '.\n ' lokaliz('Trying again with') ...
-                       ' [' num2str(Epochos_laiko_intervalas_alt)  '] \n' ]));
-                       [EEG, ~, LASTCOM] = pop_epoch( EEG_pries, ...
+                        wrn=warning('off','backtrace');
+                        warning(sprintf(['\n' lokaliz('Empty dataset') '.\n ' lokaliz('Trying again with') ...
+                            ' [' num2str(Epochos_laiko_intervalas_alt)  '] \n' ]));
+                        warning(wrn.state, 'backtrace');
+                        [EEG, ~, LASTCOM] = pop_epoch( EEG_pries, ...
                         Epochuoti_pagal_stimulus, ...
                         Epochos_laiko_intervalas_alt, ...
                         'epochinfo', 'yes');
@@ -2531,7 +2535,9 @@ switch ICA_zr_veiksena
         if isfield(EEG.reject, 'MARAinfo');
             pop_visualizeMARAfeatures(EEG.reject.gcompreject, EEG.reject.MARAinfo);
         else
+            wrn=warning('off','backtrace');
             warning([ lokaliz('kintamasis neegzistuoja') ': EEG.reject.MARAinfo' ] );
+            warning(wrn.state, 'backtrace');
         end;
 end;
 
@@ -5454,7 +5460,9 @@ else
     catch err;
         %set(elementas,'UserData',sprintf('%d ', iv));
     end;
+    wrn=warning('off','backtrace');
     warning(lokaliz('This version allow to select any real events from dataset, but manually you can enter only numbers.'));
+    warning(wrn.state, 'backtrace');
 end;
 set(elementas,'String',num2str(get(elementas,'UserData')));
 str=get(elementas,'String');
