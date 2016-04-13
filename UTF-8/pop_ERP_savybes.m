@@ -3574,11 +3574,25 @@ try
                 %plot(mast*[ERP_savyb.pusplocio_x],[ERP_savyb.pusplocio_y],'*','Color','g');
                 %plot(mast*[ERP_savyb.max_x],[ERP_savyb.max_y],'+','Color',[1 0 0.6]);
                 %plot(mast*[ERP_savyb.min_x],[ERP_savyb.min_y],'+','Color',[1 0.5 0]);
-                plot([ERP_savyb.pusplocio_x],[ERP_savyb.pusplocio_y],'*','Color','g');
-                plot([ERP_savyb.max_x],[ERP_savyb.max_y],'+','Color',[1 0 0.6]);
-                plot([ERP_savyb.min_x],[ERP_savyb.min_y],'+','Color',[1 0.6 0]);
-                legend({lokaliz('ERP') lokaliz('half_area') lokaliz('maximum_short') lokaliz('minimum_short')},'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
-                set(handles.axes1, 'UserData', 4);
+                irasu_kiekis_legendoje=1;
+                irasai_legendoje={lokaliz('ERP')};
+                if get(handles.checkbox64, 'Value') || get(handles.checkbox67, 'Value');
+                    plot([ERP_savyb.pusplocio_x],[ERP_savyb.pusplocio_y],'*','Color','g');
+                    irasu_kiekis_legendoje=irasu_kiekis_legendoje+1;
+                    irasai_legendoje=[irasai_legendoje {lokaliz('half_area')} ];
+                end;
+                if get(handles.checkbox63, 'Value')
+                    plot([ERP_savyb.min_x],[ERP_savyb.min_y],'+','Color',[1 0.6 0]);
+                    irasu_kiekis_legendoje=irasu_kiekis_legendoje+1;
+                    irasai_legendoje=[irasai_legendoje {lokaliz('minimum_short')} ];
+                end;
+                if get(handles.checkbox66, 'Value')
+                    plot([ERP_savyb.max_x],[ERP_savyb.max_y],'+','Color',[1 0 0.6]);
+                    irasu_kiekis_legendoje=irasu_kiekis_legendoje+1;
+                    irasai_legendoje=[irasai_legendoje {lokaliz('maximum_short')} ];
+                end;
+                legend(irasai_legendoje,'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
+                set(handles.axes1, 'UserData', irasu_kiekis_legendoje);
             elseif and(get(handles.checkbox58,'Value'),strcmp(get(handles.checkbox58,'Enable'),'on'));
                     %if isequal(ALLEEG_.times);
                     %    plot(mast*ALLEEG_(1).times,mean(ALLEEG_.erp_data));
