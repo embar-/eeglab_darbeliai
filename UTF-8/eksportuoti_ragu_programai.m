@@ -272,7 +272,8 @@ for i=1:length(ALLEEG) ;
     try
         EEG=ALLEEG(i);
         if ~isnumeric(EEG.data);
-            [~, EEG, ~] = pop_newset(ALLEEG, EEG, i,'retrieve',i,'study',0);
+            EEG=eeg_retrieve(ALLEEG, i);
+            %[~, EEG, ~] = pop_newset(ALLEEG, EEG, i,'retrieve',i,'study',0);
             %[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET,'retrieve',[1:length(ALLEEG)],'study',0);
         end;
         if length(EEG_filenames)<i;
