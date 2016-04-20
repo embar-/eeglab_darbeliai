@@ -1,7 +1,7 @@
 eeglab_darbeliai
 ================
 
-EEGLAB plugin Darbeliai was created with intention to facilitate batch processing of selected EEG data files in graphical user interface (GUI). Darbeliai uses EEG data files in various formats (\*.set, \*.edf, \*.cnt and others) as input directly, and outputs processed data directly to files in EEGLAB data format (\*.set), so this in contrast to EEGLAB itseft where user must work with EEG datasets. So (in most cases) you no longer need to care about EEG data importing from raw EEG files into EEGLAB dataset and writing processed data back to file. 
+EEGLAB plugin Darbeliai created with intention to facilitate batch processing of selected EEG data files in graphical user interface (GUI). Darbeliai uses EEG data files in various formats (\*.set, \*.edf, \*.cnt and others) as input directly, and outputs processed data directly to files in EEGLAB data format (\*.set), so this in contrast to EEGLAB itseft where user must work with EEG datasets. So (in most cases) you no longer need to care about EEG data importing from raw EEG files into EEGLAB dataset and writing processed data back to file. 
 
 In Lithuanian – the most archaic live Indoeuropean language – *darbeliai* means *the little works*. 
 This EEGLAB plugin allows you to acomplish these jobs:
@@ -40,5 +40,5 @@ More information can be found https://github.com/embar-/eeglab_darbeliai/wiki/0.
  
 --
  
-  (C) 2014-2015 Mindaugas Baranauskas   
+  (C) 2014-2016 Mindaugas Baranauskas   
 
