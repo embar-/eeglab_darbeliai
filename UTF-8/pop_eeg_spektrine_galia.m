@@ -569,9 +569,11 @@ elseif isempty(atrinkti_teksta(lower(RINKMENOS),'*.set'));
 end;
 [~,~,min_trukme,patikrintos_visos]=...
     eeg_trukmiu_sarasas(get(handles.edit1,'String'), RINKMENOS);
-if min_trukme < fft_lango_ilgis_sekundemis;    
+if min_trukme < fft_lango_ilgis_sekundemis;
+    wrn=warning('off','backtrace');
     warning([lokaliz('FFT window length') ' (' num2str(fft_lango_ilgis_sekundemis) ...
         ') > EEG.xmax - EEG.xmin (' num2str(min_trukme) ')' ]);
+    warning(wrn.state, 'backtrace');
     set(handles.edit_fft_langas,'Backgroundcolor',[1 1 0]); drawnow; pause(1);
     set(handles.edit_fft_langas,'Backgroundcolor',[1 1 1]); drawnow;
     return;
