@@ -1589,7 +1589,7 @@ stlp1=lokaliz('Spectrum band');
 stlp2=lokaliz('From (time)');
 stlp3=lokaliz('To (time)');
 set(handles.uitable1,'ColumnName', {stlp1 stlp2 stlp3});
-
+set(handles.edit_doc,'String',[ lokaliz('Galia') '_%t' ]);
 
 % --- Executes on button press in pushbutton14.
 function pushbutton14_Callback(hObject, eventdata, handles)
