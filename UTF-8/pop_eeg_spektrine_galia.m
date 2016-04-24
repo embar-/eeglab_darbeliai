@@ -673,19 +673,18 @@ try
         lst=[{} KELIAS unique(Darbeliai.keliai.atverimui)];
         [~,idx,~]=unique(lst);
         Darbeliai.keliai.atverimui=lst(sort(idx));
-    catch err1;
+    catch %err1;
         Darbeliai.keliai.atverimui=[{} KELIAS];
     end;    
     try
         lst=[{} KELIAS_SAUGOJIMUI unique(Darbeliai.keliai.saugojimui)];
         [~,idx,~]=unique(lst);
         Darbeliai.keliai.saugojimui=lst(sort(idx));
-    catch err2;
+    catch %err2;
         Darbeliai.keliai.saugojimui=[{} KELIAS_SAUGOJIMUI];
     end;
     save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
-catch err;
-    %warning(err.message);
+catch %err; warning(err.message);
 end;
 
 % Užduočių parinkčių įsiminimas
