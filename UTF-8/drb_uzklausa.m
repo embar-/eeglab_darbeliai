@@ -75,7 +75,7 @@ d0={d(find([d.isdir])).name};
 d1=arrayfun(@(x) fullfile(regexprep(c,[filesep '$'],''), d0{x}), 3:length(d0),'UniformOutput', false);
 l=dir(fileparts(c));
 l0={l(find([l.isdir])).name};
-l1=arrayfun(@(x) fullfile(regexprep(fileparts(c),[filesep '$'],''), l0{x}), 3:length(l0),'UniformOutput', false);
+l1=arrayfun(@(x) Tikras_Kelias(fullfile(regexprep(fileparts(c),[filesep '$'],''), l0{x})), 3:length(l0),'UniformOutput', false);
 
 % ankstesnių seansų kelių įkėlimas
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
@@ -105,7 +105,7 @@ for x=1:length(s0) ;
     end;
 end;
 
-p=unique([p1 d1 l1 s1 {pwd}]);
+p=unique([c p1 d1 l1 s1 {pwd}]);
 a=listdlg(...
     'Name', lokaliz('Pasirinkite aplanka'), ...
     'PromptString', paaiskinimas, ...
