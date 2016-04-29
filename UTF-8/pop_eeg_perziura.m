@@ -152,18 +152,27 @@ if narsyti;
     set(handles.pushbutton_1, 'callback', {@pushbutton_1_Callback, handles} );
     set(handles.pushbutton_v1, 'callback', {@pushbutton_v1_Callback, handles} );
     set(handles.edit_failu_filtras1, 'callback', {@atnaujink_rodoma_kelia_ir_failus, handles} );
+    try set(handles.edit_failu_filtras1,'String',g(1).flt_show); catch; end;
     set(handles.edit1, 'callback', {@atnaujink_rodoma_kelia_ir_failus1, handles} );
+    try set(handles.edit1,'String',g(1).path);   catch; end;
+    try set(handles.edit1,'String',g(1).pathin); catch; end;
     if narsyti == 2
         set(handles.listbox1, 'callback', {@listbox1B_Callback, handles} );
         set(handles.pushbutton_2, 'callback', {@pushbutton_2_Callback, handles} );
         set(handles.pushbutton_v2, 'callback', {@pushbutton_v2_Callback, handles} );
         set(handles.listbox2, 'callback', {@listbox2_Callback, handles} );
         set(handles.edit2, 'callback', {@atnaujink_rodoma_kelia_ir_failus2, handles} );
+        try set(handles.edit2,'String',g(1).path);    catch; end;
+        try set(handles.edit2,'String',g(1).pathout); catch; end;
         atnaujink_rodoma_kelia_ir_failus2(handles.edit2, [], handles);
     else
         set(handles.listbox1, 'callback', {@listbox1A_Callback, handles} );
     end;
     atnaujink_rodoma_kelia_ir_failus1(handles.edit1, [], handles);
+    try tmp=find(ismember(get(handles.listbox1,'String'), {g.files})); 
+        set(handles.listbox1,'Value',tmp(1));
+    catch
+    end;
 else
     a=axes('units','normalized','position',[0.08 0.05 0.9 0.9 ]);
 end;
@@ -191,6 +200,14 @@ if isempty(EEG2)
     end;
 else
         eeg_perziura(EEG1, EEG2, 'figure', f, 'axes', a);
+end;
+
+if isempty(EEG1.data);
+    if narsyti == 1;
+        listbox1A_Callback(handles.listbox1, [], handles);
+    elseif narsyti == 2;
+        listbox1B_Callback(handles.listbox1, [], handles)
+    end;
 end;
 
 if isempty(getappdata(a,'EEG1'));
@@ -222,12 +239,11 @@ if isempty(id); return; end;
 Kelias=get(handles.edit1,'String');
 Rinkmenos=get(handles.listbox1,'String');
 Rinkmena=Rinkmenos{id};
-[EEG]=eeg_ikelk(Kelias, Rinkmena);
-if isempty(EEG); return; end;
-
 Kelias2=get(handles.edit2,'String');
 Rinkmenos2=get(handles.listbox2,'String');
 [Rinkmena2,id2]=rask_panasiausia(Rinkmena,Rinkmenos2);
+[EEG]=eeg_ikelk(Kelias, Rinkmena);
+if isempty(EEG); return; end;
 if isempty(Rinkmena2);
     EEG2=[];
 else

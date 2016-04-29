@@ -569,9 +569,11 @@ elseif isempty(atrinkti_teksta(lower(RINKMENOS),'*.set'));
 end;
 [~,~,min_trukme,patikrintos_visos]=...
     eeg_trukmiu_sarasas(get(handles.edit1,'String'), RINKMENOS);
-if min_trukme < fft_lango_ilgis_sekundemis;    
+if min_trukme < fft_lango_ilgis_sekundemis;
+    wrn=warning('off','backtrace');
     warning([lokaliz('FFT window length') ' (' num2str(fft_lango_ilgis_sekundemis) ...
         ') > EEG.xmax - EEG.xmin (' num2str(min_trukme) ')' ]);
+    warning(wrn.state, 'backtrace');
     set(handles.edit_fft_langas,'Backgroundcolor',[1 1 0]); drawnow; pause(1);
     set(handles.edit_fft_langas,'Backgroundcolor',[1 1 1]); drawnow;
     return;
@@ -671,19 +673,18 @@ try
         lst=[{} KELIAS unique(Darbeliai.keliai.atverimui)];
         [~,idx,~]=unique(lst);
         Darbeliai.keliai.atverimui=lst(sort(idx));
-    catch err1;
+    catch %err1;
         Darbeliai.keliai.atverimui=[{} KELIAS];
     end;    
     try
         lst=[{} KELIAS_SAUGOJIMUI unique(Darbeliai.keliai.saugojimui)];
         [~,idx,~]=unique(lst);
         Darbeliai.keliai.saugojimui=lst(sort(idx));
-    catch err2;
+    catch %err2;
         Darbeliai.keliai.saugojimui=[{} KELIAS_SAUGOJIMUI];
     end;
     save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
-catch err;
-    %warning(err.message);
+catch %err; warning(err.message);
 end;
 
 % Užduočių parinkčių įsiminimas
@@ -1588,7 +1589,7 @@ stlp1=lokaliz('Spectrum band');
 stlp2=lokaliz('From (time)');
 stlp3=lokaliz('To (time)');
 set(handles.uitable1,'ColumnName', {stlp1 stlp2 stlp3});
-
+set(handles.edit_doc,'String',[ lokaliz('Galia') '_%t' ]);
 
 % --- Executes on button press in pushbutton14.
 function pushbutton14_Callback(hObject, eventdata, handles)

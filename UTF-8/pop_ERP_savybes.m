@@ -1349,7 +1349,7 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
                     laksto_pav=ERP_lentele{1,1}(1:min(length(ERP_lentele{1,1}),31));
                 else
                     laksto_pav=num2str(i);
-                end;ERP_lentele
+                end;
                 %if ispc
                     xlswrite(excel_dokumentas_erp, ERP_lentele, laksto_pav );
                     disp(excel_dokumentas_erp);
@@ -3510,16 +3510,12 @@ try
     set(handles.edit69, 'String', mean(mean([ERP_savyb.pusplocio_y]))); % ampl puei ploto
     set(handles.edit67, 'String', mean(mean([ERP_savyb.min_y]))); % min
     set(handles.edit68, 'String', mean(mean([ERP_savyb.max_y]))); % max
-
-    
-    %ERP_savyb.min_x
-    %ERP_savyb.min_y
-    %ERP_savyb.max_x
-    %ERP_savyb.max_y
     
     % Išvalyti seną paveikslą
     axes(handles.axes1);
     cla;
+    
+    % Naujas paveikslas
     linijos={'-' '--' '-.'};
     colormap('colorcube');   spalvos1=colormap;
     spalvos1=spalvos1([1:63],:);
@@ -3578,11 +3574,25 @@ try
                 %plot(mast*[ERP_savyb.pusplocio_x],[ERP_savyb.pusplocio_y],'*','Color','g');
                 %plot(mast*[ERP_savyb.max_x],[ERP_savyb.max_y],'+','Color',[1 0 0.6]);
                 %plot(mast*[ERP_savyb.min_x],[ERP_savyb.min_y],'+','Color',[1 0.5 0]);
-                plot([ERP_savyb.pusplocio_x],[ERP_savyb.pusplocio_y],'*','Color','g');
-                plot([ERP_savyb.max_x],[ERP_savyb.max_y],'+','Color',[1 0 0.6]);
-                plot([ERP_savyb.min_x],[ERP_savyb.min_y],'+','Color',[1 0.6 0]);
-                legend({lokaliz('ERP') lokaliz('half_area') lokaliz('maximum_short') lokaliz('minimum_short')},'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
-                set(handles.axes1, 'UserData', 4);
+                irasu_kiekis_legendoje=1;
+                irasai_legendoje={lokaliz('ERP')};
+                if get(handles.checkbox64, 'Value') || get(handles.checkbox67, 'Value');
+                    plot([ERP_savyb.pusplocio_x],[ERP_savyb.pusplocio_y],'*','Color','g');
+                    irasu_kiekis_legendoje=irasu_kiekis_legendoje+1;
+                    irasai_legendoje=[irasai_legendoje {lokaliz('half_area')} ];
+                end;
+                if get(handles.checkbox63, 'Value')
+                    plot([ERP_savyb.min_x],[ERP_savyb.min_y],'+','Color',[1 0.6 0]);
+                    irasu_kiekis_legendoje=irasu_kiekis_legendoje+1;
+                    irasai_legendoje=[irasai_legendoje {lokaliz('minimum_short')} ];
+                end;
+                if get(handles.checkbox66, 'Value')
+                    plot([ERP_savyb.max_x],[ERP_savyb.max_y],'+','Color',[1 0 0.6]);
+                    irasu_kiekis_legendoje=irasu_kiekis_legendoje+1;
+                    irasai_legendoje=[irasai_legendoje {lokaliz('maximum_short')} ];
+                end;
+                legend(irasai_legendoje,'FontSize', 6, 'Location', 'eastoutside', 'Interpreter', 'none');
+                set(handles.axes1, 'UserData', irasu_kiekis_legendoje);
             elseif and(get(handles.checkbox58,'Value'),strcmp(get(handles.checkbox58,'Enable'),'on'));
                     %if isequal(ALLEEG_.times);
                     %    plot(mast*ALLEEG_(1).times,mean(ALLEEG_.erp_data));
@@ -3653,6 +3663,63 @@ try
     grid on;
     set(handles.axes1, 'Visible', 'on');
 
+    % Koreliacijų rodymas
+    try
+        if length(ribos) == 2;
+            kor_lent_v=['Koreliacijos: [' num2str(ribos(1)) ' ' num2str(ribos(2)) '] ms'];
+        else
+            kor_lent_v='Koreliacijos';
+        end;
+        kor_lent_h=getappdata(handles.figure1, 'kor_lent_h'); % evalin('base','h');
+        kor_lent_i=getappdata(handles.figure1, 'kor_lent_i'); % evalin('base','id');
+        kor_lent_d=getappdata(handles.figure1, 'kor_lent_d'); % evalin('base','d');
+        if length(kor_lent_i) ~= size(kor_lent_d,1); error('netinka'); end;
+        if length(kor_lent_h) ~= size(kor_lent_d,2); error('netinka'); end;
+        kor_lent_idx=zeros(1,length(kor_lent_i));
+        kor_lent_l={ALLEEG_.file};
+        for i=1:length(kor_lent_i);
+            g=regexp(kor_lent_l, ['^' kor_lent_i{i} '[^0-9]']); 
+            n=find(arrayfun(@(x) ~isempty(g{x}), 1:length(g)));
+            if length(n) == 1;
+                kor_lent_idx(i)=n;
+            end;
+        end;
+        kor_lent_netusti=find(kor_lent_idx);
+        if length(kor_lent_netusti) < 5; error('netinka'); end;
+        kor_lent_d=kor_lent_d(kor_lent_netusti,:);
+        kor_lent_y=length(ERP_savyb(1).vid_ampl);
+        kor_lent_a=nan(length(kor_lent_netusti),kor_lent_y);
+        kor_lent_k={};
+        for i=1:length(kor_lent_netusti);
+            tmpid=kor_lent_idx(kor_lent_netusti(i));
+            for ii=1:length(ERP_savyb(tmpid).vid_ampl);
+                kl=ALLEEG_(tmpid).chanlocs(ii).labels;
+                ki=find(ismember(kor_lent_k,kl));
+                if isempty(ki);
+                    kor_lent_k=[kor_lent_k kl];
+                    ki=length(kor_lent_k);
+                end;
+                kor_lent_a(i,ki)=ERP_savyb(tmpid).vid_ampl(ii);
+            end;
+        end;
+        [kor_r,kor_p]=corr(kor_lent_d,kor_lent_a,'rows','pairwise','type','Spearman'); % 'Pearson' arba 'Spearman'
+        kor_r_=num2cell(kor_r);
+        disp(' ');
+        disp(kor_lent_v);
+        %disp(' '); disp([ 'r' kor_lent_k ; kor_lent_h' kor_r_]);
+        disp(' ');
+        for i=1:length(kor_lent_h);
+            for kor_p_i=find(kor_p(i,:)<0.05);
+                fprintf('r = %1.3f, p = %1.4f - %s <-> %s\n', kor_r(i,kor_p_i), kor_p(i,kor_p_i), kor_lent_h{i}, kor_lent_k{kor_p_i});
+                kor_r_{i,kor_p_i}=['<html><table bgcolor=yellow><tr><td>' num2str(kor_r(i,kor_p_i)) '</td></tr></table><html>' ];
+            end;
+        end;
+        kor_lent_f=figure('Toolbar','none','Menubar','none','NumberTitle','off','Name',kor_lent_v);
+        kor_lent_t=uitable(kor_lent_f,'data',kor_r_,'ColumnName', kor_lent_k, 'RowName', kor_lent_h, ...
+            'Units', 'normalized', 'position', [0 0 1 1],'tag','koreliaciju_lentele');
+        disp(' ');
+    catch %err; Pranesk_apie_klaida(err,'','',0);
+    end
 
 if ~isempty(ALLEEG_);
 if get(handles.checkbox61, 'Value');
@@ -3842,9 +3909,20 @@ drawnow;
 
 % --- Executes on mouse press over axes background.
 function axes1_ButtonDownFcn(hObject, eventdata, handles)
-% hObject    handle to axes1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+pele=get(handles.figure1,'SelectionType');
+if ~get(handles.checkbox57, 'Value') && strcmpi(pele,'normal');
+    return;
+end;
+if strcmpi(pele,'extend');
+    if strcmp(get(handles.checkbox57,'Enable'),'off');
+        return;
+    end;
+    try axes1_ButtonDownFcn2(hObject, eventdata, handles); catch; end;
+else
+    try axes1_ButtonDownFcn1(hObject, eventdata, handles); catch; end;
+end;
+
+function axes1_ButtonDownFcn1(hObject, eventdata, handles)
 h2 = figure;
 set(h2,'Visible','off');
 try
@@ -3899,6 +3977,54 @@ if ~isempty(spausdinti);
     setappdata(handles.axes1, 'spausdinti', []);
 end;
 
+function axes1_ButtonDownFcn2(hObject, eventdata, handles)
+%a=inputdlg({'Rinkmenos priesaga prie atvejo:'},'Lentelės įkėlimas',1,{'.set'});
+%Priesaga=a{1};
+Priesaga='';
+try
+[h,i,d]=importuoti_lentele('',Priesaga);
+catch err; Pranesk_apie_klaida(err,'','',0);
+end;
+if length(i) ~= size(d,1); return; end;
+if length(h) ~= size(d,2); return; end;
+setappdata(handles.figure1, 'kor_lent_h', h); assignin('base','kor_lent_h',h);
+setappdata(handles.figure1, 'kor_lent_i', i); assignin('base','kor_lent_i',i);
+setappdata(handles.figure1, 'kor_lent_d', d); assignin('base','kor_lent_d',d);
+msgbox('Pavyko įkelti lentelę!','Pavyko!');
+ERP_perziura(hObject, eventdata, handles);
+
+function [h,id,d]=importuoti_lentele(varargin)
+h={'-'};id={};d=[];
+if nargin > 0;
+    rinkmena=varargin{1};
+else
+    rinkmena='';
+end;
+if nargin > 1;
+    id_priesaga=varargin{2};
+else
+    id_priesaga='';
+end;
+if isempty(rinkmena) || ~exist(rinkmena,'file');
+    [f,p] = uigetfile({'*.txt','*.txt';'*.*','*.*'},'Pasirinkite duomenis','','MultiSelect','off');
+    if f == 0; return; end;
+    rinkmena=fullfile(p,f);
+end;
+fid=fopen(rinkmena, 'r');
+h1=regexprep(regexprep(fgets(fid),'[ \t]*\n',''),'[ \t]*\r','');
+h1=strrep(h1,' ','_');
+h=textscan(h1,'%s',1+length(regexp(h1,'\t')));
+h=h{1}'; h=h(2:end);
+id={}; t='';
+while ischar(t);
+    if ~isempty(t);
+        id1=textscan(t,'%s',1);
+        id=[id ; { [ id1{1}{1} id_priesaga ] } ];
+    end;
+    t=fgets(fid);
+end;
+fclose(fid);
+d=dlmread(rinkmena,'',1,1);
 
 function spausdinimas_pagal_kanalus(hObject, eventdata, handles)
 spausdinimas_pagal(hObject, eventdata, handles, 'kanalai')
