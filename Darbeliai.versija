@@ -1,8 +1,5 @@
-Darbeliai v2016.03.28.1
+Darbeliai v2016.04.29.1
 
-LT: Ištaisytas SĮSP eksportavimas į Ragu, kai
-EEGLAB duomenų rinkinų kanalų eiliškumas skiriasi
-(tvarka suvienodinama eksportuojant pagal pirmąjį).
+LT: pakeistos kelios smulkmenos.
 
-EN: Fix ERP export into Ragu, then order of 
-channels is not consistent across EEGLAB datasets.
+EN: minor polishing.
