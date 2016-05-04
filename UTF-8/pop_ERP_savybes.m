@@ -4006,7 +4006,8 @@ if length(h) ~= size(d,2); return; end;
 setappdata(handles.figure1, 'kor_lent_h', h); assignin('base','kor_lent_h',h);
 setappdata(handles.figure1, 'kor_lent_i', i); assignin('base','kor_lent_i',i);
 setappdata(handles.figure1, 'kor_lent_d', d); assignin('base','kor_lent_d',d);
-msgbox('Pavyko įkelti lentelę!','Pavyko!');
+m=msgbox('Pavyko įkelti lentelę!','Pavyko!');
+drawnow; pause(2); delete(m);
 ERP_perziura(hObject, eventdata, handles);
 
 function [h,id,d]=importuoti_lentele(varargin)
