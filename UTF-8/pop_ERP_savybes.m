@@ -3721,7 +3721,7 @@ try
             'Units', 'normalized', 'position', [0 0 1 1],'tag','koreliaciju_lentele',...
             'CellSelectionCallback', {@sklaidos_diagrama, handles});
         disp(' ');
-    catch err; Pranesk_apie_klaida(err,'','',0);
+    catch %err; Pranesk_apie_klaida(err,'','',0);
     end
 
 if ~isempty(ALLEEG_);
