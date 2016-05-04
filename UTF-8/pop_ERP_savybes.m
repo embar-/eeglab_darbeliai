@@ -3715,10 +3715,13 @@ try
             end;
         end;
         kor_lent_f=figure('Toolbar','none','Menubar','none','NumberTitle','off','Name',kor_lent_v);
+        setappdata(kor_lent_f,'kor_lent_d',kor_lent_d);
+        setappdata(kor_lent_f,'kor_lent_a',kor_lent_a);
         kor_lent_t=uitable(kor_lent_f,'data',kor_r_,'ColumnName', kor_lent_k, 'RowName', kor_lent_h, ...
-            'Units', 'normalized', 'position', [0 0 1 1],'tag','koreliaciju_lentele');
+            'Units', 'normalized', 'position', [0 0 1 1],'tag','koreliaciju_lentele',...
+            'CellSelectionCallback', {@sklaidos_diagrama, handles});
         disp(' ');
-    catch %err; Pranesk_apie_klaida(err,'','',0);
+    catch err; Pranesk_apie_klaida(err,'','',0);
     end
 
 if ~isempty(ALLEEG_);
@@ -3761,6 +3764,19 @@ else
 end;
 drawnow;
 Ar_galima_vykdyti(hObject, eventdata, handles);
+
+function sklaidos_diagrama(hObject, eventdata, handles)
+ei = eventdata.Indices(1);
+si = eventdata.Indices(2);
+kor_lent_d=getappdata(gcf,'kor_lent_d'); d=kor_lent_d(:,ei);
+kor_lent_a=getappdata(gcf,'kor_lent_a'); a=kor_lent_a(:,si);
+kor_lent_k=get(gcbo,'ColumnName');       s=kor_lent_k{si};
+kor_lent_h=get(gcbo,'RowName');          e=kor_lent_h{ei};
+f=figure('Toolbar','none','Menubar','none','NumberTitle','off','Name',[ e ' - ' s ]);
+figure(f);
+plot(d,a,'o'); lsline;
+xlabel(e, 'Interpreter', 'none');
+ylabel(s, 'Interpreter', 'none');
 
 % --- Executes on button press in checkbox60.
 function checkbox60_Callback(hObject, eventdata, handles)
