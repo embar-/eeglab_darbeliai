@@ -44,7 +44,7 @@
 
 function EEG = eeg_interpoliuok64(EEG, varargin)
 
-if nargin > 0; Reikalingi_kanalai=varargin{1};
+if nargin > 1; Reikalingi_kanalai=varargin{1};
 else           Reikalingi_kanalai= ...
         {'Fp1' 'Fpz' 'Fp2' 'F7' 'F3' 'Fz' 'F4' 'F8' 'FC5' 'FC1' 'FC2' 'FC6' 'M1' 'T7' 'C3' 'Cz' 'C4' ... 
          'T8' 'M2' 'CP5' 'CP1' 'CP2' 'CP6' 'P7' 'P3' 'Pz' 'P4' 'P8' 'POz' 'O1' 'Oz' 'O2' 'AF7' 'AF3' ... 
@@ -52,11 +52,27 @@ else           Reikalingi_kanalai= ...
          'P5' 'P1' 'P2' 'P6' 'PO5' 'PO3' 'PO4' 'PO6' 'FT7' 'FT8' 'TP7' 'TP8' 'PO7' 'PO8' ;};
 end;
 
-if nargin > 1; Atmesti_nepasirinktus=varargin{2};
+if nargin > 2; Atmesti_nepasirinktus=varargin{2};
 else           Atmesti_nepasirinktus=0;
 end;
 
 %% Kanalų struktūra
+
+% Įsiminimas pagal semą kanalų struktūrą
+%for i=1:length(EEG.chanlocs) ;
+%    KANALU_DUOMENYS{i,1}= EEG.chanlocs(i).labels             ;
+%    KANALU_DUOMENYS{i,2}= EEG.chanlocs(i).type               ;
+%    KANALU_DUOMENYS{i,3}= EEG.chanlocs(i).theta              ;
+%    KANALU_DUOMENYS{i,4}= EEG.chanlocs(i).radius             ;
+%    KANALU_DUOMENYS{i,5}= EEG.chanlocs(i).X                  ;
+%    KANALU_DUOMENYS{i,7}= EEG.chanlocs(i).Y                  ;
+%    KANALU_DUOMENYS{i,8}= EEG.chalocs(i).Z                   ;
+%    KANALU_DUOMENYS{i,9}= EEG.chanlocs(i).sph_theta          ;
+%    KANALU_DUOMENYS{i,10}= EEG.chanlocs(i).sph_phi           ;
+%    KANALU_DUOMENYS{i,11}= EEG.chanlocs(i).sph_radius        ;
+%    KANALU_DUOMENYS{i,12}= EEG.chanlocs(i).urchan            ;
+%    KANALU_DUOMENYS{i,13}= EEG.chanlocs(i).ref               ;
+%end ;
 
 KANALU_DUOMENYS={
     'Fp1','',-17.9260000000000,0.514988888888889,80.7840137690914,26.1330144040702,-4.00108454195971,17.9260000000000,-2.69799999999999,85,1,'';
@@ -127,7 +143,7 @@ KANALU_DUOMENYS={
 
 NORIMU_KANALU_DUOMENYS=KANALU_DUOMENYS(find(ismember(KANALU_DUOMENYS(:,1),Reikalingi_kanalai)),:) ;
 
-disp([length(NORIMU_KANALU_DUOMENYS) length(Reikalingi_kanalai)]);
+% disp([length(NORIMU_KANALU_DUOMENYS) length(Reikalingi_kanalai)]);
 
 % Bandyti išlaikyti seną atskaitos sistemą
 
