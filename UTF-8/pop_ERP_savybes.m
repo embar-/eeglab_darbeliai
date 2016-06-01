@@ -935,11 +935,11 @@ for i=1:Pasirinktu_failu_N;
         
         pask_eeg_i=length(ALLEEG_);
         
-        if get(handles.checkbox59, 'Value')
-            % Jei rodyti kanalų vidurkį
+        if Naudoti_kanalu_vidurki
             ALLEEG_(pask_eeg_i).erp_data=mean(EEGTMP.erp_data,1);
             ALLEEG_(pask_eeg_i).chans={''};
-            ALLEEG_(pask_eeg_i).chanlocs(1).labels=lokaliz('mean');
+            ALLEEG_(pask_eeg_i).chanlocs(end+1).labels=lokaliz('mean');
+            ALLEEG_(pask_eeg_i).chanlocs=ALLEEG_(pask_eeg_i).chanlocs(end);
             Reikalingi_kanalai_sukaupti={};
 %             li=1+size(legendoje,1);
 %             legendoje{li,1}=Rinkmena;
@@ -1283,8 +1283,8 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
         
         DarboNr=DarboNr+1;
         Darbo_eigos_busena(handles, 'Eksportuoti į RAGU...', DarboNr, length(ALLEEG_), length(ALLEEG_));
-        eksportuoti_ragu_programai(ALLEEG_, ALLEEG_, 1, 1,KELIAS_SAUGOJIMUI,Reikalingi_kanalai);
-        
+        eksportuoti_ragu_programai(ALLEEG_, ALLEEG_, 1, 1, KELIAS_SAUGOJIMUI);
+                
     end;
     
     
@@ -1314,8 +1314,7 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
     end;
     
     %% Eksportuoti į Excel
-    % Nebaigta
-    
+    % Nebaigta    
     
     if get(handles.popupmenu10,'Value')==3;
         
@@ -1364,6 +1363,14 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
         end;
     end;
     
+    %% Eksportuoti į MAT
+    
+    if get(handles.popupmenu10,'Value')==4;
+        [ERP_MAT.Kanalai, ERP_MAT.Laikai, ERP_MAT.Rinkmenos, ERP_MAT.Amplitude_KxLxR] = ...
+            eksportuoti_erp_mat(ALLEEG_, ALLEEG_, 1, 1, KELIAS_SAUGOJIMUI);
+        assignin('base', 'ERP_MAT', ERP_MAT);
+    end;
+
 end;
 
 %% Po darbų    
@@ -1372,11 +1379,9 @@ set(handles.text_darbas,'String',' ' );
 drawnow;
 
 if and(Apdoroti_visi_tiriamieji == 1, ...
-        or(...
-        get(handles.radiobutton6,'Value') == 0 ,...
-        get(handles.checkbox_pabaigus_i_apdorotu_aplanka, 'Value') == 1 ...
-        ) ...
-        );
+        or( get(handles.radiobutton6,'Value') == 0 ,...
+            get(handles.checkbox_pabaigus_i_apdorotu_aplanka, 'Value') == 1 ) ...
+      );
     
     if ~isempty(PaskRinkmIssaugKelias);
        set(handles.edit1,'String',PaskRinkmIssaugKelias);
@@ -2620,6 +2625,8 @@ set(handles.checkbox_baigti_anksciau,'String',lokaliz('Break work'));
 set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'String',lokaliz('Go to saved files directory when completed'));
 set(handles.checkbox_pabaigus_atverti,'String',lokaliz('Load saved files in EEGLAB when completed'));
 set(handles.togglebutton1,'String', lokaliz('Cancel'));
+set(handles.popupmenu10,'Value',2);
+set(handles.popupmenu10,'String',{'Ragu' 'TXT', 'Excel', 'Matlab'});
 set(handles.popupmenu11,'String', ...
     {lokaliz('of all files'), ...
      lokaliz('by subjects as in EEG.subject variable'), ...
@@ -2627,7 +2634,7 @@ set(handles.popupmenu11,'String', ...
      lokaliz('by conditions as in EEG.condition variable'), ...
      lokaliz('by sessions as in EEG.session variable'), ...
      lokaliz('by filters, separated by semicolons')});
-
+ 
 % --- Executes on button press in pushbutton11.
 function pushbutton11_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton11 (see GCBO)
@@ -3321,7 +3328,8 @@ try
             % Jei rodyti kanalų vidurkį
             ALLEEG_(pask_eeg_i).erp_data=mean(EEGTMP.erp_data,1);
             ALLEEG_(pask_eeg_i).chans={''};
-            ALLEEG_(pask_eeg_i).chanlocs(1).labels=lokaliz('mean');
+            ALLEEG_(pask_eeg_i).chanlocs(end+1).labels=lokaliz('mean');
+            ALLEEG_(pask_eeg_i).chanlocs=ALLEEG_(pask_eeg_i).chanlocs(end);
             lngdi=1+size(legendoje,1);
             legendoje{lngdi,1}=regexprep(Rinkmena,'.set$','');
             legendoje{lngdi,2}='';            
