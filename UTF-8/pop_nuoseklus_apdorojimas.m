@@ -1909,7 +1909,6 @@ for i=1:Pasirinktu_failu_N;
 
                 EEG = eeg_checkset( EEG );
 
-                disp(get(handles.pushbutton7,'Value'));
                 Reikalingi_kanalai=get(handles.pushbutton7,'UserData');
                 Atmesti_nepasirinktus=get(handles.checkbox_atrink_kanalus2A,'Value');
                 
