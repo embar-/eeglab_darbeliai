@@ -66,13 +66,7 @@ if nargin > 4;
     folder_name=varargin{5};
 else
     folder_name='';
-end;
-if nargin > 5;    
-    Reikalingi_kanalai=varargin{6};
-else
-    Reikalingi_kanalai={};
-end;
- 
+end; 
  
 disp(' ');
 disp(' === EEG eksportavimas į tekstinį failą RAGU programai ===');
@@ -88,11 +82,6 @@ end;
 Channel62=Channel; %#ok - imporuotuojama iš RaguMontage62.mat
 Channel=struct('DataUnit', {}, 'Name', {}, 'RefName', {}, 'CoordsPhi', {}, 'CoordsRadius', {}, 'CoordsTheta', {}, 'UnitString', {}, 'ChannelColor', {});
 VISI_KANALAI_62={Channel62.Name};
-%{'Fp1' 'Fpz' 'Fp2' 'F7' 'F3' 'Fz' 'F4' 'F8' 'FC5' 'FC1' 'FC2' 'FC6' 'T7' ...
-% 'C3' 'Cz' 'C4' 'T8' 'CP5' 'CP1' 'CP2' 'CP6' 'P7' 'P3' 'Pz' 'P4' 'P8' 'POz' ...
-% 'O1' 'Oz' 'O2' 'AF7' 'AF3' 'AF4' 'AF8' 'F5' 'F1' 'F2' 'F6' 'FC3' 'FCz' 'FC4' ...
-% 'C5' 'C1' 'C2' 'C6' 'CP3' 'CPz' 'CP4' 'P5' 'P1' 'P2' 'P6' ... 
-% 'PO5' 'PO3' 'PO4' 'PO6' 'FT7' 'FT8' 'TP7' 'TP8' 'PO7' 'PO8' ;};
 EEG_filenames={};
 precision=7;
 
@@ -183,31 +172,6 @@ if length(ALLEEG) > 1 ;
         warndlg(msg, 'Nepageidaujami kanalai!' );
         %return ;
     end;
-%     min_trials = 0;
-%     if ~isequal(EEG.trials) ;
-%         msg=['Skiriasi epochų kiekis! ' ];
-%         disp(msg);
-%        
-%         min_trials=min([EEG.trials]);
-%   
-%         button = questdlg(['Skiriasi epochų kiekis!' [{}] ...
-%            [ 'Min: ' num2str(min_trials) ] ...
-%            [ 'Max: ' num2str(max([EEG.trials])) ] ...
-%            [ 'Ar suvienodinti epochų kiekį, visuose ' ] ...
-%            [ 'duomesyse paliekant tik pirmas ' num2str(min_trials) '?'] ]  , ...
-%            'Duomenys nesuderinami!', ...
-%            'Atsisakyti', 'Nevienodinti','Suvienodinti', 'Suvienodinti');  
-%
-%          if strcmp(button,'Nevienodinti');
-%              min_trials = 0;
-%          end;
-%       
-%        if strcmp(button,'Atsisakyti');
-%              disp('Atšaukta!');
-%            % feature('DefaultCharacterSet',koduote);
-%              return ;
-%          end;
-%     end; 
 elseif length(ALLEEG) == 1 ;
     ChanLocs={};
     ChanLocs(1,1:length({ALLEEG(1).chanlocs.labels}))={ALLEEG(1).chanlocs.labels};
@@ -230,7 +194,6 @@ for i=1:length(EEGLAB_ChanLocs);
    catch
       msg=['Bus praleistas kanalas: ' EEGLAB_ChanLocs(i).labels ] ;
       disp(msg);
-      %warndlg(msg,'Nepilna schema');
    end;
 end;
 ChanLocs={Channel.Name};
@@ -289,13 +252,12 @@ for i=1:length(ALLEEG) ;
         Rinkmena=[regexprep(EEG_filenames{i}, '.set$', '') '.txt'];
         Rinkmena_su_keliu=fullfile(folder_name, Rinkmena) ;
         disp([num2str(i) '/' num2str(length(ALLEEG)) ' (' num2str(round(i/length(ALLEEG) * 100)) '%): ' Rinkmena_su_keliu]);
-        %if ~isempty(Svetimi_kanalai) ;
        
         try
             EEG.data=EEG.erp_data; % EEG.erp_data is not standard EEGLAB param
             EEG.trials=1; EEG.epoch=[]; EEG.event=[];
             EEG.icaact=[]; EEG.icawinv=[]; EEG.icasphere=[]; EEG.icaweights=[]; EEG.icachansind=[]; 
-            disp(lokaliz('We use pre-processed data to speed up exporting data. Please ignore these eeg_checkset warnings:'));
+            disp(lokaliz('We use pre-processed data to speed up exporting. Please ignore eeg_checkset warnings.'));
             %lango_erp=[EEGTMP.erp_data(:,idx1:idx2,:)];
         catch 
             %lango_erp=mean([EEGTMP.data(:,idx1:idx2,:)],3);
@@ -305,20 +267,10 @@ for i=1:length(ALLEEG) ;
             error(lokaliz('Empty dataset'));
         end;
         
-        TMPEEG = pop_select(EEG,'channel',ChanLocs);
-        %end;
-        %     if min_trials > 0 ;
-        %        EEG = pop_selectevent( EEG, 'epoch',[1:min_trials] ,'deleteevents','off', 'deleteepochs','on', 'invertepochs','off');
-        %     end;
+        EEG = pop_select(EEG,'channel',ChanLocs);
         
-%         if ~isempty(TMPEEG.epoch); % TMPEEG.trials > 0 ; % size(TMPEEG.data,3) >1 %
-%             pop_export(TMPEEG, Rinkmena, 'transpose','on','elec','on','time','off','erp','on','precision',7);
-%         else
-%             pop_export(TMPEEG, Rinkmena, 'transpose','on','elec','on','time','off','erp','off','precision',7);
-%         end;        
-        
-        x = TMPEEG.data;
-        if ~isempty(TMPEEG.epoch); % TMPEEG.trials > 0 ; % size(TMPEEG.data,3) >1 %
+        x = EEG.data;
+        if ~isempty(EEG.epoch); % TMPEEG.trials > 0 ; % size(TMPEEG.data,3) >1 %
             x = mean(x, 3);
         else
             x = reshape(x, size(x,1), size(x,2)*size(x,3));
@@ -326,7 +278,7 @@ for i=1:length(ALLEEG) ;
         lentele=nan(ChN,size(x,2));
         x_n = size(x,1);
         for index = 1:x_n;
-            lbl=TMPEEG.chanlocs(index).labels;
+            lbl=EEG.chanlocs(index).labels;
             nr=find(ismember(ChanLocs,lbl));
             % disp({index lbl '>' nr});
             if length(nr) == 1;
@@ -342,8 +294,7 @@ for i=1:length(ALLEEG) ;
         
         Eksportuotos_rinkmenos{end+1}=Rinkmena;
         
-    catch err;
-        Pranesk_apie_klaida(err,'','',0);
+    catch err; Pranesk_apie_klaida(err,'','',0);
     end;
 end;
 %[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET,'retrieve',[1:length(ALLEEG)],'study',0);
@@ -373,7 +324,7 @@ fprintf(finfo_id, [ datestr(now, 'yyyy-mm-dd HH:MM:SS') ' \n\n' ] );
 fprintf(finfo_id, ['Sampling rate = ' num2str(Info.srate) ' Hz \n' ] );
 fprintf(finfo_id, ['Time start    = ' num2str(Info.xmin) ' s \n' ] );
 fprintf(finfo_id, ['Time end      = ' num2str(Info.xmax) ' s \n' ] );
-fprintf(finfo_id, ['Delta X       = %0.4f ms \n' ] , (1000 / Info.srate ) );
+fprintf(finfo_id, ['Delta X       = %0.5f ms \n' ] , (1000 / Info.srate ) );
 fprintf(finfo_id, ['Schema        =\n%s\n\n%d :\n' ], Kanalu_schemos_kelias , ChN );
 fprintf(finfo_id, ['%s ' ], Channel.Name );
 fprintf(finfo_id, ['\n\n\n%s\n\n' ], [ folder_name filesep ] );
