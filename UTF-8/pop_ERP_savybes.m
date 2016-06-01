@@ -3678,7 +3678,7 @@ try
         kor_lent_idx=zeros(1,length(kor_lent_i));
         kor_lent_l={ALLEEG_.file};
         for i=1:length(kor_lent_i);
-            g=regexp(kor_lent_l, ['^' kor_lent_i{i} '[^0-9]']); 
+            g=regexp(kor_lent_l, ['^' kor_lent_i{i} '[^0-9]']);
             n=find(arrayfun(@(x) ~isempty(g{x}), 1:length(g)));
             if length(n) == 1;
                 kor_lent_idx(i)=n;
@@ -3686,6 +3686,7 @@ try
         end;
         kor_lent_netusti=find(kor_lent_idx);
         if length(kor_lent_netusti) < 5; error('netinka'); end;
+        kor_lent_i=kor_lent_i(kor_lent_netusti);
         kor_lent_d=kor_lent_d(kor_lent_netusti,:);
         kor_lent_y=length(ERP_savyb(1).vid_ampl);
         kor_lent_a=nan(length(kor_lent_netusti),kor_lent_y);
@@ -3717,6 +3718,7 @@ try
         kor_lent_f=figure('Toolbar','none','Menubar','none','NumberTitle','off','Name',kor_lent_v);
         setappdata(kor_lent_f,'kor_lent_d',kor_lent_d);
         setappdata(kor_lent_f,'kor_lent_a',kor_lent_a);
+        setappdata(kor_lent_f,'kor_lent_i',kor_lent_i);
         kor_lent_t=uitable(kor_lent_f,'data',kor_r_,'ColumnName', kor_lent_k, 'RowName', kor_lent_h, ...
             'Units', 'normalized', 'position', [0 0 1 1],'tag','koreliaciju_lentele',...
             'CellSelectionCallback', {@sklaidos_diagrama, handles});
@@ -3768,6 +3770,7 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 function sklaidos_diagrama(hObject, eventdata, handles)
 ei = eventdata.Indices(1);
 si = eventdata.Indices(2);
+kor_lent_i=getappdata(gcf,'kor_lent_i');
 kor_lent_d=getappdata(gcf,'kor_lent_d'); d=kor_lent_d(:,ei);
 kor_lent_a=getappdata(gcf,'kor_lent_a'); a=kor_lent_a(:,si);
 kor_lent_k=get(gcbo,'ColumnName');       s=kor_lent_k{si};
@@ -3775,6 +3778,8 @@ kor_lent_h=get(gcbo,'RowName');          e=kor_lent_h{ei};
 f=figure('Toolbar','none','Menubar','none','NumberTitle','off','Name',[ e ' - ' s ]);
 figure(f);
 plot(d,a,'o'); lsline;
+hold('on');
+text(d+0.1,a+0.1,kor_lent_i);
 xlabel(e, 'Interpreter', 'none');
 ylabel(s, 'Interpreter', 'none');
 
