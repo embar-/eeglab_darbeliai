@@ -188,7 +188,12 @@ if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
                 sveikos_epochos_=arrayfun(@(i) epochu_poslinkiai(i) == round(epochu_poslinkiai(i)), 1:length(epochu_poslinkiai));
                 sveikos_epochos=find(sveikos_epochos_);
                 for nsvei=find(~sveikos_epochos_);
-                    sk(nsvei)=sk(sveikos_epochos(find(sveikos_epochos>nsvei,1,'first')));
+                    skrtm1=sk(sveikos_epochos(find(sveikos_epochos>nsvei,1,'first')));
+                    if isempty(skrtm1);
+                        warning('Kažkuris vienas įvykis gali nušokti!');
+                    else
+                        sk(nsvei)=skrtm1;
+                    end;
                 end;
             end;
             epochos=[EEG1.event.epoch];
