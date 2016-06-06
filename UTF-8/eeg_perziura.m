@@ -272,7 +272,7 @@ else
     rms1=std(data1,[],1);
     rms2=std(data2,[],1);
 end;
-y_koef=round(36*sqrt(sqrt(mean([rms1(~isnan(rms1)) rms2(~isnan(rms2))]))));
+y_koef=round(36*sqrt(sqrt(max([rms1(~isnan(rms1)) rms2(~isnan(rms2)) 0]))));
 if or(size(y_koef) ~= [1 1], ismember(y_koef, [0 NaN])) ; 
     y_koef=600 / max(EEG1.nbchan, EEG2.nbchan); 
 end;
