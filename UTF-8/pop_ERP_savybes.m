@@ -740,7 +740,7 @@ drawnow;
 %[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
 
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko
-tic
+pradzios_laikas=tic;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Galima naudoti nukreipiant į seniau aprašytas funkcijas, tačiau tuomet nebus atsižvelgiama į pasirinktus kanalus ir įvykius
@@ -1470,7 +1470,7 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
     % Parodyk, kiek laiko uztruko
     disp(' ');
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
-    toc ;
+    toc(pradzios_laikas) ;
     disp(['Atlikta']);
     
 else

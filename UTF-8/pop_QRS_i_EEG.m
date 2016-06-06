@@ -691,7 +691,7 @@ end;
 STUDY = []; CURRENTSTUDY = 0;
 
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko
-tic
+pradzios_laikas=tic;
 
 DarboNr=0;
 PaskutinioIssaugotoDarboNr=0;
@@ -1385,7 +1385,7 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
     % Parodyk, kiek laiko uztruko
     disp(' ');
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
-    toc ;
+    toc(pradzios_laikas) ;
     disp(['Atlikta']);
     
 else

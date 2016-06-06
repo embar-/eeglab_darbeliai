@@ -623,7 +623,7 @@ end;
 STUDY = []; CURRENTSTUDY = 0;
 
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko
-tic
+pradzios_laikas=tic;
 
 DarboNr=str2num(get(handles.text_atlikta_darbu,'String'));
 PaskutinioIssaugotoDarboNr=0;
@@ -817,7 +817,7 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, isempty(Sukamos_rinkmn) ),...
     % Parodyk, kiek laiko uztruko
     disp(' ');
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
-    toc ;
+    toc(pradzios_laikas) ;
     disp(['Atlikta']);
     
 else
