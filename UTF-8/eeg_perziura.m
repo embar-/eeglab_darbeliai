@@ -254,7 +254,10 @@ if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
             ivTipai={EEG1.event.type};
             if EEG2.trials <= 1;
                 EEG1.event(ismember(ivTipai,{'boundary'}))=[];
-            end;            
+            end;
+            if ~isempty(EEG1.times(diff(EEG1.times) < 0)) || ~isempty(EEG2.times(diff(EEG2.times) < 0));
+                warning('Įrašai nedera tarpusavyje! Matysite išdarkytą vaizdą!');
+            end;
         end;
         EEG1.xmin=0.001*min(EEG1.times); if isempty(EEG1.xmin); EEG1.xmin=NaN; end;
         EEG1.xmax=0.001*max(EEG1.times); if isempty(EEG1.xmax); EEG1.xmax=0; end;
@@ -909,7 +912,7 @@ zymekliai_pilni = isempty(EEG1.data) || isempty(EEG2.data) || ~isempty(getappdat
 for i=[1 2];
     eval([ 'EEG=EEG' num2str(i) ';' ]);
     ix=find(EEG.times(EEG.times <= (LX(2)+2/EEG.srate)*1000) >= (LX(1)-2/EEG.srate)*1000);
-    EEG.grafikoX=[0.001*EEG.times(ix) 0]; %disp([i min(EEG.grafikoX(1:end-1)) max(EEG.grafikoX(1:end-1))]);
+    EEG.grafikoX=[0.001*EEG.times(ix) NaN]; %disp([i min(EEG.grafikoX(1:end-1)) max(EEG.grafikoX(1:end-1))]);
     iy=[max(ceil(LY(1)),1):min(floor(LY(2)),EEG.nbchan)];
     EEG.grafikoY=EEG.data(iy,ix) ./ getappdata(parentAx,'y_koef');
     if isempty(getappdata(parentAx,'apversti'));
@@ -923,7 +926,7 @@ if ~isempty(getappdata(parentAx,'derinti_Y'))
     derinti_Y=1;
 elseif zymekliai_pilni;
     derinti_Y=0;
-elseif any(ismember(EEG1.grafikoX,EEG2.grafikoX));
+elseif any(ismember(EEG1.grafikoX(1:end-1),EEG2.grafikoX(1:end-1)));
     derinti_Y=2;
 else
     derinti_Y=0;
