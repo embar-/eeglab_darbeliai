@@ -232,17 +232,24 @@ try
     par_pav=par_pav(ids);
     par_dat={ saranka.data };       par_dat=par_dat(ids);
     par_kom={ saranka.komentaras }; par_kom=par_kom(ids);
-    if ~isempty(par_pav); yra_isimintu_rinkiniu=1 ; end; 
+    if ~isempty(par_pav); yra_isimintu_rinkiniu=1 ; end;
+    meniu_nuostatos_ikelimo_grupe=handles.meniu_nuostatos_ikelti;
     for i=1:length(par_pav);
-        try
-        uimenu(handles.meniu_nuostatos_ikelti,...
+        if (mod(i,20) == 1) && (length(par_pav) > 20*ceil(i/20)) ;
+            meniu_nuostatos_ikelimo_grupe_kita=...
+                uimenu(meniu_nuostatos_ikelimo_grupe,'Label','- - >',...
+                'Separator', 'on');
+        end;
+        try uimenu(meniu_nuostatos_ikelimo_grupe,...
             'Label', ['<html><font size="-2" color="#ADD8E6">' par_dat{i} '</font> ' ...
             par_pav{i} ' <br><font size="-2" color="#ADD8E6">' par_kom{i} '</font></html>'],...
-            'Separator',fastif(i==1,'on','off'),...
-            'Accelerator',fastif(i<10, num2str(i), ''),...
+            'Separator','off', 'Accelerator',fastif(i<10, num2str(i), ''),...
             'Callback',{@nukreipimas_gui1, handles, 'drb_parinktys', 'ikelti',darbas,par_pav{i}});
         catch err0;
             Pranesk_apie_klaida(err0, 'pop_pervadinimas.m', '-', 0);
+        end;
+        if (mod(i,20) == 0) && (length(par_pav) > i);
+            meniu_nuostatos_ikelimo_grupe=meniu_nuostatos_ikelimo_grupe_kita;
         end;
     end;
 catch %err; Pranesk_apie_klaida(err, 'pop_QRS_i_EEG.m', '-', 0);
