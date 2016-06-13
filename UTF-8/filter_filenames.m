@@ -188,6 +188,7 @@ if ismember('*',dirstr);
                 dir3=dir2;
                 dir2=[dir21  dir22 filesep dir2]; %#ok
             end;
+            if isempty(dir1); dir1='.'; end;
             %disp([dir1 filesep dir21 dir22 ' x ' dir3]);
             dir_out=dir([dir1 filesep dir21 dir22]);
             files_and_dirs={dir_out.name};
