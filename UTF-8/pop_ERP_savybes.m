@@ -3711,6 +3711,7 @@ try
                 kor_lent_a(i,ki)=ERP_savyb(tmpid).vid_ampl(ii);
             end;
         end;
+        if isempty(kor_lent_k); error('netinka'); end;
         [kor_r,kor_p]=corr(kor_lent_d,kor_lent_a,'rows','pairwise','type','Spearman'); % 'Pearson' arba 'Spearman'
         kor_r_=num2cell(kor_r);
         disp(' ');
@@ -3718,9 +3719,13 @@ try
         %disp(' '); disp([ 'r' kor_lent_k ; kor_lent_h' kor_r_]);
         disp(' ');
         for i=1:length(kor_lent_h);
-            for kor_p_i=find(kor_p(i,:)<0.05);
-                fprintf('r = %1.3f, p = %1.4f - %s <-> %s\n', kor_r(i,kor_p_i), kor_p(i,kor_p_i), kor_lent_h{i}, kor_lent_k{kor_p_i});
-                kor_r_{i,kor_p_i}=['<html><table bgcolor=yellow><tr><td>' num2str(kor_r(i,kor_p_i)) '</td></tr></table><html>' ];
+            for kor_p_i=find(kor_p(i,:)<=0.05);
+                if kor_p(i,kor_p_i) <= 0.05 / ( length(kor_lent_h) * length(kor_lent_h) )
+                     kor_spalva='red';  kor_ryski='*';
+                else kor_spalva='yellow'; kor_ryski=' ';
+                end;
+                fprintf('r = %1.3f, p = %1.4f - %s <-> %s %s\n', kor_r(i,kor_p_i), kor_p(i,kor_p_i), kor_lent_h{i}, kor_lent_k{kor_p_i}, kor_ryski);
+                kor_r_{i,kor_p_i}=['<html><table bgcolor=' kor_spalva '><tr><td>' num2str(kor_r(i,kor_p_i)) '</td></tr></table><html>' ];
             end;
         end;
         kor_lent_f=figure('Toolbar','none','Menubar','none','NumberTitle','off','Name',kor_lent_v);
@@ -3787,7 +3792,7 @@ f=figure('Toolbar','none','Menubar','none','NumberTitle','off','Name',[ e ' - ' 
 figure(f);
 plot(d,a,'o'); lsline;
 hold('on');
-text(d+0.1,a+0.1,kor_lent_i);
+text(d+diff(get(gca,'xlim'))/100,a+diff(get(gca,'ylim'))/50,kor_lent_i);
 xlabel(e, 'Interpreter', 'none');
 ylabel(s, 'Interpreter', 'none');
 
