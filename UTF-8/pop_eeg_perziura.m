@@ -210,9 +210,24 @@ if isempty(EEG1.data);
     end;
 end;
 
-if isempty(getappdata(a,'EEG1'));
-    delete(f);
-    return;
+EEG1_appdata=getappdata(a,'EEG1');
+if isempty(EEG1_appdata);
+    delete(f); return;
+end;
+
+tik_prasmingas=0;
+if isfield(g,'tik_prasmingas'); tik_prasmingas=g.tik_prasmingas; end;
+if tik_prasmingas;
+    try 
+        if isempty(EEG1_appdata.data);
+            error('Neprasmingas');
+        end;
+    catch
+        [wrn_b]=warning('off','backtrace');
+        warning(lokaliz('Empty dataset'));
+        warning(wrn_b);
+        delete(f); return;
+    end;
 end;
 
 set(f,'Visible','on');
