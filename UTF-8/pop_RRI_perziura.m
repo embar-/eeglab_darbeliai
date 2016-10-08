@@ -1644,7 +1644,9 @@ set(handles.figure1,'pointer','watch');
 SeniLaikai=get(handles.axes_rri,'UserData');
 Senas_EKG=handles.EKG;
 Senas_EKG_=handles.EKG_laikai;
-Senas_EKG_HZ=handles.EKG_Hz;
+try Senas_EKG_HZ=handles.EKG_Hz;
+catch, Senas_EKG_HZ=[];
+end;
 try
     EKG=dlmread(rinkmena);
     if size(EKG,1) > 1; EKG=EKG' ; end;
@@ -1707,7 +1709,9 @@ set(handles.figure1,'pointer','watch');
 SeniLaikai=get(handles.axes_rri,'UserData');
 Senas_EKG=handles.EKG;
 Senas_EKG_=handles.EKG_laikai;
-Senas_EKG_HZ=handles.EKG_Hz;
+try Senas_EKG_HZ=handles.EKG_Hz;
+catch, Senas_EKG_HZ=[];
+end;
 try
     EEG = eeg_ikelk(p,f);
     %assignin('base','EEG',EEG);
@@ -1853,7 +1857,9 @@ set(handles.figure1,'pointer','watch');
 SeniLaikai=get(handles.axes_rri,'UserData');
 Senas_EKG=handles.EKG;
 Senas_EKG_=handles.EKG_laikai;
-Senas_EKG_HZ=handles.EKG_Hz;
+try Senas_EKG_HZ=handles.EKG_Hz;
+catch, Senas_EKG_HZ=[];
+end;
 try
     Labchart_data=load(rinkmena,'-mat');
     %assignin('base','Labchart_data',Labchart_data);
@@ -2037,7 +2043,9 @@ set(handles.figure1,'pointer','watch');
 SeniLaikai=get(handles.axes_rri,'UserData');
 Senas_EKG=handles.EKG;
 Senas_EKG_=handles.EKG_laikai;
-Senas_EKG_HZ=handles.EKG_Hz;
+try Senas_EKG_HZ=handles.EKG_Hz;
+catch, Senas_EKG_HZ=[];
+end;
 try
     acq_data=load_acq(rinkmena);
     %assignin('base','acq_data',acq_data);
