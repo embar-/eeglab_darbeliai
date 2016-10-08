@@ -2734,7 +2734,7 @@ else
 end;
 bd=get(h,'BrushData');
 %assignin('base','bd',bd);
-bd=sum(cell2mat(bd),1);
+bd=sum(cell2mat(arrayfun(@(x) double(bd{x}), 1:length(bd), 'UniformOutput', false)'),1);
 Laikai=Laikai(find(bd));
 t=max(Laikai(find(Laikai < (xvid-0.001))));
 optimalus_rodymasx(hObject, eventdata, handles, t, 0);
@@ -2755,7 +2755,7 @@ else
 end;
 bd=get(h,'BrushData');
 %assignin('base','bd',bd);
-bd=sum(cell2mat(bd),1);
+bd=sum(cell2mat(arrayfun(@(x) double(bd{x}), 1:length(bd), 'UniformOutput', false)'),1);
 Laikai=Laikai(find(bd));
 t=min(Laikai(find(Laikai > (xvid+0.001))));
 optimalus_rodymasx(hObject, eventdata, handles, t, 0);
