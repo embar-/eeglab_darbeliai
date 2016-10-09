@@ -48,6 +48,8 @@ switch lower(uzklausa)
         varargout=drb_uzklausa_kanalai(varargin{2:end});
     case {'katalogas'}
         varargout=drb_uzklausa_katalogas(varargin{2:end});
+    case {'papildiniai'}
+        varargout=drb_uzklausa_papildiniai(varargin{2:end});
     otherwise
         warning(lokaliz('Netinkami parametrai'));
         help(mfilename);
@@ -148,7 +150,8 @@ if ismember('boundary',bendri_ivykiai);
     bendri_ivykiai=bendri_ivykiai(i);
 end;
 if isempty(visi_galimi_ivykiai);
-    warndlg(lokaliz('No events found.'),lokaliz('Selection of events'));
+    wrnmsg=[lokaliz('No events found.') drb_uzklausa_papildiniai];
+    warndlg(wrnmsg,lokaliz('Selection of events'));
     return;
 end;
 pateikiami_ivykiai={};
@@ -226,7 +229,8 @@ pasirinkti_kanalai={{}};
 
 [~,visi_galimi_kanalai,bendri_kanalai]=eeg_kanalu_sarasas (katalogas, rinkmenos);
 if isempty(visi_galimi_kanalai);
-    warndlg(lokaliz('No channels found.'),lokaliz('Selection of channels'));
+    wrnmsg=[lokaliz('No channels found.') drb_uzklausa_papildiniai];
+    warndlg(wrnmsg,lokaliz('Selection of channels'));
     return;
 end;
 pateikiami_kanalai={};
@@ -284,3 +288,13 @@ end;
 pasirinkti_kanalai_idx_=pasirinkti_kanalai_idx(find(ismember(pasirinkti_kanalai_idx, [pateikiami_bendri_v pateikiami_nebendri_v])==0));
 pasirinkti_kanalai={unique({pasirinkti_kanalai{:} pateikiami_kanalai{pasirinkti_kanalai_idx_}})};
 
+
+function [pranesimas]=drb_uzklausa_papildiniai(varargin)
+pranesimas={};
+nera_fileio = (exist('ft_read_header','file') ~= 2);
+nera_biosig = (exist('sopen','file') ~= 2);
+if nera_fileio || nera_biosig;
+    pranesimas={pranesimas [ lokaliz('Pabandykite idiegti papildinius') ':' ] };
+    if nera_fileio; pranesimas=[pranesimas 'FILEIO']; end;
+    if nera_biosig; pranesimas=[pranesimas 'BIOSIG']; end;
+end;
