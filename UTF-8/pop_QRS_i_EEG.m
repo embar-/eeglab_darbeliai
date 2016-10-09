@@ -776,7 +776,7 @@ for i=1:Pasirinktu_failu_N;
                             if isempty(Reikalingas_kanalas);
                                 error([lokaliz('Channel') '?' ]);
                             end;
-                            EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1);
+                            EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1,1);
                             EEG=QRS_is_EEG(EEG,EKG_kanalas,QRS_ivykis,QRS_algoritmas,0);
                             
                         case 2
