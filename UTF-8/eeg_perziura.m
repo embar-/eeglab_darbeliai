@@ -268,23 +268,6 @@ if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
     end;
 end;
 
-% Y mažinimo koeficientas
-%disp('Tinkamo Y koeficiento radimas...');
-data1=EEG1.data(~isnan(EEG1.data));
-data2=EEG2.data(~isnan(EEG2.data));
-if ~exist('rms','file') == 2 ;
-    rms1=rms(data1);
-    rms2=rms(data2);
-else
-    rms1=std(data1,[],1);
-    rms2=std(data2,[],1);
-end;
-y_koef=round(36*sqrt(sqrt(max([rms1(~isnan(rms1)) rms2(~isnan(rms2)) 0]))));
-if or(size(y_koef) ~= [1 1], ismember(y_koef, [0 NaN])) ; 
-    y_koef=600 / max(EEG1.nbchan, EEG2.nbchan); 
-end;
-setappdata(a,'y_koef',y_koef);
-
 if ~isempty(getappdata(a,'zymeti'));
     %assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
     disp('Aptinkami EEG1 ir EEG2 laiko atitikmenys...');
@@ -316,19 +299,18 @@ end;
 % assignin('base','l1',l1);
 % assignin('base','l2',l2);
 if isequal(l1,l2);
-    set(a,'YTick', 1:length(l1));
+    Kanalu_N=length(l1);
+    Kanalu_pav=l1;
     set(a,'YTickLabel', l1);
 else
     if isempty(l2)
         if isempty(EEG2.data);
-            set(a,'YTick', 1:length(l1));
-            set(a,'YTickLabel', l1);
+            Kanalu_pav=l1;
         else % FIXME
         end;
     elseif isempty(l1);
         if isempty(EEG1.data);
-            set(a,'YTick', 1:length(l2));
-            set(a,'YTickLabel', l2);
+            Kanalu_pav=l2;
         else % FIXME
         end;
     elseif iscellstr(l1) && (length(unique(l1)) == size(EEG1.data,1)) && ...
@@ -340,8 +322,7 @@ else
             end;
             EEG1.data=data1;
             EEG1.nbchan=EEG2.nbchan;
-            set(a,'YTick', 1:length(l2));
-            set(a,'YTickLabel', l2);
+            Kanalu_pav=l2;
         elseif ~any(~ismember(l2,l1));
             data2=nan(length(l1),size(EEG2.data,2));
             for i=1:length(l2);
@@ -349,8 +330,7 @@ else
             end;
             EEG2.data=data2;
             EEG2.nbchan=EEG1.nbchan;
-            set(a,'YTick', 1:length(l1));
-            set(a,'YTickLabel', l1);
+            Kanalu_pav=l1;
         %elseif EEG.urchanlocs
         else
             if length(l1) > length(l2); k1=l1; k2=l2; else  k1=l2; k2=l1; end;
@@ -373,20 +353,39 @@ else
             end;
             EEG1.data=data1; EEG1.nbchan=n;
             EEG2.data=data2; EEG2.nbchan=n;
-            set(a,'YTick', 1:n);
-            set(a,'YTickLabel', l);
+            Kanalu_pav=l;
         end;
     %elseif % FIXME
             %isempty([EEG1.chanlocs.urchan]) && ~isempty([EEG2.chanlocs.urchan])
             %l1([EEG2.chanlocs.urchan])
     elseif length(l1) >= length(l2);
-            set(a,'YTick', 1:length(l1));
-            set(a,'YTickLabel', l1);
+            Kanalu_pav=l1;
     else
-            set(a,'YTick', 1:length(l2));
-            set(a,'YTickLabel', l2);
+            Kanalu_pav=l2;
     end;
 end;
+Kanalu_N=length(Kanalu_pav);
+set(a,'YTick', 1:Kanalu_N);
+set(a,'YTickLabel', Kanalu_pav);
+
+% Y mažinimo koeficientas
+%disp('Tinkamo Y koeficiento radimas...');
+data1=EEG1.data(~isnan(EEG1.data));
+data2=EEG2.data(~isnan(EEG2.data));
+if ~exist('rms','file') == 2 ;
+    rms1=rms(data1);
+    rms2=rms(data2);
+else
+    rms1=std(data1,[],1);
+    rms2=std(data2,[],1);
+end;
+rms12=max([rms1(~isnan(rms1)) rms2(~isnan(rms2)) 0]);
+y_koef=max(1,round(50*max(sqrt(sqrt(sqrt(Kanalu_N))),0.1)*log(sqrt(rms12))));
+if or(size(y_koef) ~= [1 1], ismember(y_koef, [0 NaN]));
+    y_koef=round(100*sqrt(sqrt(length(get(a,'YTick')))));
+end;
+setappdata(a,'y_koef',y_koef);
+
 
 function idx=artimiausi(x1,x2,skirtumas)
 x1=x1(:); if size(x1,1) == 1; x1=x1'; end;
