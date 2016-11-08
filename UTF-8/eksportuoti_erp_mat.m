@@ -1,7 +1,7 @@
-% eksportuoti_ragu_programai()
-% eksportuoti_ragu_programai(ALLEEG, EEG)
+% eksportuoti_erp_mat()
+% eksportuoti_erp_mat(ALLEEG, EEG)
 %
-% EEG eksportavimas į tekstinį failą RAGU programai
+% ERP eksportavimas į MAT failą
 %
 %
 % (C) 2014-2016 Mindaugas Baranauskas
@@ -40,8 +40,13 @@
 %
 %%
  
-function eksportuoti_ragu_programai(varargin)
- 
+function [ChanLocs, ERP_laikai, Eksportuotos_rinkmenos, ERP_lentele]=eksportuoti_erp_mat(varargin)
+
+ERP_laikai=[];
+Eksportuotos_rinkmenos={};
+ERP_lentele=[];
+ChanLocs={};
+
 if nargin > 0;    
     ALLEEG=varargin{1};
 else
@@ -67,23 +72,14 @@ if nargin > 4;
 else
     folder_name='';
 end; 
- 
+
 disp(' ');
-disp(' === EEG eksportavimas į tekstinį failą RAGU programai ===');
+disp(' === ERP eksportavimas į MAT rinkmeną ===');
  
 % turi būti paleista EEGLAB programa
 %eeglab redraw;
 
-try    load(which('RaguMontage62.mat'));
-catch
-    warning('Nepavyko rasti RaguMontage62.mat');
-    return;
-end;
-Channel62=Channel; %#ok - imporuotuojama iš RaguMontage62.mat
-Channel=struct('DataUnit', {}, 'Name', {}, 'RefName', {}, 'CoordsPhi', {}, 'CoordsRadius', {}, 'CoordsTheta', {}, 'UnitString', {}, 'ChannelColor', {});
-VISI_KANALAI_62={Channel62.Name};
 EEG_filenames={};
-precision=7;
 
 % Duomenų įkėlimas
 button='Atverti naujus';
@@ -151,7 +147,6 @@ if length(ALLEEG) > 1 ;
         warndlg(msg, 'Duomenys nesuderinami!' );
         return ;
     end;
-    ChanLocs={};
     for i=1:length(ALLEEG);  
         ChanLocs(i,1:length({ALLEEG(1).chanlocs.labels}))={ALLEEG(i).chanlocs.labels};
     end;
@@ -164,73 +159,32 @@ if length(ALLEEG) > 1 ;
             return ;
         end;
     end;
-    Svetimi_kanalai=setdiff(upper(ChanLocsUniq),intersect(upper(VISI_KANALAI_62),upper(ChanLocsUniq)));
-    if ~isempty(Svetimi_kanalai) ;
-        %msg=['Kanalai, kurie neturi atitikmens Ragu schemoje: ' Svetimi_kanalai 'Kanalų atrinkimui galite pasinaudoti tam skirta funkcija ' 'per meniu Darbeliai > Nuoseklus apdorojimas' ] ;
-        msg=['Kai kurie kanalai neturi atitikmens Ragu schemoje: '  Svetimi_kanalai  'Jie nebus eksportuojami.' ] ;
-        disp(char(msg));
-        warndlg(msg, 'Nepageidaujami kanalai!' );
-        %return ;
-    end;
 elseif length(ALLEEG) == 1 ;
-    ChanLocs={};
     ChanLocs(1,1:length({ALLEEG(1).chanlocs.labels}))={ALLEEG(1).chanlocs.labels};
     ChanLocsUniq=unique(ChanLocs)';
-    Svetimi_kanalai=setdiff(upper(ChanLocsUniq),intersect(upper(VISI_KANALAI_62),upper(ChanLocsUniq)));
-    if ~isempty(Svetimi_kanalai) ;
-        %msg=['Kanalai, kurie neturi atitikmens Ragu schemoje: ' Svetimi_kanalai 'Kanalų atrinkimui galite pasinaudoti tam skirta funkcija ' 'per meniu Darbeliai > Nuoseklus apdorojimas' ] ;
-        msg=['Kai kurie kanalai neturi atitikmens Ragu schemoje: ' Svetimi_kanalai 'Jie nebus eksportuojami.' ] ;
-        disp(char(msg));
-        warndlg(msg, 'Nepageidaujami kanalai!' );
-        %return ;
-    end;
+else
+    error('internal error');
 end;
 
-% Kanalų struktūra
-EEGLAB_ChanLocs=EEG(1).chanlocs;
-for i=1:length(EEGLAB_ChanLocs);
-   try
-      Channel(1+length(Channel))=Channel62(find(ismember(upper([{Channel62.Name}]),upper(EEGLAB_ChanLocs(i).labels))));
-   catch
-      msg=['Bus praleistas kanalas: ' EEGLAB_ChanLocs(i).labels ] ;
-      disp(msg);
-   end;
-end;
-ChanLocs={Channel.Name};
-ChN=length(Channel);
+% Kanalų kiekis
+ChanLocs=ChanLocs(1,:);
+ChN=size(ChanLocs,2);
 
-% Rašymo formatas
-strprintf = '';
-for index = 1:ChN;
-    strprintf = [ strprintf '%.' num2str(precision) 'f\t' ];
-end;
-strprintf(end) = 'n';
-
+ERP_laikai=ALLEEG(1).times;
 
 % Paklausti, kur saugoti duomenis
 try
     if isempty(folder_name);
-    folder_name = uigetdir(pwd, 'Pasirinkite aplanką, į kurį eksportuoti EEG duomenis tekstiniu pavidalu') ;
+    folder_name = uigetdir(pwd, 'Pasirinkite aplanką, į kurį eksportuoti SĮSP duomenis MAT rinkmenoje') ;
     end;
-    new_folder=fullfile(folder_name, 'info');
-    if ~isequal(exist(new_folder,'dir'),7);
-        try mkdir(new_folder); catch; end;
-    end;
-    %cd(folder_name) ;
-    disp(' ');
-    disp('Duomenys bus rašomi į:');
-    disp(folder_name);
 catch
     disp('Atšaukta!');
     return ;
 end;
  
- 
- 
-% Eksportavimas pačių EEG duomenų
+% Lentelės sukūrimas
 disp(' ');
-disp('Eksportuojama...');
-Eksportuotos_rinkmenos={};
+disp('Kuriama lentelė...');
 for i=1:length(ALLEEG) ;
     try
         EEG=ALLEEG(i);
@@ -267,8 +221,6 @@ for i=1:length(ALLEEG) ;
             error(lokaliz('Empty dataset'));
         end;
         
-        EEG = pop_select(EEG,'channel',ChanLocs);
-        
         x = EEG.data;
         if ~isempty(EEG.epoch); % TMPEEG.trials > 0 ; % size(TMPEEG.data,3) >1 %
             x = mean(x, 3);
@@ -288,100 +240,24 @@ for i=1:length(ALLEEG) ;
             end;
         end;
         
-        fid = fopen(Rinkmena_su_keliu, 'w');
-        fprintf(fid, strprintf, lentele);
-        fclose(fid);
-        
         Eksportuotos_rinkmenos{end+1}=Rinkmena;
+        ERP_lentele(1:size(lentele,1),1:size(lentele,2),length(Eksportuotos_rinkmenos))=lentele;
         
     catch err; Pranesk_apie_klaida(err,'','',0);
     end;
 end;
-%[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, CURRENTSET,'retrieve',[1:length(ALLEEG)],'study',0);
- 
-Info.srate=EEG(1).srate ;
-Info.pnts=EEG(1).pnts ;
-Info.trials=EEG(1).trials ;
-Info.xmin=EEG(1).xmin ;
-Info.xmax=EEG(1).xmax ;
- 
+
+ERP_MAT.Kanalai   = ChanLocs;
+ERP_MAT.Laikai    = ERP_laikai;
+ERP_MAT.Rinkmenos = Eksportuotos_rinkmenos;
+ERP_MAT.Amplitude_KxLxR = ERP_lentele; %#ok
+mat_file=fullfile (folder_name, ['ERP_'  datestr(now, 'yyyy-mm-dd_HHMMSS') '.mat']);
+
 disp(' ');
-disp(['Delta X = ' num2str(1000 / Info.srate ) ' ms']);
-disp(' ');
- 
- 
-% Eksportavimas kanalų padėčių sąrašo
-disp(' ');
-disp('Eksportuojama kanalų schema...');
- 
-%Kanalu_schemos_kelias=fullfile( pwd, [ '_' num2str(ChN) '_kan_padetys_' datestr(now, 'yyyy-mm-dd_HHMMSS') '.mat' ] ) ;
-Kanalu_schemos_kelias=fullfile( folder_name, 'info' , [ 'Schema_' num2str(ChN) '.mat' ] ) ;
-save(Kanalu_schemos_kelias ,'Channel', 'EEGLAB_ChanLocs', 'Info');
- 
-info_file=fullfile (folder_name, 'info', ['Ragu_duomenu_'  datestr(now, 'yyyy-mm-dd_HHMMSS') '.txt']);
-finfo_id = fopen(info_file, 'w');
-fprintf(finfo_id, [ datestr(now, 'yyyy-mm-dd HH:MM:SS') ' \n\n' ] );
-fprintf(finfo_id, ['Sampling rate = ' num2str(Info.srate) ' Hz \n' ] );
-fprintf(finfo_id, ['Time start    = ' num2str(Info.xmin) ' s \n' ] );
-fprintf(finfo_id, ['Time end      = ' num2str(Info.xmax) ' s \n' ] );
-fprintf(finfo_id, ['Delta X       = %0.5f ms \n' ] , (1000 / Info.srate ) );
-fprintf(finfo_id, ['Schema        =\n%s\n\n%d :\n' ], Kanalu_schemos_kelias , ChN );
-fprintf(finfo_id, ['%s ' ], Channel.Name );
-fprintf(finfo_id, ['\n\n\n%s\n\n' ], [ folder_name filesep ] );
-for i=1:length(Eksportuotos_rinkmenos) ;
-    if (exist(fullfile(folder_name,Eksportuotos_rinkmenos{i})) == 2);
-        fprintf(finfo_id, [ '%s \n' ], Eksportuotos_rinkmenos{i} );
-    end;
-end;
-fclose(finfo_id);
-try
-    open(info_file);
-catch err;
-    disp(err.message);
-end;
- 
-disp(' ');
-disp('Kanalų schemą rasite');
-disp(Kanalu_schemos_kelias);
+disp(lokaliz('Duomenis rasite rinkmenoje'));
+disp(mat_file);
+save(mat_file, 'ERP_MAT');
+
 disp(' ');
 disp('Atlikta!');
 disp(' ');
- 
- 
- 
-if and(~(exist('Ragu.m','file') == 2) , (exist('ragu_diegimas.m','file') == 2) );
- 
-      button = questdlg('Ar norėtumėte įdiegti Ragu?' , ...
-           'RAGU programa nerasta!', ...
-           'Atsisakyti', 'Diegti','Diegti');  
- 
-         if strcmp(button,'Diegti');
-             try
-                ragu_diegimas;
-             catch
-                msg=['Klaida bandant diegti Ragu.' ];
-                disp(msg);
-                warndlg(msg, 'Ragu diegimas' );
-                return ;
-             end
-         end;
-end;
- 
-if (exist('Ragu.m','file') == 2) ;
- 
-      button = questdlg('Atverti Ragu?'  , ...
-           'Ar norite atverti RAGU?', ...
-           'Atsisakyti', 'Atverti','Atverti');  
- 
-         if strcmp(button,'Atverti');
-             try
-                Ragu;
-             catch
-                msg='Klaida bandant atverti Ragu.';
-                disp(msg);
-                warndlg(msg, 'Atverti Ragu' );
-                return ;
-             end
-         end;
-end;
-

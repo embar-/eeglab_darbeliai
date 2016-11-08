@@ -691,7 +691,7 @@ end;
 STUDY = []; CURRENTSTUDY = 0;
 
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko
-tic
+pradzios_laikas=tic;
 
 DarboNr=0;
 PaskutinioIssaugotoDarboNr=0;
@@ -776,7 +776,7 @@ for i=1:Pasirinktu_failu_N;
                             if isempty(Reikalingas_kanalas);
                                 error([lokaliz('Channel') '?' ]);
                             end;
-                            EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1);
+                            EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1,1);
                             EEG=QRS_is_EEG(EEG,EKG_kanalas,QRS_ivykis,QRS_algoritmas,0);
                             
                         case 2
@@ -949,7 +949,7 @@ for i=1:Pasirinktu_failu_N;
                     kiti_kod    = Ivykiai0(rodykles_kt);
                     
                     Reikalingas_kanalas=get(handles.text_kanal,'TooltipString');
-                    EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1);
+                    EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1,1);
                     if isempty(EKG_kanalas); % nors nenurodytas kanalas, vis tiek ieškoti 'EKG'
                         EKG_kanalas=find(ismember({EEG.chanlocs.labels},'EKG')==1);
                     end;
@@ -1385,7 +1385,7 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
     % Parodyk, kiek laiko uztruko
     disp(' ');
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
-    toc ;
+    toc(pradzios_laikas) ;
     disp(['Atlikta']);
     
 else

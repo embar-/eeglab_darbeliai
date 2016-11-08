@@ -1367,7 +1367,7 @@ end;
 STUDY = []; CURRENTSTUDY = 0;
 
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko
-tici=tic;
+pradzios_laikas=tic;
 f=statusbar(get(handles.pushbutton1,'String'));
 statusbar('off',f);
 
@@ -1376,7 +1376,7 @@ for i=1:Pasirinktu_failu_N;
     [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(KELIAS,Rinkmena);
     RinkmenaAtverimuiSuKeliu=fullfile(KELIAS_, Rinkmena_);
     % statusbar
-    tok=toc(tici);
+    tok=toc(pradzios_laikas);
     p=(i-1)/Pasirinktu_failu_N;
     if and(tok>1,p<0.5);
         statusbar('on',f);
@@ -1448,7 +1448,7 @@ end;
  % Parodyk, kiek laiko uztruko
     disp(' ');
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
-    toc(tici);
+    toc(pradzios_laikas);
     disp(lokaliz('Done'));
     
 if ishandle(f)

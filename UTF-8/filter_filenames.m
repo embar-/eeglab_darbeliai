@@ -148,7 +148,7 @@ if ismember(pathsep,dir_);
     loc1 = [1 seplocs(1:end-1)+1];
     loc2 = seplocs(1:end)-1;
     pathfolders = arrayfun(@(a,b) dir_(a:b), loc1, loc2, 'UniformOutput', false);
-    %disp(pathfolders);
+    %disp(pathfolders');
 else
     pathfolders={dir_};
 end;
@@ -188,6 +188,7 @@ if ismember('*',dirstr);
                 dir3=dir2;
                 dir2=[dir21  dir22 filesep dir2]; %#ok
             end;
+            if isempty(dir1); dir1='.'; end;
             %disp([dir1 filesep dir21 dir22 ' x ' dir3]);
             dir_out=dir([dir1 filesep dir21 dir22]);
             files_and_dirs={dir_out.name};
@@ -198,10 +199,12 @@ if ismember('*',dirstr);
                 if ispc;
                     filesepar='\\';
                     dir1=strrep(dir1,filesep,filesepar);
+                    % Windows'uose gali lūžti, jei \ interpretuoja ne kaip aplankų skyriklį
+                    % Tačiau nutrynus \\, gali paskutinį aplanką klaidingai sujungti su failu...
+                    dir3=regexprep(dir3,[filesepar '$'],'');
                 else
                     filesepar=filesep;
                 end;
-                dir3=regexprep(dir3,[filesepar '$'],'');
                 dirstr_= sprintf([dir1 '%s' filesepar dir3 pathsep], files_and_dirs{dir_idx});
                 dirstr=[dirstr filter_dir(dirstr_)]; %#ok
             else

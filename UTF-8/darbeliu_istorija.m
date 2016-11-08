@@ -2,6 +2,22 @@
 % Pakeitimai:
 % ------------------------
 %
+% v2016.11.08.1
+% + Naudotojui pranešti apie trūkstamus papildinius rinkmenoms nuskaityti.
+% + BIOPAC importavimas į EEGLAB struktūrą.
+% ~ Epochavimas ir atrinkimas: nerodyti įspėjimų, jei
+%   papildomų nebūtinų veiksmų parametrai tušti.
+% ~ Interpoliavimas iškeltas į eeg_interpoliuok64.m
+% ~ ERP>MAT ekpsportavimas iškeltas į eksportuoti_erp_mat.m
+% ~ eeg_peržiūra variklio patobulinimai.
+% ~ Kiti smulkūs pakeitimai.
+
+% v2016.04.29.1
+% ~ pop_ERP_savybes: papildomus taškus piešti tik pagal pareikalavimą.
+% ~ Kai kuriuose įspėjimuose nerodyti pėdsako.
+% ~ Kruoštesnis kelio tikrinimas katalogų pasirinkimui.
+% ~ Kiti smulkūs pakeitimai.
+%
 % v2016.03.28.1
 % + Ištaisytas SĮSP eksportavimas į Ragu, kai
 %   EEGLAB duomenų rinkinų kanalų eiliškumas skiriasi

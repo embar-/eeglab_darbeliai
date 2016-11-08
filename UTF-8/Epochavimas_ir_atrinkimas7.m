@@ -2,7 +2,7 @@
 % Atrinkti dideles epochas, kuriose yra dviejų rūšių stimulai: stimulai ir atsakai
 % T.y. epochuojama pagal stimulų įvykius, po to tikrinama, ar naujose epochose yra atsakų įvykiai
 % 
-% Taip pat yra galimybė šias dideles epchas dar smulkiau epochuoti pagal stimulus ir Epochuoti_pagal_atsakus,
+% Taip pat yra galimybė šias dideles epochas dar smulkiau epochuoti pagal stimulus ir Epochuoti_pagal_atsakus,
 % galima pašalinti jų baseline
 %
 %
@@ -59,8 +59,6 @@ else
     disp(' ');
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
     
-    
-    PAGEIDAUJAMAS_KELIAS='D:\Rasa\eeg_analize\2m_S\31  32  33  34  35  36  51  52  53  54  55  56 su 10' ;
     Epochuoti_pagal_stimulus= '31:36 51:56' ;
     Epochavimo_intervalas_pirminis= '-0.200 2.000 ' ;
     Epochavimo_intervalas_stimulams= '0.350 0.700 ' ;
@@ -136,15 +134,7 @@ else
     
     
     % Duomenu ikelimui:
-    
-    try
-        cd(PAGEIDAUJAMAS_KELIAS);
-    catch err;
-        %disp(err.message);
-        disp([ 'Neradome pageidaujamo kelio ' PAGEIDAUJAMAS_KELIAS ' , tad pasirinkite ji!' ]);
-        %    return ;
-    end;
-    
+        
     [FileNames,PathName,FilterIndex] = uigetfile({'*.set','EEGLAB duomenys';'*.cnt','ASA LAB EEG duomenys';'*Pruned with ICA*.set','Pruned with ICA';'*.*','Visi failai'},'Pasirinkite duomenis','', 'MultiSelect','on');
     
     % [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
@@ -204,8 +194,7 @@ catch err;
     return ;
 end;
 
-if class(FileNames) == 'char' ;
-    NumberOfFiles=1 ;
+if ischar(FileNames) ;
     temp{1}=FileNames ;
     FileNames=temp;
 end ;
@@ -270,6 +259,7 @@ for i=1:NumberOfFiles ;
     
     % Atrinkti tik nurodyta ivyki turincias epochas (teisingus atsakymus)
     try
+        disp(' ');
         disp(' = Epochu su pasirinktais atsakais atrinkimas = ');
         [EEG, ~, LASTCOM] = pop_selectevent( EEG, 'type', Epochuoti_pagal_atsakus ,'deleteevents','off','deleteepochs','on','invertepochs','off');
         EEG = eegh(LASTCOM, EEG);
@@ -291,214 +281,214 @@ for i=1:NumberOfFiles ;
         %% Ikelti laikinaji faila darbui su ATSAKAIS
         disp(' ');
         disp(' = Darbas su atsakais = ');
-        try
-            %Epochavimo_intervalas_atsakams=str2num(answer{6}) ;
-            disp(['Pakartotines epochos trukme atsakams ' num2str( Epochavimo_intervalas_atsakams(2) - Epochavimo_intervalas_atsakams(1)) ' sekundes']);
-            
-            EEG = pop_loadset('filename',NewFileTmp_,'filepath',NewDir);
-            [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
-            
-            
-            % Epochuoti pagal nurodytus ivykius nurodytame intervale trumpesniame
-            % ATSAKAMS
-            [EEG, ~, LASTCOM] = pop_epoch( EEG, Epochuoti_pagal_atsakus, Epochavimo_intervalas_atsakams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch atsakai'], 'epochinfo', 'yes');
-            EEG = eegh(LASTCOM, EEG);
+        if ~isempty(Epochavimo_intervalas_atsakams);
             try
-                tmp_base_interval=[];
-                tmp_base_trukme=(Epochavimo_intervalas_atsakams_base(2) - Epochavimo_intervalas_atsakams_base(1) );
-                tmp_base_interval=1000 * [Epochavimo_intervalas_atsakams_base(1) Epochavimo_intervalas_atsakams_base(2)];
-                [EEG, LASTCOM] = pop_rmbase( EEG, tmp_base_interval);
-                EEG = eegh(LASTCOM, EEG);
-                EEG = eeg_checkset( EEG );
-            catch err
-                disp([ 'Baseline ' num2str(tmp_base_interval) ' atsakams nekoreguota:' ]);
-                %disp(err.message);
-                Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
-            end;
-            
-            EEG = eeg_checkset( EEG );
-            NewFile=fullfile(NewDir, [  strrep(strrep(File,'.cnt',''),'.set','') ' tik_ats_su visais stim.set']);
-            
-            if EEG.trials > 0 ;
-                [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'setname', strrep(strrep(File,'.cnt',''),'.set',''),'savenew',NewFile);
-            else
-                error('Liko tuscias irasas');
-            end;
-            
-            % Isvalyti atminti
-            STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
-            
-            % Viska pakartokim, kad smulkiau EEG sukarpytu pagal stimulus,
-            % susietais su vienu atsaku
-            for y=1:length(Epochuoti_pagal_stimulus) ;
+                %Epochavimo_intervalas_atsakams=str2num(answer{6}) ;
+                disp(['Pakartotines epochos trukme atsakams ' num2str( Epochavimo_intervalas_atsakams(2) - Epochavimo_intervalas_atsakams(1)) ' sekundes']);
                 
-                try
-                    if ~(ismember(Epochuoti_pagal_stimulus(y),visi_galimi_ivykiai));
-                        error(['Nera stimulo ' Epochuoti_pagal_stimulus(y) ]);
-                    end;
-                    
-                    disp(' ');
-                    
-                    EEG = pop_loadset('filename',NewFileTmp_,'filepath',NewDir);
-                    [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
-                    
-                    % Atrinkti tik nurodyta ivyki turincias epochas (teisingus atsakymus)
-                    [EEG, ~, LASTCOM] = pop_selectevent( EEG, 'type', [Epochuoti_pagal_stimulus_(y)] ,'deleteevents','off','deleteepochs','on','invertepochs','off');
-                    EEG = eegh(LASTCOM, EEG);
-                    EEG = eeg_checkset( EEG );
-                    % Apkarpyti pagal pageidaujama atsako intervala
-                    [EEG, ~, LASTCOM] = pop_epoch( EEG, Epochuoti_pagal_atsakus, Epochavimo_intervalas_atsakams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch atsakai'], 'epochinfo', 'yes');
-                    EEG = eegh(LASTCOM, EEG);
+                EEG = pop_loadset('filename',NewFileTmp_,'filepath',NewDir);
+                [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
+                
+                
+                % Epochuoti pagal nurodytus ivykius nurodytame intervale trumpesniame
+                % ATSAKAMS
+                [EEG, ~, LASTCOM] = pop_epoch( EEG, Epochuoti_pagal_atsakus, Epochavimo_intervalas_atsakams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch atsakai'], 'epochinfo', 'yes');
+                EEG = eegh(LASTCOM, EEG);
+                if ~isempty(Epochavimo_intervalas_atsakams_base);
                     try
-                        tmp_base_interval=[];
-                        tmp_base_trukme=(Epochavimo_intervalas_atsakams_base(2) - Epochavimo_intervalas_atsakams_base(1) );
                         tmp_base_interval=1000 * [Epochavimo_intervalas_atsakams_base(1) Epochavimo_intervalas_atsakams_base(2)];
-                        [EEG, LASTCOM] = pop_rmbase( EEG, tmp_base_interval );
+                        [EEG, LASTCOM] = pop_rmbase( EEG, tmp_base_interval);
                         EEG = eegh(LASTCOM, EEG);
                         EEG = eeg_checkset( EEG );
                     catch err
-                        disp([ 'Baseline ' num2str(tmp_base_interval) ' atsakams(2) nekoreguota:' ]);
+                        disp([ 'Baseline ' num2str(tmp_base_interval) ' atsakams nekoreguota:' ]);
                         %disp(err.message);
                         Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
                     end;
-                    EEG = eeg_checkset( EEG );
-                    
-                    NewFile2=fullfile(NewDir, [  strrep(strrep(File,'.cnt',''),'.set','') ' tik_ats_su '  Epochuoti_pagal_stimulus{y} ' stim.set']);
-                    if EEG.trials > 0 ;
-                        [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'setname', strrep(strrep(File,'.cnt',''),'.set',''),'savenew',NewFile2);
-                        disp(['Pavyko atrinkti atsakus, kai yra ivykis ' Epochuoti_pagal_stimulus{y}]);
-                        str=(sprintf('Naujas failas patalpintas cia:\n%s\n\n', NewFile2)) ;
-                        disp(str);
-                    else
-                        error('Liko tuscias irasas');
-                    end;
-                    
-                catch err;
-                    disp(['NEPAVYKO atrinkti atsaku, kai yra ivykis ' Epochuoti_pagal_stimulus{y}]);
-                    %disp(err.message);
-                    Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
-                    disp(' ');
+                end;
+                
+                EEG = eeg_checkset( EEG );
+                NewFile=fullfile(NewDir, [  strrep(strrep(File,'.cnt',''),'.set','') ' tik_ats_su visais stim.set']);
+                
+                if EEG.trials > 0 ;
+                    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'setname', strrep(strrep(File,'.cnt',''),'.set',''),'savenew',NewFile);
+                else
+                    error('Liko tuscias irasas');
                 end;
                 
                 % Isvalyti atminti
                 STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
                 
+                % Viska pakartokim, kad smulkiau EEG sukarpytu pagal stimulus,
+                % susietais su vienu atsaku
+                for y=1:length(Epochuoti_pagal_stimulus) ;
+                    
+                    try
+                        if ~(ismember(Epochuoti_pagal_stimulus(y),visi_galimi_ivykiai));
+                            error(['Nera stimulo ' Epochuoti_pagal_stimulus(y) ]);
+                        end;
+                        
+                        disp(' ');
+                        
+                        EEG = pop_loadset('filename',NewFileTmp_,'filepath',NewDir);
+                        [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
+                        
+                        % Atrinkti tik nurodyta ivyki turincias epochas (teisingus atsakymus)
+                        [EEG, ~, LASTCOM] = pop_selectevent( EEG, 'type', [Epochuoti_pagal_stimulus_(y)] ,'deleteevents','off','deleteepochs','on','invertepochs','off');
+                        EEG = eegh(LASTCOM, EEG);
+                        EEG = eeg_checkset( EEG );
+                        % Apkarpyti pagal pageidaujama atsako intervala
+                        [EEG, ~, LASTCOM] = pop_epoch( EEG, Epochuoti_pagal_atsakus, Epochavimo_intervalas_atsakams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch atsakai'], 'epochinfo', 'yes');
+                        EEG = eegh(LASTCOM, EEG);
+                        if ~isempty(Epochavimo_intervalas_atsakams_base);
+                            try
+                                tmp_base_interval=1000 * [Epochavimo_intervalas_atsakams_base(1) Epochavimo_intervalas_atsakams_base(2)];
+                                [EEG, LASTCOM] = pop_rmbase( EEG, tmp_base_interval );
+                                EEG = eegh(LASTCOM, EEG);
+                                EEG = eeg_checkset( EEG );
+                            catch err
+                                disp([ 'Baseline ' num2str(tmp_base_interval) ' atsakams(2) nekoreguota:' ]);
+                                %disp(err.message);
+                                Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
+                            end;
+                        end;
+                        EEG = eeg_checkset( EEG );
+                        
+                        NewFile2=fullfile(NewDir, [  strrep(strrep(File,'.cnt',''),'.set','') ' tik_ats_su '  Epochuoti_pagal_stimulus{y} ' stim.set']);
+                        if EEG.trials > 0 ;
+                            [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'setname', strrep(strrep(File,'.cnt',''),'.set',''),'savenew',NewFile2);
+                            disp(['Pavyko atrinkti atsakus, kai yra ivykis ' Epochuoti_pagal_stimulus{y}]);
+                            str=(sprintf('Naujas failas patalpintas cia:\n%s\n\n', NewFile2)) ;
+                            disp(str);
+                        else
+                            error('Liko tuscias irasas');
+                        end;
+                        
+                    catch err;
+                        disp(['NEPAVYKO atrinkti atsaku, kai yra ivykis ' Epochuoti_pagal_stimulus{y}]);
+                        %disp(err.message);
+                        Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
+                        disp(' ');
+                    end;
+                    
+                    % Isvalyti atminti
+                    STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
+                    
+                end;
+            catch err;
+                str=sprintf(['Klaida epochuojant pagal atsakus.']);
+                disp(str);
+                %disp(err.message);
+                Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
             end;
-        catch err;
-            str=sprintf(['Klaida epochuojant pagal atsakus.']);
-            disp(str);
-            %disp(err.message);
-            Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
         end;
-        
         disp(' ');
         
         %% Ikelti laikinaji faila darbui su STIMULAIS
         disp(' ');
         disp(' = Darbas su stimulais = ');
-        
-        try
-            %Epochavimo_intervalas_stimulams=str2num(answer{3}) ;
-            disp(['Pakartotines epochos trukme stimulams ' num2str( Epochavimo_intervalas_stimulams(2) - Epochavimo_intervalas_stimulams(1)) ' sekundes']);
-            
-            EEG = pop_loadset('filename',NewFileTmp_,'filepath',NewDir);
-            [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
-            
-            % Epochuoti pagal nurodytus ivykius nurodytame intervale trumpesniame
-            % STIMULAMS
-            
-            [EEG, ~, LASTCOM] = pop_epoch( EEG, Epochuoti_pagal_stimulus, Epochavimo_intervalas_stimulams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch stimulai'], 'epochinfo', 'yes');
-            EEG = eegh(LASTCOM, EEG);
+        if ~isempty(Epochavimo_intervalas_stimulams);
             try
-                tmp_base_interval=[];
-                tmp_base_trukme=(Epochavimo_intervalas_stimulams_base(2) - Epochavimo_intervalas_stimulams_base(1) );
-                tmp_base_interval=1000 * [Epochavimo_intervalas_stimulams_base(1) Epochavimo_intervalas_stimulams_base(2)];
-                [EEG, LASTCOM] = pop_rmbase( EEG, tmp_base_interval);
-                EEG = eegh(LASTCOM, EEG);
-                EEG = eeg_checkset( EEG );
-            catch err
-                disp([ 'Baseline ' num2str(tmp_base_interval) ' stimulams nekoreguota:' ]);
-                %disp(err.message);
-                Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', File,0) ;
-            end;
-            EEG = eeg_checkset( EEG );
-            NewFile=fullfile(NewDir, [  strrep(strrep(File,'.cnt',''),'.set','') ' tik_stim visi.set']);
-            if EEG.trials > 0 ;
-                [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'setname', strrep(strrep(File,'.cnt',''),'.set',''),'savenew',NewFile);
-            else
-                error('Liko tuscias irasas');
-            end;
-            % Isvalyti atminti
-            STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
-            % Info
-            str=(sprintf('\n\n%s apdorotas (%d is %d = %3.2f%%)\nNaujas failas patalpintas cia:\n%s\n\n', File, i, NumberOfFiles, i/NumberOfFiles*100, NewFile)) ;
-            disp(str);
-            % Parodyk, kiek laiko uztruko
-            toc ;
-            
-            disp(' ');
-            
-            % Viska pakartokim, kad smulkiau EEG sukarpytu pagal stimulus
-            for y=1:length(Epochuoti_pagal_stimulus) ;
+                %Epochavimo_intervalas_stimulams=str2num(answer{3}) ;
+                disp(['Pakartotines epochos trukme stimulams ' num2str( Epochavimo_intervalas_stimulams(2) - Epochavimo_intervalas_stimulams(1)) ' sekundes']);
                 
-                try
-                    if ~(ismember(Epochuoti_pagal_stimulus(y),visi_galimi_ivykiai));
-                        error(['Nera stimulo ' Epochuoti_pagal_stimulus(y) ]);
-                    end;
-                    
-                    disp(' ');
-                    
-                    EEG = pop_loadset('filename',NewFileTmp_,'filepath',NewDir);
-                    [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
-                    
-                    % Atrinkti tik nurodyta ivyki turincias epochas (teisingus atsakymus)
-                    [EEG, ~, LASTCOM] = pop_selectevent( EEG, 'type', [Epochuoti_pagal_stimulus_(y)] ,'deleteevents','off','deleteepochs','on','invertepochs','off');
-                    EEG = eegh(LASTCOM, EEG);
-                    [EEG, ~, LASTCOM] = pop_epoch( EEG, Epochuoti_pagal_stimulus, Epochavimo_intervalas_stimulams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch stimulai'], 'epochinfo', 'yes');
-                    EEG = eegh(LASTCOM, EEG);
+                EEG = pop_loadset('filename',NewFileTmp_,'filepath',NewDir);
+                [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
+                
+                % Epochuoti pagal nurodytus ivykius nurodytame intervale trumpesniame
+                % STIMULAMS
+                
+                [EEG, ~, LASTCOM] = pop_epoch( EEG, Epochuoti_pagal_stimulus, Epochavimo_intervalas_stimulams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch stimulai'], 'epochinfo', 'yes');
+                EEG = eegh(LASTCOM, EEG);
+                if ~isempty(Epochavimo_intervalas_stimulams_base);
                     try
-                        tmp_base_interval=[];
-                        tmp_base_trukme=(Epochavimo_intervalas_stimulams_base(2) - Epochavimo_intervalas_stimulams_base(1) );
                         tmp_base_interval=1000 * [Epochavimo_intervalas_stimulams_base(1) Epochavimo_intervalas_stimulams_base(2)];
                         [EEG, LASTCOM] = pop_rmbase( EEG, tmp_base_interval);
                         EEG = eegh(LASTCOM, EEG);
                         EEG = eeg_checkset( EEG );
                     catch err
-                        disp([ 'Baseline ' num2str(tmp_base_interval) ' stimulams(2) nekoreguota:' ]);
+                        disp([ 'Baseline ' num2str(tmp_base_interval) ' stimulams nekoreguota:' ]);
                         %disp(err.message);
-                        Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
+                        Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', File,0) ;
                     end;
-                    
-                    
-                    EEG = eeg_checkset( EEG );
-                    
-                    NewFile2=fullfile(NewDir, [  strrep(strrep(File,'.cnt',''),'.set','') ' tik_stim ' Epochuoti_pagal_stimulus{y} '.set']);
-                    if EEG.trials > 0 ;
-                        [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'setname', strrep(strrep(File,'.cnt',''),'.set',''),'savenew',NewFile2);
-                        disp(['Pavyko atrinkti stimulus, kai yra ivykis ' Epochuoti_pagal_stimulus{y}]);
-                        str=(sprintf('Naujas failas patalpintas cia:\n%s\n\n', NewFile2)) ;
-                        disp(str);
-                    else
-                        error('Liko tuscias irasas');
-                    end;
-                catch err;
-                    disp(['NEPAVYKO atrinkti stimulu, kai yra ivykis ' Epochuoti_pagal_stimulus{y}]);
-                    %disp(err.message);
-                    Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
-                    disp(' ');
                 end;
-                
+                EEG = eeg_checkset( EEG );
+                NewFile=fullfile(NewDir, [  strrep(strrep(File,'.cnt',''),'.set','') ' tik_stim visi.set']);
+                if EEG.trials > 0 ;
+                    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'setname', strrep(strrep(File,'.cnt',''),'.set',''),'savenew',NewFile);
+                else
+                    error('Liko tuscias irasas');
+                end;
                 % Isvalyti atminti
                 STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
+                % Info
+                str=(sprintf('\n\n%s apdorotas (%d is %d = %3.2f%%)\nNaujas failas patalpintas cia:\n%s\n\n', File, i, NumberOfFiles, i/NumberOfFiles*100, NewFile)) ;
+                disp(str);
+                % Parodyk, kiek laiko uztruko
+                toc ;
                 
+                disp(' ');
+                
+                % Viska pakartokim, kad smulkiau EEG sukarpytu pagal stimulus
+                for y=1:length(Epochuoti_pagal_stimulus) ;
+                    
+                    try
+                        if ~(ismember(Epochuoti_pagal_stimulus(y),visi_galimi_ivykiai));
+                            error(['Nera stimulo ' Epochuoti_pagal_stimulus(y) ]);
+                        end;
+                        
+                        disp(' ');
+                        
+                        EEG = pop_loadset('filename',NewFileTmp_,'filepath',NewDir);
+                        [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
+                        
+                        % Atrinkti tik nurodyta ivyki turincias epochas (teisingus atsakymus)
+                        [EEG, ~, LASTCOM] = pop_selectevent( EEG, 'type', [Epochuoti_pagal_stimulus_(y)] ,'deleteevents','off','deleteepochs','on','invertepochs','off');
+                        EEG = eegh(LASTCOM, EEG);
+                        [EEG, ~, LASTCOM] = pop_epoch( EEG, Epochuoti_pagal_stimulus, Epochavimo_intervalas_stimulams, 'newname', [ strrep(strrep(File,'.cnt',''),'.set','') 'filtr epoch stimulai'], 'epochinfo', 'yes');
+                        EEG = eegh(LASTCOM, EEG);
+                        if ~isempty(Epochavimo_intervalas_stimulams_base);
+                            try
+                                tmp_base_interval=1000 * [Epochavimo_intervalas_stimulams_base(1) Epochavimo_intervalas_stimulams_base(2)];
+                                [EEG, LASTCOM] = pop_rmbase( EEG, tmp_base_interval);
+                                EEG = eegh(LASTCOM, EEG);
+                                EEG = eeg_checkset( EEG );
+                            catch err
+                                disp([ 'Baseline ' num2str(tmp_base_interval) ' stimulams(2) nekoreguota:' ]);
+                                %disp(err.message);
+                                Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
+                            end;
+                        end;
+                        
+                        EEG = eeg_checkset( EEG );
+                        
+                        NewFile2=fullfile(NewDir, [  strrep(strrep(File,'.cnt',''),'.set','') ' tik_stim ' Epochuoti_pagal_stimulus{y} '.set']);
+                        if EEG.trials > 0 ;
+                            [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 0,'setname', strrep(strrep(File,'.cnt',''),'.set',''),'savenew',NewFile2);
+                            disp(['Pavyko atrinkti stimulus, kai yra ivykis ' Epochuoti_pagal_stimulus{y}]);
+                            str=(sprintf('Naujas failas patalpintas cia:\n%s\n\n', NewFile2)) ;
+                            disp(str);
+                        else
+                            error('Liko tuscias irasas');
+                        end;
+                    catch err;
+                        disp(['NEPAVYKO atrinkti stimulu, kai yra ivykis ' Epochuoti_pagal_stimulus{y}]);
+                        %disp(err.message);
+                        Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
+                        disp(' ');
+                    end;
+                    
+                    % Isvalyti atminti
+                    STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
+                    
+                end;
+            catch err;
+                str=sprintf(['Klaida epochuojant pagal stimulus.']);
+                disp(str);
+                %disp(err.message);
+                Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
             end;
-        catch err;
-            str=sprintf(['Klaida epochuojant pagal stimulus.']);
-            disp(str);
-            %disp(err.message);
-            Pranesk_apie_klaida(err, 'Epochavimas_ir_atrinkimas7', '',0) ;
-        end;
-        
+        end
         disp(' ');
         
     catch err;

@@ -1644,6 +1644,9 @@ set(handles.figure1,'pointer','watch');
 SeniLaikai=get(handles.axes_rri,'UserData');
 Senas_EKG=handles.EKG;
 Senas_EKG_=handles.EKG_laikai;
+try Senas_EKG_HZ=handles.EKG_Hz;
+catch, Senas_EKG_HZ=[];
+end;
 try
     EKG=dlmread(rinkmena);
     if size(EKG,1) > 1; EKG=EKG' ; end;
@@ -1677,6 +1680,7 @@ catch err;
     set(handles.axes_rri,'UserData',SeniLaikai);
     handles.EKG=Senas_EKG;
     handles.EKG_laikai=Senas_EKG_;
+    handles.EKG_Hz=Senas_EKG_HZ;
     pushbutton_atstatyti_Callback(hObject, eventdata, handles);
     guidata(handles.figure1, handles);
 end;
@@ -1705,6 +1709,9 @@ set(handles.figure1,'pointer','watch');
 SeniLaikai=get(handles.axes_rri,'UserData');
 Senas_EKG=handles.EKG;
 Senas_EKG_=handles.EKG_laikai;
+try Senas_EKG_HZ=handles.EKG_Hz;
+catch, Senas_EKG_HZ=[];
+end;
 try
     EEG = eeg_ikelk(p,f);
     %assignin('base','EEG',EEG);
@@ -1744,7 +1751,7 @@ try
         catch err;
             Kanalai=arrayfun(@(i) sprintf('%d', i), [1:Kanalu_N], 'UniformOutput', false);
         end;
-        KanaloNr=find(ismember(Kanalai,{'EKG' 'ECG'}));
+        KanaloNr=find(ismember(Kanalai,{'EKG' 'ECG'}),1);
         if isempty(KanaloNr); KanaloNr=1; end;
            KanaloNr=listdlg(...
             'ListString',Kanalai,...
@@ -1753,6 +1760,7 @@ try
             'PromptString',lokaliz('Please select channel'),...
             'OKString',lokaliz('OK'),...
             'CancelString',lokaliz('Cancel'));
+        if isempty(KanaloNr); error(lokaliz('Please select channel')); end;
     elseif Kanalu_N == 1;
         KanaloNr=1;
     else
@@ -1819,6 +1827,7 @@ catch err;
     set(handles.axes_rri,'UserData',SeniLaikai);
     handles.EKG=Senas_EKG;
     handles.EKG_laikai=Senas_EKG_;
+    handles.EKG_Hz=Senas_EKG_HZ;
     pushbutton_atstatyti_Callback(hObject, eventdata, handles);
     guidata(handles.figure1, handles);
 end;
@@ -1846,29 +1855,34 @@ else
 end;
 set(handles.figure1,'pointer','watch');
 SeniLaikai=get(handles.axes_rri,'UserData');
+Senas_EKG=handles.EKG;
+Senas_EKG_=handles.EKG_laikai;
+try Senas_EKG_HZ=handles.EKG_Hz;
+catch, Senas_EKG_HZ=[];
+end;
 try
     Labchart_data=load(rinkmena,'-mat');
     %assignin('base','Labchart_data',Labchart_data);
     figure(handles.figure1);
-    try
-        Kanalu_N=size(Labchart_data.datastart,1); % size(Labchart_data.titles,1);
-        if Kanalu_N > 1;
-            Kanalai=cellfun(@(i) Labchart_data.titles(i,:), ...
-                num2cell(1:size(Labchart_data.titles,1)),...
-                'UniformOutput',false);
-            KanaloNr=listdlg(...
-                'ListString',Kanalai,...
-                'SelectionMode','single',...
-                'InitialValue',1,...
-                'PromptString',lokaliz('Please select channel'),...
-                'OKString',lokaliz('OK'),...
-                'CancelString',lokaliz('Cancel'));
-        else
-            KanaloNr=1;
-        end;
-    catch err;
-        Pranesk_apie_klaida(err,mfilename,rinkmena,0);
-        KanaloNr=0;
+    Kanalu_N=size(Labchart_data.datastart,1); % size(Labchart_data.titles,1);
+    if Kanalu_N > 1;
+        Kanalai=cellfun(@(i) Labchart_data.titles(i,:), ...
+            num2cell(1:size(Labchart_data.titles,1)),...
+            'UniformOutput',false);
+        KanaloNr=find(ismember(Kanalai,{'EKG' 'ECG'}),1);
+        if isempty(KanaloNr); KanaloNr=1; end;
+        KanaloNr=listdlg(...
+            'ListString',Kanalai,...
+            'SelectionMode','single',...
+            'InitialValue',KanaloNr,...
+            'PromptString',lokaliz('Please select channel'),...
+            'OKString',lokaliz('OK'),...
+            'CancelString',lokaliz('Cancel'));
+        if isempty(KanaloNr); error(lokaliz('Please select channel')); end;
+    elseif Kanalu_N == 1;
+        KanaloNr=1;
+    else
+        error('Reikia kanalo!');
     end;
 
     if isempty(Labchart_data.com);
@@ -1896,18 +1910,15 @@ try
             'CancelString',lokaliz('Cancel'));
     end;
 
-    if KanaloNr
-        handles.EKG=[Labchart_data.data(Labchart_data.datastart(KanaloNr,blokas):Labchart_data.dataend(KanaloNr,blokas))]';
-        if ekg_apversta(handles.EKG,Labchart_data.samplerate(KanaloNr,blokas),0); handles.EKG=-handles.EKG; end;
-        handles.EKG_laikai=[...
-            ([Labchart_data.datastart(KanaloNr,blokas):Labchart_data.dataend(KanaloNr,blokas)] ...
-            - Labchart_data.datastart(KanaloNr,blokas) ) / Labchart_data.samplerate(KanaloNr,blokas)]';
-        set(handles.checkbox_ekg,'Value',1);
-        %assignin('base','EKG_laikai',handles.EKG_laikai);
-    else
-        handles.EKG=[];
-        handles.EKG_laikai=[];
-    end;
+    
+    handles.EKG_Hz=Labchart_data.samplerate(KanaloNr,blokas);
+    handles.EKG=[Labchart_data.data(Labchart_data.datastart(KanaloNr,blokas):Labchart_data.dataend(KanaloNr,blokas))]';
+    if ekg_apversta(handles.EKG,handles.EKG_Hz,0); handles.EKG=-handles.EKG; end;
+    handles.EKG_laikai=[...
+        ([Labchart_data.datastart(KanaloNr,blokas):Labchart_data.dataend(KanaloNr,blokas)] ...
+        - Labchart_data.datastart(KanaloNr,blokas) ) / Labchart_data.samplerate(KanaloNr,blokas)]';
+    set(handles.checkbox_ekg,'Value',1);
+    %assignin('base','EKG_laikai',handles.EKG_laikai);
 
 %     if strcmp(get(handles.checkbox_ekg,'Visible'),'off');
 %         set(handles.checkbox_ekg,'Visible','on');
@@ -1999,7 +2010,10 @@ catch err;
     %warning(err.message);
     %w=warndlg(err.message);
     %uiwait(w);
-    set(handles.axes_rri,'UserData',SeniLaikai);
+    set(handles.axes_rri,'UserData',SeniLaikai);    
+    handles.EKG=Senas_EKG;
+    handles.EKG_laikai=Senas_EKG_;
+    handles.EKG_Hz=Senas_EKG_HZ;
     pushbutton_atstatyti_Callback(hObject, eventdata, handles);
     guidata(handles.figure1, handles);
 end;
@@ -2027,33 +2041,42 @@ else
 end;
 set(handles.figure1,'pointer','watch');
 SeniLaikai=get(handles.axes_rri,'UserData');
+Senas_EKG=handles.EKG;
+Senas_EKG_=handles.EKG_laikai;
+try Senas_EKG_HZ=handles.EKG_Hz;
+catch, Senas_EKG_HZ=[];
+end;
 try
     acq_data=load_acq(rinkmena);
     %assignin('base','acq_data',acq_data);
     figure(handles.figure1);
     if isempty(acq_data.data); error(lokaliz('Empty dataset')); end;
-    try
-        Kanalu_N=acq_data.hdr.graph.num_channels;
-        if Kanalu_N > 1;
-            Kanalai={acq_data.hdr.per_chan_data.comment_text};
-            KanaloNr=listdlg(...
-                'ListString',Kanalai,...
-                'SelectionMode','single',...
-                'InitialValue',1,...
-                'PromptString',lokaliz('Please select channel'),...
-                'OKString',lokaliz('OK'),...
-                'CancelString',lokaliz('Cancel'));
-        else
-            KanaloNr=1;
-        end;
-    catch err;
-        Pranesk_apie_klaida(err,mfilename,'',0);
-        KanaloNr=0;
+    Kanalu_N=acq_data.hdr.graph.num_channels;
+    if Kanalu_N > 1;
+        Kanalai={acq_data.hdr.per_chan_data.comment_text};
+        KanaloNr=find(ismember(Kanalai,{'EKG' 'ECG'}),1);
+        if isempty(KanaloNr); KanaloNr=1; end;
+        KanaloNr=listdlg(...
+            'ListString',Kanalai,...
+            'SelectionMode','single',...
+            'InitialValue',KanaloNr,...
+            'PromptString',lokaliz('Please select channel'),...
+            'OKString',lokaliz('OK'),...
+            'CancelString',lokaliz('Cancel'));
+        if isempty(KanaloNr); error(lokaliz('Please select channel')); end;
+    elseif Kanalu_N == 1;
+        KanaloNr=1;
+    else
+        error('Reikia kanalo!');
     end;
 
-    bloku=regexp(acq_data.markers.szText,'^Segment .*');
-    bloku=find(arrayfun(@(i) ~isempty(bloku{i}), 1:length(bloku)));
-    Bloku_N=length(bloku);
+    if isempty(acq_data.markers.szText);
+        Bloku_N=1;
+    else
+        bloku=regexp(acq_data.markers.szText,'^Segment .*');
+        bloku=find(arrayfun(@(i) ~isempty(bloku{i}), 1:length(bloku)));
+        Bloku_N=length(bloku);
+    end;
     if Bloku_N > 1;
         bloku_sar=acq_data.markers.szText(bloku);
         blokas=find(ismember(bloku,find(acq_data.markers.fSelected,1)));
@@ -2069,23 +2092,24 @@ try
         blokas=1;
     end;
 
-    if KanaloNr
+    
+    if isempty(acq_data.markers.lSample);
+        nuo=1;
+        iki=size(acq_data.data,1);
+    else
         nuo=acq_data.markers.lSample(bloku(blokas))+1;
         if bloku(blokas) < bloku(end);
             iki=acq_data.markers.lSample(bloku(blokas+1));
         else
             iki=size(acq_data.data,1);
         end;
-        handles.EKG=double(acq_data.data(nuo:iki,KanaloNr));
-        if ekg_apversta(handles.EKG,double(acq_data.hdr.graph.sample_time),0); handles.EKG=-handles.EKG; end;
-        handles.EKG_laikai=[double([nuo:iki] - nuo ) / 1000 * ...
-            double(acq_data.hdr.graph.sample_time) ]';
-        set(handles.checkbox_ekg,'Value',1);
-        %assignin('base','EKG_laikai',handles.EKG_laikai);
-    %else
-    %    handles.EKG=[];
-    %    handles.EKG_laikai=[];
     end;
+    handles.EKG_Hz=1000/double(acq_data.hdr.graph.sample_time);
+    handles.EKG=double(acq_data.data(nuo:iki,KanaloNr));
+    if ekg_apversta(handles.EKG,handles.EKG_Hz,0); handles.EKG=-handles.EKG; end;
+    handles.EKG_laikai=[double([nuo:iki] - nuo ) / handles.EKG_Hz ]';
+    set(handles.checkbox_ekg,'Value',1);
+    %assignin('base','EKG_laikai',handles.EKG_laikai);
 
     try
         Aptikti_EKG_QRS_Callback2(hObject, eventdata, handles);
@@ -2110,6 +2134,9 @@ catch err;
     %w=warndlg(err.message);
     %uiwait(w);
     set(handles.axes_rri,'UserData',SeniLaikai);
+    handles.EKG=Senas_EKG;
+    handles.EKG_laikai=Senas_EKG_;
+    handles.EKG_Hz=Senas_EKG_HZ;
     pushbutton_atstatyti_Callback(hObject, eventdata, handles);
     guidata(handles.figure1, handles);
 end;
@@ -2707,7 +2734,7 @@ else
 end;
 bd=get(h,'BrushData');
 %assignin('base','bd',bd);
-bd=sum(cell2mat(bd),1);
+bd=sum(cell2mat(arrayfun(@(x) double(bd{x}), 1:length(bd), 'UniformOutput', false)'),1);
 Laikai=Laikai(find(bd));
 t=max(Laikai(find(Laikai < (xvid-0.001))));
 optimalus_rodymasx(hObject, eventdata, handles, t, 0);
@@ -2728,7 +2755,7 @@ else
 end;
 bd=get(h,'BrushData');
 %assignin('base','bd',bd);
-bd=sum(cell2mat(bd),1);
+bd=sum(cell2mat(arrayfun(@(x) double(bd{x}), 1:length(bd), 'UniformOutput', false)'),1);
 Laikai=Laikai(find(bd));
 t=min(Laikai(find(Laikai > (xvid+0.001))));
 optimalus_rodymasx(hObject, eventdata, handles, t, 0);

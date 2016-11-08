@@ -740,7 +740,7 @@ drawnow;
 %[ALLEEG, EEG, CURRENTSET, ALLCOM] = pop_newset([],[],[]);
 
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko
-tic
+pradzios_laikas=tic;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Galima naudoti nukreipiant į seniau aprašytas funkcijas, tačiau tuomet nebus atsižvelgiama į pasirinktus kanalus ir įvykius
@@ -935,11 +935,11 @@ for i=1:Pasirinktu_failu_N;
         
         pask_eeg_i=length(ALLEEG_);
         
-        if get(handles.checkbox59, 'Value')
-            % Jei rodyti kanalų vidurkį
+        if Naudoti_kanalu_vidurki
             ALLEEG_(pask_eeg_i).erp_data=mean(EEGTMP.erp_data,1);
             ALLEEG_(pask_eeg_i).chans={''};
-            ALLEEG_(pask_eeg_i).chanlocs(1).labels=lokaliz('mean');
+            ALLEEG_(pask_eeg_i).chanlocs(end+1).labels=lokaliz('mean');
+            ALLEEG_(pask_eeg_i).chanlocs=ALLEEG_(pask_eeg_i).chanlocs(end);
             Reikalingi_kanalai_sukaupti={};
 %             li=1+size(legendoje,1);
 %             legendoje{li,1}=Rinkmena;
@@ -1283,8 +1283,8 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
         
         DarboNr=DarboNr+1;
         Darbo_eigos_busena(handles, 'Eksportuoti į RAGU...', DarboNr, length(ALLEEG_), length(ALLEEG_));
-        eksportuoti_ragu_programai(ALLEEG_, ALLEEG_, 1, 1,KELIAS_SAUGOJIMUI,Reikalingi_kanalai);
-        
+        eksportuoti_ragu_programai(ALLEEG_, ALLEEG_, 1, 1, KELIAS_SAUGOJIMUI);
+                
     end;
     
     
@@ -1314,8 +1314,7 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
     end;
     
     %% Eksportuoti į Excel
-    % Nebaigta
-    
+    % Nebaigta    
     
     if get(handles.popupmenu10,'Value')==3;
         
@@ -1364,6 +1363,14 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
         end;
     end;
     
+    %% Eksportuoti į MAT
+    
+    if get(handles.popupmenu10,'Value')==4;
+        [ERP_MAT.Kanalai, ERP_MAT.Laikai, ERP_MAT.Rinkmenos, ERP_MAT.Amplitude_KxLxR] = ...
+            eksportuoti_erp_mat(ALLEEG_, ALLEEG_, 1, 1, KELIAS_SAUGOJIMUI);
+        assignin('base', 'ERP_MAT', ERP_MAT);
+    end;
+
 end;
 
 %% Po darbų    
@@ -1372,11 +1379,9 @@ set(handles.text_darbas,'String',' ' );
 drawnow;
 
 if and(Apdoroti_visi_tiriamieji == 1, ...
-        or(...
-        get(handles.radiobutton6,'Value') == 0 ,...
-        get(handles.checkbox_pabaigus_i_apdorotu_aplanka, 'Value') == 1 ...
-        ) ...
-        );
+        or( get(handles.radiobutton6,'Value') == 0 ,...
+            get(handles.checkbox_pabaigus_i_apdorotu_aplanka, 'Value') == 1 ) ...
+      );
     
     if ~isempty(PaskRinkmIssaugKelias);
        set(handles.edit1,'String',PaskRinkmIssaugKelias);
@@ -1465,7 +1470,7 @@ if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr < 
     % Parodyk, kiek laiko uztruko
     disp(' ');
     t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
-    toc ;
+    toc(pradzios_laikas) ;
     disp(['Atlikta']);
     
 else
@@ -2620,6 +2625,8 @@ set(handles.checkbox_baigti_anksciau,'String',lokaliz('Break work'));
 set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'String',lokaliz('Go to saved files directory when completed'));
 set(handles.checkbox_pabaigus_atverti,'String',lokaliz('Load saved files in EEGLAB when completed'));
 set(handles.togglebutton1,'String', lokaliz('Cancel'));
+set(handles.popupmenu10,'Value',2);
+set(handles.popupmenu10,'String',{'Ragu' 'TXT', 'Excel', 'Matlab'});
 set(handles.popupmenu11,'String', ...
     {lokaliz('of all files'), ...
      lokaliz('by subjects as in EEG.subject variable'), ...
@@ -2627,7 +2634,7 @@ set(handles.popupmenu11,'String', ...
      lokaliz('by conditions as in EEG.condition variable'), ...
      lokaliz('by sessions as in EEG.session variable'), ...
      lokaliz('by filters, separated by semicolons')});
-
+ 
 % --- Executes on button press in pushbutton11.
 function pushbutton11_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton11 (see GCBO)
@@ -3321,7 +3328,8 @@ try
             % Jei rodyti kanalų vidurkį
             ALLEEG_(pask_eeg_i).erp_data=mean(EEGTMP.erp_data,1);
             ALLEEG_(pask_eeg_i).chans={''};
-            ALLEEG_(pask_eeg_i).chanlocs(1).labels=lokaliz('mean');
+            ALLEEG_(pask_eeg_i).chanlocs(end+1).labels=lokaliz('mean');
+            ALLEEG_(pask_eeg_i).chanlocs=ALLEEG_(pask_eeg_i).chanlocs(end);
             lngdi=1+size(legendoje,1);
             legendoje{lngdi,1}=regexprep(Rinkmena,'.set$','');
             legendoje{lngdi,2}='';            
@@ -3678,7 +3686,7 @@ try
         kor_lent_idx=zeros(1,length(kor_lent_i));
         kor_lent_l={ALLEEG_.file};
         for i=1:length(kor_lent_i);
-            g=regexp(kor_lent_l, ['^' kor_lent_i{i} '[^0-9]']); 
+            g=regexp(kor_lent_l, ['^' kor_lent_i{i} '[^0-9]']);
             n=find(arrayfun(@(x) ~isempty(g{x}), 1:length(g)));
             if length(n) == 1;
                 kor_lent_idx(i)=n;
@@ -3686,6 +3694,7 @@ try
         end;
         kor_lent_netusti=find(kor_lent_idx);
         if length(kor_lent_netusti) < 5; error('netinka'); end;
+        kor_lent_i=kor_lent_i(kor_lent_netusti);
         kor_lent_d=kor_lent_d(kor_lent_netusti,:);
         kor_lent_y=length(ERP_savyb(1).vid_ampl);
         kor_lent_a=nan(length(kor_lent_netusti),kor_lent_y);
@@ -3702,6 +3711,7 @@ try
                 kor_lent_a(i,ki)=ERP_savyb(tmpid).vid_ampl(ii);
             end;
         end;
+        if isempty(kor_lent_k); error('netinka'); end;
         [kor_r,kor_p]=corr(kor_lent_d,kor_lent_a,'rows','pairwise','type','Spearman'); % 'Pearson' arba 'Spearman'
         kor_r_=num2cell(kor_r);
         disp(' ');
@@ -3709,14 +3719,22 @@ try
         %disp(' '); disp([ 'r' kor_lent_k ; kor_lent_h' kor_r_]);
         disp(' ');
         for i=1:length(kor_lent_h);
-            for kor_p_i=find(kor_p(i,:)<0.05);
-                fprintf('r = %1.3f, p = %1.4f - %s <-> %s\n', kor_r(i,kor_p_i), kor_p(i,kor_p_i), kor_lent_h{i}, kor_lent_k{kor_p_i});
-                kor_r_{i,kor_p_i}=['<html><table bgcolor=yellow><tr><td>' num2str(kor_r(i,kor_p_i)) '</td></tr></table><html>' ];
+            for kor_p_i=find(kor_p(i,:)<=0.05);
+                if kor_p(i,kor_p_i) <= 0.05 / ( length(kor_lent_h) * length(kor_lent_h) )
+                     kor_spalva='red';  kor_ryski='*';
+                else kor_spalva='yellow'; kor_ryski=' ';
+                end;
+                fprintf('r = %1.3f, p = %1.4f - %s <-> %s %s\n', kor_r(i,kor_p_i), kor_p(i,kor_p_i), kor_lent_h{i}, kor_lent_k{kor_p_i}, kor_ryski);
+                kor_r_{i,kor_p_i}=['<html><table bgcolor=' kor_spalva '><tr><td>' num2str(kor_r(i,kor_p_i)) '</td></tr></table><html>' ];
             end;
         end;
         kor_lent_f=figure('Toolbar','none','Menubar','none','NumberTitle','off','Name',kor_lent_v);
+        setappdata(kor_lent_f,'kor_lent_d',kor_lent_d);
+        setappdata(kor_lent_f,'kor_lent_a',kor_lent_a);
+        setappdata(kor_lent_f,'kor_lent_i',kor_lent_i);
         kor_lent_t=uitable(kor_lent_f,'data',kor_r_,'ColumnName', kor_lent_k, 'RowName', kor_lent_h, ...
-            'Units', 'normalized', 'position', [0 0 1 1],'tag','koreliaciju_lentele');
+            'Units', 'normalized', 'position', [0 0 1 1],'tag','koreliaciju_lentele',...
+            'CellSelectionCallback', {@sklaidos_diagrama, handles});
         disp(' ');
     catch %err; Pranesk_apie_klaida(err,'','',0);
     end
@@ -3761,6 +3779,22 @@ else
 end;
 drawnow;
 Ar_galima_vykdyti(hObject, eventdata, handles);
+
+function sklaidos_diagrama(hObject, eventdata, handles)
+ei = eventdata.Indices(1);
+si = eventdata.Indices(2);
+kor_lent_i=getappdata(gcf,'kor_lent_i');
+kor_lent_d=getappdata(gcf,'kor_lent_d'); d=kor_lent_d(:,ei);
+kor_lent_a=getappdata(gcf,'kor_lent_a'); a=kor_lent_a(:,si);
+kor_lent_k=get(gcbo,'ColumnName');       s=kor_lent_k{si};
+kor_lent_h=get(gcbo,'RowName');          e=kor_lent_h{ei};
+f=figure('Toolbar','none','Menubar','none','NumberTitle','off','Name',[ e ' - ' s ]);
+figure(f);
+plot(d,a,'o'); lsline;
+hold('on');
+text(d+diff(get(gca,'xlim'))/100,a+diff(get(gca,'ylim'))/50,kor_lent_i);
+xlabel(e, 'Interpreter', 'none');
+ylabel(s, 'Interpreter', 'none');
 
 % --- Executes on button press in checkbox60.
 function checkbox60_Callback(hObject, eventdata, handles)
@@ -3990,7 +4024,8 @@ if length(h) ~= size(d,2); return; end;
 setappdata(handles.figure1, 'kor_lent_h', h); assignin('base','kor_lent_h',h);
 setappdata(handles.figure1, 'kor_lent_i', i); assignin('base','kor_lent_i',i);
 setappdata(handles.figure1, 'kor_lent_d', d); assignin('base','kor_lent_d',d);
-msgbox('Pavyko įkelti lentelę!','Pavyko!');
+m=msgbox('Pavyko įkelti lentelę!','Pavyko!');
+drawnow; pause(2); delete(m);
 ERP_perziura(hObject, eventdata, handles);
 
 function [h,id,d]=importuoti_lentele(varargin)
