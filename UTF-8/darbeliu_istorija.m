@@ -2,6 +2,9 @@
 % Pakeitimai:
 % ------------------------
 %
+% v2016.12.28.1
+% + Įkeliant duomenis informuoti trūkstamus papildinius importavimui.
+%
 % v2016.11.08.1
 % + Naudotojui pranešti apie trūkstamus papildinius rinkmenoms nuskaityti.
 % + BIOPAC importavimas į EEGLAB struktūrą.
