@@ -39,9 +39,7 @@ end;
             fprintf('%s...\n', lokaliz('BIOSIG negali nuskaityti'));
             diary_fid=fopen(diary_zrn2);
             diary_prn=fgets(diary_fid);
-            if isnumeric(diary_prn)
-                diary_prn='';
-            end;
+            if ~ischar(diary_prn); diary_prn=''; end;
             fclose(diary_fid);
             delete(diary_zrn2);
             if (exist(diary_zrn0,'file') == 2) && (~strcmp(diary_zrn0,'diary')); 
