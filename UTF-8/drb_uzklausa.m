@@ -49,7 +49,7 @@ switch lower(uzklausa)
     case {'katalogas'}
         varargout=drb_uzklausa_katalogas(varargin{2:end});
     case {'papildiniai'}
-        varargout=drb_uzklausa_papildiniai(varargin{2:end});
+        varargout={drb_uzklausa_papildiniai(varargin{2:end})};
     otherwise
         warning(lokaliz('Netinkami parametrai'));
         help(mfilename);
@@ -229,7 +229,7 @@ pasirinkti_kanalai={{}};
 
 [~,visi_galimi_kanalai,bendri_kanalai]=eeg_kanalu_sarasas (katalogas, rinkmenos);
 if isempty(visi_galimi_kanalai);
-    wrnmsg=[lokaliz('No channels found.') drb_uzklausa_papildiniai];
+    wrnmsg=[lokaliz('No names of channels found.') drb_uzklausa_papildiniai];
     warndlg(wrnmsg,lokaliz('Selection of channels'));
     return;
 end;
@@ -290,11 +290,12 @@ pasirinkti_kanalai={unique({pasirinkti_kanalai{:} pateikiami_kanalai{pasirinkti_
 
 
 function [pranesimas]=drb_uzklausa_papildiniai(varargin)
-pranesimas={};
 nera_fileio = (exist('ft_read_header','file') ~= 2);
 nera_biosig = (exist('sopen','file') ~= 2);
 if nera_fileio || nera_biosig;
-    pranesimas={pranesimas [ lokaliz('Pabandykite idiegti papildinius') ':' ] };
-    if nera_fileio; pranesimas=[pranesimas 'FILEIO']; end;
-    if nera_biosig; pranesimas=[pranesimas 'BIOSIG']; end;
+    pranesimas={[ lokaliz('Pabandykite idiegti papildinius') ':' ] };
+    if nera_fileio; pranesimas={pranesimas{:} 'FILEIO'}; end;
+    if nera_biosig; pranesimas={pranesimas{:} 'BIOSIG'}; end;
+else
+    pranesimas={};
 end;

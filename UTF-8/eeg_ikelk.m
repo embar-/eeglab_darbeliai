@@ -1,7 +1,19 @@
 % eeg_ikelk - duomenų įkėlimas EEGLAB struktūros pavidalu kone iš bet
 % kokios vienos EEG rinkmenos [EEG]=eeg_ikelk(kelias,rinkmena)
 
-function [EEG]=eeg_ikelk(Kelias, Rinkmena)
+function [EEG]=eeg_ikelk(Kelias, Rinkmena, varargin)
+
+persistent PAPILDINIAI_JAU_PATIKRINTI
+
+try
+    g=struct(varargin);
+catch
+    g=struct;
+end;
+tikrinti_papildinius=1;
+if isfield(g,'tikrinti_papildinius');
+    tikrinti_papildinius=g.tikrinti_papildinius;
+end;
 
     [Kelias_,Rinkmena_]=rinkmenos_tikslinimas(Kelias,Rinkmena);
     try % Importuoti kaip EEGLAB *.set
@@ -27,6 +39,7 @@ function [EEG]=eeg_ikelk(Kelias, Rinkmena)
             fprintf('%s...\n', lokaliz('BIOSIG negali nuskaityti'));
             diary_fid=fopen(diary_zrn2);
             diary_prn=fgets(diary_fid);
+            if ~ischar(diary_prn); diary_prn=''; end;
             fclose(diary_fid);
             delete(diary_zrn2);
             if (exist(diary_zrn0,'file') == 2) && (~strcmp(diary_zrn0,'diary')); 
@@ -74,7 +87,20 @@ function [EEG]=eeg_ikelk(Kelias, Rinkmena)
                     load(Kelias_ir_rinkmena,'-mat');
                 catch %; Pranesk_apie_klaida(lasterr, mfilename, Kelias_ir_rinkmena, 0);
                     fprintf('%s...\n', lokaliz('MATLAB negali nuskaityti'));
-                    try % Bent tuščią EEGLAB EEG struktūrą pasiūlyti
+                    % Nurodyti galimai trūkstamus papildinius
+                    [wrn_b]=warning('off','backtrace');
+                    if tikrinti_papildinius
+                        if isempty(PAPILDINIAI_JAU_PATIKRINTI)
+                            PAPILDINIAI_JAU_PATIKRINTI=1;
+                            wrnmsg=[lokaliz('Ikelti nepavyko') drb_uzklausa('papildiniai')];
+                            warning(sprintf('%s\n',wrnmsg{:}));
+                            warndlg(wrnmsg,lokaliz('Duomenu ikelimas'));
+                        else
+                            warning(lokaliz('Ikelti nepavyko'));
+                        end;
+                    end;
+                    warning(wrn_b);
+                    try % Bent tuščią EEGLAB EEG struktūrą grąžinti
                         [~, EEG] = pop_newset([],[],[]);
                     catch %; Pranesk_apie_klaida(lasterr, mfilename, Kelias_ir_rinkmena, 0);
                         % Belieka tuščią grąžinti...
