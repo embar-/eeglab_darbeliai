@@ -84,7 +84,7 @@ for i=1:length(RINKMENOS);
             else
                 ivykiai=[ivykiai{:}];
                 if isnumeric(ivykiai);
-                    warning([Rinkmena ': ' lokaliz('events are in numeric format.')]);
+                    %warning([Rinkmena ': ' lokaliz('events are in numeric format.')]);
                     %warndlg({Rinkmena lokaliz('events are in numeric format.')},mfilename);
                     ivykiai=unique(ivykiai);
                     ivykiai=cellfun(@(i) {num2str(ivykiai(i))}, num2cell([1:length(ivykiai)]));
