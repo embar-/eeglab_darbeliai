@@ -44,7 +44,7 @@ end;
 % be to ir pats issibarstymas gali siekti iki ~5 ms
 
 g.Labchart_laiko_daugiklis =  902076 / 902101 ;
-g.Leidziama_paklaida = 7 ; % milisekundemis
+g.Leidziama_paklaida = 5 + 1000/g.LabchartTickrate ; % milisekundemis
 g.papildomai_atmesti_ivykius = [] ;
 
 newEEGlabEvents = struct('type', {}, 'value', {}, 'latency' ,{}, 'duration', {}, 'urevent', {});
@@ -103,7 +103,7 @@ if ismember('ECG', LabChart_TXT_events_);
 elseif ismember('HRV', LabChart_TXT_events_);
    LabChart_key='HRV';
 else
-   LabChart_key='';
+   LabChart_key='Eve';
 end;
 
 % Vienas kanalas gali turėti kelis blokus, 
@@ -220,7 +220,7 @@ elseif and(and ( g.Bendri.LabChart_dydis == length(g.Unikalus_kodai.bendri), g.B
     g.TaiPaprastasAtvejis = true ;
     g.papildomai_atmesti_ivykius = [ g.papildomai_atmesti_ivykius 299 ] ;
     
-% atveju nenagrinekim (teoriskai galetu keli kodai kartotis; ju kiekis gali buti vienodas arba ne)
+% Kitu atveju nenagrinekim (teoriskai galetu keli kodai kartotis; ju kiekis gali buti vienodas arba ne)
 else return ;    
     error('Nepavyko');
 end;
@@ -244,11 +244,8 @@ if g.Netvarkingi_poslinkiai ;
     % pirma suraskime visu laiku tarpusavio skirtumus
     g.Tarpai_tarp_ivykiu.LabChart=diff(g.Bendri.LabChart(:,2)) ;
     g.Tarpai_tarp_ivykiu.EEG =    diff(g.Bendri.EEG(     :,2)) ;
-    
-    
-    
+        
     g.Tarpai_tarp_ivykiu.sumu_skirtumas =  sum(g.Tarpai_tarp_ivykiu.LabChart) - sum(g.Tarpai_tarp_ivykiu.EEG) ;
-    
     if sqrt( g.Tarpai_tarp_ivykiu.sumu_skirtumas ^ 2) <= 2 * g.Leidziama_paklaida ;
         % Išbandykim paprasta toki atveji (3m_I_1):
         % Ivykiu skaicius skiriasi, bet laiko skirtumas 
@@ -290,16 +287,18 @@ if g.Netvarkingi_poslinkiai ;
         g.Tarpai_tarp_ivykiu.potencialios_atskaitos4 = unique(g.Tarpai_tarp_ivykiu.potencialios_atskaitos3) ;
         g.Tarpai_tarp_ivykiu.potencialios_atskaitos4 = g.Tarpai_tarp_ivykiu.potencialios_atskaitos4(g.Tarpai_tarp_ivykiu.potencialios_atskaitos4 ~= 9999999999999999999999999999999999 ) ;
         if ~isempty(g.Tarpai_tarp_ivykiu.potencialios_atskaitos4) ;
-            g.Tarpai_tarp_ivykiu.daugmaz_sutampa = true ;
             tmp = findseq(g.Tarpai_tarp_ivykiu.potencialios_atskaitos3(:,1)) ;
             tmp = tmp(find(ismember(tmp(:,1),g.Tarpai_tarp_ivykiu.potencialios_atskaitos4)),:) ;
             tmp = tmp(find(tmp(:,4) == max(tmp(:,4))),:) ;
-            % jei kartais butu kelios vienodai geros galimybes, tai pasirinkti pirmaji atskaitos taska
-            tmp=tmp(1,:) ; 
-            g.Tarpai_tarp_ivykiu.pasirinkta_atskaita = tmp(1,1) - 1 ;
-            % pagal atskaitos taska surasti atitinkamus LabChart ir EGG ivykius
-            g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(1:tmp(1,4),1) = [ tmp(1,2):tmp(1,3) ]  ;
-            g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(1:tmp(1,4),2) = [ tmp(1,2):tmp(1,3) ] + g.Tarpai_tarp_ivykiu.pasirinkta_atskaita ;
+            if ~isempty(tmp)
+                g.Tarpai_tarp_ivykiu.daugmaz_sutampa = true ;
+                % jei kartais butu kelios vienodai geros galimybes, tai pasirinkti pirmaji atskaitos taska
+                tmp=tmp(1,:) ;
+                g.Tarpai_tarp_ivykiu.pasirinkta_atskaita = tmp(1,1) - 1 ;
+                % pagal atskaitos taska surasti atitinkamus LabChart ir EGG ivykius
+                g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(1:tmp(1,4),1) = [ tmp(1,2):tmp(1,3) ]  ;
+                g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(1:tmp(1,4),2) = [ tmp(1,2):tmp(1,3) ] + g.Tarpai_tarp_ivykiu.pasirinkta_atskaita ;
+            end;
         end;
     end ;
     
@@ -335,17 +334,15 @@ if g.Netvarkingi_poslinkiai ;
     end;
         
 end ;
-    
 
 % Naujam ivykiu sarasui naudokim senuosius EEG
 % ir pridekim trukstamus is % LabChart (isskyrus 200:230 sriti )
 g.Nauji.LabChart = cell2mat(g.listOfTimes.LabChart(find(ismember(cell2mat(g.listOfTimes.LabChart(:,1)), [ g.Unikalus_kodai.bendri ; g.papildomai_atmesti_ivykius ] ) == 0  ),:)) ;
 g.Nauji.LabChart(:,2) = g.Nauji.LabChart(:,2) - g.Poslinkis.vidutinis ; 
 g.Nauji.LabChart(:,3) = 0 ;
-g.Nauji.EEG = cell2mat(g.listOfTimes.EEG(find(ismember(cell2mat(g.listOfTimes.EEG(:,1)), [200:230] ) == 0  ),:)) ;
+g.Nauji.EEG = cell2mat(g.listOfTimes.EEG);% cell2mat(g.listOfTimes.EEG(find(ismember(cell2mat(g.listOfTimes.EEG(:,1)), [200:230] ) == 0  ),:)) ;
 g.Nauji.Bendri =  sortrows( [ g.Nauji.EEG ; g.Nauji.LabChart ] , 2 ) ; 
 [g.Nauji.dydis, ~ ] = size(g.Nauji.Bendri) ;
-
 for icom=1:g.Nauji.dydis ;
     if g.Nauji.Bendri(icom,1) == 300;
         newEEGlabEvents(1,icom).type    = g.New_R_event_type ;
@@ -362,8 +359,6 @@ for icom=1:g.Nauji.dydis ;
         newEEGlabEvents(1,icom).urevent = '' ;
     end;
 end ;
-
-
 
 Poslinkis_vidutinis=g.Poslinkis.vidutinis;
 Poslinkio_paklaidos=g.Poslinkis.paklaidos;

@@ -1915,7 +1915,10 @@ try
     
     handles.EKG_Hz=Labchart_data.samplerate(KanaloNr,blokas);
     handles.EKG=[Labchart_data.data(Labchart_data.datastart(KanaloNr,blokas):Labchart_data.dataend(KanaloNr,blokas))]';
-    if ekg_apversta(handles.EKG,handles.EKG_Hz,0); handles.EKG=-handles.EKG; end;
+    leisti_apversti=~isempty(get(gcf,'currentModifier'));
+    if leisti_apversti
+        if ekg_apversta(handles.EKG,handles.EKG_Hz,0); handles.EKG=-handles.EKG; end;
+    end;
     handles.EKG_laikai=[...
         ([Labchart_data.datastart(KanaloNr,blokas):Labchart_data.dataend(KanaloNr,blokas)] ...
         - Labchart_data.datastart(KanaloNr,blokas) ) / Labchart_data.samplerate(KanaloNr,blokas)]';
@@ -1955,7 +1958,11 @@ try
                         LabChart_key='';
                 end;
             otherwise
-                LabChart_key='';
+                if length(LabChart_TXT_events_)==1
+                    LabChart_key=LabChart_TXT_events_{1};
+                else
+                    LabChart_key='';
+                end;
         end;
     end;
 
@@ -1978,7 +1985,7 @@ try
             comtextMark = Labchart_data.comtext(comtextMark,:);
             comtextMark = deblank(comtextMark);
             is_LabChart_key=0;
-            if and(length(comtextMark) > 2, ~isempty(LabChart_key))
+            if length(comtextMark) > 2
                 if strcmp(comtextMark(1:3),LabChart_key);
                     is_LabChart_key=1;
                 end;
@@ -1987,7 +1994,6 @@ try
                 Laikelis=Labchart_data.com(icomMain,3) * ...
                     ( 1000 / Labchart_data.tickrate(blokas) )  ; % * g.Labchart_laiko_daugiklis ;
                 Laikai=[Laikai; Laikelis];
-
             end ;
         end ;
 
@@ -1998,6 +2004,33 @@ try
     end;
     
     handles.zmkl_lks=[]; handles.zmkl_pvd={};
+    ivyk_kit_id=[intersect(...
+        find(Labchart_data.com(:,2)==blokas),...
+        find(Labchart_data.com(:,4)==1))]' ;
+    % unique du kartus, kad išrikiuotų abėcėliškai, bet iš trumpo sąrašo - gal taip greičiau
+    ivyk_kit_un=unique(arrayfun(@(i) deblank(Labchart_data.comtext(i,:)), unique(Labchart_data.com(ivyk_kit_id, 5)), 'UniformOutput', false));
+    ivyk_kiti=listdlg(...
+        'ListString',ivyk_kit_un,...
+        'SelectionMode','multiple',...
+        'InitialValue',1:length(ivyk_kit_un),...
+        'PromptString',lokaliz('Select other events:'),...
+        'OKString',lokaliz('OK'),...
+        'CancelString',lokaliz('Cancel'));
+    if ~isempty(ivyk_kiti);
+        ivyk_kit=ivyk_kit_un(ivyk_kiti);
+        for icomMain=ivyk_kit_id
+            comtextMark = Labchart_data.com(icomMain, 5);
+            comtextMark = Labchart_data.comtext(comtextMark,:);
+            comtextMark=deblank(comtextMark);
+            if ismember(comtextMark,ivyk_kit)
+            %if str2num(comtextMark) >= 200
+                handles.zmkl_pvd = {handles.zmkl_pvd{:} comtextMark};
+                zLaikelis=Labchart_data.com(icomMain,3) * ...
+                    (1 / Labchart_data.tickrate(blokas) ) ;  % * g.Labchart_laiko_daugiklis ;
+                handles.zmkl_lks=[handles.zmkl_lks zLaikelis];
+            end;
+        end ;
+    end;
 
     dabartines_fig=findobj(handles.figure1);
     delete(dabartines_fig(find(ismember(dabartines_fig,handles.pradines_fig)==0)));
