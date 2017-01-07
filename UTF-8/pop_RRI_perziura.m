@@ -144,7 +144,7 @@ else
         if median(diff(handles.EKG_laikai(:))) >= 100;
             handles.EKG_laikai=handles.EKG_laikai*0.001;
         end;
-        if isempty(Pradiniai_laikai);
+        if isempty(Pradiniai_laikai);            
             try axes(handles.axes_rri); cla;
                 set(handles.axes_rri,'Visible','off');
                 Aptikti_EKG_QRS_Callback2(hObject, eventdata, handles);
@@ -962,13 +962,15 @@ NY1=0; if get(handles.checkbox_ekg,'Value'); NY1=NY1-100; end;
 NY2=1500; %if ~isempty(RRI(find([RRI(:)] >0))); NY2=min(max(RRI)+30,1500); end;
 NX1=5*floor(min([Laikai ; handles.EKG_laikai])/5);
 NX2=5*ceil( max([Laikai ; handles.EKG_laikai])/5);
-set(findobj(handles.scrollHandles(1),'Tag','scrollPatch'),'YData',[NY1 NY2 NY2 NY1 ]);
-set(findobj(handles.scrollHandles(1),'Tag','scrollBar'),  'YData',[NY1 NY2]);
-set(findobj(handles.scrollHandles(2),'Tag','scrollPatch'),'XData',[NX1 NX1 NX2 NX2]);
-set(findobj(handles.scrollHandles(2),'Tag','scrollBar'),  'XData',[NX1 NX2]);
-if isobject(handles.scrollHandles);
-    set(handles.scrollHandles,'XLim',[NX1 NX2]);
-    set(handles.scrollHandles,'YLim',[NY1 NY2]);
+if ismember('scrollHandles', fields(handles));
+    if isobject(handles.scrollHandles);
+        set(findobj(handles.scrollHandles(1),'Tag','scrollPatch'),'YData',[NY1 NY2 NY2 NY1 ]);
+        set(findobj(handles.scrollHandles(1),'Tag','scrollBar'),  'YData',[NY1 NY2]);
+        set(findobj(handles.scrollHandles(2),'Tag','scrollPatch'),'XData',[NX1 NX1 NX2 NX2]);
+        set(findobj(handles.scrollHandles(2),'Tag','scrollBar'),  'XData',[NX1 NX2]);
+        set(handles.scrollHandles,'XLim',[NX1 NX2]);
+        set(handles.scrollHandles,'YLim',[NY1 NY2]);
+    end;
 end;
 for h=[handles.RRI_lin handles.RRI_tsk handles.EKG_tsk [handles.ScrollHandlesCldrL]'];
     try
@@ -2185,17 +2187,8 @@ end;
 set(handles.figure1,'pointer','watch');
 
 % % statusbar
-% tici=tic;
 f=statusbar(lokaliz('Palaukite!'));
 statusbar('on',f);
-%     tok=toc(tici);
-%     p=i/length(RINKMENOS);
-%     if and(tok>1,p<0.5);
-%         statusbar('on',f);
-%     end;
-%     if isempty(statusbar(p,f));
-%         break;
-%     end;
 p=0;
 statusbar(p,f);
 
