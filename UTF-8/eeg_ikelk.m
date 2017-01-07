@@ -18,6 +18,15 @@ end;
     [Kelias_,Rinkmena_]=rinkmenos_tikslinimas(Kelias,Rinkmena);
     try % Importuoti kaip EEGLAB *.set
         EEG = pop_loadset('filename',Rinkmena_,'filepath',Kelias_);
+        ivykiai={EEG.event.type};
+        if ~iscellstr(ivykiai);
+            for i=1:length(ivykiai);
+                try
+                    EEG.event(i).type=str2num(EEG.event(i).type);
+                catch
+                end
+            end;
+        end;
     catch 
         Kelias_ir_rinkmena=fullfile(Kelias_, Rinkmena_);
         % Pranesk_apie_klaida(lasterr, mfilename, Kelias_ir_rinkmena, 0);
@@ -45,7 +54,7 @@ end;
             if (exist(diary_zrn0,'file') == 2) && (~strcmp(diary_zrn0,'diary')); 
                 diary(diary_zrn0);
             end;
-            diary(diary_bsn0);            
+            diary(diary_bsn0);
             if ~isempty(regexp(diary_prn,'ACQ format not supported'));
                 fprintf('%s %s...\n', lokaliz('Trying again with'), 'load_acq');
                 try
@@ -71,6 +80,7 @@ end;
                 end;
             end;
             
+            [wrn_b]=warning('off','backtrace');
             try % Importuoti per FILEIO
                 fprintf('%s %s...\n', lokaliz('Trying again with'), 'FILEIO');
                 EEG=pop_fileio(Kelias_ir_rinkmena);
@@ -85,10 +95,10 @@ end;
                 try % Įkelti tiesiogiai į MATLAB
                     fprintf('%s %s...\n', lokaliz('Trying again with'), 'MATLAB');
                     load(Kelias_ir_rinkmena,'-mat');
+                    EEG = eeg_checkset(EEG);
                 catch %; Pranesk_apie_klaida(lasterr, mfilename, Kelias_ir_rinkmena, 0);
                     fprintf('%s...\n', lokaliz('MATLAB negali nuskaityti'));
                     % Nurodyti galimai trūkstamus papildinius
-                    [wrn_b]=warning('off','backtrace');
                     if tikrinti_papildinius
                         if isempty(PAPILDINIAI_JAU_PATIKRINTI)
                             PAPILDINIAI_JAU_PATIKRINTI=1;
@@ -99,7 +109,6 @@ end;
                             warning(lokaliz('Ikelti nepavyko'));
                         end;
                     end;
-                    warning(wrn_b);
                     try % Bent tuščią EEGLAB EEG struktūrą grąžinti
                         [~, EEG] = pop_newset([],[],[]);
                     catch %; Pranesk_apie_klaida(lasterr, mfilename, Kelias_ir_rinkmena, 0);
@@ -108,6 +117,7 @@ end;
                     end;
                 end;
             end;
+            warning(wrn_b);
         end;
     end;
     
