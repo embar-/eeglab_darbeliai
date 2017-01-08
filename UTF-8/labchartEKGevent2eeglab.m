@@ -43,7 +43,7 @@ end;
 % be to ir pats issibarstymas gali siekti iki ~5 ms
 
 Labchart_laiko_daugiklis =  902076 / 902101 ;
-g.Leidziama_paklaida = 9 + 1000/g.LabchartTickrate ; % milisekundemis
+g.Leidziama_paklaida = 6 + 1.25 * 1000/g.LabchartTickrate ; % milisekundemis
 
 g.EEG_event_fields=fieldnames(g.EEGlabEvent);
 newEEGlabEvents = cell2struct(repmat({[]},numel(g.EEG_event_fields),0),g.EEG_event_fields);
