@@ -151,7 +151,7 @@ for icomMain = [find(g.LabchartCom(:,2)==blokas)]' ;
            end;
         end;
         if is_LabChart_key
-           g.listOfTimes.LC_R{iLR,1} = NaN ; % g.New_R_event_type ;
+           g.listOfTimes.LC_R{iLR,1} = NaN ;
            g.listOfTimes.LC_R{iLR,2} = g.LabchartCom(icomMain,3) * ( 1000 / g.LabchartTickrate ) * Labchart_laiko_daugiklis ;
            iLR = iLR+1;
         end;
@@ -198,11 +198,7 @@ elseif and ( g.Bendri.LabChart_dydis == g.Unikalus_kodai.dydis, g.Bendri.EEG_dyd
         error('Vidinė klaida');
     end;
 % Kitu atveju nenagrinekim (teoriskai galetu keli kodai kartotis; ju kiekis gali buti vienodas arba ne)
-else % return ;
-    [g.Bendri.LabChart_dydis g.Bendri.EEG_dydis g.Unikalus_kodai.dydis ]
-    L=g.Bendri.LabChart(:,1)
-    E=g.Bendri.EEG(:,1)
-    B=g.Unikalus_kodai.bendri
+else
     error('Nepavyko');
 end;
 
