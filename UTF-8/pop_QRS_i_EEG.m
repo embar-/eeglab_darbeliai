@@ -873,7 +873,7 @@ for i=1:Pasirinktu_failu_N;
                                 'EEGlabEvent', EEG.event, ...
                                 'LabchartCom', Labchart_data.com, ...
                                 'LabchartComtext', Labchart_data.comtext, ...
-                                'LabchartTickrate', Labchart_data.tickrate, ...
+                                'LabchartTickrate', Labchart_data.tickrate(1), ...
                                 'New_R_event_type',QRS_ivykis);
                             EEG.event = EEG_iv_strukt;
                             
@@ -881,7 +881,7 @@ for i=1:Pasirinktu_failu_N;
                             if 0 % išjungti; skirta tik testavimui
                                 LC_duom_tsk=[Labchart_data.datastart(1,LC_blokas):Labchart_data.dataend(1,LC_blokas)];
                                 LC_signalas=Labchart_data.data(LC_duom_tsk);
-                                LC_laikai=LC_duom_tsk * ( 1000 / Labchart_data.tickrate ) * LC_daugiklis - LC_iv_poslinkis;
+                                LC_laikai=LC_duom_tsk * ( 1000 / Labchart_data.tickrate(1) ) * LC_daugiklis - LC_iv_poslinkis;
                                 signalas=spline(LC_laikai,LC_signalas,EEG.times);
                                 EEG.data(end+1,:)=signalas * 10000 ;
                                 EEG.chanlocs(end+1).labels=Labchart_data.titles(1,:);
