@@ -320,6 +320,8 @@ end ;
 % ir pridėkim R ivykius iš LabChart
 g.Nauji.R_laikai = cell2mat(g.listOfTimes.LC_R) ;
 g.Nauji.R_laikai(:,2) = g.Nauji.R_laikai(:,2) - g.Poslinkis.vidutinis ;
+g.Nauji.R_laikai=g.Nauji.R_laikai(find(g.Nauji.R_laikai(:,2) <= g.EEGlabTimes(end)),:);
+g.Nauji.R_laikai=g.Nauji.R_laikai(find(g.Nauji.R_laikai(:,2) >= 0),:);
 for ri=1:size(g.Nauji.R_laikai,1);
     g.Nauji.R_latenc(ri,1)=FindTrigerTime(g.EEGlabTimes,g.Nauji.R_laikai(ri,2));
 end;
