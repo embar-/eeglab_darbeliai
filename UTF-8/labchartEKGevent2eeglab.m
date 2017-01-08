@@ -1,15 +1,14 @@
 function [newEEGlabEvents,Poslinkis_vidutinis,Poslinkio_paklaidos] = labchartEKGevent2eeglab(varargin)
-% labchart event to eeglab event. 
-% Script is suitable for numeric events, 
-% so 300 temporaly will be marker for R wave and only in the end it will be replaced with string
+% Add labchart events from comments (R peaks) into eeglab events. 
+% Script works by allignement of numeric events.
 %
 % usage:
-%  newEEGlabEvents = LabchartEventToEEGLAB('EEGlabTimes', EEG.times, 'EEGlabEvent', EEG.event, 'LabchartCom', com, 'LabchartComtext', comtext, 'LabchartTickrate', tickrate); 
+%  newEEGlabEvents = labchartEKGevent2eeglab('EEGlabTimes', EEG.times, 'EEGlabEvent', EEG.event, 'LabchartCom', com, 'LabchartComtext', comtext, 'LabchartTickrate', tickrate); 
 %
 % (c) 2014 Aleksas Voicikas
-% (c) 2014 Mindaugas Baranauskas
+% (c) 2014,2017 Mindaugas Baranauskas
 
-%argumentu tvarkymas
+%% Argumentu tvarkymas
 if ~isempty(varargin)
 g = struct(varargin{:});
 else
@@ -17,7 +16,7 @@ else
 end;
 
 try g.EEGlabEvent; catch, error('no EEGlabevents'); end;
-try g.SaveDir; catch, g.SaveDir =0; end;
+try g.SaveDir; catch, g.SaveDir = 0; end;
 try g.LabchartCom; catch, error('no labchart com'); end;
 try g.EEGlabTimes; catch, error('no EEGlab Times'); end;
 try g.LabchartComtext; catch, error('no labchart comtext'); end;
@@ -32,7 +31,7 @@ for index = 1:length(allfields)
 	end;
 end;
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Vidinių kintamųjų paruošimas
 
 % Sekanti eilute tik testavimui:
 % g= [] ; g.LabchartCom = com ; g.LabchartComtext = comtext ; g.LabchartTickrate = tickrate ; g.EEGlabTimes = EEG.times ; g.EEGlabEvent =  EEG.event ;
@@ -45,65 +44,51 @@ end;
 
 g.Labchart_laiko_daugiklis =  902076 / 902101 ;
 g.Leidziama_paklaida = 5 + 1000/g.LabchartTickrate ; % milisekundemis
-g.papildomai_atmesti_ivykius = [] ;
 
-newEEGlabEvents = struct('type', {}, 'value', {}, 'latency' ,{}, 'duration', {}, 'urevent', {});
+g.EEG_event_fields=fieldnames(g.EEGlabEvent);
+newEEGlabEvents = cell2struct(repmat({[]},numel(g.EEG_event_fields),0),g.EEG_event_fields);
 g.Poslinkis.paklaidos=[];
 Poslinkis_vidutinis=[];
 Poslinkio_paklaidos=[];
-
-[colCom, ~] = size(g.LabchartCom);
-colEEGlab = length(g.EEGlabEvent);
-
 g.listOfTimes = {} ;
 
-%%
+%% Pereik per EEGLab ivykius, kurie potencialiai bendri su LabChart, t.y kurie yra skaičiai
 
-% Pereik per EEGLab ivykius, kurie potencialiai bendri su LabChart 
-
-iList = 1;
+iLE = 1;
 g.listOfTimes.EEG={};
-for icolEEGlab = 1:colEEGlab ;
-    tipas=g.EEGlabEvent(1,icolEEGlab).type;
-    if isnumeric(tipas);
-        EventName=num2str(tipas);
-    else
-        EventName=deblank(tipas);
-    end
-    if isstrprop(EventName, 'digit') ;
-        EventName = str2num(EventName);
-        %if  ( EventName ~= 0 ) ;
-        %  if ( EventName ~= 300 ) ;
-            g.listOfTimes.EEG{iList,1} = EventName;
-            g.listOfTimes.EEG{iList,2} = g.EEGlabTimes(single(g.EEGlabEvent(1,icolEEGlab).latency ));    
-            % aternatyva galetu buti (tik vietoj 512 butu EEG.srate reiksme): 
-            % g.listOfTimes.EEG{iList,2} = g.EEGlabEvent(1,icolEEGlab).latency  * 1000 / 512 ; 
-            try 
-                g.listOfTimes.EEG{iList,3} = g.EEGlabEvent(1,icolEEGlab).urevent ; 
-            catch, 
-                g.listOfTimes.EEG{iList,3} = 0; 
-            end;
-            iList = iList+1;
-        %  end ;
-        %end;
+for ie = 1:length(g.EEGlabEvent);
+    ivykis=g.EEGlabEvent(1,ie).type;
+    if isnumeric(ivykis);
+        ivykis=num2str(ivykis);
+    end;
+    ivykis=deblank(ivykis);
+    if and(isstrprop(ivykis, 'digit'), ~isempty(ivykis));
+        ivykis=str2num(ivykis);
+        g.listOfTimes.EEG{iLE,1} = ivykis;
+        g.listOfTimes.EEG{iLE,2} = g.EEGlabTimes(single(g.EEGlabEvent(1,ie).latency));
+        iLE = iLE+1;
     end;
 end ;
 if isempty(g.listOfTimes.EEG);
-    error('Neradome tinkamų EEG įvykių');
+    error('Neradome tinkamų EEG įvykių, t.y. užkoduotų skaičiais');
 end;
-g.Unikalus_kodai.EEG=     unique(cell2mat(g.listOfTimes.EEG(     :,1)));
+g.Unikalus_kodai.EEG=unique(cell2mat(g.listOfTimes.EEG(:,1)));
 
-%%
-% Pereik per LabChart ivykius, kurie potencialiai bendri su EEGLab
+%% % Pereik per LabChart ivykius, kurie potencialiai bendri su EEGLab
 
+% R dantelių pavadinimai įvykių komentaruose
 LabChart_TXT_events=(g.LabchartComtext(g.LabchartCom(  find(g.LabchartCom(:,4) == 2), 5) ,1:3));
 LabChart_TXT_events_=unique(cellfun(@(i) LabChart_TXT_events(i,:), num2cell(1:length(LabChart_TXT_events)),'UniformOutput', false ));
-if ismember('ECG', LabChart_TXT_events_);
+if     ismember('ECG', LabChart_TXT_events_);
    LabChart_key='ECG';
 elseif ismember('HRV', LabChart_TXT_events_);
    LabChart_key='HRV';
-else
+elseif ismember('Eve', LabChart_TXT_events_);
    LabChart_key='Eve';
+   warning('Neradus EKG/HRV įvykių, naudosimi kiti komentarai.');
+else
+   LabChart_key='';
+   warning('Tekstinių įvykių nėra, grąžinsime pradinę struktūrą.');
 end;
 
 % Vienas kanalas gali turėti kelis blokus, 
@@ -143,71 +128,60 @@ if length(g.LabchartTickrate) > 1;
    g.LabchartTickrate=g.LabchartTickrate(blokas);
 end;
 
-iList = 1;
-g.listOfTimes.LabChart={};
-for icomMain = [find(g.LabchartCom(:,2)==blokas)]' ; % 1: colCom ;
-    comtextMark = g.LabchartCom(icomMain, 5);
-    comtextMark = g.LabchartComtext(comtextMark,:);
-    comtextMark = deblank(comtextMark);
-    
-    % LabChart rupimi duomenys (R danteliai) apibudinti tekstu, 
+iLL = 1;
+iLR = 1;
+g.listOfTimes.LC_kt={};
+g.listOfTimes.LC_R={};
+for icomMain = [find(g.LabchartCom(:,2)==blokas)]' ;
+    ivykis = g.LabchartCom(icomMain, 5);
+    ivykis = deblank(g.LabchartComtext(ivykis,:));
+    % LabChart komentaruose R danteliai apibudinti tekstu, 
     % o tarp LabChart ir EEG bandri ivykiai yra skaiciai
-    if isstrprop(comtextMark, 'digit') ;
-      % LabChart 0 ivyki koduokim kaip 299
-      comtextMark = str2num(comtextMark) ;
-      if comtextMark == 0 ; 
-          comtextMark = 299 ;
-      end ; 
-       % Pasitaike irasas, kuriame buvo 255 kodas, bet neaisku, kas tai
-       %if ( comtextMark ~= 255 ) ;
+    if and(all(isstrprop(ivykis, 'digit')), ~isempty(ivykis));
+      ivykis = str2num(ivykis) ;
         % LabChart ivykio laikas, milisekundemis
-        g.listOfTimes.LabChart{iList,1} = comtextMark ;
-        g.listOfTimes.LabChart{iList,2} = g.LabchartCom(icomMain,3) * ( 1000 / g.LabchartTickrate ) * g.Labchart_laiko_daugiklis ;
-        iList = iList+1;
-       %end ;
-    else 
+        g.listOfTimes.LC_kt{iLL,1} = ivykis ;
+        g.listOfTimes.LC_kt{iLL,2} = g.LabchartCom(icomMain,3) * ( 1000 / g.LabchartTickrate ) * g.Labchart_laiko_daugiklis ;
+        iLL = iLL+1;
+    elseif ~isempty(LabChart_key)
         is_LabChart_key=0;
-        if and(length(comtextMark) > 2, ~isempty(LabChart_key))
-           if strcmp(comtextMark(1:3),LabChart_key);
+        if length(ivykis) > 2
+           if strcmp(ivykis(1:3),LabChart_key);
               is_LabChart_key=1;
            end;
         end;
         if is_LabChart_key
-           % R dantelius laikinai zymesime 300 .        
-           g.listOfTimes.LabChart{iList,1} = 300 ; % g.New_R_event_type ;
-           g.listOfTimes.LabChart{iList,2} = g.LabchartCom(icomMain,3) * ( 1000 / g.LabchartTickrate ) * g.Labchart_laiko_daugiklis ;
-           iList = iList+1;
+           g.listOfTimes.LC_R{iLR,1} = NaN ; % g.New_R_event_type ;
+           g.listOfTimes.LC_R{iLR,2} = g.LabchartCom(icomMain,3) * ( 1000 / g.LabchartTickrate ) * g.Labchart_laiko_daugiklis ;
+           iLR = iLR+1;
         end;
     end ;
 end ;
-if isempty(g.listOfTimes.LabChart);
+if isempty(g.listOfTimes.LC_kt);
     error('Neradome tinkamų LabChart įvykių');
 end;
-g.Unikalus_kodai.LabChart=unique(cell2mat(g.listOfTimes.LabChart(:,1)));
+g.Unikalus_kodai.LabChart=unique(cell2mat(g.listOfTimes.LC_kt(:,1)));
 
 %%
 
 g.Unikalus_kodai.bendri=intersect(g.Unikalus_kodai.LabChart,g.Unikalus_kodai.EEG) ;
 
-% jei nera bendru, tai grazinkim tuscia
 if isempty(g.Unikalus_kodai.bendri) ;
-    % newEEGlabEvents = g.EEGlabEvent ;
-    error('Neradome bendrų įvykių');
-    %return ;
+    error('Neradome bendrų įvykių, kurie būtų bendri LabChart ir EEG');
 end ;
 
-g.Bendri.LabChart = cell2mat(g.listOfTimes.LabChart(find(ismember(cell2mat(g.listOfTimes.LabChart(:,1)), g.Unikalus_kodai.bendri)),:) );
-g.Bendri.EEG      = cell2mat(g.listOfTimes.EEG     (find(ismember(cell2mat(g.listOfTimes.EEG(     :,1)), g.Unikalus_kodai.bendri)),:) ) ;
-[g.Bendri.LabChart_dydis, ~] = size(g.Bendri.LabChart) ;
-[g.Bendri.EEG_dydis, ~] = size(g.Bendri.EEG) ;
+g.Bendri.LabChart = cell2mat(g.listOfTimes.LC_kt(find(ismember(cell2mat(g.listOfTimes.LC_kt(:,1)), g.Unikalus_kodai.bendri)),:) );
+g.Bendri.EEG      = cell2mat(g.listOfTimes.EEG     (find(ismember(cell2mat(g.listOfTimes.EEG(     :,1)), g.Unikalus_kodai.bendri)),:) );
+g.Bendri.LabChart_dydis = size(g.Bendri.LabChart,1) ;
+g.Bendri.EEG_dydis      = size(g.Bendri.EEG,1) ;
 
 % Nagrineti du g.Unikalus_kodai.bendri atvejus: 
 % 1) kai yra vienas besikartojantis ivykio kodas
 % 2) kai yra skirtingi kodai, bet jie nesikartoja
 
 g.TaiPaprastasAtvejis = false ;
-
-if length(g.Unikalus_kodai.bendri) == 1 ;
+g.Unikalus_kodai.dydis=length(g.Unikalus_kodai.bendri);
+if g.Unikalus_kodai.dydis == 1 ;
 % 1) kai yra vienas besikartojantis ivykio kodas    
     if g.Bendri.LabChart_dydis == g.Bendri.EEG_dydis ;
         g.TaiPaprastasAtvejis = true ; 
@@ -216,12 +190,19 @@ if length(g.Unikalus_kodai.bendri) == 1 ;
     end;
     
 % 2) kai yra skirtingi kodai, bet jie nesikartoja ir issirikiave taip pat
-elseif and(and ( g.Bendri.LabChart_dydis == length(g.Unikalus_kodai.bendri), g.Bendri.EEG_dydis == length(g.Unikalus_kodai.bendri)), g.Bendri.LabChart(:,1) == g.Bendri.EEG(:,1)) ; 
-    g.TaiPaprastasAtvejis = true ;
-    g.papildomai_atmesti_ivykius = [ g.papildomai_atmesti_ivykius 299 ] ;
-    
+
+elseif and ( g.Bendri.LabChart_dydis == g.Unikalus_kodai.dydis, g.Bendri.EEG_dydis == g.Unikalus_kodai.dydis) ;
+    if g.Bendri.LabChart(:,1) == g.Bendri.EEG(:,1)
+        g.TaiPaprastasAtvejis = true ;
+    else
+        error('Vidinė klaida');
+    end;
 % Kitu atveju nenagrinekim (teoriskai galetu keli kodai kartotis; ju kiekis gali buti vienodas arba ne)
-else return ;    
+else % return ;
+    [g.Bendri.LabChart_dydis g.Bendri.EEG_dydis g.Unikalus_kodai.dydis ]
+    L=g.Bendri.LabChart(:,1)
+    E=g.Bendri.EEG(:,1)
+    B=g.Unikalus_kodai.bendri
     error('Nepavyko');
 end;
 
@@ -335,28 +316,24 @@ if g.Netvarkingi_poslinkiai ;
         
 end ;
 
-% Naujam ivykiu sarasui naudokim senuosius EEG
-% ir pridekim trukstamus is % LabChart (isskyrus 200:230 sriti )
-g.Nauji.LabChart = cell2mat(g.listOfTimes.LabChart(find(ismember(cell2mat(g.listOfTimes.LabChart(:,1)), [ g.Unikalus_kodai.bendri ; g.papildomai_atmesti_ivykius ] ) == 0  ),:)) ;
-g.Nauji.LabChart(:,2) = g.Nauji.LabChart(:,2) - g.Poslinkis.vidutinis ; 
-g.Nauji.LabChart(:,3) = 0 ;
-g.Nauji.EEG = cell2mat(g.listOfTimes.EEG);% cell2mat(g.listOfTimes.EEG(find(ismember(cell2mat(g.listOfTimes.EEG(:,1)), [200:230] ) == 0  ),:)) ;
-g.Nauji.Bendri =  sortrows( [ g.Nauji.EEG ; g.Nauji.LabChart ] , 2 ) ; 
-[g.Nauji.dydis, ~ ] = size(g.Nauji.Bendri) ;
-for icom=1:g.Nauji.dydis ;
-    if g.Nauji.Bendri(icom,1) == 300;
-        newEEGlabEvents(1,icom).type    = g.New_R_event_type ;
-    elseif g.Nauji.Bendri(icom,1) == 299;
-        newEEGlabEvents(1,icom).type    = '0' ;
+% Naujam ivykių sąrašui naudokim senuosius EEG
+% ir pridėkim R ivykius iš LabChart
+g.Nauji.R_laikai = cell2mat(g.listOfTimes.LC_R) ;
+g.Nauji.R_laikai(:,2) = g.Nauji.R_laikai(:,2) - g.Poslinkis.vidutinis ;
+for ri=1:size(g.Nauji.R_laikai,1);
+    g.Nauji.R_latenc(ri,1)=FindTrigerTime(g.EEGlabTimes,g.Nauji.R_laikai(ri,2));
+end;
+g.Nauji.R_latenc(:,2)=zeros(size(g.Nauji.R_latenc));
+g.Nauji.EEG=[g.EEGlabEvent.latency]';
+g.Nauji.EEG(:,2)=1:(size(g.Nauji.EEG));
+g.Nauji.Bendri =  sortrows( [ g.Nauji.EEG ; g.Nauji.R_latenc ] , 1 ) ; 
+for i=1:length(g.Nauji.Bendri);
+    if g.Nauji.Bendri(i,2) == 0;
+        newEEGlabEvents(1,i).type    = g.New_R_event_type ;
+        newEEGlabEvents(1,i).latency = g.Nauji.Bendri(i,1);
+        newEEGlabEvents(1,i).duration= 0;
     else
-        newEEGlabEvents(1,icom).type    = num2str(g.Nauji.Bendri(icom,1)) ;
-    end;    
-    [idx, ~]=FindTrigerTime(g.EEGlabTimes,g.Nauji.Bendri(icom,2));
-    newEEGlabEvents(1,icom).latency = idx ;
-    if g.Nauji.Bendri(icom,3) > 0 ;
-        newEEGlabEvents(1,icom).urevent = g.Nauji.Bendri(icom,3) ;
-    else
-        newEEGlabEvents(1,icom).urevent = '' ;
+        newEEGlabEvents(1,i)         = g.EEGlabEvent(g.Nauji.Bendri(i,2));
     end;
 end ;
 
@@ -367,7 +344,7 @@ Poslinkio_paklaidos=g.Poslinkis.paklaidos;
 
 function [idx, closest]=FindTrigerTime(times,triger)
   tmp = abs(times-triger);
-  [idy idx] = min(tmp); %index of closest value
+  [~, idx] = min(tmp); %index of closest value
   closest = times(idx); %closest value
 
 
