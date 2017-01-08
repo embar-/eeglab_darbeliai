@@ -881,9 +881,17 @@ for i=1:Pasirinktu_failu_N;
                             if 0 % išjungti; skirta tik testavimui
                                 LC_duom_tsk=[Labchart_data.datastart(1,LC_blokas):Labchart_data.dataend(1,LC_blokas)];
                                 LC_signalas=Labchart_data.data(LC_duom_tsk);
-                                LC_laikai=LC_duom_tsk * ( 1000 / Labchart_data.tickrate(1) ) * LC_daugiklis - LC_iv_poslinkis;
+                                LC_laikai=(LC_duom_tsk - Labchart_data.datastart(1,LC_blokas) )  / Labchart_data.tickrate(1) * 1000 * LC_daugiklis - LC_iv_poslinkis;
                                 signalas=spline(LC_laikai,LC_signalas,EEG.times);
-                                EEG.data(end+1,:)=signalas * 10000 ;
+                                LC_nezinoma_prad_id=find(EEG.times < LC_laikai(1));
+                                if ~isempty(LC_nezinoma_prad_id)
+                                    signalas(LC_nezinoma_prad_id)=ones(length(LC_nezinoma_prad_id),1)*LC_signalas(1);
+                                end;
+                                LC_nezinoma_pab_id=find(EEG.times > LC_laikai(end));
+                                if ~isempty(LC_nezinoma_pab_id)
+                                    signalas(LC_nezinoma_pab_id)=ones(length(LC_nezinoma_pab_id),1)*LC_signalas(end);
+                                end;
+                                EEG.data(end+1,:)=signalas * 30000 ;
                                 EEG.chanlocs(end+1).labels=Labchart_data.titles(1,:);
                             end;
                             
