@@ -1,4 +1,4 @@
-function [newEEGlabEvents,Poslinkis_vidutinis,Poslinkio_paklaidos] = labchartEKGevent2eeglab(varargin)
+function [newEEGlabEvents,Poslinkis_vidutinis,Poslinkio_paklaidos,blokas,Labchart_laiko_daugiklis] = labchartEKGevent2eeglab(varargin)
 % Add labchart events from comments (R peaks) into eeglab events. 
 % Script works by allignement of numeric events.
 %
@@ -42,8 +42,8 @@ end;
 % susidaro net 8 milisekundziu LabChart nuskubejimas (EEG atsilikimas),
 % be to ir pats issibarstymas gali siekti iki ~5 ms
 
-g.Labchart_laiko_daugiklis =  902076 / 902101 ;
-g.Leidziama_paklaida = 5 + 1000/g.LabchartTickrate ; % milisekundemis
+Labchart_laiko_daugiklis =  902076 / 902101 ;
+g.Leidziama_paklaida = 9 + 1000/g.LabchartTickrate ; % milisekundemis
 
 g.EEG_event_fields=fieldnames(g.EEGlabEvent);
 newEEGlabEvents = cell2struct(repmat({[]},numel(g.EEG_event_fields),0),g.EEG_event_fields);
@@ -141,7 +141,7 @@ for icomMain = [find(g.LabchartCom(:,2)==blokas)]' ;
       ivykis = str2num(ivykis) ;
         % LabChart ivykio laikas, milisekundemis
         g.listOfTimes.LC_kt{iLL,1} = ivykis ;
-        g.listOfTimes.LC_kt{iLL,2} = g.LabchartCom(icomMain,3) * ( 1000 / g.LabchartTickrate ) * g.Labchart_laiko_daugiklis ;
+        g.listOfTimes.LC_kt{iLL,2} = g.LabchartCom(icomMain,3) * ( 1000 / g.LabchartTickrate ) * Labchart_laiko_daugiklis ;
         iLL = iLL+1;
     elseif ~isempty(LabChart_key)
         is_LabChart_key=0;
@@ -152,7 +152,7 @@ for icomMain = [find(g.LabchartCom(:,2)==blokas)]' ;
         end;
         if is_LabChart_key
            g.listOfTimes.LC_R{iLR,1} = NaN ; % g.New_R_event_type ;
-           g.listOfTimes.LC_R{iLR,2} = g.LabchartCom(icomMain,3) * ( 1000 / g.LabchartTickrate ) * g.Labchart_laiko_daugiklis ;
+           g.listOfTimes.LC_R{iLR,2} = g.LabchartCom(icomMain,3) * ( 1000 / g.LabchartTickrate ) * Labchart_laiko_daugiklis ;
            iLR = iLR+1;
         end;
     end ;
@@ -339,7 +339,6 @@ end ;
 
 Poslinkis_vidutinis=g.Poslinkis.vidutinis;
 Poslinkio_paklaidos=g.Poslinkis.paklaidos;
-
 
 
 function [idx, closest]=FindTrigerTime(times,triger)

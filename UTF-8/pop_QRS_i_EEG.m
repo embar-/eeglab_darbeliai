@@ -862,7 +862,7 @@ for i=1:Pasirinktu_failu_N;
                             Labchart_data=load(QRS_rinkmena) ;
                             
                             % Sukurti naujų įvykių struktūrą
-                            [newEEGlabEvents, newEEGlabEvents_poslinkis] = ...
+                            [EEG_iv_strukt, LC_iv_poslinkis, ~, LC_blokas, LC_daugiklis] = ...
                                labchartEKGevent2eeglab(...
                                 'EEGlabTimes', EEG.times, ...
                                 'EEGlabEvent', EEG.event, ...
@@ -870,7 +870,17 @@ for i=1:Pasirinktu_failu_N;
                                 'LabchartComtext', Labchart_data.comtext, ...
                                 'LabchartTickrate', Labchart_data.tickrate, ...
                                 'New_R_event_type',QRS_ivykis);
-                            EEG.event = newEEGlabEvents;
+                            EEG.event = EEG_iv_strukt;
+                            
+                            % Įterpti pirmąjį kanalą
+                            if 0 % išjungti; skirta tik testavimui
+                                LC_duom_tsk=[Labchart_data.datastart(1,LC_blokas):Labchart_data.dataend(1,LC_blokas)];
+                                LC_signalas=Labchart_data.data(LC_duom_tsk);
+                                LC_laikai=LC_duom_tsk * ( 1000 / Labchart_data.tickrate ) * LC_daugiklis - LC_iv_poslinkis;
+                                signalas=spline(LC_laikai,LC_signalas,EEG.times);
+                                EEG.data(end+1,:)=signalas * 10000 ;
+                                EEG.chanlocs(end+1).labels=Labchart_data.titles(1,:);
+                            end;
                             
                         otherwise
                             error('EKG?');
