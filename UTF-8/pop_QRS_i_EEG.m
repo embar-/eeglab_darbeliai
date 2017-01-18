@@ -564,6 +564,11 @@ if and(isempty(get(handles.text_kanal,'TooltipString')), or(...
     set(handles.pushbutton_kanal,'BackgroundColor',[1 1 0]);
     drawnow; return;
 end;
+if and(and(get(handles.checkbox_QRS_aptikimas,'Value'), ...
+        get(handles.popupmenu_QRS_saltinis,'Value') == 3), ...
+    strcmp(get(handles.popupmenu_QRS_saltinio_galune, 'Visible'), 'off'));
+    return;
+end;
 if and(isempty(get(handles.edit_QRS_ivykis,'String')), or(...
      or(get(handles.checkbox_QRS_korekcija,'Value'), ...
         get(handles.checkbox_eksp_Rlaikus, 'Value')), ...
@@ -862,18 +867,33 @@ for i=1:Pasirinktu_failu_N;
                             Labchart_data=load(QRS_rinkmena) ;
                             
                             % Sukurti naujų įvykių struktūrą
-                            [newEEGlabEvents, newEEGlabEvents_poslinkis, newEEGlabEvents_paklaidos] = ...
+                            [EEG_iv_strukt, LC_iv_poslinkis, ~, LC_blokas, LC_daugiklis] = ...
                                labchartEKGevent2eeglab(...
                                 'EEGlabTimes', EEG.times, ...
                                 'EEGlabEvent', EEG.event, ...
                                 'LabchartCom', Labchart_data.com, ...
                                 'LabchartComtext', Labchart_data.comtext, ...
-                                'LabchartTickrate', Labchart_data.tickrate, ...
+                                'LabchartTickrate', Labchart_data.tickrate(1), ...
                                 'New_R_event_type',QRS_ivykis);
-                            EEG.event = newEEGlabEvents;        
+                            EEG.event = EEG_iv_strukt;
                             
-                            assignin('base','newEEGlabEvents_poslinkis',newEEGlabEvents_poslinkis);
-                            assignin('base','newEEGlabEvents_paklaidos',newEEGlabEvents_paklaidos);
+                            % Įterpti pirmąjį kanalą
+                            if 0 % išjungti; skirta tik testavimui
+                                LC_duom_tsk=[Labchart_data.datastart(1,LC_blokas):Labchart_data.dataend(1,LC_blokas)];
+                                LC_signalas=Labchart_data.data(LC_duom_tsk);
+                                LC_laikai=(LC_duom_tsk - Labchart_data.datastart(1,LC_blokas) )  / Labchart_data.tickrate(1) * 1000 * LC_daugiklis - LC_iv_poslinkis;
+                                signalas=spline(LC_laikai,LC_signalas,EEG.times);
+                                LC_nezinoma_prad_id=find(EEG.times < LC_laikai(1));
+                                if ~isempty(LC_nezinoma_prad_id)
+                                    signalas(LC_nezinoma_prad_id)=ones(length(LC_nezinoma_prad_id),1)*LC_signalas(1);
+                                end;
+                                LC_nezinoma_pab_id=find(EEG.times > LC_laikai(end));
+                                if ~isempty(LC_nezinoma_pab_id)
+                                    signalas(LC_nezinoma_pab_id)=ones(length(LC_nezinoma_pab_id),1)*LC_signalas(end);
+                                end;
+                                EEG.data(end+1,:)=signalas * 30000 ;
+                                EEG.chanlocs(end+1).labels=Labchart_data.titles(1,:);
+                            end;
                             
                         otherwise
                             error('EKG?');

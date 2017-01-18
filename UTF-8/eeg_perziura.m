@@ -372,17 +372,24 @@ set(a,'YTickLabel', Kanalu_pav);
 %disp('Tinkamo Y koeficiento radimas...');
 data1=EEG1.data(~isnan(EEG1.data));
 data2=EEG2.data(~isnan(EEG2.data));
-if ~exist('rms','file') == 2 ;
-    rms1=rms(data1);
-    rms2=rms(data2);
+if exist('rms','file') == 2 ;
+    rms1=mean(rms(data1,2));
+    rms2=mean(rms(data2,2));
 else
-    rms1=std(data1,[],1);
-    rms2=std(data2,[],1);
+    rms1=mean(std(data1,0,2));
+    rms2=mean(std(data2,0,2));
 end;
-rms12=max([rms1(~isnan(rms1)) rms2(~isnan(rms2)) 0]);
-y_koef=max(1,round(50*max(sqrt(sqrt(sqrt(Kanalu_N))),0.1)*log(sqrt(rms12))));
+rms12=max([rms1(~isnan(rms1)) rms2(~isnan(rms2)) 1]);
+y_koef=round(75*max(sqrt(sqrt(sqrt(Kanalu_N))),0.1)*log(sqrt(rms12)));
 if or(size(y_koef) ~= [1 1], ismember(y_koef, [0 NaN]));
     y_koef=round(100*sqrt(sqrt(length(get(a,'YTick')))));
+end;
+if y_koef < 1;
+    if y_koef <= 0;
+        y_koef=round(100*sqrt(sqrt(length(get(a,'YTick')))));
+    else
+        y_koef=1;
+    end;
 end;
 setappdata(a,'y_koef',y_koef);
 

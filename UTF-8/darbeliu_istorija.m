@@ -2,6 +2,10 @@
 % Pakeitimai:
 % ------------------------
 %
+% v2017.01.18.1
+% + Klaidų pranešimai nuo šiol surenkami į vieną
+%   iškylantį langą, o ne vis naujame atskirame lange
+%
 % v2016.12.28.1
 % + Įkeliant duomenis informuoti trūkstamus papildinius importavimui.
 %
@@ -14,7 +18,7 @@
 % ~ ERP>MAT ekpsportavimas iškeltas į eksportuoti_erp_mat.m
 % ~ eeg_peržiūra variklio patobulinimai.
 % ~ Kiti smulkūs pakeitimai.
-
+%
 % v2016.04.29.1
 % ~ pop_ERP_savybes: papildomus taškus piešti tik pagal pareikalavimą.
 % ~ Kai kuriuose įspėjimuose nerodyti pėdsako.

@@ -144,7 +144,7 @@ else
         if median(diff(handles.EKG_laikai(:))) >= 100;
             handles.EKG_laikai=handles.EKG_laikai*0.001;
         end;
-        if isempty(Pradiniai_laikai);
+        if isempty(Pradiniai_laikai);            
             try axes(handles.axes_rri); cla;
                 set(handles.axes_rri,'Visible','off');
                 Aptikti_EKG_QRS_Callback2(hObject, eventdata, handles);
@@ -962,13 +962,15 @@ NY1=0; if get(handles.checkbox_ekg,'Value'); NY1=NY1-100; end;
 NY2=1500; %if ~isempty(RRI(find([RRI(:)] >0))); NY2=min(max(RRI)+30,1500); end;
 NX1=5*floor(min([Laikai ; handles.EKG_laikai])/5);
 NX2=5*ceil( max([Laikai ; handles.EKG_laikai])/5);
-set(findobj(handles.scrollHandles(1),'Tag','scrollPatch'),'YData',[NY1 NY2 NY2 NY1 ]);
-set(findobj(handles.scrollHandles(1),'Tag','scrollBar'),  'YData',[NY1 NY2]);
-set(findobj(handles.scrollHandles(2),'Tag','scrollPatch'),'XData',[NX1 NX1 NX2 NX2]);
-set(findobj(handles.scrollHandles(2),'Tag','scrollBar'),  'XData',[NX1 NX2]);
-if isobject(handles.scrollHandles);
-    set(handles.scrollHandles,'XLim',[NX1 NX2]);
-    set(handles.scrollHandles,'YLim',[NY1 NY2]);
+if ismember('scrollHandles', fields(handles));
+    if isobject(handles.scrollHandles);
+        set(findobj(handles.scrollHandles(1),'Tag','scrollPatch'),'YData',[NY1 NY2 NY2 NY1 ]);
+        set(findobj(handles.scrollHandles(1),'Tag','scrollBar'),  'YData',[NY1 NY2]);
+        set(findobj(handles.scrollHandles(2),'Tag','scrollPatch'),'XData',[NX1 NX1 NX2 NX2]);
+        set(findobj(handles.scrollHandles(2),'Tag','scrollBar'),  'XData',[NX1 NX2]);
+        set(handles.scrollHandles,'XLim',[NX1 NX2]);
+        set(handles.scrollHandles,'YLim',[NY1 NY2]);
+    end;
 end;
 for h=[handles.RRI_lin handles.RRI_tsk handles.EKG_tsk [handles.ScrollHandlesCldrL]'];
     try
@@ -1913,7 +1915,10 @@ try
     
     handles.EKG_Hz=Labchart_data.samplerate(KanaloNr,blokas);
     handles.EKG=[Labchart_data.data(Labchart_data.datastart(KanaloNr,blokas):Labchart_data.dataend(KanaloNr,blokas))]';
-    if ekg_apversta(handles.EKG,handles.EKG_Hz,0); handles.EKG=-handles.EKG; end;
+    leisti_apversti=~isempty(get(gcf,'currentModifier'));
+    if leisti_apversti
+        if ekg_apversta(handles.EKG,handles.EKG_Hz,0); handles.EKG=-handles.EKG; end;
+    end;
     handles.EKG_laikai=[...
         ([Labchart_data.datastart(KanaloNr,blokas):Labchart_data.dataend(KanaloNr,blokas)] ...
         - Labchart_data.datastart(KanaloNr,blokas) ) / Labchart_data.samplerate(KanaloNr,blokas)]';
@@ -1953,7 +1958,11 @@ try
                         LabChart_key='';
                 end;
             otherwise
-                LabChart_key='';
+                if length(LabChart_TXT_events_)==1
+                    LabChart_key=LabChart_TXT_events_{1};
+                else
+                    LabChart_key='';
+                end;
         end;
     end;
 
@@ -1976,7 +1985,7 @@ try
             comtextMark = Labchart_data.comtext(comtextMark,:);
             comtextMark = deblank(comtextMark);
             is_LabChart_key=0;
-            if and(length(comtextMark) > 2, ~isempty(LabChart_key))
+            if length(comtextMark) > 2
                 if strcmp(comtextMark(1:3),LabChart_key);
                     is_LabChart_key=1;
                 end;
@@ -1985,7 +1994,6 @@ try
                 Laikelis=Labchart_data.com(icomMain,3) * ...
                     ( 1000 / Labchart_data.tickrate(blokas) )  ; % * g.Labchart_laiko_daugiklis ;
                 Laikai=[Laikai; Laikelis];
-
             end ;
         end ;
 
@@ -1996,6 +2004,33 @@ try
     end;
     
     handles.zmkl_lks=[]; handles.zmkl_pvd={};
+    ivyk_kit_id=[intersect(...
+        find(Labchart_data.com(:,2)==blokas),...
+        find(Labchart_data.com(:,4)==1))]' ;
+    % unique du kartus, kad išrikiuotų abėcėliškai, bet iš trumpo sąrašo - gal taip greičiau
+    ivyk_kit_un=unique(arrayfun(@(i) deblank(Labchart_data.comtext(i,:)), unique(Labchart_data.com(ivyk_kit_id, 5)), 'UniformOutput', false));
+    ivyk_kiti=listdlg(...
+        'ListString',ivyk_kit_un,...
+        'SelectionMode','multiple',...
+        'InitialValue',1:length(ivyk_kit_un),...
+        'PromptString',lokaliz('Select other events:'),...
+        'OKString',lokaliz('OK'),...
+        'CancelString',lokaliz('Cancel'));
+    if ~isempty(ivyk_kiti);
+        ivyk_kit=ivyk_kit_un(ivyk_kiti);
+        for icomMain=ivyk_kit_id
+            comtextMark = Labchart_data.com(icomMain, 5);
+            comtextMark = Labchart_data.comtext(comtextMark,:);
+            comtextMark=deblank(comtextMark);
+            if ismember(comtextMark,ivyk_kit)
+            %if str2num(comtextMark) >= 200
+                handles.zmkl_pvd = {handles.zmkl_pvd{:} comtextMark};
+                zLaikelis=Labchart_data.com(icomMain,3) * ...
+                    (1 / Labchart_data.tickrate(blokas) ) ;  % * g.Labchart_laiko_daugiklis ;
+                handles.zmkl_lks=[handles.zmkl_lks zLaikelis];
+            end;
+        end ;
+    end;
 
     dabartines_fig=findobj(handles.figure1);
     delete(dabartines_fig(find(ismember(dabartines_fig,handles.pradines_fig)==0)));
@@ -2185,17 +2220,8 @@ end;
 set(handles.figure1,'pointer','watch');
 
 % % statusbar
-% tici=tic;
 f=statusbar(lokaliz('Palaukite!'));
 statusbar('on',f);
-%     tok=toc(tici);
-%     p=i/length(RINKMENOS);
-%     if and(tok>1,p<0.5);
-%         statusbar('on',f);
-%     end;
-%     if isempty(statusbar(p,f));
-%         break;
-%     end;
 p=0;
 statusbar(p,f);
 

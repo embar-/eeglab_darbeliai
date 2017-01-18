@@ -1,7 +1,7 @@
-Darbeliai v2016.12.28.1
+Darbeliai v2017.01.18.1
 
-LT: Įkeliant duomenis pranešti apie 
-trūkstamus papildinius importavimui
+LT: Klaidų pranešimai nuo šiol surenkami į vieną
+iškylantį langą, o ne vis naujame atskirame lange.
 
-EN: inform about missing plugings
-while importing data.
+EN: Error messages now display in dedicated window,
+thus will not open multiple dialogs for new errors.
