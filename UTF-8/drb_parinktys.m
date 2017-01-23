@@ -128,6 +128,7 @@ switch darbas
     case {'pop_meta_drb'}
         versija_plg='Darbeliai v2015.07.26';
 end;
+setappdata(handles.figure1,'paskiausiai_ikeltas_rinkinys',rinkinys);
 try eval([ darbas '(''susildyk'',hObject, eventdata, handles);' ]) ; 
 catch err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
 end;
@@ -213,7 +214,19 @@ try load(konfig_rinkm);
 catch %err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm, 0);
     saranka=struct; esami={};
 end;
-[vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(vardas, komentaras, darbas, saranka, [], ~isempty(vardas));
+klausti=isempty(vardas);
+if klausti;
+    vardas=getappdata(handles.figure1,'paskiausiai_ikeltas_rinkinys');
+    if ~ischar(vardas) || ismember(vardas,{'numatytas','paskutinis'}); 
+        vardas='';
+    elseif isempty(komentaras);
+        esamo_id=find(ismember(esami,vardas));
+        if esamo_id > 0;
+            komentaras=saranka(esamo_id).komentaras;
+        end;
+    end;
+end;
+[vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(vardas, komentaras, darbas, saranka, [], ~klausti);
 if ~pavyko; return; end;
 if isempty(vardas);
     vardas='paskutinis';
