@@ -75,15 +75,19 @@ end;
 
 if isfield(g,'ICA');
     if g.ICA;
-        if ~isfield(EEG1,'icaact');
-            disp([lokaliz('nerasta') ': EEG.icaact']);
+        if isfield(EEG1,'icaact');
+            if ~isempty(EEG1.icaact);
+                EEG1.data = EEG1.icaact;
+            end;
+        else
+            EEG1.icaact=[];
+        end;
+        if isempty(EEG1.icaact) && isfield(EEG1,'icasphere') && isfield(EEG1,'icaweights')
+                EEG1.data = eeg_getdatact(EEG1, 'component', [1:size(EEG1.icaweights,1)]);
+        else
+            disp([lokaliz('nerasta') ': ICA']);
             return;
         end;
-        if isempty(EEG1.icaact);
-            disp([lokaliz('nerasta') ': EEG.icaact']);
-            return;
-        end;
-        EEG1.data=EEG1.icaact;
         EEG1.nbchan=size(EEG1.data,1);
         EEG1.chanlocs=[];
         EEG2=[]; % neleisti lyginti
