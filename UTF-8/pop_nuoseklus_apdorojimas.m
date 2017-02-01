@@ -2482,7 +2482,7 @@ EEG = eeg_checkset( EEG );
 gcompreject=find(EEG.reject.gcompreject);
 disp(gcompreject);
 
-if isempty(gcompreject) && (ICA_pt_veiksena < 5);
+if isempty(gcompreject) && (ICA_pt_veiksena < 5) && (ICA_zr_veiksena ~= 4 );
     button = questdlg(...
         [ lokaliz('No selected ICA components for rejection.') ' ' lokaliz('Grazinti pradinius duomenis?') ], lokaliz('No selected ICA components for rejection.') , ...
         lokaliz('Abort'), lokaliz('Keisti'), lokaliz('Yes'), lokaliz('Yes'));
