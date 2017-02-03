@@ -1386,8 +1386,12 @@ for i=1:Pasirinktu_failu_N;
                     try eeglab redraw;
                     catch err; Pranesk_apie_klaida(err,'','',0);
                     end;
-                    pop_eegplot( EEG, 1, 1, 1);
-                    EEG = eegh('pop_eegplot( EEG, 1, 1, 1);', EEG);
+                    if exist('pop_eegplot_w','file')
+                        pop_eegplot_w( EEG, 1, 1, 1);
+                    else
+                        pop_eegplot(   EEG, 1, 1, 1);
+                    end;
+                    %EEG = eegh('pop_eegplot( EEG, 1, 1, 1);', EEG);
 
                     %eegplot( EEG.data, 'srate', EEG.srate, 'title', 'Scroll channel activities -- eegplot()', ...
                     %  'limits', [EEG.xmin EEG.xmax]*1000 , 'command', command, eegplotoptions{:});
