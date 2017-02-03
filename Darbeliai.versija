@@ -1,7 +1,11 @@
-Darbeliai v2017.01.18.1
+Darbeliai v2017.02.03.1
 
-LT: Klaidų pranešimai nuo šiol surenkami į vieną
-iškylantį langą, o ne vis naujame atskirame lange.
+LT: Įrašo peržiūroje, iškviestoje iš nuoseklaus
+apdorojimo lango, leidžia ne tik atmesti atkarpas,
+bet taip pat ir kanalus, judėti pelės ratuku,
+o signalo vaizdui skiriama didesnė ekrano dalis.
 
-EN: Error messages now display in dedicated window,
-thus will not open multiple dialogs for new errors.
+EN: In serial processing dialog opened eegplot
+modification allows not only remove time windows,
+but also remove channels, scroll with mouse whell,
+signal viewed in larger area.
