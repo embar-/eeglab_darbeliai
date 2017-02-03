@@ -1388,10 +1388,11 @@ for i=1:Pasirinktu_failu_N;
                     end;
                     if exist('pop_eegplot_w','file')
                         pop_eegplot_w( EEG, 1, 1, 1);
+                        EEG = eegh('pop_eegplot_w( EEG, 1, 1, 1);', EEG);
                     else
                         pop_eegplot(   EEG, 1, 1, 1);
+                        EEG = eegh('pop_eegplot( EEG, 1, 1, 1);', EEG);
                     end;
-                    %EEG = eegh('pop_eegplot( EEG, 1, 1, 1);', EEG);
 
                     %eegplot( EEG.data, 'srate', EEG.srate, 'title', 'Scroll channel activities -- eegplot()', ...
                     %  'limits', [EEG.xmin EEG.xmax]*1000 , 'command', command, eegplotoptions{:});
