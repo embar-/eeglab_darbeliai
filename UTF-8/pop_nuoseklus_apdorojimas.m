@@ -1386,8 +1386,13 @@ for i=1:Pasirinktu_failu_N;
                     try eeglab redraw;
                     catch err; Pranesk_apie_klaida(err,'','',0);
                     end;
-                    pop_eegplot( EEG, 1, 1, 1);
-                    EEG = eegh('pop_eegplot( EEG, 1, 1, 1);', EEG);
+                    if exist('pop_eegplot_w','file')
+                        pop_eegplot_w( EEG, 1, 1, 1);
+                        EEG = eegh('pop_eegplot_w( EEG, 1, 1, 1);', EEG);
+                    else
+                        pop_eegplot(   EEG, 1, 1, 1);
+                        EEG = eegh('pop_eegplot( EEG, 1, 1, 1);', EEG);
+                    end;
 
                     %eegplot( EEG.data, 'srate', EEG.srate, 'title', 'Scroll channel activities -- eegplot()', ...
                     %  'limits', [EEG.xmin EEG.xmax]*1000 , 'command', command, eegplotoptions{:});
@@ -2482,7 +2487,7 @@ EEG = eeg_checkset( EEG );
 gcompreject=find(EEG.reject.gcompreject);
 disp(gcompreject);
 
-if isempty(gcompreject) && (ICA_pt_veiksena < 5);
+if isempty(gcompreject) && (ICA_pt_veiksena < 5) && (ICA_zr_veiksena ~= 4 );
     button = questdlg(...
         [ lokaliz('No selected ICA components for rejection.') ' ' lokaliz('Grazinti pradinius duomenis?') ], lokaliz('No selected ICA components for rejection.') , ...
         lokaliz('Abort'), lokaliz('Keisti'), lokaliz('Yes'), lokaliz('Yes'));

@@ -75,15 +75,19 @@ end;
 
 if isfield(g,'ICA');
     if g.ICA;
-        if ~isfield(EEG1,'icaact');
-            disp([lokaliz('nerasta') ': EEG.icaact']);
+        if isfield(EEG1,'icaact');
+            if ~isempty(EEG1.icaact);
+                EEG1.data = EEG1.icaact;
+            end;
+        else
+            EEG1.icaact=[];
+        end;
+        if isempty(EEG1.icaact) && isfield(EEG1,'icasphere') && isfield(EEG1,'icaweights')
+                EEG1.data = eeg_getdatact(EEG1, 'component', [1:size(EEG1.icaweights,1)]);
+        else
+            disp([lokaliz('nerasta') ': ICA']);
             return;
         end;
-        if isempty(EEG1.icaact);
-            disp([lokaliz('nerasta') ': EEG.icaact']);
-            return;
-        end;
-        EEG1.data=EEG1.icaact;
         EEG1.nbchan=size(EEG1.data,1);
         EEG1.chanlocs=[];
         EEG2=[]; % neleisti lyginti
@@ -106,6 +110,11 @@ f=figure('ToolBar','none','MenuBar','none','Name', pvd, 'NumberTitle','off',...
 narsyti=0;
 if isfield(g,'narsyti'); narsyti=g.narsyti; end;
 if narsyti;
+    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+    try
+        load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+    catch
+    end;
     a=axes('units','normalized','position',[0.08 0.05 0.72 0.9 ]);
     handles.edit1=uicontrol('style','edit', 'Tag', 'edit1',...
         'Units', 'normalized', 'position', [0.8 0.955 0.16 0.04],...
@@ -154,7 +163,8 @@ if narsyti;
     set(handles.edit_failu_filtras1, 'callback', {@atnaujink_rodoma_kelia_ir_failus, handles} );
     try set(handles.edit_failu_filtras1,'String',g(1).flt_show); catch; end;
     set(handles.edit1, 'callback', {@atnaujink_rodoma_kelia_ir_failus1, handles} );
-    try set(handles.edit1,'String',g(1).path);   catch; end;
+    try set(handles.edit1,'String',Darbeliai.keliai.atverimui{1}); catch; end;
+    try set(handles.edit1,'String',g(1).path); catch; end;
     try set(handles.edit1,'String',g(1).pathin); catch; end;
     if narsyti == 2
         set(handles.listbox1, 'callback', {@listbox1B_Callback, handles} );
@@ -162,6 +172,7 @@ if narsyti;
         set(handles.pushbutton_v2, 'callback', {@pushbutton_v2_Callback, handles} );
         set(handles.listbox2, 'callback', {@listbox2_Callback, handles} );
         set(handles.edit2, 'callback', {@atnaujink_rodoma_kelia_ir_failus2, handles} );
+        try set(handles.edit2,'String',Darbeliai.keliai.saugojimui{1}); catch; end;
         try set(handles.edit2,'String',g(1).path);    catch; end;
         try set(handles.edit2,'String',g(1).pathout); catch; end;
         atnaujink_rodoma_kelia_ir_failus2(handles.edit2, [], handles);

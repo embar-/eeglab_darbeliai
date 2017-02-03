@@ -2,6 +2,13 @@
 % Pakeitimai:
 % ------------------------
 %
+% v2017.02.03.1
+% + eegplot_w ir pop_eegplot_w leidžia atmetinėti kanalus/komponentes,
+%   judėti pelės ratuku plačiaekraniame monitoriuje.
+% + Jei įkeltos parinktys redaguojamos, įrašant pavadinimą ir komentarą
+%   siūlyti pagal senųjų parinkčių.
+% ~ pop_eeg_peržiūroje perskaičiuoti EEG.icaact, jei tuščia
+%
 % v2017.01.18.1
 % + Klaidų pranešimai nuo šiol surenkami į vieną
 %   iškylantį langą, o ne vis naujame atskirame lange
