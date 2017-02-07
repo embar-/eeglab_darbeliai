@@ -241,11 +241,12 @@ if ~isstr(data) % If NOT a 'noui' call or a callback from uicontrols
 
    try
        options = varargin;
-       if ~isempty( varargin ), 
+       if ~isempty( varargin )
            for i = 1:2:numel(options)
                g.(options{i}) = options{i+1};
            end
-       else g= []; end;
+       else g= [];
+       end;
    catch
        disp('eegplot_w() error: calling convention {''key'', value, ... } error'); return;
    end;	
@@ -1171,8 +1172,10 @@ u(22) = uicontrol('Parent',figh, ...
   A = DEFAULT_AXES_POSITION;
   axes('Position',[A(1)+A(3) 0.3 1-A(1)-A(3) A(4)],'Visible','off','Ylim',YLim,'tag','eyeaxes')
   axis manual
-  if strcmp(SPACING_EYE,'on'),  set(m(7),'checked','on')
-  else set(m(7),'checked','off');
+  if strcmp(SPACING_EYE,'on')
+      set(m(7),'checked','on')
+  else
+      set(m(7),'checked','off');
   end 
   eegplot_w('scaleeye', [], gcf);
   if strcmp(lower(g.scale), 'off')
@@ -1259,21 +1262,21 @@ else
     % -------------------------
     if ~isempty(g.data2)
         switch lower(g.submean) % subtract the mean ?
-         case 'on', 
-          meandata = mean(g.data2(:,lowlim:highlim)');  
-          if any(isnan(meandata))                              % 6/16/104 Ramon: meandata by memdata clean4release
-              meandata = nan_mean(g.data2(:,lowlim:highlim)');
-          end;
-         otherwise, meandata = zeros(1,g.chans);
+            case 'on'
+                meandata = mean(g.data2(:,lowlim:highlim)');
+                if any(isnan(meandata))                              % 6/16/104 Ramon: meandata by memdata clean4release
+                    meandata = nan_mean(g.data2(:,lowlim:highlim)');
+                end;
+            otherwise, meandata = zeros(1,g.chans);
         end;
     else
         switch lower(g.submean) % subtract the mean ?
-         case 'on', 
-          meandata = mean(data(:,lowlim:highlim)');
-          if any(isnan(meandata))
-              meandata = nan_mean(data(:,lowlim:highlim)');
-          end;
-         otherwise, meandata = zeros(1,g.chans);
+            case 'on'
+                meandata = mean(data(:,lowlim:highlim)');
+                if any(isnan(meandata))
+                    meandata = nan_mean(data(:,lowlim:highlim)');
+                end;
+            otherwise, meandata = zeros(1,g.chans);
         end;
     end;
     if strcmpi(g.plotdata2, 'off')
@@ -1309,8 +1312,9 @@ else
     % plot good channels on top of bad channels (if g.eloc_file(i).badchan = 0... or there is no bad channel information)
     for i = 1:g.chans
         if strcmpi(g.plotdata2, 'on')
-             tmpcolor = [ 1 0 0 ];
-        else tmpcolor = g.color{mod(g.chans-i,length(g.color))+1};
+            tmpcolor = [ 1 0 0 ];
+        else
+            tmpcolor = g.color{mod(g.chans-i,length(g.color))+1};
         end;
         
 %        keyboard;  
@@ -1322,7 +1326,7 @@ else
             plot(data(g.chans-i+1,lowlim:highlim) -meandata(g.chans-i+1)+i*g.spacing + (g.dispchans+1)*(oldspacing-g.spacing)/2 +g.elecoffset*(oldspacing-g.spacing), ...
                 'color', tmpcolor, 'clipping','on')
             
-            if (isfield(g, 'eloc_file') && isstruct(g.eloc_file)) && ~isempty(g.command) ...
+            if (isfield(g, 'eloc_file') && isstruct(g.eloc_file)) && ~isempty(g.command)
                     line(1,mean(i*g.spacing + (g.dispchans+1)*(oldspacing-g.spacing)/2 +g.elecoffset*(oldspacing-g.spacing),2),...
                     'Marker','>','MarkerEdgeColor','g','MarkerFaceColor','g','MarkerSize',6,'clipping','off','userdata',g.chans-i+1,'ButtonDownFcn',@MarkChannel);
             end
@@ -1410,15 +1414,16 @@ else
    	highlim = round(min((g.time+g.winlength)*multiplier+1));
   	%displaymenu = findobj('tag','displaymenu','parent',gcf);
     if ~isempty(g.winrej) && g.winstatus
-		if g.trialstag ~= -1 % epoched data
+        if g.trialstag ~= -1 % epoched data
 			indices = find((g.winrej(:,1)' >= lowlim & g.winrej(:,1)' <= highlim) | ...
 						   (g.winrej(:,2)' >= lowlim & g.winrej(:,2)' <= highlim));
-			if ~isempty(indices)
+            if ~isempty(indices)
 				tmpwins1 = g.winrej(indices,1)';
 				tmpwins2 = g.winrej(indices,2)';
                 if size(g.winrej,2) > 2
-    				 tmpcols  = g.winrej(indices,3:5);
-                else tmpcols  = g.wincolor;
+                    tmpcols  = g.winrej(indices,3:5);
+                else
+                    tmpcols  = g.wincolor;
                 end;
 				try eval('[cumul, indicescount] = histc(tmpwins1, (min(tmpwins1)-1):g.trialstag:max(tmpwins2));');
 				catch, [cumul, indicescount] = myhistc(tmpwins1, (min(tmpwins1)-1):g.trialstag:max(tmpwins2));
@@ -1426,24 +1431,24 @@ else
 				count = zeros(size(cumul));
 				%if ~isempty(find(cumul > 1)), find(cumul > 1), end;
                 for tmpi = 1:length(tmpwins1)
-					poscumul = indicescount(tmpi);
-					heightbeg = count(poscumul)/cumul(poscumul);
-					heightend = heightbeg + 1/cumul(poscumul);
-					count(poscumul) = count(poscumul)+1;
-					h = patch([tmpwins1(tmpi)-lowlim tmpwins2(tmpi)-lowlim ...
-							   tmpwins2(tmpi)-lowlim tmpwins1(tmpi)-lowlim], ...
-							  [heightbeg heightbeg heightend heightend], ...
-							  tmpcols(tmpi,:));  % this argument is color
-					set(h, 'EdgeColor', get(h, 'facecolor')) 
-				end;
-			end;
-		else
+                    poscumul = indicescount(tmpi);
+                    heightbeg = count(poscumul)/cumul(poscumul);
+                    heightend = heightbeg + 1/cumul(poscumul);
+                    count(poscumul) = count(poscumul)+1;
+                    h = patch([tmpwins1(tmpi)-lowlim tmpwins2(tmpi)-lowlim ...
+                               tmpwins2(tmpi)-lowlim tmpwins1(tmpi)-lowlim], ...
+                              [heightbeg heightbeg heightend heightend], ...
+                              tmpcols(tmpi,:));  % this argument is color
+                    set(h, 'EdgeColor', get(h, 'facecolor'))
+                end;
+            end;
+        else
             event2plot1 = find ( g.winrej(:,1) >= lowlim & g.winrej(:,1) <= highlim );
             event2plot2 = find ( g.winrej(:,2) >= lowlim & g.winrej(:,2) <= highlim );
             event2plot3 = find ( g.winrej(:,1) <  lowlim & g.winrej(:,2) >  highlim );
             event2plot  = union_bc(union(event2plot1, event2plot2), event2plot3);
       
-			for tpmi = event2plot(:)'
+            for tpmi = event2plot(:)'
                 if size(g.winrej,2) > 2
     				 tmpcols  = g.winrej(tpmi,3:5);
                 else tmpcols  = g.wincolor;
@@ -1452,9 +1457,9 @@ else
                            g.winrej(tpmi,2)-lowlim g.winrej(tpmi,1)-lowlim], ...
                           [0 0 1 1], tmpcols);  
                 set(h, 'EdgeColor', get(h, 'facecolor')) 
-			end;
-		end;
-	end;
+            end;
+        end;
+    end;
     		
 	% plot tags
 	% ---------
@@ -1508,12 +1513,13 @@ else
 %             ylims=ylim;
             evntxt = strrep(num2str(g.events(event2plot(index)).type),'_','-');
             if length(evntxt)>MAXEVENTSTRING, evntxt = [ evntxt(1:MAXEVENTSTRING-1) '...' ]; end; % truncate
-            try, 
+            try
                 tmph2 = text([tmplat], ylims(2)-0.005, [EVENTFONT evntxt], ...
                                     'color', g.eventcolors{ event2plot(index) }, ...
                                     'horizontalalignment', 'left',...
                                     'rotation',90);
-            catch, end;
+            catch
+            end;
             
             % draw duration is not 0
             % ----------------------
@@ -1714,7 +1720,7 @@ else
    if size(result,1) == 0 return; end;
    
    g.dispchans = eval(result{1});
-   if g.dispchans<0 | g.dispchans>g.chans
+   if g.dispchans<0 || g.dispchans>g.chans
        g.dispchans =g.chans;
    end;
    set(gcf, 'UserData', g);
@@ -1968,7 +1974,7 @@ else
     yl = ylim;
     plot([ tmppos tmppos ], yl, 'color', [0.8 0.8 0.8]);
     
-    if g.trialstag ~= -1,
+    if g.trialstag ~= -1
           lowlim = round(g.time*g.trialstag+1);
     else, lowlim = round(g.time*g.srate+1);
     end;
@@ -1977,7 +1983,7 @@ else
     datapos = min(datapos, g.frames);
 
     figure; topoplot(data(:,datapos), g.eloc_file);
-    if g.trialstag == -1,
+    if g.trialstag == -1
          latsec = (datapos-1)/g.srate;
          title(sprintf('Latency of %d seconds and %d milliseconds', floor(latsec), round(1000*(latsec-floor(latsec)))));
     else
@@ -2188,79 +2194,78 @@ end;
 % function not supported under Mac
 % --------------------------------
 function [reshist, allbin] = myhistc(vals, intervals);
+reshist = zeros(1, length(intervals));
+allbin = zeros(1, length(vals));
 
-	reshist = zeros(1, length(intervals));
-	allbin = zeros(1, length(vals));
-	
-	for index=1:length(vals)
-		minvals = vals(index)-intervals;
-		bintmp  = find(minvals >= 0);
-		[~, indextmp] = min(minvals(bintmp));
-		bintmp = bintmp(indextmp);
-		
-		allbin(index) = bintmp;
-		reshist(bintmp) = reshist(bintmp)+1;
-	end;
+for index=1:length(vals)
+    minvals = vals(index)-intervals;
+    bintmp  = find(minvals >= 0);
+    [~, indextmp] = min(minvals(bintmp));
+    bintmp = bintmp(indextmp);
+    
+    allbin(index) = bintmp;
+    reshist(bintmp) = reshist(bintmp)+1;
+end;
 
 
 % Mouse scroll wheel // Baranauskas 2016
 function mouse_scroll_wheel(~,eventdata)
-    global in_callback;
-    modifiers = get(gcf,'currentModifier');
-    if isempty(in_callback);
-        in_callback=1;
-        wheel_up=eventdata.VerticalScrollCount < 0;
-        eegplot_params={};
-        if wheel_up
-            if ismember('shift',modifiers)
-                eegplot_params={eegplot_params{:} 'drawp' 1};
-            elseif ismember('control',modifiers)
-                eegplot_params={eegplot_params{:} 'draww' 2};
-            elseif ismember('alt',modifiers)
-                eegplot_params={eegplot_params{:} 'draws' 1};
-            else
-                eegplot_params={eegplot_params{:} 'drawp' 2};
-            end;
+global in_callback;
+modifiers = get(gcf,'currentModifier');
+if isempty(in_callback);
+    in_callback=1;
+    wheel_up=eventdata.VerticalScrollCount < 0;
+    eegplot_params={};
+    if wheel_up
+        if ismember('shift',modifiers)
+            eegplot_params={eegplot_params{:} 'drawp' 1};
+        elseif ismember('control',modifiers)
+            eegplot_params={eegplot_params{:} 'draww' 2};
+        elseif ismember('alt',modifiers)
+            eegplot_params={eegplot_params{:} 'draws' 1};
         else
-            if ismember('shift',modifiers)
-                eegplot_params={eegplot_params{:} 'drawp' 4};
-            elseif ismember('control',modifiers)
-                eegplot_params={eegplot_params{:} 'draww' 1};
-            elseif ismember('alt',modifiers)
-                eegplot_params={eegplot_params{:} 'draws' 2};
-            else
-                eegplot_params={eegplot_params{:} 'drawp' 3};
-            end;
+            eegplot_params={eegplot_params{:} 'drawp' 2};
         end;
-        try eegplot_w(eegplot_params{:}); catch; end;
-        clear global in_callback;
     else
-        return;
+        if ismember('shift',modifiers)
+            eegplot_params={eegplot_params{:} 'drawp' 4};
+        elseif ismember('control',modifiers)
+            eegplot_params={eegplot_params{:} 'draww' 1};
+        elseif ismember('alt',modifiers)
+            eegplot_params={eegplot_params{:} 'draws' 2};
+        else
+            eegplot_params={eegplot_params{:} 'drawp' 3};
+        end;
     end;
+    try eegplot_w(eegplot_params{:}); catch; end;
+    clear global in_callback;
+else
+    return;
+end;
 
     
 function MarkChannel(channel_obj,~)
-    global in_callback;
-    if isempty(in_callback)
-        in_callback=1;
-        i=get(channel_obj,'userdata');
-        g=get(gcf,'UserData');
-        if isempty(g.command)
-            clear global in_callback; return;
-        end;
-        if isfield(g, 'eloc_file')
-            if ~isfield(g.eloc_file, 'badchan')
-                for ii=1:length(g.eloc_file)
-                    g.eloc_file(ii).badchan = 0;
-                end;
-            end;
-            g.eloc_file(i).badchan = 1-g.eloc_file(i).badchan;
-            set(gcf,'UserData',g);
-        end;
-        clear global in_callback;
-    else
-        return;
+global in_callback;
+if isempty(in_callback)
+    in_callback=1;
+    i=get(channel_obj,'userdata');
+    g=get(gcf,'UserData');
+    if isempty(g.command)
+        clear global in_callback; return;
     end;
+    if isfield(g, 'eloc_file')
+        if ~isfield(g.eloc_file, 'badchan')
+            for ii=1:length(g.eloc_file)
+                g.eloc_file(ii).badchan = 0;
+            end;
+        end;
+        g.eloc_file(i).badchan = 1-g.eloc_file(i).badchan;
+        set(gcf,'UserData',g);
+    end;
+    clear global in_callback;
+else
+    return;
+end;
 
 
 function eegplot_readkey(~,evnt)
