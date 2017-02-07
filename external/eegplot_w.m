@@ -314,11 +314,16 @@ if ~isstr(data) % If NOT a 'noui' call or a callback from uicontrols
    try, g.maxeventstring;    catch, g.maxeventstring = 10; end; % JavierLC
    try, g.isfreq;            catch, g.isfreq = 0;    end; % Ramon
       
-   if strcmpi(g.ploteventdur, 'on'), g.ploteventdur = 1; else g.ploteventdur = 0; end;
+   if strcmpi(g.ploteventdur, 'on')
+       g.ploteventdur = 1; 
+   else
+       g.ploteventdur = 0; 
+   end;
+   
    if ndims(data) > 2
-   		g.trialstag = size(	data, 2);
-   	end;	
-      
+       g.trialstag = size(	data, 2);
+   end;
+   
    gfields = fieldnames(g);
    for index=1:length(gfields)
       switch gfields{index}
@@ -514,7 +519,7 @@ if ~isstr(data) % If NOT a 'noui' call or a callback from uicontrols
 
 % Mouse scroll wheel
 
-  set(figh,'WindowScrollWheelFcn',@eegplot_scroll_wheel);
+  set(figh,'WindowScrollWheelFcn',@mouse_scroll_wheel);
 
 % positions of buttons
   posbut(1,:) =  [ 0.92    0.49    0.020    0.03 ]; % <<
@@ -1093,17 +1098,17 @@ u(22) = uicontrol('Parent',figh, ...
                          'else '                                            g.selectcommand{1} 'end;' ];
   g.commandselect{3} = [ 'if strcmp(get(gcbf, ''SelectionType''),''alt''),' g.ctrlselectcommand{3} ...
                          'else '                                            g.selectcommand{3} 'end;' ];
-       
-  set(figh, 'windowbuttondownfcn',   g.commandselect{1});
-  set(figh, 'windowbuttonmotionfcn', {@defmotion,figh,ax0,ax1,u(10),u(11),u(9)});
-  set(figh, 'windowbuttonupfcn',     g.commandselect{3});
+
+  set(figh, 'windowbuttondownfcn',   {@mouse_down,figh}); % g.commandselect{1});
+  set(figh, 'windowbuttonmotionfcn', {@mouse_motion,figh,ax0,ax1,u(10),u(11),u(9)});
+  set(figh, 'windowbuttonupfcn',     {@mouse_up,figh}); %g.commandselect{3});
   set(figh, 'WindowKeyPressFcn',     @eegplot_readkey);
   set(figh, 'interruptible', 'off');
   set(figh, 'busyaction', 'cancel');
 %  set(figh, 'windowbuttondownfcn', commandpush);
 %  set(figh, 'windowbuttonmotionfcn', commandmove);
 %  set(figh, 'windowbuttonupfcn', commandrelease);
-%  set(figh, 'interruptible', 'off');
+ set(figh, 'interruptible', 'off');
 %  set(figh, 'busyaction', 'cancel');
   
   % prepare event array if any
@@ -1196,20 +1201,22 @@ else
   case 'drawp' % Redraw EEG and change position
     % this test help to couple eegplot_w windows
     if exist('p3', 'var')
-    	figh = p3;
-    	figure(p3);
-    else	
-    	figh = gcf;                          % figure handle
-	end;
+        figh = p3;
+        figure(p3);
+    else
+        figh = gcf;                          % figure handle
+    end;
 	
     if strcmp(get(figh,'tag'),'dialog')
       figh = get(figh,'UserData');
     end
-    ax0 = findobj('tag','backeeg','parent',figh); % axes handle
     ax1 = findobj('tag','eegaxis','parent',figh); % axes handle
-    g = get(figh,'UserData');
     data = get(ax1,'UserData');
-    ESpacing = findobj('tag','ESpacing','parent',figh);   % ui handle
+    g = get(figh,'UserData');
+    if ~isfield(g,'trialstag')
+        return;
+    end;
+    ESpacing  = findobj('tag','ESpacing', 'parent',figh); % ui handle
     EPosition = findobj('tag','EPosition','parent',figh); % ui handle
     if ~isempty(EPosition) && ~isempty(ESpacing)
         g.time    = str2num(get(EPosition,'string'));
@@ -1222,18 +1229,18 @@ else
     if p1 == 1
       g.time = g.time-g.winlength;     % << subtract one window length
     elseif p1 == 2               
-      g.time = g.time-g.winlength/5;             % < subtract one second
+      g.time = g.time-g.winlength/5;   % < subtract one second
     elseif p1 == 3
-      g.time = g.time+g.winlength/5;             % > add one second
+      g.time = g.time+g.winlength/5;   % > add one second
     elseif p1 == 4
       g.time = g.time+g.winlength;     % >> add one window length
     end
     
-	 if g.trialstag ~= -1 % time in second or in trials
-		multiplier = g.trialstag;	
-	 else
-		multiplier = g.srate;
-	 end;		
+    if g.trialstag ~= -1 % time in second or in trials
+        multiplier = g.trialstag;
+    else
+        multiplier = g.srate;
+    end;
     
     % Update edit box
     % ---------------
@@ -1401,8 +1408,8 @@ else
     % ----------------------   	
     lowlim = round(g.time*multiplier+1);
    	highlim = round(min((g.time+g.winlength)*multiplier+1));
-  	displaymenu = findobj('tag','displaymenu','parent',gcf);
-    if ~isempty(g.winrej) & g.winstatus
+  	%displaymenu = findobj('tag','displaymenu','parent',gcf);
+    if ~isempty(g.winrej) && g.winstatus
 		if g.trialstag ~= -1 % epoched data
 			indices = find((g.winrej(:,1)' >= lowlim & g.winrej(:,1)' <= highlim) | ...
 						   (g.winrej(:,2)' >= lowlim & g.winrej(:,2)' <= highlim));
@@ -1413,8 +1420,8 @@ else
     				 tmpcols  = g.winrej(indices,3:5);
                 else tmpcols  = g.wincolor;
                 end;
-				try, eval('[cumul indicescount] = histc(tmpwins1, (min(tmpwins1)-1):g.trialstag:max(tmpwins2));');
-				catch, [cumul indicescount] = myhistc(tmpwins1, (min(tmpwins1)-1):g.trialstag:max(tmpwins2));
+				try eval('[cumul, indicescount] = histc(tmpwins1, (min(tmpwins1)-1):g.trialstag:max(tmpwins2));');
+				catch, [cumul, indicescount] = myhistc(tmpwins1, (min(tmpwins1)-1):g.trialstag:max(tmpwins2));
 				end;
 				count = zeros(size(cumul));
 				%if ~isempty(find(cumul > 1)), find(cumul > 1), end;
@@ -1566,7 +1573,7 @@ else
         if tagzerooffset < 0, tagzerooffset = 0; end;
         
 		for i=1:length(alltag)-1
-			if ~isempty(tagpos) & tagpos(end)-alltag(i)<2*incrementpoint/3
+			if ~isempty(tagpos) && tagpos(end)-alltag(i)<2*incrementpoint/3
 				tagpos  = tagpos(1:end-1);
 			end;
 			if ~isempty(g.freqlimits)
@@ -1984,157 +1991,199 @@ else
   % release button: check window consistency, add to trial boundaries
   % -------------------------------------------------------------------
   case 'defupcom'
-    fig = varargin{1};
-    g = get(fig,'UserData');
-    ax1 = findobj('tag','backeeg','parent',fig); 
-    g.incallback = 0;
-    set(fig,'UserData', g);  % early save in case of bug in the following
-    if strcmp(g.mocap,'on'), g.winrej = g.winrej(end,:);end; % nima
-    if ~isempty(g.winrej)', ...
-        if g.winrej(end,1) == g.winrej(end,2) % remove unitary windows
-            g.winrej = g.winrej(1:end-1,:);
-        else
-            if g.winrej(end,1) > g.winrej(end,2) % reverse values if necessary
-                g.winrej(end, 1:2) = [g.winrej(end,2) g.winrej(end,1)];
-            end;
-            g.winrej(end,1) = max(1, g.winrej(end,1));
-            g.winrej(end,2) = min(g.frames, g.winrej(end,2));
-            if g.trialstag == -1 % find nearest trials boundaries if necessary
-                I1 = find((g.winrej(end,1) >= g.winrej(1:end-1,1)) & (g.winrej(end,1) <= g.winrej(1:end-1,2)) ); 
-                if ~isempty(I1)
-                    g.winrej(I1,2) = max(g.winrej(I1,2), g.winrej(end,2)); % extend epoch
-                    g.winrej = g.winrej(1:end-1,:); % remove if empty match
-                else,
-                   I2 = find((g.winrej(end,2) >= g.winrej(1:end-1,1)) & (g.winrej(end,2) <= g.winrej(1:end-1,2)) ); 
-                   if ~isempty(I2)
-                        g.winrej(I2,1) = min(g.winrej(I2,1), g.winrej(end,1)); % extend epoch
-                        g.winrej = g.winrej(1:end-1,:); % remove if empty match
-                    else,
-                       I2 = find((g.winrej(end,1) <= g.winrej(1:end-1,1)) & (g.winrej(end,2) >= g.winrej(1:end-1,1)) ); 
-                       if ~isempty(I2)
-                            g.winrej(I2,:) = []; % remove if empty match
-                       end;
-                    end;
-                end;
-            end;
-        end;
-    end;
-    set(fig,'UserData', g);
-    eegplot_w('drawp', 0);
-    if strcmp(g.mocap,'on'), show_mocap_for_eegplot(g.winrej); g.winrej = g.winrej(end,:); end; % nima
+    mouse_up([],[],varargin{1}); % Just for compatibility with original eegplot()
          
   % push button: create/remove window
   % ---------------------------------
   case 'defdowncom'
-    show_mocap_timer = timerfind('tag','mocapDisplayTimer'); if ~isempty(show_mocap_timer),  end; % nima
-    fig = varargin{1};
-    g = get(fig,'UserData');
-    ax1 = findobj('tag','backeeg','parent',fig); 
+      mouse_down([],[],varargin{1}); % Just for compatibility with original eegplot()
+   otherwise
+      error(['Error - invalid eegplot_w() parameter: ',data])
+  end
+end
+
+% push mouse button
+% ---------------------------------
+function mouse_down(varargin)
+fig = varargin{3};
+if strcmp(get(fig, 'SelectionType'),'alt')
+    eegplot_w('topoplot', fig);
+    return;
+end;
+show_mocap_timer = timerfind('tag','mocapDisplayTimer'); if ~isempty(show_mocap_timer),  end; % nima
+if strcmp(get(fig, 'SelectionType'),'normal')
+    ax1 = findobj('tag','backeeg','parent',fig);
     tmppos = get(ax1, 'currentpoint');
-    if strcmp(get(fig, 'SelectionType'),'normal');
-        
-        fig = varargin{1};
-        g = get(fig,'UserData');       
-        ax1 = findobj('tag','backeeg','parent',fig);
-        tmppos = get(ax1, 'currentpoint');       
-        g = get(fig,'UserData'); % get data of backgroung image {g.trialstag g.winrej incallback}
-        if g.incallback ~= 1 % interception of nestest calls
-            if g.trialstag ~= -1,
-                lowlim = round(g.time*g.trialstag+1);
-                highlim = round(g.winlength*g.trialstag);
-            else,
-                lowlim  = round(g.time*g.srate+1);
-                highlim = round(g.winlength*g.srate);
+    g = get(fig,'UserData'); % get data of backgroung image {g.trialstag g.winrej incallback}
+    if g.incallback ~= 1 % interception of nestest calls
+        %g.incallback = 1;  % set this variable for callback for continuous data
+        set(fig,'UserData',g);
+        if g.trialstag ~= -1
+            lowlim = round(g.time*g.trialstag+1);
+            highlim = round(g.winlength*g.trialstag);
+        else
+            lowlim  = round(g.time*g.srate+1);
+            highlim = round(g.winlength*g.srate);
+        end;
+        if (tmppos(1) >= 0) && (tmppos(1) <= highlim)
+            if isempty(g.winrej)
+                Allwin=0;
+            else
+                Allwin = (g.winrej(:,1) < lowlim+tmppos(1)) & (g.winrej(:,2) > lowlim+tmppos(1));
             end;
-            if (tmppos(1) >= 0) & (tmppos(1) <= highlim),
-                if isempty(g.winrej) Allwin=0;
-                else Allwin = (g.winrej(:,1) < lowlim+tmppos(1)) & (g.winrej(:,2) > lowlim+tmppos(1));
+            if any(Allwin) % remove the mark or select electrode if necessary
+                lowlim = find(Allwin==1);
+                if g.setelectrode  % select electrode
+                    ax2 = findobj('tag','eegaxis','parent',fig);
+                    tmppos = get(ax2, 'currentpoint');
+                    tmpelec = g.chans + 1 - round(tmppos(1,2) / g.spacing);
+                    tmpelec = min(max(tmpelec, 1), g.chans);
+                    g.winrej(lowlim,tmpelec+5) = ~g.winrej(lowlim,tmpelec+5); % set the electrode
+                else  % remove mark
+                    g.winrej(lowlim,:) = [];
                 end;
-                if any(Allwin) % remove the mark or select electrode if necessary
-                    lowlim = find(Allwin==1);
-                    if g.setelectrode  % select electrode  
-                        ax2 = findobj('tag','eegaxis','parent',fig);
-                        tmppos = get(ax2, 'currentpoint');
-                        tmpelec = g.chans + 1 - round(tmppos(1,2) / g.spacing);
-                        tmpelec = min(max(tmpelec, 1), g.chans);
-                        g.winrej(lowlim,tmpelec+5) = ~g.winrej(lowlim,tmpelec+5); % set the electrode
-                    else  % remove mark
-                        g.winrej(lowlim,:) = [];
+            else
+                if g.trialstag ~= -1 % find nearest trials boundaries if epoched data
+                    alltrialtag = [0:g.trialstag:g.frames];
+                    I1 = find(alltrialtag < (tmppos(1)+lowlim) );
+                    if ~isempty(I1) && I1(end) ~= length(alltrialtag)
+                        g.winrej = [g.winrej' [alltrialtag(I1(end)) alltrialtag(I1(end)+1) g.wincolor zeros(1,g.chans)]']';
                     end;
                 else
-                    if g.trialstag ~= -1 % find nearest trials boundaries if epoched data
-                        alltrialtag = [0:g.trialstag:g.frames];
-                        I1 = find(alltrialtag < (tmppos(1)+lowlim) ); 
-                        if ~isempty(I1) & I1(end) ~= length(alltrialtag),
-                            g.winrej = [g.winrej' [alltrialtag(I1(end)) alltrialtag(I1(end)+1) g.wincolor zeros(1,g.chans)]']';
-                        end;
-                    else,
-    	                g.incallback = 1;  % set this variable for callback for continuous data
-                        if size(g.winrej,2) < 5
-                            g.winrej(:,3:5) = repmat(g.wincolor, [size(g.winrej,1) 1]);
-                        end;
-                        if size(g.winrej,2) < 5+g.chans
-                            g.winrej(:,6:(5+g.chans)) = zeros(size(g.winrej,1),g.chans);
-                        end;
-                        g.winrej = [g.winrej' [tmppos(1)+lowlim tmppos(1)+lowlim g.wincolor zeros(1,g.chans)]']';
+                    g.incallback = 1;  % set this variable for callback for continuous data
+                    if size(g.winrej,2) < 5
+                        g.winrej(:,3:5) = repmat(g.wincolor, [size(g.winrej,1) 1]);
+                    end;
+                    if size(g.winrej,2) < 5+g.chans
+                        g.winrej(:,6:(5+g.chans)) = zeros(size(g.winrej,1),g.chans);
+                    end;
+                    tmppos_x=mouse_near_boundary_correction(tmppos(1)+lowlim,g);
+                    g.winrej = [g.winrej' [tmppos_x tmppos_x g.wincolor zeros(1,g.chans)]']';
+                end;
+            end;
+            set(fig,'UserData', g);
+            eegplot_w('drawp', 0);  % redraw background
+        end;
+    end;
+end;
+
+% release mouse button
+% ---------------------------------
+function mouse_up(varargin)
+fig = varargin{3};
+g = get(fig,'UserData');
+g.incallback = 0;
+set(fig,'UserData', g);  % early save in case of bug in the following
+if strcmp(g.mocap,'on'), g.winrej = g.winrej(end,:);end; % nima
+if ~isempty(g.winrej)'
+    if g.winrej(end,1) == g.winrej(end,2) % remove unitary windows
+        g.winrej = g.winrej(1:end-1,:);
+    else
+        if g.winrej(end,1) > g.winrej(end,2) % reverse values if necessary
+            g.winrej(end, 1:2) = [g.winrej(end,2) g.winrej(end,1)];
+        end;
+        g.winrej(end,1) = max(1, g.winrej(end,1));
+        g.winrej(end,2) = min(g.frames, g.winrej(end,2));
+        if g.trialstag == -1 % find nearest trials boundaries if necessary
+            I1 = find((g.winrej(end,1) >= g.winrej(1:end-1,1)) & (g.winrej(end,1) <= g.winrej(1:end-1,2)) );
+            if ~isempty(I1)
+                g.winrej(I1,2) = max(g.winrej(I1,2), g.winrej(end,2)); % extend epoch
+                g.winrej = g.winrej(1:end-1,:); % remove if empty match
+            else
+                I2 = find((g.winrej(end,2) >= g.winrej(1:end-1,1)) & (g.winrej(end,2) <= g.winrej(1:end-1,2)) );
+                if ~isempty(I2)
+                    g.winrej(I2,1) = min(g.winrej(I2,1), g.winrej(end,1)); % extend epoch
+                    g.winrej = g.winrej(1:end-1,:); % remove if empty match
+                else
+                    I2 = find((g.winrej(end,1) <= g.winrej(1:end-1,1)) & (g.winrej(end,2) >= g.winrej(1:end-1,1)) );
+                    if ~isempty(I2)
+                        g.winrej(I2,:) = []; % remove if empty match
                     end;
                 end;
-                set(fig,'UserData', g);
-                eegplot_w('drawp', 0);  % redraw background
             end;
         end;
     end;
-   otherwise
-      error(['Error - invalid eegplot_w() parameter: ',data])
-  end  
-end
+end;
+set(fig,'UserData', g);
+eegplot_w('drawp', 0);
+if strcmp(g.mocap,'on'), show_mocap_for_eegplot(g.winrej); g.winrej = g.winrej(end,:); end; % nima
+
+
 % Function to show the value and electrode at mouse position
-function defmotion(varargin)
-    fig = varargin{3};
-    ax1 = varargin{4};
-    tmppos = get(ax1, 'currentpoint'); 
-    
-    if  all([tmppos(1,1) >= 0,tmppos(1,2)>= 0])
-        g = get(fig,'UserData');
-        if g.trialstag ~= -1,
-            lowlim = round(g.time*g.trialstag+1);
-        else, lowlim = round(g.time*g.srate+1);
-        end;
-        if g.incallback
-            g.winrej = [g.winrej(1:end-1,:)' [g.winrej(end,1) tmppos(1)+lowlim g.winrej(end,3:end)]']';
-            set(fig,'UserData', g);
-            eegplot_w('drawb');
+function mouse_motion(varargin)
+fig = varargin{3};
+ax1 = varargin{4};
+tmppos = get(ax1, 'currentpoint');
+%if  all([tmppos(1,1) >= 0,tmppos(1,2)>= 0])
+    g = get(fig,'UserData');
+    if g.trialstag ~= -1
+        lowlim = round(g.time*g.trialstag+1);
+    else
+        lowlim = round(g.time*g.srate+1);
+        highlim = round(g.winlength*g.srate);
+    end;
+    if g.incallback && g.trialstag == -1
+        tmppos_x=mouse_near_boundary_correction(tmppos(1)+lowlim,g);
+        g.winrej = [g.winrej(1:end-1,:)' [g.winrej(end,1) tmppos_x g.winrej(end,3:end)]']';
+        set(fig,'UserData', g);
+        if tmppos_x < lowlim - highlim * 0.03
+            eegplot_w('drawp',2);
+        elseif tmppos_x > lowlim + highlim * 1.03
+            eegplot_w('drawp',3);
         else
-            hh = varargin{6}; % h = findobj('tag','Etime','parent',fig);
-            if g.trialstag ~= -1,
-                tmpval = mod(tmppos(1)+lowlim-1,g.trialstag)/g.trialstag*(g.limits(2)-g.limits(1)) + g.limits(1);
-                if g.isfreq, tmpval = tmpval/1000 + g.freqs(1); end
-                set(hh, 'string', num2str(tmpval));
-            else
-                tmpval = (tmppos(1)+lowlim-1)/g.srate;
-                 if g.isfreq, tmpval = tmpval+g.freqs(1); end
-                set(hh, 'string', num2str(tmpval)); % put g.time in the box
-            end;
-            ax1 = varargin{5};% ax1 = findobj('tag','eegaxis','parent',fig);
-            tmppos = get(ax1, 'currentpoint');
-            tmpelec = round(tmppos(1,2) / g.spacing);
-            tmpelec = min(max(double(tmpelec), 1),g.chans);
-            labls = get(ax1, 'YtickLabel');
-            hh = varargin{8}; % hh = findobj('tag','Eelec','parent',fig);  % put electrode in the box
-            if ~g.envelope
-                set(hh, 'string', labls(tmpelec+1,:));
-            else
-                set(hh, 'string', ' ');
-            end
-            hh = varargin{7}; % hh = findobj('tag','Evalue','parent',fig);
-            if ~g.envelope
-                eegplotdata = get(ax1, 'userdata');
-                set(hh, 'string', num2str(eegplotdata(g.chans+1-tmpelec, min(g.frames,max(1,double(round(tmppos(1)+lowlim)))))));  % put value in the box
-            else
-                set(hh,'string',' ');
-            end
+            eegplot_w('drawb');
         end;
-    end
+    else
+        hh = varargin{6}; % h = findobj('tag','Etime','parent',fig);
+        if g.trialstag ~= -1
+            tmpval = mod(tmppos(1)+lowlim-1,g.trialstag)/g.trialstag*(g.limits(2)-g.limits(1)) + g.limits(1);
+            if g.isfreq, tmpval = tmpval/1000 + g.freqs(1); end
+            set(hh, 'string', num2str(tmpval));
+        else
+            tmpval = (tmppos(1)+lowlim-1)/g.srate;
+            if g.isfreq, tmpval = tmpval+g.freqs(1); end
+            set(hh, 'string', num2str(tmpval)); % put g.time in the box
+        end;
+        ax1 = varargin{5};% ax1 = findobj('tag','eegaxis','parent',fig);
+        tmppos = get(ax1, 'currentpoint');
+        tmpelec = round(tmppos(1,2) / g.spacing);
+        tmpelec = min(max(double(tmpelec), 1),g.chans);
+        labls = get(ax1, 'YtickLabel');
+        hh = varargin{8}; % hh = findobj('tag','Eelec','parent',fig);  % put electrode in the box
+        if ~g.envelope
+            set(hh, 'string', labls(tmpelec+1,:));
+        else
+            set(hh, 'string', ' ');
+        end
+        hh = varargin{7}; % hh = findobj('tag','Evalue','parent',fig);
+        if ~g.envelope
+            eegplotdata = get(ax1, 'userdata');
+            set(hh, 'string', num2str(eegplotdata(g.chans+1-tmpelec, min(g.frames,max(1,double(round(tmppos(1)+lowlim)))))));  % put value in the box
+        else
+            set(hh,'string',' ');
+        end
+    end;
+%end
+
+% Attract position to boundaries
+function [tmppos_x]=mouse_near_boundary_correction(tmppos_x,g)
+boundaries_lat=[0 g.frames] + 0.5;
+if isfield(g,'eventtypes')
+    if iscellstr(g.eventtypes)
+        if ismember({'boundary'},g.eventtypes)
+            boundaries_lat=unique([boundaries_lat ...
+                g.eventlatencies(find(ismember({g.events.type},{'boundary'}))) ]);
+        end;
+    end;
+end;
+[~,boundary_closest_id]=min(abs(boundaries_lat-tmppos_x));
+boundary_closest_lat=boundaries_lat(boundary_closest_id);
+if abs(boundary_closest_lat - tmppos_x) < (g.srate*0.2)
+    tmppos_x=round(boundary_closest_lat);
+elseif tmppos_x > boundaries_lat(end)
+    tmppos_x = boundaries_lat(end);
+end;
+
 
 % function not supported under Mac
 % --------------------------------
@@ -2146,7 +2195,7 @@ function [reshist, allbin] = myhistc(vals, intervals);
 	for index=1:length(vals)
 		minvals = vals(index)-intervals;
 		bintmp  = find(minvals >= 0);
-		[mintmp indextmp] = min(minvals(bintmp));
+		[~, indextmp] = min(minvals(bintmp));
 		bintmp = bintmp(indextmp);
 		
 		allbin(index) = bintmp;
@@ -2155,7 +2204,7 @@ function [reshist, allbin] = myhistc(vals, intervals);
 
 
 % Mouse scroll wheel // Baranauskas 2016
-function eegplot_scroll_wheel(~,eventdata)
+function mouse_scroll_wheel(~,eventdata)
     global in_callback;
     modifiers = get(gcf,'currentModifier');
     if isempty(in_callback);
@@ -2192,16 +2241,16 @@ function eegplot_scroll_wheel(~,eventdata)
     
 function MarkChannel(channel_obj,~)
     global in_callback;
-    if isempty(in_callback);
+    if isempty(in_callback)
         in_callback=1;
         i=get(channel_obj,'userdata');
         g=get(gcf,'UserData');
-        if isempty(g.command);
+        if isempty(g.command)
             clear global in_callback; return;
         end;
         if isfield(g, 'eloc_file')
             if ~isfield(g.eloc_file, 'badchan')
-                for ii=1:length(g.eloc_file); 
+                for ii=1:length(g.eloc_file)
                     g.eloc_file(ii).badchan = 0;
                 end;
             end;
@@ -2215,16 +2264,17 @@ function MarkChannel(channel_obj,~)
 
 
 function eegplot_readkey(~,evnt)
-    switch evnt.Key
-        case 'rightarrow'
-            eegplot_w('drawp',4);
-        case 'leftarrow'
-            eegplot_w('drawp',1);
-        case {'home' 'end'}
-            EPosition = findobj('tag','EPosition','parent',gcf);
-            g = get(gcf,'UserData');
-            id=find(ismember({'home' 'end'},evnt.Key));
-            set(EPosition,'string',num2str(g.limits(id)));
-            eegplot_w('drawp',0);
-            
-    end
+switch evnt.Key
+    case 'rightarrow'
+        eegplot_w('drawp',4);
+    case 'leftarrow'
+        eegplot_w('drawp',1);
+    case {'home' 'end'}
+        EPosition = findobj('tag','EPosition','parent',gcf);
+        g = get(gcf,'UserData');
+        id=find(ismember({'home' 'end'},evnt.Key));
+        set(EPosition,'string',num2str(g.limits(id)));
+        eegplot_w('drawp',0);
+        
+end
+
