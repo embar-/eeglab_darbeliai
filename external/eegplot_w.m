@@ -208,7 +208,7 @@ function [outvar1] = eegplot_w(data, varargin); % p1,p2,p3,p4,p5,p6,p7,p8,p9)
 % Defaults (can be re-defined):
 
 DEFAULT_PLOT_COLOR = { [0 0 1], [0.7 0.7 0.7]};         % EEG line color
-try, icadefs;
+try icadefs;
 	DEFAULT_FIG_COLOR = BACKCOLOR;
 	BUTTON_COLOR = GUIBUTTONCOLOR;
 catch
@@ -344,7 +344,7 @@ if ~isstr(data) % If NOT a 'noui' call or a callback from uicontrols
    end;	
    if length(g.spacing) ~= 1
    		disp('Error: ''spacing'' must be a single number'); return;
-   end;	
+   end;
    if length(g.winlength) ~= 1
    		disp('Error: winlength must be a single number'); return;
    end;	
@@ -507,8 +507,8 @@ if ~isstr(data) % If NOT a 'noui' call or a callback from uicontrols
       'YColor',DEFAULT_AXIS_COLOR,...
       'FontSize',8);
 
-  if isstr(g.eloc_file) | isstruct(g.eloc_file)  % Read in electrode names
-      if isstruct(g.eloc_file) & length(g.eloc_file) > size(data,1)
+  if isstr(g.eloc_file) || isstruct(g.eloc_file)  % Read in electrode names
+      if isstruct(g.eloc_file) && length(g.eloc_file) > size(data,1)
           g.eloc_file(end) = []; % common reference channel location
       end;
       eegplot_w('setelect', g.eloc_file, ax1);
@@ -517,10 +517,6 @@ if ~isstr(data) % If NOT a 'noui' call or a callback from uicontrols
   % %%%%%%%%%%%%%%%%%%%%%%%%%
   % Set up uicontrols
   % %%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Mouse scroll wheel
-
-  set(figh,'WindowScrollWheelFcn',@mouse_scroll_wheel);
 
 % positions of buttons
   posbut(1,:) =  [ 0.92    0.49    0.020    0.03 ]; % <<
@@ -1100,6 +1096,7 @@ u(22) = uicontrol('Parent',figh, ...
   g.commandselect{3} = [ 'if strcmp(get(gcbf, ''SelectionType''),''alt''),' g.ctrlselectcommand{3} ...
                          'else '                                            g.selectcommand{3} 'end;' ];
 
+  set(figh,'WindowScrollWheelFcn',   {@mouse_scroll_wheel,figh});
   set(figh, 'windowbuttondownfcn',   {@mouse_down,figh}); % g.commandselect{1});
   set(figh, 'windowbuttonmotionfcn', {@mouse_motion,figh,ax0,ax1,u(10),u(11),u(9)});
   set(figh, 'windowbuttonupfcn',     {@mouse_up,figh}); %g.commandselect{3});
@@ -1222,9 +1219,12 @@ else
     ESpacing  = findobj('tag','ESpacing', 'parent',figh); % ui handle
     EPosition = findobj('tag','EPosition','parent',figh); % ui handle
     if ~isempty(EPosition) && ~isempty(ESpacing)
-        g.time    = str2num(get(EPosition,'string'));
+        EPosition_new = str2num(get(EPosition,'string'));
+        if ~isempty(EPosition_new)
+            g.time = EPosition_new;
+        end;
         if g.trialstag(1) ~= -1
-            g.time    = g.time - 1;
+            g.time = g.time - 1;
         end;
         g.spacing = str2num(get(ESpacing,'string'));
     end;
@@ -1293,47 +1293,85 @@ else
     axes(ax1)
     hold on
     
+    chans_list_bad=[];
+    if ~isfield(g, 'eloc_file') || ~isfield(g.eloc_file, 'badchan')
+        chans_list_good=1:g.chans;
+    else
+        chans_list_bad=g.chans-find([g.eloc_file.badchan])+1;
+        chans_list_good=setdiff(1:g.chans,chans_list_bad);
+    end;
+    
     % plot channels whose "badchan" field is set to 1.
     % Bad channels are plotted first so that they appear behind the good
     % channels in the eegplot_w figure window.
-    for i = 1:g.chans        
-        if isfield(g, 'eloc_file') && ...
-                   isfield(g.eloc_file, 'badchan') && ...
-                   g.eloc_file(g.chans-i+1).badchan;
-            tmpcolor = [ .85 .85 .85 ];
-            plot(data(g.chans-i+1,lowlim:highlim) -meandata(g.chans-i+1)+i*g.spacing + (g.dispchans+1)*(oldspacing-g.spacing)/2 +g.elecoffset*(oldspacing-g.spacing), ...
-                'color', tmpcolor, 'clipping','on')
+    if ~isempty(chans_list_bad)
+        tmp_plot_data_x=1:length(lowlim:highlim);
+        tmp_plot_data_y=nan(length(chans_list_bad),length(lowlim:highlim));
+        for ii = 1:length(chans_list_bad)
+            i=chans_list_bad(ii);
+            tmp_plot_data_y(ii,tmp_plot_data_x)=data(g.chans-i+1,lowlim:highlim) ...
+                - meandata(g.chans-i+1) ...
+                + i*g.spacing ...
+                + (g.dispchans+1)*(oldspacing-g.spacing)/2 ...
+                + g.elecoffset*(oldspacing-g.spacing);
+        end
+        plot(tmp_plot_data_y', 'color', [ .85 .85 .85 ], 'clipping','on');
+        for i = chans_list_bad
             line(1,mean(i*g.spacing + (g.dispchans+1)*(oldspacing-g.spacing)/2 +g.elecoffset*(oldspacing-g.spacing),2),...
                 'Marker','<','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',6,'clipping','off','userdata',g.chans-i+1,'ButtonDownFcn',@MarkChannel);
         end
-               
-    end
+    end;
     
     % plot good channels on top of bad channels (if g.eloc_file(i).badchan = 0... or there is no bad channel information)
-    for i = 1:g.chans
+    if ~isempty(chans_list_good)
+        chans_list_good_N=length(chans_list_good);
+        tmp_plot_data_x_N=length(lowlim:highlim);
+        plot_at_once=1; % mode: 0, 1 or 2
         if strcmpi(g.plotdata2, 'on')
             tmpcolor = [ 1 0 0 ];
+        elseif length(g.color) == 1
+            tmpcolor = g.color{1};
         else
-            tmpcolor = g.color{mod(g.chans-i,length(g.color))+1};
+            plot_at_once=0; % in this case only mode "0" allowed
         end;
-        
-%        keyboard;  
-        if (isfield(g, 'eloc_file') && ...
-                isfield(g.eloc_file, 'badchan') && ...
-                ~g.eloc_file(g.chans-i+1).badchan) || ...
-                (~isfield(g, 'eloc_file')) || ...
-                (~isfield(g.eloc_file, 'badchan'));
-            plot(data(g.chans-i+1,lowlim:highlim) -meandata(g.chans-i+1)+i*g.spacing + (g.dispchans+1)*(oldspacing-g.spacing)/2 +g.elecoffset*(oldspacing-g.spacing), ...
-                'color', tmpcolor, 'clipping','on')
-            
-            if (isfield(g, 'eloc_file') && isstruct(g.eloc_file)) && ~isempty(g.command)
-                    line(1,mean(i*g.spacing + (g.dispchans+1)*(oldspacing-g.spacing)/2 +g.elecoffset*(oldspacing-g.spacing),2),...
+        switch plot_at_once
+            case 1
+                tmp_plot_data_x=1:tmp_plot_data_x_N;
+                tmp_plot_data_y=nan(length(chans_list_good),tmp_plot_data_x_N);
+            case 2
+                tmp_plot_data_x= repmat([1:tmp_plot_data_x_N NaN],1,chans_list_good_N) ;
+                tmp_plot_data_y= nan(1, chans_list_good_N*(tmp_plot_data_x_N+1));
+        end;
+        for ii = 1:chans_list_good_N
+            i=chans_list_good(ii);
+            tmp_plot_data_y_i=data(g.chans-i+1,lowlim:highlim) ...
+                - meandata(g.chans-i+1)+i*g.spacing ...
+                + (g.dispchans+1)*(oldspacing-g.spacing)/2 ...
+                + g.elecoffset*(oldspacing-g.spacing);
+            switch plot_at_once
+                case 0
+                    tmpcolor = g.color{mod(g.chans-i,length(g.color))+1};
+                    plot(tmp_plot_data_y_i, 'color', tmpcolor, 'clipping','on')
+                case 1
+                    tmp_plot_data_y(ii,tmp_plot_data_x)=tmp_plot_data_y_i;
+                case 2
+                    tmp_plot_data_y(1,(ii-1)*(tmp_plot_data_x_N+1)+[1:tmp_plot_data_x_N])=tmp_plot_data_y_i;
+            end;
+        end;
+        switch plot_at_once
+            case 1
+                plot(tmp_plot_data_y', 'color', tmpcolor, 'clipping','on');
+            case 2
+                plot(tmp_plot_data_x,tmp_plot_data_y, 'color', tmpcolor, 'clipping','on');
+        end;
+        if (isfield(g, 'eloc_file') && isstruct(g.eloc_file)) && ~isempty(g.command)
+            for i = chans_list_good
+                line(1,mean(i*g.spacing + (g.dispchans+1)*(oldspacing-g.spacing)/2 +g.elecoffset*(oldspacing-g.spacing),2),...
                     'Marker','>','MarkerEdgeColor','g','MarkerFaceColor','g','MarkerSize',6,'clipping','off','userdata',g.chans-i+1,'ButtonDownFcn',@MarkChannel);
-            end
-        end
-        
-    end
-     
+            end;
+        end;
+    end;
+    
     % draw selected channels
     % ------------------------
     if ~isempty(g.winrej) && size(g.winrej,2) > 2
@@ -1641,7 +1679,10 @@ else
     else 
         g.time    = str2num(get(EPosition,'string'))-1;   
     end;        
-    g.spacing = str2num(get(ESpacing,'string'));  
+    g.spacing = str2num(get(ESpacing,'string'));
+    if isempty(g.spacing)
+        g.spacing=0;
+    end;
     
     orgspacing= g.spacing;
     if p1 == 1
@@ -2209,39 +2250,39 @@ end;
 
 
 % Mouse scroll wheel // Baranauskas 2016
-function mouse_scroll_wheel(~,eventdata)
-global in_callback;
-modifiers = get(gcf,'currentModifier');
-if isempty(in_callback);
-    in_callback=1;
+function mouse_scroll_wheel(~,eventdata,fig)
+%global in_callback;
+figure(fig);
+modifiers = get(fig,'currentModifier');
+%if isempty(in_callback)
+    %in_callback=1;
     wheel_up=eventdata.VerticalScrollCount < 0;
-    eegplot_params={};
     if wheel_up
         if ismember('shift',modifiers)
-            eegplot_params={eegplot_params{:} 'drawp' 1};
+            eegplot_params={'drawp', 1};
         elseif ismember('control',modifiers)
-            eegplot_params={eegplot_params{:} 'draww' 2};
+            eegplot_params={'draww', 2};
         elseif ismember('alt',modifiers)
-            eegplot_params={eegplot_params{:} 'draws' 1};
+            eegplot_params={'draws', 1};
         else
-            eegplot_params={eegplot_params{:} 'drawp' 2};
+            eegplot_params={'drawp', 2};
         end;
     else
         if ismember('shift',modifiers)
-            eegplot_params={eegplot_params{:} 'drawp' 4};
+            eegplot_params={'drawp' 4};
         elseif ismember('control',modifiers)
-            eegplot_params={eegplot_params{:} 'draww' 1};
+            eegplot_params={'draww' 1};
         elseif ismember('alt',modifiers)
-            eegplot_params={eegplot_params{:} 'draws' 2};
+            eegplot_params={'draws' 2};
         else
-            eegplot_params={eegplot_params{:} 'drawp' 3};
+            eegplot_params={'drawp' 3};
         end;
     end;
-    try eegplot_w(eegplot_params{:}); catch; end;
-    clear global in_callback;
-else
-    return;
-end;
+    try eegplot_w(eegplot_params{:}, [], fig); catch; end;
+%     clear global in_callback;
+% else
+%     return;
+% end;
 
     
 function MarkChannel(channel_obj,~)
