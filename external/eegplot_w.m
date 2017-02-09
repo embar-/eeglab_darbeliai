@@ -489,7 +489,7 @@ if ~isstr(data) % If NOT a 'noui' call or a callback from uicontrols
   % Drawing axis
   % --------------- 
   YLabels = num2str((1:g.chans)');  % Use numbers as default
-  YLabels = flipud(str2mat(YLabels,' '));
+  YLabels = flipud(char(YLabels,' '));
   ax1 = axes('Position',DEFAULT_AXES_POSITION,...
       'userdata', data, ...% store the data here
       'tag','eegaxis','parent',figh,...%(when in g, slow down display)
@@ -1042,14 +1042,14 @@ u(22) = uicontrol('Parent',figh, ...
 	        'AXESH = findobj(''tag'',''eegaxis'',''parent'',FIGH);',...
 		'YTICK = get(AXESH,''YTick'');',...
 		'YTICK = length(YTICK);',...
-		'set(AXESH,''YTickLabel'',flipud(str2mat(num2str((1:YTICK-1)''),'' '')));',...
+		'set(AXESH,''YTickLabel'',flipud(char(num2str((1:YTICK-1)''),'' '')));',...
 		'clear FIGH AXESH YTICK;'];
   uimenu('Parent',m(6),'Label','Show number','Callback',timestring)
   uimenu('Parent',m(6),'Label','Load .loc(s) file',...
       'Callback','eegplot_w(''loadelect'');')
   
   % Zooms %%%%%%%%
-  if verLessThan('matlab','8.4.0')
+  if ismatlab && verLessThan('matlab','8.4.0')
       zm = uimenu('Parent',m(2),'Label','Zoom off/on');
       commandzoom = [ 'set(gcbf, ''WindowButtonDownFcn'', [ ''zoom(gcbf,''''down''''); eegplot(''''zoom'''', gcbf, 1);'' ]);' ...
           'tmpg = get(gcbf, ''userdata'');' ...
@@ -1806,7 +1806,7 @@ else
 	YLabels = { tmplocs.labels };
     YLabels = strvcat(YLabels);
     
-    YLabels = flipud(str2mat(YLabels,' '));
+    YLabels = flipud(char(YLabels,' '));
     set(axeshand,'YTickLabel',YLabels)
   
   case 'title'
@@ -1936,7 +1936,7 @@ else
       % reactivate zoom if 3 arguments
       % ------------------------------
       if exist('p2', 'var') == 1
-          if verLessThan('matlab','8.4.0')
+          if ismatlab && verLessThan('matlab','8.4.0')
               set(gcbf, 'windowbuttondownfcn', [ 'zoom(gcbf,''down''); eegplot(''zoom'', gcbf, 1);' ]);
           else
               warning('FIXME: Zoom not work in MATLAB >= 8.4.0')
