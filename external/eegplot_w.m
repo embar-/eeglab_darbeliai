@@ -301,7 +301,7 @@ if ~ischar(data) % If NOT a 'noui' call or a callback from uicontrols
    try, g.ploteventdur;     catch, g.ploteventdur = 'off'; end;
    try, g.data2;            catch, g.data2      = []; end;
    try, g.plotdata2;        catch, g.plotdata2 = 'off'; end;
-   %try, g.mocap;		    catch, g.mocap		= 'off'; end; % nima
+   try, g.mocap;		    catch, g.mocap		= 'off'; end; % nima
    try, g.selectcommand;     catch, g.selectcommand     = { '' '' '' }; end; % { defdowncom defmotioncom defupcom }
    try, g.ctrlselectcommand; catch, g.ctrlselectcommand = { '' '' '' }; end; % { defctrldowncom defctrlmotioncom defctrlupcom }
    try, g.datastd;          catch, g.datastd = []; end; %ozgur
@@ -327,7 +327,7 @@ if ~ischar(data) % If NOT a 'noui' call or a callback from uicontrols
                'trialstag'  'winrej' 'command' 'tag' 'xgrid' 'ygrid' 'color' 'colmodif'...
                'freqs' 'freqlimits' 'submean' 'children' 'limits' 'dispchans' 'wincolor' ...
                'maxeventstring' 'ploteventdur' 'butlabel' 'scale' 'events' 'data2' 'plotdata2' ...
-               'selectcommand' 'ctrlselectcommand' 'datastd' 'normed' 'envelope' 'isfreq'}; %'mocap' 
+               'mocap' 'selectcommand' 'ctrlselectcommand' 'datastd' 'normed' 'envelope' 'isfreq'}
       otherwise, error(['eegplot_w: unrecognized option: ''' gfields{index} '''' ]);
       end;
    end;
