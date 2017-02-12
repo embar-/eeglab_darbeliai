@@ -302,8 +302,8 @@ if ~ischar(data) % If NOT a 'noui' call or a callback from uicontrols
    try, g.data2;            catch, g.data2      = []; end;
    try, g.plotdata2;        catch, g.plotdata2 = 'off'; end;
    %try, g.mocap;		    catch, g.mocap		= 'off'; end; % nima
-   try, g.selectcommand;     catch, g.selectcommand     = { defdowncom defmotioncom defupcom }; end;
-   try, g.ctrlselectcommand; catch, g.ctrlselectcommand = { defctrldowncom defctrlmotioncom defctrlupcom }; end;
+   try, g.selectcommand;     catch, g.selectcommand     = { '' '' '' }; end; % { defdowncom defmotioncom defupcom }
+   try, g.ctrlselectcommand; catch, g.ctrlselectcommand = { '' '' '' }; end; % { defctrldowncom defctrlmotioncom defctrlupcom }
    try, g.datastd;          catch, g.datastd = []; end; %ozgur
    try, g.normed;            catch, g.normed = 0; end; %ozgur
    try, g.envelope;          catch, g.envelope = 0; end;%ozgur
@@ -1002,15 +1002,21 @@ u(22) = uicontrol('Parent',figh, ...
   % NOTE: commandselect{2} option has been moved to a
   %       subfunction to improve speed
   %%%%%%%%%%%%%%%%%%%
-  g.commandselect{1} = [ 'if strcmp(get(gcbf, ''SelectionType''),''alt''),' g.ctrlselectcommand{1} ...
-                         'else '                                            g.selectcommand{1} 'end;' ];
-  g.commandselect{3} = [ 'if strcmp(get(gcbf, ''SelectionType''),''alt''),' g.ctrlselectcommand{3} ...
-                         'else '                                            g.selectcommand{3} 'end;' ];
-
+  disp(g.selectcommand)
+  if ~isempty(g.ctrlselectcommand{1}) || ~isempty(g.ctrlselectcommand{3}) || ...
+         ~isempty(g.selectcommand{1}) || ~isempty(g.selectcommand{3})
+      g.commandselect{1} = [ 'if strcmp(get(gcbf, ''SelectionType''),''alt''),' ...
+           g.ctrlselectcommand{1} '; else ' g.selectcommand{1} '; end;' ];
+      g.commandselect{3} = [ 'if strcmp(get(gcbf, ''SelectionType''),''alt''),' ...
+           g.ctrlselectcommand{3} '; else ' g.selectcommand{3} '; end;' ];
+      set(figh, 'windowbuttondownfcn',   g.commandselect{1});
+      set(figh, 'windowbuttonupfcn',     g.commandselect{3});
+  else
+      set(figh, 'windowbuttondownfcn',   {@mouse_down,figh});
+      set(figh, 'windowbuttonupfcn',     {@mouse_up,figh});
+  end;
   set(figh,'WindowScrollWheelFcn',   {@mouse_scroll_wheel,figh});
-  set(figh, 'windowbuttondownfcn',   {@mouse_down,figh}); % g.commandselect{1});
   set(figh, 'windowbuttonmotionfcn', {@mouse_motion,figh,ax0,ax1,u(10),u(11),u(9)});
-  set(figh, 'windowbuttonupfcn',     {@mouse_up,figh}); %g.commandselect{3});
   set(figh, 'WindowKeyPressFcn',     {@eegplot_readkey,figh});
   set(figh, 'interruptible', 'off');
 %  set(figh, 'busyaction', 'cancel');
