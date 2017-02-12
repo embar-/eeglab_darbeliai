@@ -2,7 +2,8 @@
 %             Allows vertical scrolling through channels and manual marking 
 %             and unmarking of data stretches or epochs for rejection.
 %    Almost identical to pop_eegplot(), but allow scroll with mouse wheel, 
-%    to remove channels / components, looks better in wide-screen monitor.
+%    to remove channels / components (with Shift+click), 
+%    looks better in wide-screen monitor and draw EEG data faster.
 %
 % Usage: 
 %           >> eegplot_w(data, 'key1', value1 ...); % use interface buttons, etc.
