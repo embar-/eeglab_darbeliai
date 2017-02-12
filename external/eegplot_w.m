@@ -2385,7 +2385,7 @@ else
     fig = gcf;
 end;
 g = get(fig,'UserData');
-
+modifiers = get(fig,'currentModifier');
 switch evnt.Key
     case 'pageup'
         draw_data([],[],fig,1,[],g);
@@ -2400,8 +2400,18 @@ switch evnt.Key
         EPosition = findobj('tag','EPosition','parent',fig);
         set(EPosition,'string',num2str(g.limits(id)/1000));
         draw_data([],[],fig,0,[],g);
-    case 'up'
-        draw_data([],[],figh,0,[],[],ax1,'g.elecoffset = get(gcbo, ''value'')*(g.chans-g.dispchans);')
+    case 'uparrow'
+        if ismember('control',modifiers)
+            change_eeg_window_length([],[],fig,2);
+        elseif ismember('alt',modifiers)
+            change_scale([],[],fig,1);
+        end;
+    case 'downarrow'
+        if ismember('control',modifiers)
+            change_eeg_window_length([],[],fig,1);
+        elseif ismember('alt',modifiers)
+            change_scale([],[],fig,2);
+        end;
     case {'space'}
         eegplot_w('window');
     case {'tab'}
