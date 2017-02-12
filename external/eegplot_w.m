@@ -147,12 +147,6 @@
 %                    the dependent window. Allows comparison of two concurrent datasets,
 %                    or of channel and component data from the same dataset.
 %    'scale'      - ['on'|'off'] Display the amplitude scale {default: 'on'}.
-%    'mocap'      - ['on'|'off'] Display motion capture data in a separate figure.
-%                     To run, select an EEG data period in the scolling display using 
-%                     the mouse. Motion capture (mocap) data should be
-%                     under EEG.moredata.mocap.markerPosition in xs, ys and zs fields which are
-%                     (number of markers, number of time points) arrays.                
-%                    {default: 'off'}.
 %    'selectcommand' - [cell array] list of 3 commands (strings) to run when the mouse 
 %                      button is down, when it is moving and when the mouse button is up.
 %    'ctrlselectcommand' - [cell array] same as above in conjunction with pressing the 
@@ -333,7 +327,7 @@ if ~ischar(data) % If NOT a 'noui' call or a callback from uicontrols
                'trialstag'  'winrej' 'command' 'tag' 'xgrid' 'ygrid' 'color' 'colmodif'...
                'freqs' 'freqlimits' 'submean' 'children' 'limits' 'dispchans' 'wincolor' ...
                'maxeventstring' 'ploteventdur' 'butlabel' 'scale' 'events' 'data2' 'plotdata2' ...
-               'mocap' 'selectcommand' 'ctrlselectcommand' 'datastd' 'normed' 'envelope' 'isfreq'};
+               'selectcommand' 'ctrlselectcommand' 'datastd' 'normed' 'envelope' 'isfreq'}; %'mocap' 
       otherwise, error(['eegplot_w: unrecognized option: ''' gfields{index} '''' ]);
       end;
    end;
