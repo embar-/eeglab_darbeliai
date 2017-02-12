@@ -1049,11 +1049,13 @@ u(22) = uicontrol('Parent',figh, ...
       indexwidth = ones(1,length(g.eventtypes))*2;
       if iscell(g.eventtypes)
           index=find(ismember(g.eventtypes,{'boundary'}));
-          indexwidth(index) = 1;
-          g.eventtypestyle{index} = '-';
-          g.eventtypecolors{index} = 'c';
-          g.eventstyle(find(indexcolor==index))={'-'};
-          g.eventcolors(find(indexcolor==index))={'c'};
+          if ~isempty(index)
+              indexwidth(index) = 1;
+              g.eventtypestyle{index} = '-';
+              g.eventtypecolors{index} = 'c';
+              g.eventstyle(find(indexcolor==index))={'-'};
+              g.eventcolors(find(indexcolor==index))={'c'};
+          end;
       end;
       g.eventtypewidths = g.eventwidths (mod(indexwidth([1:length(g.eventtypes)])-1 ,length(g.eventwidths))+1);
       g.eventwidths     = g.eventwidths (mod(indexwidth(indexcolor)-1               ,length(g.eventwidths))+1);
