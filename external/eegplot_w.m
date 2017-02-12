@@ -301,7 +301,7 @@ if ~ischar(data) % If NOT a 'noui' call or a callback from uicontrols
    try, g.ploteventdur;     catch, g.ploteventdur = 'off'; end;
    try, g.data2;            catch, g.data2      = []; end;
    try, g.plotdata2;        catch, g.plotdata2 = 'off'; end;
-   try, g.mocap;		    catch, g.mocap		= 'off'; end; % nima
+   %try, g.mocap;		    catch, g.mocap		= 'off'; end; % nima
    try, g.selectcommand;     catch, g.selectcommand     = { defdowncom defmotioncom defupcom }; end;
    try, g.ctrlselectcommand; catch, g.ctrlselectcommand = { defctrldowncom defctrlmotioncom defctrlupcom }; end;
    try, g.datastd;          catch, g.datastd = []; end; %ozgur
