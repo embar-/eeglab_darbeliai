@@ -107,7 +107,7 @@
 %    'freqlimits' - [freq_start freq_end] If plotting epoch spectra instead of data, frequency 
 %                   limits to display spectrum. (Data should contain spectral values).
 %                   *** This option must be used ALWAYS with 'freqs' ***  
-%    'winlength'  - [value] Seconds (or epochs) of data to display in window {default: 5}
+%    'winlength'  - [value] Seconds (or epochs) of data to display in window {default: 10}
 %    'dispchans'  - [integer] Number of channels to display in the activity window 
 %                   {default: from data}.  If < total number of channels, a vertical  
 %                   slider on the left side of the figure allows vertical data scrolling. 
@@ -275,7 +275,7 @@ if ~ischar(data) % If NOT a 'noui' call or a callback from uicontrols
    try, g.srate; 		    catch, g.srate		= 256; 	end;
    try, g.spacing; 			catch, g.spacing	= 0; 	end;
    try, g.eloc_file; 		catch, g.eloc_file	= 0; 	end; % 0 mean numbered
-   try, g.winlength; 		catch, g.winlength	= 5; 	end; % Number of seconds of EEG displayed
+   try, g.winlength; 		catch, g.winlength	= 10; 	end; % Number of seconds of EEG displayed
    try, g.fullscreen; 	    catch, g.fullscreen = 'on';	end;
    try, g.position; 	    catch, g.position	= ORIGINAL_POSITION; g.fullscreen = 'on';	end;
    try, g.title; 		    catch, g.title		= ['Scroll activity -- eegplot_w()']; 	end;
@@ -287,7 +287,7 @@ if ~ischar(data) % If NOT a 'noui' call or a callback from uicontrols
    try, g.xgrid;		    catch, g.xgrid		= 'off'; end;
    try, g.ygrid;		    catch, g.ygrid		= 'off'; end;
    try, g.color;		    catch, g.color		= 'off'; end;
-   try, g.submean;			catch, g.submean	= 'off'; end;
+   try, g.submean;			catch, g.submean	= 'on'; end;
    try, g.children;			catch, g.children	= 0; end;
    try, g.limits;		    catch, g.limits	    = [0 1000*(size(data,2)-1)/g.srate]; end;
    try, g.freqs;            catch, g.freqs	    = []; end;  % Ramon
