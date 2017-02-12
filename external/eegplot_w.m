@@ -2226,7 +2226,11 @@ tmppos = get(ax0, 'currentpoint');
         ax1 = varargin{5};% ax1 = findobj('tag','eegaxis','parent',fig);
         hv = varargin{7}; % hh = findobj('tag','Evalue','parent',fig);
         he = varargin{8}; % hh = findobj('tag','Eelec','parent',fig);  % put electrode in the box
-        point_is_valid=tmppos(1) >= 0 && tmppos(1) <= highlim;
+        if g.trialstag ~= -1
+            point_is_valid=tmppos(1) >= 0 && tmppos(1) < g.winlength*g.trialstag;
+        else
+            point_is_valid=tmppos(1) >= 0 && tmppos(1) <= highlim;
+        end;
         if point_is_valid
             if g.trialstag ~= -1
                 tmpval = mod(tmppos(1)+lowlim-1,g.trialstag)/g.trialstag*(g.limits(2)-g.limits(1)) + g.limits(1);
@@ -2399,9 +2403,14 @@ switch evnt.Key
     case 'pagedown'
         draw_data([],[],fig,4,[],g);
     case {'home' 'end'}
-        id=find(ismember({'home' 'end'},evnt.Key));
         EPosition = findobj('tag','EPosition','parent',fig);
-        set(EPosition,'string',num2str(g.limits(id)/1000));
+        id=find(ismember({'home' 'end'},evnt.Key));
+        if g.trialstag == -1
+            limi=[g.limits(1)/1000 ceil(g.limits(2)/1000-g.winlength)];
+        else
+            limi=[1 1 + g.frames/g.trialstag - g.winlength];
+        end;
+        set(EPosition,'string',num2str(limi(id)));
         draw_data([],[],fig,0,[],g);
     case 'uparrow'
         if ismember('control',modifiers)
