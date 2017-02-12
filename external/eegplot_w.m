@@ -1824,8 +1824,10 @@ end;
 if ~isempty(g.events)
       if ischar(g.events(1).type)
           eventlist={g.events.type};
+          evnt_groups=g.eventtypes;
       else
-          eventlist=arrayfun(@(x) num2str(g.events(x).duration), 1:length(g.events),'UniformOutput',false);
+          eventlist=arrayfun(@(x) num2str(g.events(x).type), 1:length(g.events),'UniformOutput',false);
+          evnt_groups=arrayfun(@(x) num2str(g.eventtypes(x)), 1:length(g.eventtypes),'UniformOutput',false);
       end;
 else
     eventlist={};
@@ -1852,7 +1854,7 @@ if strcmpi(g.plotevent, 'on') || ismember('boundary',eventlist)
             ylims=ylim(ax0);
         end
         evnt_group=event2plot_ut{evnt_group_idx_tmp};
-        evnt_group_idx=find(ismember(g.eventtypes,evnt_group));
+        evnt_group_idx=find(ismember(evnt_groups,evnt_group));
         evnt_group_color = g.eventtypecolors{evnt_group_idx};
         event2plot_activ = event2plot(find(event2plot_uti==evnt_group_idx_tmp));
         
