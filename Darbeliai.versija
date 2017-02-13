@@ -1,11 +1,5 @@
-Darbeliai v2017.02.03.1
+Darbeliai v2017.02.13.1
 
-LT: Įrašo peržiūroje, iškviestoje iš nuoseklaus
-apdorojimo lango, leidžia ne tik atmesti atkarpas,
-bet taip pat ir kanalus, judėti pelės ratuku,
-o signalo vaizdui skiriama didesnė ekrano dalis.
+LT: alternatyvi EEG peržiūra veiks greičiau.
 
-EN: In serial processing dialog opened eegplot
-modification allows not only remove time windows,
-but also remove channels, scroll with mouse whell,
-signal viewed in larger area.
+EN: faster alternative EEG scrolling.

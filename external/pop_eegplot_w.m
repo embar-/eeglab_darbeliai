@@ -337,7 +337,9 @@ else
     for index = 1:length(elecrange)
         tmpstruct(index).labels = int2str(elecrange(index));
     end;
-    eegplotoptions = { eegplotoptions{:}  'eloc_file' tmpstruct };
+    if exist('tmpstruct','var')
+        eegplotoptions = { eegplotoptions{:}  'eloc_file' tmpstruct };
+    end;
 end;
 
 if EEG.nbchan > 100

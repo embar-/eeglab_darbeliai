@@ -1,6 +1,10 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2017.02.13.1
+% ~ eegplot_w veiks greičiau.
+% + eegplot_w įvykių žymėjime trauks prie karpymo vietų.
+%
 %
 % v2017.02.03.1
 % + eegplot_w ir pop_eegplot_w leidžia atmetinėti kanalus/komponentes,
