@@ -314,6 +314,8 @@ try   save(konfig_rinkm,'Darbeliai');
 catch err; Pranesk_apie_klaida(err, darbas, konfig_rinkm, 0);
 end;
 
+setappdata(handles.figure1,'paskiausiai_ikeltas_rinkinys',vardas);
+
 % meniu
 drb_meniu(hObject, eventdata, handles, 'visas', darbas);
 
