@@ -2060,6 +2060,9 @@ function change_scale(varargin)
         case 2
             g.spacing = max(0.005, g.spacing * 0.8);
     end
+    if ismember(p1, [1 2])
+        g.spacing = round(g.spacing,1-floor(log10(g.spacing)));
+    end;
     if round(g.spacing*100) == 0
         maxindex = min(10000, g.frames);  
         g.spacing = 0.01*max(max(data(:,1:maxindex),[],2),[],1)-min(min(data(:,1:maxindex),[],2),[],1);  % Set g.spacingto max/min data
