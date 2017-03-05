@@ -1484,9 +1484,11 @@ function draw_data(varargin)
         return;
     end;
     
+    ax1 = [];
     if nargin >= 7
         ax1 = varargin{7};
-    else
+    end;
+    if isempty(ax1)
         ax1 = findobj('tag','eegaxis','parent',figh); % axes handle
     end;
     
@@ -2428,5 +2430,8 @@ switch evnt.Key
         eegplot_w('window');
     case {'tab'}
         eegplot_w('winelec');
+    case {'v'}
+        draw_data([],[],fig,0,[],[],[],...
+            'if strcmp(g.plotevent,''on''); g.plotevent = ''off''; else g.plotevent = ''on''; end;');
 end
 
