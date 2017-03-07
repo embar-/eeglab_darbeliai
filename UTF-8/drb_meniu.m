@@ -460,7 +460,7 @@ end;
 
 msg={Darbeliu_versija 
     ' ' 
-    '(c) 2014-2016 Mindaugas Baranauskas'
+    '(c) 2014-2017 Mindaugas Baranauskas'
     ['' 109 105 110 100 97 117 103 97 115 46 98 97 114 97 110 97 117 115  107 97 115 64 103 102 46 118 117 46 108 116] };
 
 % % Ženkliukas
@@ -479,14 +479,4 @@ s.WindowStyle='replace';
 %msgbox(msg, antr, ic{:}, s);
 msgbox(msg, antr, s);
 
-
-function versija=Darbeliu_versija
-function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-versija='Darbeliai';
-try
-    fid_vers=fopen(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai.versija'));
-    versija=regexprep(regexprep(fgets(fid_vers),'[ ]*\n',''),'[ ]*\r','');
-    fclose(fid_vers); 
-catch
-end;
 
