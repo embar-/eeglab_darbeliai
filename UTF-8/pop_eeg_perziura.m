@@ -46,14 +46,14 @@ function pop_eeg_perziura(varargin)
 
 if nargin == 0; help(mfilename); return; end;
 EEG2=[];
-if isstruct(varargin{1});
+if isstruct(varargin{1})
     EEG1=varargin{1};
     try
         if nargin > 1
-            if isstruct(varargin{2});
+            if isstruct(varargin{2})
                 EEG2=varargin{2};
                 g=struct(varargin{3:end});
-            elseif ~isempty(varargin{2});
+            elseif ~isempty(varargin{2})
                 g=struct(varargin{2:end});
             else
                 g=struct(varargin{3:end});
@@ -73,16 +73,18 @@ else
     end;
 end;
 
-if isfield(g,'ICA');
-    if g.ICA;
-        if isfield(EEG1,'icaact');
-            if ~isempty(EEG1.icaact);
+if isfield(g,'ICA')
+    if g.ICA
+        if isfield(EEG1,'icaact')
+            if ~isempty(EEG1.icaact)
                 EEG1.data = EEG1.icaact;
             end;
         else
             EEG1.icaact=[];
         end;
-        if isempty(EEG1.icaact) && isfield(EEG1,'icasphere') && isfield(EEG1,'icaweights')
+        if isempty(EEG1.icaact) ...
+                && isfield(EEG1,'icasphere') && ~isempty(EEG1.icasphere) ...
+                && isfield(EEG1,'icaweights') && ~isempty(EEG1.icaweights)
                 EEG1.data = eeg_getdatact(EEG1, 'component', [1:size(EEG1.icaweights,1)]);
         else
             disp([lokaliz('nerasta') ': ICA']);
@@ -105,11 +107,11 @@ end;
 
 f=figure('ToolBar','none','MenuBar','none','Name', pvd, 'NumberTitle','off',...
     'Units','normalized','OuterPosition',[0 0 1 1],'Tag','Darbeliai',...
-    'Color',[0.9400 0.9400 0.9400]);
+    'Color',[0.9400 0.9400 0.9400],'Visible','off');
 
 narsyti=0;
 if isfield(g,'narsyti'); narsyti=g.narsyti; end;
-if narsyti;
+if narsyti
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     try
         load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
@@ -188,10 +190,9 @@ else
     a=axes('units','normalized','position',[0.08 0.05 0.9 0.9 ]);
 end;
 
-p=uicontrol('style','pushbutton', 'String', lokaliz('Close'),  'Tag', 'Close', ...
+uicontrol('style','pushbutton', 'String', lokaliz('Close'),  'Tag', 'Close', ...
     'Units', 'normalized', 'position', [0.84 0.05 0.1 0.05], 'callback', ...
     'if get(gcf,''userdata''); eeg_perziura(''gauk_zymejimo_sriti''); uiresume; else delete(gcf); end;');
-set(f,'Visible','off');
 
 zymeti=0; % isempty(EEG2);
 if isfield(g,'zymeti'); zymeti=g.zymeti; end;
@@ -199,12 +200,12 @@ if zymeti; setappdata(a,'zymeti',1); end;
 
 laukti=zymeti;
 if isfield(g,'laukti'); laukti=g.laukti; end;
-if laukti;
+if laukti
     set(f, 'UserData', 1);
 end;
 
 if isempty(EEG2)
-    if zymeti;
+    if zymeti
         eeg_perziura(EEG1, EEG1, 'figure', f, 'axes', a);
     else
         eeg_perziura(EEG1, []  , 'figure', f, 'axes', a);
@@ -213,24 +214,24 @@ else
         eeg_perziura(EEG1, EEG2, 'figure', f, 'axes', a);
 end;
 
-if isempty(EEG1.data);
-    if narsyti == 1;
+if isempty(EEG1.data)
+    if narsyti == 1
         listbox1A_Callback(handles.listbox1, [], handles);
-    elseif narsyti == 2;
+    elseif narsyti == 2
         listbox1B_Callback(handles.listbox1, [], handles)
     end;
 end;
 
 EEG1_appdata=getappdata(a,'EEG1');
-if isempty(EEG1_appdata);
+if isempty(EEG1_appdata)
     delete(f); return;
 end;
 
 tik_prasmingas=0;
 if isfield(g,'tik_prasmingas'); tik_prasmingas=g.tik_prasmingas; end;
-if tik_prasmingas;
+if tik_prasmingas
     try 
-        if isempty(EEG1_appdata.data);
+        if isempty(EEG1_appdata.data)
             error('Neprasmingas');
         end;
     catch
@@ -242,13 +243,14 @@ if tik_prasmingas;
 end;
 
 set(f,'Visible','on');
-if get(f,'userdata');
+drawnow;
+if get(f,'userdata')
     uiwait(f);
     try delete(f); catch ; end;
 end;
 
 
-function listbox1A_Callback(hObject, eventdata, handles)
+function listbox1A_Callback(~, ~, handles)
 id=get(handles.listbox1,'Value');
 if isempty(id); return; end;
 Kelias=get(handles.edit1,'String');
@@ -259,7 +261,7 @@ if isempty(EEG); return; end;
 eeg_perziura('perkurti', EEG, [], 'f', handles.figure1, 'a', handles.axes1);
 set(handles.figure1,'Name',Rinkmena);
 
-function listbox1B_Callback(hObject, eventdata, handles)
+function listbox1B_Callback(~, ~, handles)
 id=get(handles.listbox1,'Value');
 if isempty(id); return; end;
 Kelias=get(handles.edit1,'String');
@@ -270,7 +272,7 @@ Rinkmenos2=get(handles.listbox2,'String');
 [Rinkmena2,id2]=rask_panasiausia(Rinkmena,Rinkmenos2);
 [EEG]=eeg_ikelk(Kelias, Rinkmena);
 if isempty(EEG); return; end;
-if isempty(Rinkmena2);
+if isempty(Rinkmena2)
     EEG2=[];
 else
     [EEG2]=eeg_ikelk(Kelias2, Rinkmena2);
@@ -278,13 +280,13 @@ else
 end;
 
 eeg_perziura('perkurti', EEG, EEG2, 'f', handles.figure1, 'a', handles.axes1);
-if isempty(Rinkmena2);
+if isempty(Rinkmena2)
     set(handles.figure1,'Name',Rinkmena);
 else
     set(handles.figure1,'Name', [Rinkmena ' + ' Rinkmena2]);
 end;
 
-function listbox2_Callback(hObject, eventdata, handles)
+function listbox2_Callback(~, ~, handles)
 id2=get(handles.listbox2,'Value');
 if isempty(id2); return; end;
 Kelias2=get(handles.edit2,'String');
@@ -294,7 +296,7 @@ Rinkmena2=Rinkmenos2{id2};
 if isempty(EEG2); return; end;
 
 id=get(handles.listbox1,'Value');
-if isempty(id);
+if isempty(id)
     EEG=[];
     Rinkmena='';
 else
@@ -351,7 +353,7 @@ atnaujink_rodoma_kelia_ir_failus1(hObject, eventdata, handles);
 atnaujink_rodoma_kelia_ir_failus2(hObject, eventdata, handles);
 
 % Atnaujink rodoma kelia
-function atnaujink_rodoma_darbini_kelia(hObject, eventdata, h_edit, h_pushbutton_v)
+function atnaujink_rodoma_darbini_kelia(~, ~, h_edit, h_pushbutton_v)
 kelias_orig=pwd;
 try
     cd(get(h_edit,'String'));
@@ -369,11 +371,11 @@ cd(kelias_orig);
 set(h_edit,'BackgroundColor',[1 1 1]);
 
 % Atnaujink rodomus failus
-function atnaujink_rodomus_failus(hObject, eventdata, h_edit, h_listbox, h_edit_failu_filtras)
+function atnaujink_rodomus_failus(~, ~, h_edit, h_listbox, h_edit_failu_filtras)
 Kelias_dabar=pwd;
 cd(get(h_edit,'String'));
 FAILAI=filter_filenames(get(h_edit_failu_filtras,'String'));
-if isempty(FAILAI);
+if isempty(FAILAI)
     %FAILAI(1).name='';
     set(h_listbox,'Max',0);
     set(h_listbox,'Value',[]);
@@ -389,13 +391,13 @@ cd(Kelias_dabar);
 function [panasiausias,nr]=rask_panasiausia(zodis,sarasas)
 panasiausias='';
 nr=0;
-if isempty(zodis) || isempty(sarasas);
+if isempty(zodis) || isempty(sarasas)
     return;
 end;
 ats=regexp(sarasas, [ '^' zodis '.*' ]);
 nr=find(arrayfun(@(x) ~isempty(ats{x}), 1:length(ats)));
-if isempty(nr);
+if isempty(nr)
     [panasiausias,nr]=rask_panasiausia(regexprep(zodis,'.$',''),sarasas);
-elseif (length(nr) == 1) || length(zodis) > 1 ;
+elseif (length(nr) == 1) || length(zodis) > 1
     panasiausias=sarasas{nr(1)};
 end;
