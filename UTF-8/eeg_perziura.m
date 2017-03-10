@@ -554,7 +554,9 @@ try    f=g(1).figure;
     end;
 catch; f=figure;
 end;
-set(f,'pointer','watch'); drawnow;
+if strcmp(get(f,'Visible'),'on')
+    set(f,'pointer','watch'); drawnow;
+end;
 try    a=g(1).axes; if ~isobject(a); a=gca; end;
 catch; a=gca; % axes; % getappdata(f,'main_axes');
 end;
