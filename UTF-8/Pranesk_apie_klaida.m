@@ -128,8 +128,6 @@ if or(isempty(h),isempty(m))
         'tag','EEGLAB Darbeliu klaidos langas', ...
         'Name', ['Darbeliai: ' lokaliz('Error')]);
     hsp=get(h,'color');
-    OS=fastif(ispc, 'Windows', fastif(isunix, fastif(ismac, 'MAC', 'Linux'), ''));
-    lc=char(java.util.Locale.getDefault());
     m=uicontrol('style','edit','max',100,...
         'position', [20 70 400 350], 'units','pixels',...
         'enable','inactive','HorizontalAlignment','left',...
@@ -155,5 +153,7 @@ end;
 
 function kopijuoti(~,~,m)
 tekstas = get(m,'string');
+OS=fastif(ispc, 'Windows', fastif(isunix, fastif(ismac, 'MAC', 'Linux'), ''));
+lc=char(java.util.Locale.getDefault());
 tekstas = [ Darbeliu_versija ; ['EEGLAB ' eeg_getversion ]; [ 'MATLAB ' version ' ' OS ' ' lc]; ' '; '---------------'; tekstas ];
 clipboard('copy',sprintf('%s\n',tekstas{:}));
