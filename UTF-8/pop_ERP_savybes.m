@@ -1303,7 +1303,7 @@ if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
                 [~,Rinkmena_txt_exp,~]=fileparts(EEGTMP.file);
                 Rinkmena_txt_exp=fullfile(KELIAS_SAUGOJIMUI,[Rinkmena_txt_exp '.txt']);
                 EEGTMP.data=EEGTMP.erp_data; % EEG.erp_data is not standard EEGLAB param
-                disp(lokaliz('We use pre-processed data to speed up exporting data. Please ignore these eeg_checkset warnings:'));
+                disp(lokaliz('We use pre-processed data to speed up exporting data. Please ignore eeg_checkset warnings.'));
                 %lango_erp=[EEGTMP.erp_data(:,idx1:idx2,:)];
                 pop_export(EEGTMP, Rinkmena_txt_exp, 'transpose','on','elec','on','time','on','erp','on','precision',7);
                 disp(Rinkmena_txt_exp);
