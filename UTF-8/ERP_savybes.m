@@ -183,8 +183,6 @@ function B = pakeisk_reiksmes(A, newval, oldval)
 %   B = pakeisk_reiksmes(A,NEWVAL,OLDVAL) replaces all occurrences of NEWVAL(k) in A
 %   with OLDVAL(k).  NEWVAL and OLDVAL must match in size.
 
-error(nargchk(2, 3, nargin, 'struct'))
-
 if nargin == 2
     oldval = zeros(size(newval));  % Probably should throw a warning here.
 end
