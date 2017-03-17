@@ -1,14 +1,9 @@
 %
-%
-%
-%
-%
 % EEG + EKG tyrinėjimui
 %
 % GUI versija
 %
-%
-% (C) 2014-2016 Mindaugas Baranauskas
+% (C) 2014-2017 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -912,7 +907,9 @@ for i=1:Pasirinktu_failu_N;
                 
                 % Išsaugoti
                 Priesaga=(get(handles.edit_QRS_aptikimas,'String')) ;
-                Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_QRS_aptikimas_,'String')) ] ;
+                Numeris = num2str(SaugomoNr); 
+                if length(Numeris) == 1; Numeris = [ '0' Numeris ]; end;
+                Poaplankis=[ './' Numeris ' - ' (get(handles.edit_QRS_aptikimas_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
                 if get(handles.checkbox_QRS_aptikimas_,'Value') == 1 ;
                     eeg_issaugoti(EEG, fullfile(KELIAS_SAUGOJIMUI,Poaplankis), NaujaRinkmena);
@@ -1015,7 +1012,9 @@ for i=1:Pasirinktu_failu_N;
                 
                 % Išsaugoti
                 Priesaga=(get(handles.edit_QRS_korekcija,'String')) ;
-                Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_QRS_korekcija_,'String')) ] ;
+                Numeris = num2str(SaugomoNr); 
+                if length(Numeris) == 1; Numeris = [ '0' Numeris ]; end;
+                Poaplankis=[ './' Numeris ' - ' (get(handles.edit_QRS_korekcija_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
                 if get(handles.checkbox_QRS_korekcija_,'Value') == 1 ;
                     eeg_issaugoti(EEG, fullfile(KELIAS_SAUGOJIMUI,Poaplankis), NaujaRinkmena);
@@ -1061,8 +1060,9 @@ for i=1:Pasirinktu_failu_N;
                     
                     % Eksportuoti
                     Priesaga=(get(handles.edit_eksp_Rlaikus,'String')) ;
-                    Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_eksp_Rlaikus_,'String')) ] ;
-                    %RinkmenaRlaik=[  strrep(strrep(Rinkmena_,'.cnt',''),'.set','') Priesaga ];
+                    Numeris = num2str(SaugomoNr);
+                    if length(Numeris) == 1; Numeris = [ '0' Numeris ]; end;
+                    Poaplankis=[ './' Numeris ' - ' (get(handles.edit_eksp_Rlaikus_,'String')) ] ;
                     RinkmenaRlaik=[  strrep(strrep(NaujaRinkmena,'.cnt',''),'.set','') Priesaga ];
                     
                     
@@ -1128,8 +1128,9 @@ for i=1:Pasirinktu_failu_N;
                     
                     % Eksportuoti
                     Priesaga=(get(handles.edit_eksp_RRI,'String')) ;
-                    Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_eksp_RRI_,'String')) ] ;
-                    %RinkmenaRRI=[  strrep(strrep(Rinkmena_,'.cnt',''),'.set','') Priesaga ];
+                    Numeris = num2str(SaugomoNr);
+                    if length(Numeris) == 1; Numeris = [ '0' Numeris ]; end;
+                    Poaplankis=[ './' Numeris ' - ' (get(handles.edit_eksp_RRI_,'String')) ] ;
                     RinkmenaRRI=[  strrep(strrep(NaujaRinkmena,'.cnt',''),'.set','') Priesaga ];
                                         
                     if get(handles.checkbox_eksp_RRI_,'Value') == 1 ;
@@ -1199,7 +1200,9 @@ for i=1:Pasirinktu_failu_N;
                 
                 % Išsaugoti
                 Priesaga=(get(handles.edit_trint_EKG,'String')) ;
-                Poaplankis=[ './' num2str(SaugomoNr) ' - ' (get(handles.edit_trint_EKG_,'String')) ] ;
+                Numeris = num2str(SaugomoNr); 
+                if length(Numeris) == 1; Numeris = [ '0' Numeris ]; end;
+                Poaplankis=[ './' Numeris ' - ' (get(handles.edit_trint_EKG_,'String')) ] ;
                 [~, NaujaRinkmena, ~ ]=fileparts(NaujaRinkmena); NaujaRinkmena=[  NaujaRinkmena Priesaga '.set'];
                 if get(handles.checkbox_trint_EKG_,'Value') == 1 ;
                     eeg_issaugoti(EEG, fullfile(KELIAS_SAUGOJIMUI,Poaplankis), NaujaRinkmena);

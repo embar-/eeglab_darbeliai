@@ -727,9 +727,11 @@ for i=1:Pasirinktu_failu_N;
                
         
         % Išsaugoti
-        if isempty(PaskRinkmIssaugKelias) && ~TIK_PERZIURA;
-            if get(handles.checkbox_poaplankis,'Value');
-                Poaplankis=[ './' num2str(SaugomoNr) ' - ' get(handles.edit_poaplankis,'String') ] ;
+        if isempty(PaskRinkmIssaugKelias) && ~TIK_PERZIURA
+            if get(handles.checkbox_poaplankis,'Value')
+                Numeris = num2str(SaugomoNr); 
+                if length(Numeris) == 1; Numeris = [ '0' Numeris ]; end;
+                Poaplankis=[ './' Numeris ' - ' get(handles.edit_poaplankis,'String') ] ;
             else
                 Poaplankis='.';
             end;
@@ -738,7 +740,6 @@ for i=1:Pasirinktu_failu_N;
             eeg_issaugoti(EEG, fullfile(KELIAS_SAUGOJIMUI,Poaplankis), NaujaRinkmena);
             PaskRinkmIssaugKelias=Tikras_Kelias(fullfile(KELIAS_SAUGOJIMUI,Poaplankis));
             DarboPorcijaAtlikta = 1;
-        %else   disp('Duomenys jau įrašyti');
         end;
         
         str=(sprintf('%s apdorotas (%d/%d = %3.2f%%)\r\n', NaujaRinkmena, i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100 )) ;
@@ -794,9 +795,7 @@ drawnow;
 if and(Apdoroti_visi_tiriamieji == 1, ...
         or(...
         get(handles.radiobutton6,'Value') == 0 ,...
-        get(handles.checkbox_pabaigus_i_apdorotu_aplanka, 'Value') == 1 ...
-        ) ...
-        );
+        get(handles.checkbox_pabaigus_i_apdorotu_aplanka, 'Value') == 1 ))
     
     if ~isempty(PaskRinkmIssaugKelias);
         set(handles.edit1,'String',PaskRinkmIssaugKelias);
