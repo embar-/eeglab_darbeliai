@@ -203,7 +203,8 @@ function [outvar1] = eegplot_w(data, varargin); % p1,p2,p3,p4,p5,p6,p7,p8,p9)
 % Defaults (can be re-defined):
 
 DEFAULT_PLOT_COLOR = { [0 0 1], [0.7 0.7 0.7]};         % EEG line color
-try icadefs;
+try
+    icadefs;
 	DEFAULT_FIG_COLOR = BACKCOLOR;
 	BUTTON_COLOR = GUIBUTTONCOLOR;
 catch
@@ -437,6 +438,10 @@ if ~ischar(data) % If NOT a 'noui' call or a callback from uicontrols
     end
     if g.spacing  == 0 || isnan(g.spacing)
         g.spacing = 1; % default
+    elseif g.spacing > 2 && g.spacing < 11000
+        optim_scale=[2 3 5 7 10 15 20 30 50 75 100 150 200 250 300 500 750 1000 1500 2000 2500 3000 10000];
+        [~,i]=min(abs(optim_scale-g.spacing));
+        g.spacing = optim_scale(i);
     end;
   end
 
@@ -2064,8 +2069,30 @@ function change_scale(varargin)
         g.spacing = round(g.spacing,1-floor(log10(g.spacing)));
     end;
     if round(g.spacing*100) == 0
-        maxindex = min(10000, g.frames);  
-        g.spacing = 0.01*max(max(data(:,1:maxindex),[],2),[],1)-min(min(data(:,1:maxindex),[],2),[],1);  % Set g.spacingto max/min data
+        maxindex = min(10000, g.frames);
+        if g.spacing == 0
+            stds = std(data(:,1:maxindex),[],2);
+            g.datastd = stds;
+            stds = sort(stds);
+            if length(stds) > 2
+                stds = mean(stds(2:end-1));
+            else
+                stds = mean(stds);
+            end;
+            g.spacing = stds*3;
+            if g.spacing > 10
+                g.spacing = round(g.spacing);
+            end
+            if g.spacing  == 0 || isnan(g.spacing)
+                g.spacing = 1; % default
+            elseif g.spacing > 2 && g.spacing < 11000
+                optim_scale=[2 3 5 7 10 15 20 30 50 75 100 150 200 250 300 500 750 1000 1500 2000 2500 3000 10000];
+                [~,i]=min(abs(optim_scale-g.spacing));
+                g.spacing = optim_scale(i);
+            end;
+        else
+            g.spacing = 0.01*max(max(data(:,1:maxindex),[],2),[],1)-min(min(data(:,1:maxindex),[],2),[],1);  % Set g.spacingto max/min data
+        end;
     end;
 
     % update edit box
@@ -2250,6 +2277,7 @@ tmppos = get(ax0, 'currentpoint');
         end;
         if ~g.envelope && point_is_valid
             eegplotdata = get(ax1, 'userdata');
+            if isempty(eegplotdata); return; end;
             tmppos = get(ax1, 'currentpoint');
             tmpelec = round(tmppos(1,2) / g.spacing);
             tmpelec = min(max(double(tmpelec), 1),g.chans);
