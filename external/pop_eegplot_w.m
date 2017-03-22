@@ -149,7 +149,7 @@ if reject
         'else LASTCOM1=''''; ' ...
         'end; ' ];
     if EEG.trials > 1
-        com3 = '[EEGTMP LASTCOM2] = pop_rejepoch(EEGTMP, tmprej, 1); ' ;
+        com3 = '[EEGTMP LASTCOM2] = pop_rejepoch(EEGTMP, tmprej, 0); ' ;
     else
         com3 = '[EEGTMP LASTCOM2] = eeg_eegrej(EEGTMP,eegplot2event(TMPREJ, -1)); ' ;
     end;
