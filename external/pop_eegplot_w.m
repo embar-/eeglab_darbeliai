@@ -19,7 +19,7 @@
 %                    equivalent 'reject'.
 % Inputs:
 %   EEG        - input EEG dataset
-%   icacomp    - type of rejection 0 = independent components; 
+%   icacomp    - type of rejection 0 = independent components;
 %                                  1 = data channels. {Default: 1 = data channels}
 %   superpose  - 0 = Show new marks only: Do not color the background of data portions 
 %                    previously marked for rejection by visual inspection. Mark new data 
@@ -144,7 +144,7 @@ if reject
     end;
     com1 = [ com1 ...
         '  if ~isempty(LASTCOM1),' ...
-        '     EEGTMP = eegh(LASTCOM1, EEGTMP); ' ...
+        '     EEGTMP = eegh(strrep(LASTCOM1,''EEGTMP'',''EEG''), EEGTMP); ' ...
         '  end;' ...
         'else LASTCOM1=''''; ' ...
         'end; ' ];
@@ -174,7 +174,7 @@ if reject
     
     com4 = [ ...
         'if ~isempty(LASTCOM2),' ...
-        '     EEGTMP = eegh(LASTCOM2, EEGTMP);' ...
+        '     EEGTMP = eegh(strrep(LASTCOM2,''EEGTMP'',''EEG''), EEGTMP);' ...
         'end;' ...
         'if or(~isempty(LASTCOM1),~isempty(LASTCOM2))' ...
         '  [ALLEEG EEG CURRENTSET tmpcom] = pop_newset(ALLEEG, EEGTMP' newset_param ');' ... 
@@ -200,8 +200,8 @@ if EEG.trials > 1
 	% ---------- begin of modified eeg_rejmacro ----------
     % script macro for generating command and old rejection arrays
     
-    if ~exist('nbpnts','var'); 
-        nbpnts = EEG.pnts; 
+    if ~exist('nbpnts','var');
+        nbpnts = EEG.pnts;
     end;
     
     % mix all type of rejections
@@ -263,13 +263,20 @@ if EEG.trials > 1
     end;
     
     switch superpose
-        case 0, rejeegplot = trial2eegplot(  rej, rejE, nbpnts, colrej);
-        case 1, rejeegplottmp = trial2eegplot(  oldrej, oldrejE, nbpnts, min(colrej+0.15, [1 1 1]));
-            if ~isempty(rejeegplottmp), rejeegplot = [ rejeegplottmp ];
-            else rejeegplot = []; end;
+        case 0
+            rejeegplot = trial2eegplot(  rej, rejE, nbpnts, colrej);
+        case 1
+            rejeegplottmp = trial2eegplot(  oldrej, oldrejE, nbpnts, min(colrej+0.15, [1 1 1]));
+            if ~isempty(rejeegplottmp) 
+                rejeegplot = [ rejeegplottmp ];
+            else
+                rejeegplot = [];
+            end;
             rejeegplottmp = trial2eegplot(  rej, rejE, nbpnts, colrej);
-            if ~isempty(rejeegplottmp), rejeegplot = [ rejeegplot; rejeegplottmp ]; end;
-        case 2,
+            if ~isempty(rejeegplottmp)
+                rejeegplot = [ rejeegplot; rejeegplottmp ];
+            end;
+        case 2
             rejeegplot = [];
             for index = 1:length(EEG.reject.disprej)
                 if ~isempty(EEG.reject.disprej{index})
@@ -288,7 +295,9 @@ if EEG.trials > 1
                 end;
             end;
             rejeegplottmp = trial2eegplot(  rej, rejE, nbpnts, colrej);
-            if ~isempty(rejeegplottmp), rejeegplot = [ rejeegplot; rejeegplottmp ]; end;
+            if ~isempty(rejeegplottmp)
+                rejeegplot = [ rejeegplot; rejeegplottmp ];
+            end;
     end;
     if ~isempty(rejeegplot)
         rejeegplot = rejeegplot(:,[1:5,elecrange+5]);
@@ -320,7 +329,7 @@ else % case of a single trial (continuous data)
                                      'boundary markers in the event table).'), 'Warning', 'Cancel', 'Continue', 'Continue');
             if strcmpi(res, 'Cancel'), return; end;
         end;
-    end; 
+    end;
     eegplotoptions = { 'events', EEG.event };
 end;
 
@@ -348,12 +357,12 @@ if EEG.nbchan > 100
 end;
 
 if icacomp == 1
-	eegplot_w( EEG.data, 'srate', EEG.srate, 'title', 'Scroll channel activities -- eegplot_w()', ...
-			  'limits', [EEG.xmin EEG.xmax]*1000 , 'command', command, eegplotoptions{:}, varargin{:}); 
+	eegplot_w( EEG.data, 'srate', EEG.srate, 'title', [ 'Scroll channel activities -- eegplot_w(): ' EEG.setname], ...
+			  'limits', [EEG.xmin EEG.xmax]*1000 , 'command', command, eegplotoptions{:}, varargin{:});
 else
     tmpdata = eeg_getdatact(EEG, 'component', [1:size(EEG.icaweights,1)]);
-	eegplot_w( tmpdata, 'srate', EEG.srate, 'title', 'Scroll component activities -- eegplot_w()', ...
-			 'limits', [EEG.xmin EEG.xmax]*1000 , 'command', command, eegplotoptions{:}, varargin{:}); 
+	eegplot_w( tmpdata, 'srate', EEG.srate, 'title', [ 'Scroll component activities -- eegplot_w(): ' EEG.setname], ...
+			 'limits', [EEG.xmin EEG.xmax]*1000 , 'command', command, eegplotoptions{:}, varargin{:});
 end;
-com = [ com sprintf('pop_eegplot_w( %s, %d, %d, %d);', inputname(1), icacomp, superpose, reject) ]; 
+com = [ com sprintf('pop_eegplot_w( %s, %d, %d, %d);', inputname(1), icacomp, superpose, reject) ];
 return;
