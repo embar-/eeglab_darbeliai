@@ -2305,7 +2305,7 @@ if isfield(g,'eventtypes')
 end;
 [~,boundary_closest_id]=min(abs(boundaries_lat-tmppos_x));
 boundary_closest_lat=boundaries_lat(boundary_closest_id);
-if abs(boundary_closest_lat - tmppos_x) < (g.srate*0.2)
+if abs(boundary_closest_lat - tmppos_x) < (g.srate*g.winlength*0.02)
     tmppos_x=round(boundary_closest_lat);
 elseif tmppos_x > boundaries_lat(end)
     tmppos_x = boundaries_lat(end);
