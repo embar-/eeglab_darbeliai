@@ -161,7 +161,7 @@ if reject
         DarbObj1=findobj(figDarb,'tag','pushbutton1');
         DarbObj2=findobj(figDarb,'tag','checkbox_baigti_anksciau');
         if ~isempty(DarbObj1) && ~isempty(DarbObj2)
-            if and(strcmp(get(DarbObj2,'Visible'),'on'), get(DarbObj1,'Value'))
+            if and(strcmpi(get(DarbObj1,'Enable'),'off'), strcmpi(get(DarbObj2,'Visible'),'on'))
                 CallFromDarbeliai=1;
             end;
         end;
