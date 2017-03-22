@@ -3712,7 +3712,13 @@ try
             end;
         end;
         if isempty(kor_lent_k); error('netinka'); end;
-        [kor_r,kor_p]=corr(kor_lent_d,kor_lent_a,'rows','pairwise','type','Spearman'); % 'Pearson' arba 'Spearman'
+        kor_lent_t='Spearman'; % 'Pearson' arba 'Spearman'
+        if strcmp(kor_lent_t,'Spearman')
+            kor_lent_s='rho';
+        else
+            kor_lent_s='r';
+        end;
+        [kor_r,kor_p]=corr(kor_lent_d,kor_lent_a,'rows','pairwise','type',kor_lent_t); 
         kor_r_=num2cell(kor_r);
         disp(' ');
         disp(kor_lent_v);
@@ -3724,15 +3730,20 @@ try
                      kor_spalva='red';  kor_ryski='*';
                 else kor_spalva='yellow'; kor_ryski=' ';
                 end;
-                fprintf('r = %1.3f, p = %1.4f - %s <-> %s %s\n', kor_r(i,kor_p_i), kor_p(i,kor_p_i), kor_lent_h{i}, kor_lent_k{kor_p_i}, kor_ryski);
-                kor_r_{i,kor_p_i}=['<html><table bgcolor=' kor_spalva '><tr><td>' num2str(kor_r(i,kor_p_i)) '</td></tr></table><html>' ];
+                fprintf('%s = %1.3f, p = %1.4f - %s <-> %s %s\n', ...
+                    kor_lent_s, kor_r(i,kor_p_i), kor_p(i,kor_p_i), kor_lent_h{i}, kor_lent_k{kor_p_i}, kor_ryski);
+                kor_r_{i,kor_p_i}=['<html><table bgcolor=' kor_spalva '><tr><td align=right>' num2str(kor_r(i,kor_p_i)) '</td></tr></table><html>' ];
             end;
         end;
         kor_lent_f=figure('Toolbar','none','Menubar','none','NumberTitle','off','Name',kor_lent_v);
         setappdata(kor_lent_f,'kor_lent_d',kor_lent_d);
         setappdata(kor_lent_f,'kor_lent_a',kor_lent_a);
         setappdata(kor_lent_f,'kor_lent_i',kor_lent_i);
-        kor_lent_t=uitable(kor_lent_f,'data',kor_r_,'ColumnName', kor_lent_k, 'RowName', kor_lent_h, ...
+        setappdata(kor_lent_f,'kor_lent_t',kor_lent_t);
+        setappdata(kor_lent_f,'kor_lent_s',kor_lent_s);
+        setappdata(kor_lent_f,'kor_lent_r',kor_r);
+        setappdata(kor_lent_f,'kor_lent_p',kor_p);
+        uitable(kor_lent_f,'data',kor_r_,'ColumnName', kor_lent_k, 'RowName', kor_lent_h, ...
             'Units', 'normalized', 'position', [0 0 1 1],'tag','koreliaciju_lentele',...
             'CellSelectionCallback', {@sklaidos_diagrama, handles});
         disp(' ');
@@ -3783,18 +3794,25 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 function sklaidos_diagrama(hObject, eventdata, handles)
 ei = eventdata.Indices(1);
 si = eventdata.Indices(2);
+kor_lent_t=getappdata(gcf,'kor_lent_t');
+kor_lent_s=getappdata(gcf,'kor_lent_s');
+kor_lent_r=getappdata(gcf,'kor_lent_r');
+kor_lent_p=getappdata(gcf,'kor_lent_p');
 kor_lent_i=getappdata(gcf,'kor_lent_i');
 kor_lent_d=getappdata(gcf,'kor_lent_d'); d=kor_lent_d(:,ei);
 kor_lent_a=getappdata(gcf,'kor_lent_a'); a=kor_lent_a(:,si);
 kor_lent_k=get(gcbo,'ColumnName');       s=kor_lent_k{si};
 kor_lent_h=get(gcbo,'RowName');          e=kor_lent_h{ei};
-f=figure('Toolbar','none','Menubar','none','NumberTitle','off','Name',[ e ' - ' s ]);
+l=get(gcbo,'Data');
+f=figure('NumberTitle','off','Name',[ e ' - ' s ]); % 'Menubar','none','Toolbar','none',
 figure(f);
 plot(d,a,'o'); lsline;
 hold('on');
 text(d+diff(get(gca,'xlim'))/100,a+diff(get(gca,'ylim'))/50,kor_lent_i);
 xlabel(e, 'Interpreter', 'none');
 ylabel(s, 'Interpreter', 'none');
+pvd=[kor_lent_t ' ' kor_lent_s ' = ' num2str(kor_lent_r(ei,si)) ', p = ' num2str(kor_lent_p(ei,si)) ];
+title(pvd);
 
 % --- Executes on button press in checkbox60.
 function checkbox60_Callback(hObject, eventdata, handles)
