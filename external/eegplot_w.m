@@ -1451,8 +1451,6 @@ end
 % ---------------------------------
 function draw_data(varargin)
 
-    DEFAULT_GRID_SPACING = 1;         % Grid lines every n seconds
-    
     if nargin >= 3
         figh = varargin{3};
         %figure(figh);
@@ -1675,16 +1673,8 @@ function draw_data(varargin)
             end;
     	end;
     end;
-    
     g.spacing = oldspacing;
-    set(ax1, 'Xlim', [1 g.winlength*multiplier+1],...
-		     'XTick',[1:multiplier*DEFAULT_GRID_SPACING:g.winlength*multiplier+1]);
-    
-    if g.isfreq % Ramon
-        set(ax1, 'XTickLabel', num2str((g.freqs(1):DEFAULT_GRID_SPACING:g.freqs(end))'));
-    else
-        set(ax1, 'XTickLabel', num2str((g.time:DEFAULT_GRID_SPACING:g.time+g.winlength)'));
-    end
+    set(ax1, 'Xlim', [1 g.winlength*multiplier+1]);
 
     % ordinates: even if all elec are plotted, some may be hidden
     set(ax1, 'ylim',[g.elecoffset*g.spacing (g.elecoffset+g.dispchans+1)*g.spacing] );
@@ -1714,8 +1704,6 @@ function draw_data(varargin)
 % Draw background
 % ---------------------------------
 function draw_background(varargin)
-
-DEFAULT_GRID_SPACING = 1;         % Grid lines every n seconds
 
 if nargin >= 3
     fig = varargin{3};
@@ -1976,22 +1964,25 @@ if g.trialstag(1) ~= -1
     tagtext = eeg_point2lat(tagpos, floor((tagpos)/g.trialstag)+1, g.srate, tmplimit,tpmorder);
     set(ax1,'XTickLabel', tagtext,'XTick', tagpos-lowlim);
 else
+    DEFAULT_GRID_SPACING = 10^ceil(log10(g.winlength)-1);
+    if g.winlength / DEFAULT_GRID_SPACING < 2
+        DEFAULT_GRID_SPACING = DEFAULT_GRID_SPACING / 2;
+    end;
     set(ax0,'XTickLabel', [],'YTickLabel', [],...
         'Xlim', [0 g.winlength*multiplier],...
         'XTick',[], 'YTick',[], ...
         'Position', AXES_POSITION);
-    set(ax1,'Position', AXES_POSITION,...
-            'XTick',[1:multiplier*DEFAULT_GRID_SPACING:g.winlength*multiplier+1]);
+    set(ax1,'Position', AXES_POSITION);
     if g.isfreq
+        set(ax1,'XTick', [1:multiplier*DEFAULT_GRID_SPACING:g.winlength*multiplier+1]);
         set(ax1,'XTickLabel', num2str((g.freqs(1):DEFAULT_GRID_SPACING:g.freqs(end))'));
     else
-        set(ax1,'XTickLabel', num2str((g.time:DEFAULT_GRID_SPACING:g.time+g.winlength)'));
+        XTickStartSec = DEFAULT_GRID_SPACING*ceil(g.time/DEFAULT_GRID_SPACING);
+        XTickStart = multiplier*(XTickStartSec-g.time) + 1;
+        set(ax1,'XTick', [XTickStart:(multiplier*DEFAULT_GRID_SPACING):(g.winlength*multiplier+1)]);
+        set(ax1,'XTickLabel', num2str((XTickStartSec:DEFAULT_GRID_SPACING:g.time+g.winlength)'));
     end;
 end;
-
-% ordinates: even if all elec are plotted, some may be hidden
-set(ax1, 'ylim',[g.elecoffset*g.spacing (g.elecoffset+g.dispchans+1)*g.spacing] );
-%axes(ax1)
 
 
 % Redraw EEG and change window size
