@@ -444,11 +444,11 @@ if ~ischar(data) % If NOT a 'noui' call or a callback from uicontrols
   figh = figure('UserData', g,... % store the settings here
       'Color',DEFAULT_FIG_COLOR, 'name', g.title,...
       'MenuBar','none','tag', g.tag ,'Position',g.position, ...
-      'numbertitle', 'off', 'visible', 'off', 'Units', 'Normalized');
+      'numbertitle', 'off', 'visible', 'off', 'Units', 'Normalized',...
+      'interruptible', 'off', 'busyaction', 'cancel');
   if strcmp(g.fullscreen,'on')
       set(figh,'OuterPosition',[0 0 1 1]);
   end;
-
   pos = get(figh,'position'); % plot relative to current axes
   q = [pos(1) pos(2) 0 0];
   s = [pos(3) pos(4) pos(3) pos(4)]./100;
@@ -1000,7 +1000,7 @@ u(22) = uicontrol('Parent',figh, ...
       set(figh, 'windowbuttondownfcn',   {@mouse_down,figh});
       set(figh, 'windowbuttonupfcn',     {@mouse_up,figh});
   end;
-  set(figh,'WindowScrollWheelFcn',   {@mouse_scroll_wheel,figh,ax0,ax1,u(10),u(11),u(9)});
+  set(figh, 'WindowScrollWheelFcn',  {@mouse_scroll_wheel,figh,ax0,ax1,u(10),u(11),u(9)});
   set(figh, 'windowbuttonmotionfcn', {@mouse_motion,figh,ax0,ax1,u(10),u(11),u(9)});
   set(figh, 'WindowKeyPressFcn',     {@eegplot_readkey,figh,ax0,ax1,u(10),u(11),u(9)});
   set(figh, 'interruptible', 'off');
@@ -1580,8 +1580,15 @@ function draw_data(varargin)
         end
         plot(ax1,tmp_plot_data_y', 'color', [ .85 .85 .85 ], 'clipping','on');
         for i = chans_list_bad
-            line(ax1,1,mean(i*g.spacing + (g.dispchans+1)*(oldspacing-g.spacing)/2 +g.elecoffset*(oldspacing-g.spacing),2),...
-                'Marker','<','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',6,'clipping','off','userdata',g.chans-i+1,'ButtonDownFcn',{@MarkChannel,figh,g.chans-i+1});
+            line_params = ...
+                {1,mean(i*g.spacing + (g.dispchans+1)*(oldspacing-g.spacing)/2 +g.elecoffset*(oldspacing-g.spacing),2),...
+                'Marker','<','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',6,...
+                'clipping','off','userdata',g.chans-i+1,'ButtonDownFcn',{@MarkChannel,figh,g.chans-i+1}};
+            if ismatlab && verLessThan('matlab','9.0.0')
+                line(line_params{:})
+            else
+                line(ax1,line_params{:});
+            end;
         end
     end;
     
@@ -1704,7 +1711,9 @@ ax0 = findobj('tag','backeeg','parent',fig); % axes handle
 ax1 = findobj('tag','eegaxis','parent',fig); % axes handle
 
 % Plot data and update axes
-%axes(ax0);
+if ismatlab && verLessThan('matlab','9.0.0')
+    axes(ax0);
+end;
 cla(ax0);
 hold(ax0,'on');
 % plot rejected windows
@@ -1741,12 +1750,15 @@ if ~isempty(g.winrej) && g.winstatus
                 heightbeg = count(poscumul)/cumul(poscumul);
                 heightend = heightbeg + 1/cumul(poscumul);
                 count(poscumul) = count(poscumul)+1;
-                patch(ax0,...
-                    [tmpwins1(tmpi)-lowlim tmpwins2(tmpi)-lowlim ...
-                    tmpwins2(tmpi)-lowlim tmpwins1(tmpi)-lowlim], ...
-                    [heightbeg heightbeg heightend heightend], ...
-                    tmpcols(tmpi,:),... % this argument is color
-                    'EdgeColor', tmpcols(tmpi,:)); 
+                winrej = [tmpwins1(tmpi)-lowlim tmpwins2(tmpi)-lowlim ...
+                          tmpwins2(tmpi)-lowlim tmpwins1(tmpi)-lowlim];
+                winheigh = [heightbeg heightbeg heightend heightend];
+                patch_params = {winrej, winheigh, tmpcols(tmpi,:), 'EdgeColor', tmpcols(tmpi,:)};
+                if ismatlab && verLessThan('matlab','9.0.0')
+                    patch(patch_params{:});
+                else
+                    patch(ax0, patch_params{:});
+                end;
             end;
         end;
     else
@@ -1761,12 +1773,14 @@ if ~isempty(g.winrej) && g.winstatus
             else
                 tmpcols  = g.wincolor;
             end;
-            patch(ax0, ...
-                  [g.winrej(tpmi,1)-lowlim g.winrej(tpmi,2)-lowlim ...
-                   g.winrej(tpmi,2)-lowlim g.winrej(tpmi,1)-lowlim], ...
-                  [0 0 1 1], ...
-                  tmpcols,...
-                  'EdgeColor', tmpcols);
+            winrej=[g.winrej(tpmi,1)-lowlim g.winrej(tpmi,2)-lowlim ...
+                   g.winrej(tpmi,2)-lowlim g.winrej(tpmi,1)-lowlim];
+            patch_params={winrej, [0 0 1 1], tmpcols, 'EdgeColor', tmpcols};
+            if ismatlab && verLessThan('matlab','9.0.0')
+                patch(patch_params{:});
+            else
+                patch(ax0, patch_params{:});
+            end;
         end;
     end;
 end;
@@ -1856,10 +1870,15 @@ if strcmpi(g.plotevent, 'on') || ismember('boundary',eventlist)
         for index = 1:length(event2plot_activ)
             tmplat1=tmplat(index);
             try
-                text(ax0, [tmplat1], ylims(2)-0.005, [EVENTFONT evntxt], ...
+                text_prop={tmplat1, ylims(2)-0.005, [EVENTFONT evntxt], ...
                     'color', evnt_group_color, ...
                     'horizontalalignment', 'left',...
-                    'rotation',90);
+                    'rotation',90};
+                if ismatlab && verLessThan('matlab','9.0.0')
+                    text(text_prop{:});
+                else
+                    text(ax0, text_prop{:});
+                end;
             catch
             end;
             
@@ -1870,10 +1889,15 @@ if strcmpi(g.plotevent, 'on') || ismember('boundary',eventlist)
                 tmplatend = g.eventlatencyend(event2plot_activ(index))-lowlim-1;
                 if tmplatend ~= 0
                     tmplim = ylims;
-                    patch(ax0, [ tmplat1 tmplatend tmplatend tmplat1 ], ...
+                    patch_params = {[ tmplat1 tmplatend tmplatend tmplat1 ], ...
                         [ tmplim(1) tmplim(1) tmplim(2) tmplim(2) ], ...
                         evnt_group_color, ...  % this argument is color
-                        'EdgeColor', 'none');
+                        'EdgeColor', 'none' };
+                    if ismatlab && verLessThan('matlab','9.0.0')
+                        patch(patch_params{:});
+                    else
+                        patch(ax0, patch_params{:});
+                    end;
                 end;
             end;
         end;
@@ -1963,6 +1987,9 @@ else
         set(ax1,'XTick', [XTickStart:(multiplier*DEFAULT_GRID_SPACING):(g.winlength*multiplier+1)]);
         set(ax1,'XTickLabel', num2str((XTickStartSec:DEFAULT_GRID_SPACING:g.time+g.winlength)'));
     end;
+end;
+if ismatlab && verLessThan('matlab','9.0.0')
+    axes(ax1);
 end;
 
 
@@ -2189,13 +2216,14 @@ function mouse_motion(varargin)
 fig = varargin{3};
 ax0 = varargin{4};
 tmppos = get(ax0, 'currentpoint');
-    g = get(fig,'UserData');
+g = get(fig,'UserData');
     if g.trialstag ~= -1
         lowlim = round(g.time*g.trialstag+1);
     else
         lowlim = round(g.time*g.srate+1);
         highlim = round(g.winlength*g.srate);
     end;
+    
     if g.incallback && g.trialstag == -1
         tmppos_x=mouse_near_boundary_correction(tmppos(1)+lowlim,g);
         g.winrej = [g.winrej(1:end-1,:)' [g.winrej(end,1) tmppos_x g.winrej(end,3:end)]']';
@@ -2209,7 +2237,7 @@ tmppos = get(ax0, 'currentpoint');
         end;
     else
       hh = varargin{6}; % h = findobj('tag','Etime','parent',fig);
-      if isobject(hh) && isvalid(hh)
+      if ismatlab && verLessThan('matlab','8.4.0') || isobject(hh) && isvalid(hh)
         ax1 = varargin{5};% ax1 = findobj('tag','eegaxis','parent',fig);
         hv = varargin{7}; % hh = findobj('tag','Evalue','parent',fig);
         he = varargin{8}; % hh = findobj('tag','Eelec','parent',fig);  % put electrode in the box
@@ -2245,7 +2273,7 @@ tmppos = get(ax0, 'currentpoint');
         end
       end;
     end;
-
+ 
 
 % Attract position to boundaries
 function [tmppos_x]=mouse_near_boundary_correction(tmppos_x,g)
