@@ -1019,9 +1019,9 @@ u(22) = uicontrol('Parent',figh, ...
       set(figh, 'windowbuttondownfcn',   {@mouse_down,figh});
       set(figh, 'windowbuttonupfcn',     {@mouse_up,figh});
   end;
-  set(figh,'WindowScrollWheelFcn',   {@mouse_scroll_wheel,figh});
+  set(figh,'WindowScrollWheelFcn',   {@mouse_scroll_wheel,figh,ax0,ax1,u(10),u(11),u(9)});
   set(figh, 'windowbuttonmotionfcn', {@mouse_motion,figh,ax0,ax1,u(10),u(11),u(9)});
-  set(figh, 'WindowKeyPressFcn',     {@eegplot_readkey,figh});
+  set(figh, 'WindowKeyPressFcn',     {@eegplot_readkey,figh,ax0,ax1,u(10),u(11),u(9)});
   set(figh, 'interruptible', 'off');
 %  set(figh, 'busyaction', 'cancel');
 %  set(figh, 'windowbuttondownfcn', commandpush);
@@ -2329,8 +2329,7 @@ end;
 
 
 % Mouse scroll wheel
-function mouse_scroll_wheel(~,eventdata,fig)
-%figure(fig);
+function mouse_scroll_wheel(~,eventdata,fig,varargin)
 modifiers = get(fig,'currentModifier');
 wheel_up=eventdata.VerticalScrollCount < 0;
 if wheel_up
@@ -2353,6 +2352,9 @@ else
     else
         draw_data([],[],fig,3);
     end;
+end;
+if nargin > 3
+    mouse_motion([],[],fig,varargin{:});
 end;
 
 
@@ -2465,4 +2467,7 @@ switch evnt.Key
         draw_data([],[],fig,0,[],[],[],...
             'if strcmp(g.plotevent,''on''); g.plotevent = ''off''; else g.plotevent = ''on''; end;');
 end
+if nargin > 3
+    mouse_motion([],[],varargin{:})
+end;
 
