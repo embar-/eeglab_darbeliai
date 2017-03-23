@@ -1482,6 +1482,9 @@ function draw_data(varargin)
         custom_command = '';
     end;
     
+    % compare versions once, because it slows down drawing
+    verLessThan_matlab_9 = ismatlab && verLessThan('matlab','9.0.0');
+    
     %axes(ax1);
     data = get(ax1,'UserData');
     ESpacing  = findobj('tag','ESpacing', 'parent',figh); % ui handle
@@ -1584,7 +1587,7 @@ function draw_data(varargin)
                 {1,mean(i*g.spacing + (g.dispchans+1)*(oldspacing-g.spacing)/2 +g.elecoffset*(oldspacing-g.spacing),2),...
                 'Marker','<','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',6,...
                 'clipping','off','userdata',g.chans-i+1,'ButtonDownFcn',{@MarkChannel,figh,g.chans-i+1}};
-            if ismatlab && verLessThan('matlab','9.0.0')
+            if verLessThan_matlab_9
                 line(line_params{:})
             else
                 line(ax1,line_params{:});
@@ -1710,9 +1713,12 @@ end;
 ax0 = findobj('tag','backeeg','parent',fig); % axes handle
 ax1 = findobj('tag','eegaxis','parent',fig); % axes handle
 
+% compare versions once, because it slows down drawing
+verLessThan_matlab_9 = ismatlab && verLessThan('matlab','9.0.0');
+
 % Plot data and update axes
-if ismatlab && verLessThan('matlab','9.0.0')
-    axes(ax0);
+if verLessThan_matlab_9
+    axes(ax0); % changing axes very slows down drawing
 end;
 cla(ax0);
 hold(ax0,'on');
@@ -1754,7 +1760,7 @@ if ~isempty(g.winrej) && g.winstatus
                           tmpwins2(tmpi)-lowlim tmpwins1(tmpi)-lowlim];
                 winheigh = [heightbeg heightbeg heightend heightend];
                 patch_params = {winrej, winheigh, tmpcols(tmpi,:), 'EdgeColor', tmpcols(tmpi,:)};
-                if ismatlab && verLessThan('matlab','9.0.0')
+                if verLessThan_matlab_9
                     patch(patch_params{:});
                 else
                     patch(ax0, patch_params{:});
@@ -1776,7 +1782,7 @@ if ~isempty(g.winrej) && g.winstatus
             winrej=[g.winrej(tpmi,1)-lowlim g.winrej(tpmi,2)-lowlim ...
                    g.winrej(tpmi,2)-lowlim g.winrej(tpmi,1)-lowlim];
             patch_params={winrej, [0 0 1 1], tmpcols, 'EdgeColor', tmpcols};
-            if ismatlab && verLessThan('matlab','9.0.0')
+            if verLessThan_matlab_9
                 patch(patch_params{:});
             else
                 patch(ax0, patch_params{:});
@@ -1874,7 +1880,7 @@ if strcmpi(g.plotevent, 'on') || ismember('boundary',eventlist)
                     'color', evnt_group_color, ...
                     'horizontalalignment', 'left',...
                     'rotation',90};
-                if ismatlab && verLessThan('matlab','9.0.0')
+                if verLessThan_matlab_9
                     text(text_prop{:});
                 else
                     text(ax0, text_prop{:});
@@ -1893,7 +1899,7 @@ if strcmpi(g.plotevent, 'on') || ismember('boundary',eventlist)
                         [ tmplim(1) tmplim(1) tmplim(2) tmplim(2) ], ...
                         evnt_group_color, ...  % this argument is color
                         'EdgeColor', 'none' };
-                    if ismatlab && verLessThan('matlab','9.0.0')
+                    if verLessThan_matlab_9
                         patch(patch_params{:});
                     else
                         patch(ax0, patch_params{:});
@@ -1988,8 +1994,8 @@ else
         set(ax1,'XTickLabel', num2str((XTickStartSec:DEFAULT_GRID_SPACING:g.time+g.winlength)'));
     end;
 end;
-if ismatlab && verLessThan('matlab','9.0.0')
-    axes(ax1);
+if verLessThan_matlab_9
+    axes(ax1); % changing axes very slows down drawing
 end;
 
 
@@ -2237,7 +2243,7 @@ g = get(fig,'UserData');
         end;
     else
       hh = varargin{6}; % h = findobj('tag','Etime','parent',fig);
-      if ismatlab && verLessThan('matlab','8.4.0') || isobject(hh) && isvalid(hh)
+      if ~isnumeric(hh) && isobject(hh) && isvalid(hh)
         ax1 = varargin{5};% ax1 = findobj('tag','eegaxis','parent',fig);
         hv = varargin{7}; % hh = findobj('tag','Evalue','parent',fig);
         he = varargin{8}; % hh = findobj('tag','Eelec','parent',fig);  % put electrode in the box
