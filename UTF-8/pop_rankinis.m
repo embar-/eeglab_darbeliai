@@ -280,8 +280,8 @@ try
     varargout{2} = get(handles.edit1,'String'); % kelias
     varargout{3} = get(handles.listbox2,'String'); % rinkmenos    
     varargout{4} = varargout{3}(find(cellfun(@exist,fullfile(varargout{2},varargout{3}))==2)); % esamos rinkmenos
-    varargout{5} = str2num(get(handles.text_atlikta_darbu,'String')) + get(handles.checkbox_poaplankis,'Value'); % skaitliukas
-catch err;
+    varargout{5} = str2num(get(handles.text_atlikta_darbu,'String')); % skaitliukas
+catch
     varargout{1} = [];
     varargout{2} = '';
     varargout{3} = {};
@@ -812,6 +812,9 @@ end;
 if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr <  DarboNr ),...
         and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
     
+    if get(handles.checkbox_poaplankis,'Value')
+        SaugomoNr=SaugomoNr+1;
+    end
     set(handles.text_atlikta_darbu,'String',num2str(SaugomoNr-1));
     atnaujinti_eeglab=true;
     
