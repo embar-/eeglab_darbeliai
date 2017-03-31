@@ -1,6 +1,16 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2017.03.31.1
+% ~ (pop_)eegplot_w atnaujinimas ištaisant suderinamumą
+%   su MATLAB R2015 ir senesnėmis versijomis.
+% ~ Pakatalogių numeracija bent dviženkliais skaičiais.
+% ~ Išsamesni pranešimai apie klaidas, be to, juos patogiau kopijuoti.
+% ~ pop_rankinis: skaitliuko atnaujinimas po darbų
+% + Pakartotinai įrašant parinktis, siūlyti senųjų 
+%   parinkčių pavadinimą ir komentarą
+% ~ Kiti smulkūs pakeitimai.
+%
 % v2017.02.13.1
 % ~ eegplot_w veiks greičiau.
 % + eegplot_w įvykių žymėjime trauks prie karpymo vietų.
