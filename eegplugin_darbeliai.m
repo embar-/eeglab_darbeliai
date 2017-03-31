@@ -199,6 +199,30 @@ if exist(fullfile(curdir_parrent, config_file),'file') == 2;
 end;
 curdir=[curdir filesep];
 
+
+% Atnaujinti eegplot_w1.1.2 > eegplot_w1.1.3
+if exist(fullfile(curdir,'external','pop_eegplot_w.m'),'file') == 2 || ...
+   exist(fullfile(curdir,'external','eegplot_w.m'),'file') == 2
+   eeglab_plugins_dir=fileparts(fileparts(curdir));
+
+   if exist(fullfile(eeglab_plugins_dir,'eegplot_w1.1.2','eegplugin_eegplot_w.m'),'file') == 2 || ...
+      exist(fullfile(eeglab_plugins_dir,'eegplot_w1.1.2','pop_eegplot_w.m'),'file') == 2 || ...
+      exist(fullfile(eeglab_plugins_dir,'eegplot_w1.1.2','eegplot_w.m'),'file') == 2 || ...
+
+      try movefile(fullfile(eeglab_plugins_dir,'eegplot_w1.1.2'),fullfile(eeglab_plugins_dir,'eegplot_w1.1.3'),'f');
+          movefile(fullfile(curdir,'external','pop_eegplot_w.m'),fullfile(eeglab_plugins_dir,'eegplot_w1.1.3'),'f');
+          movefile(fullfile(curdir,'external','eegplot_w.m'),fullfile(eeglab_plugins_dir,'eegplot_w1.1.3'),'f');
+          addpath(fullfile(eeglab_plugins_dir,'eegplot_w1.1.3'));
+          eegplugin_eegplot_w(fig,try_strings,catch_strings);
+      catch
+      end
+   elseif size(which ('pop_eegplot_w','-all'),1) > 1 && size(which ('eegplot_w','-all'),1) > 1
+       try delete(fullfile(curdir,'external','pop_eegplot_w.m')); catch; end
+       try delete(fullfile(curdir,'external','eegplot_w.m')); catch; end
+   end
+end
+
+
 Darbeliai_nuostatos.lokale={ '' ; '' ; '' ; } ;
 Darbeliai_nuostatos.tikrinti_versija=1;
 Darbeliai_nuostatos.diegti_auto=0;
@@ -382,6 +406,7 @@ if and((exist('atnaujinimas.m','file') == 2),...
    end;     
    
 end;
+
 
 % Ieskoti Ragu
 if ~(exist('Ragu.m','file') == 2 ) ;

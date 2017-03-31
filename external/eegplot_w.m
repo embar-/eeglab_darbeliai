@@ -203,7 +203,8 @@ function [outvar1] = eegplot_w(data, varargin); % p1,p2,p3,p4,p5,p6,p7,p8,p9)
 % Defaults (can be re-defined):
 
 DEFAULT_PLOT_COLOR = { [0 0 1], [0.7 0.7 0.7]};         % EEG line color
-try icadefs;
+try
+    icadefs;
 	DEFAULT_FIG_COLOR = BACKCOLOR;
 	BUTTON_COLOR = GUIBUTTONCOLOR;
 catch
@@ -422,22 +423,7 @@ if ~ischar(data) % If NOT a 'noui' call or a callback from uicontrols
    g.frames = g.frames*tmpnb;
   
   if g.spacing == 0
-    maxindex = min(1000, g.frames);  
-	stds = std(data(:,1:maxindex),[],2);
-    g.datastd = stds;
-	stds = sort(stds);
-	if length(stds) > 2
-		stds = mean(stds(2:end-1)); 
-	else
-		stds = mean(stds);
-	end;	
-    g.spacing = stds*3;  
-    if g.spacing > 10
-      g.spacing = round(g.spacing);
-    end
-    if g.spacing  == 0 || isnan(g.spacing)
-        g.spacing = 1; % default
-    end;
+    g=optim_scale(data,g);
   end
 
   % set defaults
@@ -458,11 +444,11 @@ if ~ischar(data) % If NOT a 'noui' call or a callback from uicontrols
   figh = figure('UserData', g,... % store the settings here
       'Color',DEFAULT_FIG_COLOR, 'name', g.title,...
       'MenuBar','none','tag', g.tag ,'Position',g.position, ...
-      'numbertitle', 'off', 'visible', 'off', 'Units', 'Normalized');
+      'numbertitle', 'off', 'visible', 'off', 'Units', 'Normalized',...
+      'interruptible', 'off', 'busyaction', 'cancel');
   if strcmp(g.fullscreen,'on')
       set(figh,'OuterPosition',[0 0 1 1]);
   end;
-
   pos = get(figh,'position'); % plot relative to current axes
   q = [pos(1) pos(2) 0 0];
   s = [pos(3) pos(4) pos(3) pos(4)]./100;
@@ -1014,9 +1000,9 @@ u(22) = uicontrol('Parent',figh, ...
       set(figh, 'windowbuttondownfcn',   {@mouse_down,figh});
       set(figh, 'windowbuttonupfcn',     {@mouse_up,figh});
   end;
-  set(figh,'WindowScrollWheelFcn',   {@mouse_scroll_wheel,figh});
+  set(figh, 'WindowScrollWheelFcn',  {@mouse_scroll_wheel,figh,ax0,ax1,u(10),u(11),u(9)});
   set(figh, 'windowbuttonmotionfcn', {@mouse_motion,figh,ax0,ax1,u(10),u(11),u(9)});
-  set(figh, 'WindowKeyPressFcn',     {@eegplot_readkey,figh});
+  set(figh, 'WindowKeyPressFcn',     {@eegplot_readkey,figh,ax0,ax1,u(10),u(11),u(9)});
   set(figh, 'interruptible', 'off');
 %  set(figh, 'busyaction', 'cancel');
 %  set(figh, 'windowbuttondownfcn', commandpush);
@@ -1446,8 +1432,6 @@ end
 % ---------------------------------
 function draw_data(varargin)
 
-    DEFAULT_GRID_SPACING = 1;         % Grid lines every n seconds
-    
     if nargin >= 3
         figh = varargin{3};
         %figure(figh);
@@ -1484,9 +1468,11 @@ function draw_data(varargin)
         return;
     end;
     
+    ax1 = [];
     if nargin >= 7
         ax1 = varargin{7};
-    else
+    end;
+    if isempty(ax1)
         ax1 = findobj('tag','eegaxis','parent',figh); % axes handle
     end;
     
@@ -1495,6 +1481,9 @@ function draw_data(varargin)
     else
         custom_command = '';
     end;
+    
+    % compare versions once, because it slows down drawing
+    verLessThan_matlab_9 = ismatlab && verLessThan('matlab','9.0.0');
     
     %axes(ax1);
     data = get(ax1,'UserData');
@@ -1594,8 +1583,15 @@ function draw_data(varargin)
         end
         plot(ax1,tmp_plot_data_y', 'color', [ .85 .85 .85 ], 'clipping','on');
         for i = chans_list_bad
-            line(ax1,1,mean(i*g.spacing + (g.dispchans+1)*(oldspacing-g.spacing)/2 +g.elecoffset*(oldspacing-g.spacing),2),...
-                'Marker','<','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',6,'clipping','off','userdata',g.chans-i+1,'ButtonDownFcn',{@MarkChannel,figh,g.chans-i+1});
+            line_params = ...
+                {1,mean(i*g.spacing + (g.dispchans+1)*(oldspacing-g.spacing)/2 +g.elecoffset*(oldspacing-g.spacing),2),...
+                'Marker','<','MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',6,...
+                'clipping','off','userdata',g.chans-i+1,'ButtonDownFcn',{@MarkChannel,figh,g.chans-i+1}};
+            if verLessThan_matlab_9
+                line(line_params{:})
+            else
+                line(ax1,line_params{:});
+            end;
         end
     end;
     
@@ -1668,16 +1664,8 @@ function draw_data(varargin)
             end;
     	end;
     end;
-    
     g.spacing = oldspacing;
-    set(ax1, 'Xlim', [1 g.winlength*multiplier+1],...
-		     'XTick',[1:multiplier*DEFAULT_GRID_SPACING:g.winlength*multiplier+1]);
-    
-    if g.isfreq % Ramon
-        set(ax1, 'XTickLabel', num2str((g.freqs(1):DEFAULT_GRID_SPACING:g.freqs(end))'));
-    else
-        set(ax1, 'XTickLabel', num2str((g.time:DEFAULT_GRID_SPACING:g.time+g.winlength)'));
-    end
+    set(ax1, 'Xlim', [1 g.winlength*multiplier+1]);
 
     % ordinates: even if all elec are plotted, some may be hidden
     set(ax1, 'ylim',[g.elecoffset*g.spacing (g.elecoffset+g.dispchans+1)*g.spacing] );
@@ -1708,8 +1696,6 @@ function draw_data(varargin)
 % ---------------------------------
 function draw_background(varargin)
 
-DEFAULT_GRID_SPACING = 1;         % Grid lines every n seconds
-
 if nargin >= 3
     fig = varargin{3};
 else
@@ -1727,8 +1713,13 @@ end;
 ax0 = findobj('tag','backeeg','parent',fig); % axes handle
 ax1 = findobj('tag','eegaxis','parent',fig); % axes handle
 
+% compare versions once, because it slows down drawing
+verLessThan_matlab_9 = ismatlab && verLessThan('matlab','9.0.0');
+
 % Plot data and update axes
-%axes(ax0);
+if verLessThan_matlab_9
+    axes(ax0); % changing axes very slows down drawing
+end;
 cla(ax0);
 hold(ax0,'on');
 % plot rejected windows
@@ -1765,12 +1756,15 @@ if ~isempty(g.winrej) && g.winstatus
                 heightbeg = count(poscumul)/cumul(poscumul);
                 heightend = heightbeg + 1/cumul(poscumul);
                 count(poscumul) = count(poscumul)+1;
-                patch(ax0,...
-                    [tmpwins1(tmpi)-lowlim tmpwins2(tmpi)-lowlim ...
-                    tmpwins2(tmpi)-lowlim tmpwins1(tmpi)-lowlim], ...
-                    [heightbeg heightbeg heightend heightend], ...
-                    tmpcols(tmpi,:),... % this argument is color
-                    'EdgeColor', tmpcols(tmpi,:)); 
+                winrej = [tmpwins1(tmpi)-lowlim tmpwins2(tmpi)-lowlim ...
+                          tmpwins2(tmpi)-lowlim tmpwins1(tmpi)-lowlim];
+                winheigh = [heightbeg heightbeg heightend heightend];
+                patch_params = {winrej, winheigh, tmpcols(tmpi,:), 'EdgeColor', tmpcols(tmpi,:)};
+                if verLessThan_matlab_9
+                    patch(patch_params{:});
+                else
+                    patch(ax0, patch_params{:});
+                end;
             end;
         end;
     else
@@ -1785,12 +1779,14 @@ if ~isempty(g.winrej) && g.winstatus
             else
                 tmpcols  = g.wincolor;
             end;
-            patch(ax0, ...
-                  [g.winrej(tpmi,1)-lowlim g.winrej(tpmi,2)-lowlim ...
-                   g.winrej(tpmi,2)-lowlim g.winrej(tpmi,1)-lowlim], ...
-                  [0 0 1 1], ...
-                  tmpcols,...
-                  'EdgeColor', tmpcols);
+            winrej=[g.winrej(tpmi,1)-lowlim g.winrej(tpmi,2)-lowlim ...
+                   g.winrej(tpmi,2)-lowlim g.winrej(tpmi,1)-lowlim];
+            patch_params={winrej, [0 0 1 1], tmpcols, 'EdgeColor', tmpcols};
+            if verLessThan_matlab_9
+                patch(patch_params{:});
+            else
+                patch(ax0, patch_params{:});
+            end;
         end;
     end;
 end;
@@ -1880,10 +1876,15 @@ if strcmpi(g.plotevent, 'on') || ismember('boundary',eventlist)
         for index = 1:length(event2plot_activ)
             tmplat1=tmplat(index);
             try
-                text(ax0, [tmplat1], ylims(2)-0.005, [EVENTFONT evntxt], ...
+                text_prop={tmplat1, ylims(2)-0.005, [EVENTFONT evntxt], ...
                     'color', evnt_group_color, ...
                     'horizontalalignment', 'left',...
-                    'rotation',90);
+                    'rotation',90};
+                if verLessThan_matlab_9
+                    text(text_prop{:});
+                else
+                    text(ax0, text_prop{:});
+                end;
             catch
             end;
             
@@ -1894,10 +1895,15 @@ if strcmpi(g.plotevent, 'on') || ismember('boundary',eventlist)
                 tmplatend = g.eventlatencyend(event2plot_activ(index))-lowlim-1;
                 if tmplatend ~= 0
                     tmplim = ylims;
-                    patch(ax0, [ tmplat1 tmplatend tmplatend tmplat1 ], ...
+                    patch_params = {[ tmplat1 tmplatend tmplatend tmplat1 ], ...
                         [ tmplim(1) tmplim(1) tmplim(2) tmplim(2) ], ...
                         evnt_group_color, ...  % this argument is color
-                        'EdgeColor', 'none');
+                        'EdgeColor', 'none' };
+                    if verLessThan_matlab_9
+                        patch(patch_params{:});
+                    else
+                        patch(ax0, patch_params{:});
+                    end;
                 end;
             end;
         end;
@@ -1969,22 +1975,28 @@ if g.trialstag(1) ~= -1
     tagtext = eeg_point2lat(tagpos, floor((tagpos)/g.trialstag)+1, g.srate, tmplimit,tpmorder);
     set(ax1,'XTickLabel', tagtext,'XTick', tagpos-lowlim);
 else
+    DEFAULT_GRID_SPACING = 10^ceil(log10(g.winlength)-1);
+    if g.winlength / DEFAULT_GRID_SPACING < 2
+        DEFAULT_GRID_SPACING = DEFAULT_GRID_SPACING / 2;
+    end;
     set(ax0,'XTickLabel', [],'YTickLabel', [],...
         'Xlim', [0 g.winlength*multiplier],...
         'XTick',[], 'YTick',[], ...
         'Position', AXES_POSITION);
-    set(ax1,'Position', AXES_POSITION,...
-            'XTick',[1:multiplier*DEFAULT_GRID_SPACING:g.winlength*multiplier+1]);
+    set(ax1,'Position', AXES_POSITION);
     if g.isfreq
+        set(ax1,'XTick', [1:multiplier*DEFAULT_GRID_SPACING:g.winlength*multiplier+1]);
         set(ax1,'XTickLabel', num2str((g.freqs(1):DEFAULT_GRID_SPACING:g.freqs(end))'));
     else
-        set(ax1,'XTickLabel', num2str((g.time:DEFAULT_GRID_SPACING:g.time+g.winlength)'));
+        XTickStartSec = DEFAULT_GRID_SPACING*ceil(g.time/DEFAULT_GRID_SPACING);
+        XTickStart = multiplier*(XTickStartSec-g.time) + 1;
+        set(ax1,'XTick', [XTickStart:(multiplier*DEFAULT_GRID_SPACING):(g.winlength*multiplier+1)]);
+        set(ax1,'XTickLabel', num2str((XTickStartSec:DEFAULT_GRID_SPACING:g.time+g.winlength)'));
     end;
 end;
-
-% ordinates: even if all elec are plotted, some may be hidden
-set(ax1, 'ylim',[g.elecoffset*g.spacing (g.elecoffset+g.dispchans+1)*g.spacing] );
-%axes(ax1)
+if verLessThan_matlab_9
+    axes(ax1); % changing axes very slows down drawing
+end;
 
 
 % Redraw EEG and change window size
@@ -2058,9 +2070,17 @@ function change_scale(varargin)
         case 2
             g.spacing = max(0.005, g.spacing * 0.8);
     end
+    if ismember(p1, [1 2])
+        spacing_deka=10^(floor(log10(g.spacing))-1);
+        g.spacing = spacing_deka*round(g.spacing/spacing_deka);
+    end;
     if round(g.spacing*100) == 0
-        maxindex = min(10000, g.frames);  
-        g.spacing = 0.01*max(max(data(:,1:maxindex),[],2),[],1)-min(min(data(:,1:maxindex),[],2),[],1);  % Set g.spacingto max/min data
+        if g.spacing == 0
+            g=optim_scale(data,g);
+        else
+            maxindex = min(10000, g.frames);
+            g.spacing = 0.01*max(max(data(:,1:maxindex),[],2),[],1)-min(min(data(:,1:maxindex),[],2),[],1);  % Set g.spacingto max/min data
+        end;
     end;
 
     % update edit box
@@ -2202,13 +2222,14 @@ function mouse_motion(varargin)
 fig = varargin{3};
 ax0 = varargin{4};
 tmppos = get(ax0, 'currentpoint');
-    g = get(fig,'UserData');
+g = get(fig,'UserData');
     if g.trialstag ~= -1
         lowlim = round(g.time*g.trialstag+1);
     else
         lowlim = round(g.time*g.srate+1);
         highlim = round(g.winlength*g.srate);
     end;
+    
     if g.incallback && g.trialstag == -1
         tmppos_x=mouse_near_boundary_correction(tmppos(1)+lowlim,g);
         g.winrej = [g.winrej(1:end-1,:)' [g.winrej(end,1) tmppos_x g.winrej(end,3:end)]']';
@@ -2222,7 +2243,7 @@ tmppos = get(ax0, 'currentpoint');
         end;
     else
       hh = varargin{6}; % h = findobj('tag','Etime','parent',fig);
-      if isobject(hh) && isvalid(hh)
+      if ~isnumeric(hh) && isobject(hh) && isvalid(hh)
         ax1 = varargin{5};% ax1 = findobj('tag','eegaxis','parent',fig);
         hv = varargin{7}; % hh = findobj('tag','Evalue','parent',fig);
         he = varargin{8}; % hh = findobj('tag','Eelec','parent',fig);  % put electrode in the box
@@ -2245,6 +2266,7 @@ tmppos = get(ax0, 'currentpoint');
         end;
         if ~g.envelope && point_is_valid
             eegplotdata = get(ax1, 'userdata');
+            if isempty(eegplotdata); return; end;
             tmppos = get(ax1, 'currentpoint');
             tmpelec = round(tmppos(1,2) / g.spacing);
             tmpelec = min(max(double(tmpelec), 1),g.chans);
@@ -2257,7 +2279,7 @@ tmppos = get(ax0, 'currentpoint');
         end
       end;
     end;
-
+ 
 
 % Attract position to boundaries
 function [tmppos_x]=mouse_near_boundary_correction(tmppos_x,g)
@@ -2272,7 +2294,7 @@ if isfield(g,'eventtypes')
 end;
 [~,boundary_closest_id]=min(abs(boundaries_lat-tmppos_x));
 boundary_closest_lat=boundaries_lat(boundary_closest_id);
-if abs(boundary_closest_lat - tmppos_x) < (g.srate*0.2)
+if abs(boundary_closest_lat - tmppos_x) < (g.srate*g.winlength*0.02)
     tmppos_x=round(boundary_closest_lat);
 elseif tmppos_x > boundaries_lat(end)
     tmppos_x = boundaries_lat(end);
@@ -2295,9 +2317,31 @@ for index=1:length(vals)
 end;
 
 
+function g=optim_scale(data,g)
+    maxindex = min(10000, g.frames);
+	stds = std(data(:,1:maxindex),[],2);
+    g.datastd = stds;
+	stds = sort(stds);
+	if length(stds) > 2
+		stds = mean(stds(2:end-1));
+	else
+		stds = mean(stds);
+	end;
+    g.spacing = stds*3;
+    if g.spacing > 10
+      g.spacing = round(g.spacing);
+    end
+    if g.spacing  == 0 || isnan(g.spacing)
+        g.spacing = 1; % default
+    elseif g.spacing > 1.9 && g.spacing < 10000
+        optim_scale=[2 3 5 7 10 15 20 30 50 75 100 150 200 250 300 500 750 1000 1500 2000 2500 3000 10000];
+        i=find(optim_scale > g.spacing);
+        g.spacing = optim_scale(i(1));
+    end;
+
+
 % Mouse scroll wheel
-function mouse_scroll_wheel(~,eventdata,fig)
-%figure(fig);
+function mouse_scroll_wheel(~,eventdata,fig,varargin)
 modifiers = get(fig,'currentModifier');
 wheel_up=eventdata.VerticalScrollCount < 0;
 if wheel_up
@@ -2320,6 +2364,9 @@ else
     else
         draw_data([],[],fig,3);
     end;
+end;
+if nargin > 3
+    mouse_motion([],[],fig,varargin{:});
 end;
 
 
@@ -2428,5 +2475,11 @@ switch evnt.Key
         eegplot_w('window');
     case {'tab'}
         eegplot_w('winelec');
+    case {'v'}
+        draw_data([],[],fig,0,[],[],[],...
+            'if strcmp(g.plotevent,''on''); g.plotevent = ''off''; else g.plotevent = ''on''; end;');
 end
+if nargin > 3
+    mouse_motion([],[],varargin{:})
+end;
 

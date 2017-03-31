@@ -41,10 +41,9 @@
 
 function [keliai] = galima_fja(fja,komanda)
 keliai='';
-keliai2='';
 tikrintinas=fileparts(which(fja));
-while ~isempty(tikrintinas);
-    if ivykdoma(komanda);
+while ~isempty(tikrintinas)
+    if ivykdoma(komanda)
         break;
     else
         keliai=[keliai tikrintinas pathsep];
@@ -57,6 +56,6 @@ function rez=ivykdoma(komanda)
 rez=1;
 try
     eval([komanda ' ;']);
-catch err
+catch
     rez=0;
 end;

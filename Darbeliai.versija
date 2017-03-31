@@ -1,5 +1,15 @@
-Darbeliai v2017.02.13.1
+Darbeliai v2017.03.31.1
 
-LT: alternatyvi EEG peržiūra veiks greičiau.
+LT: 
+(pop_)eegplot_w atnaujinimas ištaisant suderinamumą
+su MATLAB R2015 ir senesnėmis versijomis.
+Pakatalogių numeracija bent dviženkliais skaičiais.
+Išsamesni pranešimai apie klaidas, 
+be to, juos patogiau kopijuoti.
 
-EN: faster alternative EEG scrolling.
+EN:
+Update of (pop_)eegplot_w to fix compatibility
+with MATLAB R2015 and older versions.
+Numeration of subdirectories with at least 2 digits.
+More verbose messages about errors.
+Other minor changes.
