@@ -1,7 +1,7 @@
 %
 % Pakeitimai:
 % ------------------------
-% v2017.03.31.1
+% v2017.04.01.1
 % ~ (pop_)eegplot_w atnaujinimas ištaisant suderinamumą
 %   su MATLAB R2015 ir senesnėmis versijomis.
 % ~ Pakatalogių numeracija bent dviženkliais skaičiais.
