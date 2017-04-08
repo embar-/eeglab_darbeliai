@@ -754,17 +754,12 @@ for i=1:Pasirinktu_failu_N;
             end;
         end;
         
+        if PERZIURA; pop_eeg_perziura(EEG0, EEG, 'title', [Rinkmena_ ' + ' NaujaRinkmena], 'zymeti', 0); end;
+    
     else
-        msgbox(sprintf([lokaliz('Time:') ' %s\n' lokaliz('Path:') ' %s\n' lokaliz('File:') ' %s'], ...
-               t, pwd, Rinkmena),lokaliz('Empty dataset'),'error');
+        Pranesk_apie_klaida(lokaliz('Empty dataset'), lokaliz('Darbas'), fullfile(pwd, Rinkmena));
     end;
-    
-    if PERZIURA; pop_eeg_perziura(EEG0, EEG, 'title', [Rinkmena_ ' + ' NaujaRinkmena], 'zymeti', 0); end;
-    
-    % Isvalyti atminti
-    %STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
-    %eeglab redraw;
-    
+
     if get(handles.radiobutton6,'Value') == 1;
         tmp_idx=get(handles.listbox1,'Value');
         if length(tmp_idx) > 1 ;
@@ -812,10 +807,12 @@ end;
 if or(~and(get(handles.radiobutton7,'Value') == 1, PaskutinioIssaugotoDarboNr <  DarboNr ),...
         and(get(handles.radiobutton7,'Value') == 1, get(handles.checkbox_baigti_anksciau,'Value') == 1));
     
-    if get(handles.checkbox_poaplankis,'Value')
-        SaugomoNr=SaugomoNr+1;
+    if ~TIK_PERZIURA
+        if get(handles.checkbox_poaplankis,'Value')
+            SaugomoNr=SaugomoNr+1;
+        end
+        set(handles.text_atlikta_darbu,'String',num2str(SaugomoNr-1));
     end
-    set(handles.text_atlikta_darbu,'String',num2str(SaugomoNr-1));
     atnaujinti_eeglab=true;
     
     if Apdoroti_visi_tiriamieji == 1;        
