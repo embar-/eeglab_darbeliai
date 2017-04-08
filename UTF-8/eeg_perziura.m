@@ -244,24 +244,23 @@ if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
                     for vi=vis;
                         %disp([ num2str(eii) 'e ' num2str(vi) 'i [' num2str(EEG1.event(vi).urevent) '/' num2str(urid2(urid2_sutampa_i(i_nuo))) 'u]: ' EEG1.event(vi).type ' ' num2str(EEG1.event(vi).laikas_ms/1000) ' + ' num2str(sk_/1000) ' -> ' num2str((EEG1.event(vi).laikas_ms + sk_)/1000)]);
                         EEG1.event(vi).laikas_ms=EEG1.event(vi).laikas_ms + sk_;
-                    end;
+                    end
                     %disp('-');
                     urev=[urev EEG1.event(vis).urevent];
-                end;
+                end
                 %disp('--');
-                
-            end;
+            end
+            
             ivTipai={EEG1.event.type};
-            if EEG2.trials <= 1;
+            if EEG2.trials <= 1
                 EEG1.event(ismember(ivTipai,{'boundary'}))=[];
-            end;
-            if ~isempty(EEG1.times(diff(EEG1.times) < 0)) || ~isempty(EEG2.times(diff(EEG2.times) < 0));
+            elseif ~isempty(EEG1.times(diff(EEG1.times) < 0)) || ~isempty(EEG2.times(diff(EEG2.times) < 0))
                 wrn=warning('off','backtrace');
                 warning('Epochuoti įrašai nedera tarpusavyje!');
                 warning(wrn.state, 'backtrace');
-                EEG1=EEG1_kopija; 
-                clear EEG1_kopija;
-            end;
+                EEG1=EEG1_kopija;
+            end
+            clear EEG1_kopija;
         end;
         EEG1.xmin=0.001*min(EEG1.times); if isempty(EEG1.xmin); EEG1.xmin=NaN; end;
         EEG1.xmax=0.001*max(EEG1.times); if isempty(EEG1.xmax); EEG1.xmax=0; end;
