@@ -757,7 +757,7 @@ for i=1:Pasirinktu_failu_N;
         if PERZIURA; pop_eeg_perziura(EEG0, EEG, 'title', [Rinkmena_ ' + ' NaujaRinkmena], 'zymeti', 0); end;
     
     else
-        Pranesk_apie_klaida(lokaliz('Empty dataset'), lokaliz('Darbas'), fullfile(pwd, Rinkmena));
+        Pranesk_apie_klaida(lokaliz('Empty dataset'), lokaliz('Darbas'), fullfile(KELIAS_, Rinkmena_));
     end;
 
     if get(handles.radiobutton6,'Value') == 1;

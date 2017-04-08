@@ -2226,13 +2226,10 @@ for i=1:Pasirinktu_failu_N;
                 disp('+');
             end;
         end;
-
+        if PERZIURA; pop_eeg_perziura(EEG0, EEG, 'title', [Rinkmena_ ' + ' NaujaRinkmena], 'zymeti', 0); end;
     else
-        msgbox(sprintf([lokaliz('Time:') ' %s\n' lokaliz('Path:') ' %s\n' lokaliz('File:') ' %s'], ...
-               t, pwd, Rinkmena),lokaliz('Empty dataset'),'error');
+        Pranesk_apie_klaida(lokaliz('Empty dataset'), lokaliz('Darbas'), fullfile(KELIAS_, Rinkmena_));
     end;
-
-    if PERZIURA; pop_eeg_perziura(EEG0, EEG, 'title', [Rinkmena_ ' + ' NaujaRinkmena], 'zymeti', 0); end;
 
     % Isvalyti atminti
     STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];
