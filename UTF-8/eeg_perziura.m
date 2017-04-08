@@ -1173,6 +1173,9 @@ try
             end;
         end;
     end;
+    if ~isempty(findobj(act,'Type','uicontrol','Style','listbox','-depth',0));
+        return
+    end;
 catch % Paprastai klaida būna, jei kompiuteris lagina
     return;
 end;
