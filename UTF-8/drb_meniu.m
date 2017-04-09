@@ -425,8 +425,8 @@ else
     Dir=pathin;
 end;
 
-h=statusbar(lokaliz('Palaukite!'));
-statusbar(0.5,h);
+h=statusbar2015(lokaliz('Palaukite!'));
+statusbar2015(0.5,h);
 
 if ispc; % Windows PC
     evalc(['!explorer "' Dir '"']);

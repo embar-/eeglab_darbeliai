@@ -76,8 +76,8 @@ end;
 if isempty(Rinkmenos); return; end;
 
 % statusbar
-h=statusbar(lokaliz('Loading data...'));
-statusbar('on',h);
+h=statusbar2015(lokaliz('Loading data...'));
+statusbar2015('on',h);
 
 Rinkmenos2={};
 for f=1:length(Rinkmenos);
@@ -128,7 +128,7 @@ if Pasirinktu_failu_N > 0 ;
             
             % statusbar
             p=f/Pasirinktu_failu_N;
-            if isempty(statusbar(p,h));
+            if isempty(statusbar2015(p,h));
                 break;
             end;
             

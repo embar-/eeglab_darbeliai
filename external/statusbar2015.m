@@ -3,33 +3,33 @@
 %
 %Synopsis:
 %
-%  f=statusbar
+%  f=statusbar2015
 %     Get all status/progress bar handles.
 %
-%  f=statusbar(title)
+%  f=statusbar2015(title)
 %     Create a new status/progress bar. If title is an empty
 %     string, the default 'Progress ...' will be used.
 %
-%  f=statusbar(title,f)
+%  f=statusbar2015(title,f)
 %     Reset an existing status/progress bar or create a new
 %     if the handle became invalid.
 %
-%  f=statusbar(done,f)
+%  f=statusbar2015(done,f)
 %     For 0 < done < 1, update the progress bar and the elap-
 %     sed time. Estimate the remaining time until completion.
 %     On user abort, return an empty handle.
 %
-%  v=statusbar('on')
-%  v=statusbar('off')
+%  v=statusbar2015('on')
+%  v=statusbar2015('off')
 %     Set default visibility for new statusbars and return
 %     the previous setting.
 %
-%  v=statusbar('on',f)
-%  v=statusbar('off',f)
+%  v=statusbar2015('on',f)
+%  v=statusbar2015('off',f)
 %     Show or hide an existing statusbar and return the last
 %     visibility setting.
 %
-%  delete(statusbar)
+%  delete(statusbar2015)
 %     Remove all status/progress bars.
 %
 %  drawnow
@@ -37,10 +37,10 @@
 %
 %Example:
 %
-%     f=statusbar('Wait some seconds ...');
+%     f=statusbar2015('Wait some seconds ...');
 %     for p=0:0.01:1
 %        pause(0.2);
-%        if isempty(statusbar(p,f))
+%        if isempty(statusbar2015(p,f))
 %           break;
 %        end
 %     end
@@ -54,7 +54,7 @@
 %            Contributor
 %        (c) 2015, Mindaugas Baranauskas
 %
-function f=statusbar(varargin)
+function f=statusbar2015(varargin)
 
 if nargin > 0; p=varargin{1};
 else           p=lokaliz('Palaukite!');

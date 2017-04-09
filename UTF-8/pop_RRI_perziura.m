@@ -2220,10 +2220,10 @@ end;
 set(handles.figure1,'pointer','watch');
 
 % % statusbar
-f=statusbar(lokaliz('Palaukite!'));
-statusbar('on',f);
+f=statusbar2015(lokaliz('Palaukite!'));
+statusbar2015('on',f);
 p=0;
-statusbar(p,f);
+statusbar2015(p,f);
 
 try
     leisti_apversti=~isempty(get(gcf,'currentModifier'));
