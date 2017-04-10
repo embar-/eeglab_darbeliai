@@ -32,15 +32,17 @@ function kelias = Tikras_Kelias(kelias_tikrinimui)
 %
 %%
 %
-% (C) 2014, Mindaugas Baranauskas
+% (C) 2014,2017 Mindaugas Baranauskas
 %
 
 %%
 
 kelias_dabar=pwd;
+[wrn_b]=warning('off','backtrace');
 try
     cd(kelias_tikrinimui);
 catch
 end;
+warning(wrn_b);
 kelias=pwd;
 cd(kelias_dabar);
