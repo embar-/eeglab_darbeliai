@@ -233,26 +233,11 @@ try
     par_dat={ saranka.data };       par_dat=par_dat(ids);
     par_kom={ saranka.komentaras }; par_kom=par_kom(ids);
     if ~isempty(par_pav); yra_isimintu_rinkiniu=1 ; end;
-    meniu_nuostatos_ikelimo_grupe=handles.meniu_nuostatos_ikelti;
-    for i=1:length(par_pav);
-        if (mod(i,20) == 1) && (length(par_pav) > 20*ceil(i/20)) ;
-            meniu_nuostatos_ikelimo_grupe_kita=...
-                uimenu(meniu_nuostatos_ikelimo_grupe,'Label','- - >',...
-                'Separator', 'on');
-        end;
-        try uimenu(meniu_nuostatos_ikelimo_grupe,...
-            'Label', ['<html><font size="-2" color="#ADD8E6">' par_dat{i} '</font> ' ...
-            par_pav{i} ' <br><font size="-2" color="#ADD8E6">' par_kom{i} '</font></html>'],...
-            'Separator','off', 'Accelerator',fastif(i<10, num2str(i), ''),...
-            'Callback',{@nukreipimas_gui1, handles, 'drb_parinktys', 'ikelti',darbas,par_pav{i}});
-        catch err0;
-            Pranesk_apie_klaida(err0, 'pop_pervadinimas.m', '-', 0);
-        end;
-        if (mod(i,20) == 0) && (length(par_pav) > i);
-            meniu_nuostatos_ikelimo_grupe=meniu_nuostatos_ikelimo_grupe_kita;
-        end;
-    end;
-catch %err; Pranesk_apie_klaida(err, 'pop_QRS_i_EEG.m', '-', 0);
+    par_gr_=arrayfun(@(i) textscan(par_pav{i}, '%s', 'Delimiter', '|'), 1:length(par_pav));
+    par_gr=drb_meniu_parinktys_strukturos_vizija([],par_gr_,par_pav,par_dat,par_kom);
+    %assignin('base','par_gr',par_gr)
+    drb_meniu_parinktys_strukturos_kurimas([], [], handles, darbas, par_gr,handles.meniu_nuostatos_ikelti,1);
+catch %err; Pranesk_apie_klaida(err, darbas, '-', 0);
 end;
 %handles.meniu_nuostatos_irasyti = uimenu(handles.meniu_nuostatos,'Label','Įrašyti');
 %uimenu(handles.meniu_nuostatos_irasyti,'Label','Kaip paskutines','Callback',{@parinktis_irasyti,handles,'paskutinis',''});
@@ -267,6 +252,77 @@ uimenu(handles.meniu_nuostatos,'Accelerator','E', 'Label',lokaliz('Eksportuoti..
 uimenu(handles.meniu_nuostatos, 'Label', [lokaliz('Nuostatos') ' (kalba/language)'], ...
         'separator','on', 'callback', 'konfig; '  );
 
+function par_gr=drb_meniu_parinktys_strukturos_vizija(par_gr,par_gr_,par_pav,par_dat,par_kom)
+try
+    if isempty(par_gr)
+        par_gr.grupes=struct('vrd',{},'medis',{});
+        par_gr.pavieniai=struct('vrd',{},'pav',{},'dat',{},'kom',{});
+    end
+    for i=1:length(par_gr_)
+        L=length(par_gr_{i});
+        if L > 0
+            P=par_gr_{i}{1};
+            if L == 1
+                par_gr.pavieniai(end+1).vrd=P;
+                par_gr.pavieniai(end).pav=par_pav{i};
+                par_gr.pavieniai(end).dat=par_dat{i};
+                par_gr.pavieniai(end).kom=par_kom{i};
+            else
+                N=find(ismember({par_gr.grupes.vrd},{P}));
+                if isempty(N)
+                    par_gr.grupes(end+1).vrd=P;
+                    par_gr.grupes(end).medis=drb_meniu_parinktys_strukturos_vizija([],{par_gr_{i}(2:end)},par_pav(i),par_dat(i),par_kom(i));
+                else
+                    par_gr.grupes(N).medis=drb_meniu_parinktys_strukturos_vizija(par_gr.grupes(N).medis,{par_gr_{i}(2:end)},par_pav(i),par_dat(i),par_kom(i));
+                end;
+            end;
+        end;
+    end;
+catch
+end;
+
+function drb_meniu_parinktys_strukturos_kurimas(~, ~, handles, darbas, par_gr,meniu_nuostatos_ikelimo_grupe,lygis)
+    pavieniu_N=length(par_gr.pavieniai);
+    grupiu_N=length(par_gr.grupes);
+    if (pavieniu_N + grupiu_N) > 20
+        meniu_nuostatos_ikelimo_grupe_kita1=...
+                uimenu(meniu_nuostatos_ikelimo_grupe,'Label','- - >', 'Separator', 'on');
+        par_gr_kita.grupes=par_gr.grupes(21:end);
+        par_gr_kita.pavieniai=par_gr.pavieniai(max(1,21-grupiu_N):end);
+        par_gr.grupes(21:end)=[];
+        par_gr.pavieniai(max(1,21-grupiu_N):end)=[];
+        drb_meniu_parinktys_strukturos_kurimas([],[], handles, darbas, par_gr_kita,meniu_nuostatos_ikelimo_grupe_kita1,lygis+1);
+    end;
+    for i=1:length(par_gr.grupes);
+        if i == 1
+            Separator='on';
+        else
+            Separator='off';
+        end;
+        meniu_nuostatos_ikelimo_grupe_kita2=...
+                uimenu(meniu_nuostatos_ikelimo_grupe,'Label',par_gr.grupes(i).vrd, 'Separator', Separator);
+        drb_meniu_parinktys_strukturos_kurimas([],[], handles, darbas, par_gr.grupes(i).medis,meniu_nuostatos_ikelimo_grupe_kita2,lygis+1);
+    end;
+    for i=1:length(par_gr.pavieniai);
+        if i == 1
+            Separator='on';
+        else
+            Separator='off';
+        end;
+        if (lygis==1) && i<10
+            Accelerator=num2str(i);
+        else
+            Accelerator='';
+        end;
+        try uimenu(meniu_nuostatos_ikelimo_grupe,...
+            'Label', ['<html><font size="-2" color="#ADD8E6">' par_gr.pavieniai(i).dat '</font> ' ...
+            par_gr.pavieniai(i).vrd ' <br><font size="-2" color="#ADD8E6">' par_gr.pavieniai(i).kom '</font></html>'],...
+            'Separator',Separator, 'Accelerator',Accelerator,...
+            'Callback',{@nukreipimas_gui1, handles, 'drb_parinktys', 'ikelti',darbas,par_gr.pavieniai(i).pav});
+        catch err0;
+            Pranesk_apie_klaida(err0, darbas, '-', 0);
+        end;
+    end;
 
 function nukreipimas_gui1(hObject, eventdata, handles, varargin) %#ok
 pars='';
