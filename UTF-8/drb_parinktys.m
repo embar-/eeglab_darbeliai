@@ -314,7 +314,10 @@ try   save(konfig_rinkm,'Darbeliai');
 catch err; Pranesk_apie_klaida(err, darbas, konfig_rinkm, 0);
 end;
 
-setappdata(handles.figure1,'paskiausiai_ikeltas_rinkinys',vardas);
+if ~strcmpi(vardas,'paskutinis')
+    setappdata(handles.figure1,'paskiausiai_ikeltas_rinkinys',vardas);
+end;
+guidata(hObject,handles);
 
 % meniu
 drb_meniu(hObject, eventdata, handles, 'visas', darbas);
