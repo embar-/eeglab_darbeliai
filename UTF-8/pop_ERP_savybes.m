@@ -3712,11 +3712,42 @@ try
             end;
         end;
         if isempty(kor_lent_k); error('netinka'); end;
-        kor_lent_t='Spearman'; % 'Pearson' arba 'Spearman'
+        kor_lent_t='auto'; % 'Pearson' 'Spearman' 'auto'
         if strcmp(kor_lent_t,'Spearman')
             kor_lent_s='rho';
         else
             kor_lent_s='r';
+        end;
+        if strcmpi(kor_lent_t,'auto')
+            try
+                normalumas_d=NaN(1,length(kor_lent_h));
+                for kor_lent_d_i=1:size(kor_lent_d,2)
+                    normalumas_d(kor_lent_d_i)=swtest(kor_lent_d(:,kor_lent_d_i));
+                end;
+                if any(normalumas_d)
+                    disp(['Nenormalūs kintamieji:' sprintf('\n %s', kor_lent_h{find(normalumas_d)})] );
+%                 else
+%                     disp('Visi kintamieji normalūs.')
+                end;
+                
+                normalumas_a=NaN(1,length(kor_lent_k));
+                for kor_lent_a_i=1:size(kor_lent_a,2)
+                    normalumas_a(kor_lent_d_i)=swtest(kor_lent_a(:,kor_lent_a_i));
+                end;
+                if any(normalumas_a)
+                    disp(['Nenormalūs kanalai:' sprintf(' %s', kor_lent_k{find(normalumas_a)})] );
+%                 else
+%                     disp('Visi kanalai normalūs.')
+                end;
+                if any(normalumas_d) || any(normalumas_a)
+                    kor_lent_t='Spearman';
+                else
+                    kor_lent_t='Pearson';
+                end;
+            catch err
+                kor_lent_t='Pearson';
+                %Pranesk_apie_klaida(err,'Koreliacijų lentelė','',0)
+            end;
         end;
         [kor_r,kor_p]=corr(kor_lent_d,kor_lent_a,'rows','pairwise','type',kor_lent_t); 
         kor_r_=num2cell(kor_r);
@@ -3741,6 +3772,7 @@ try
         setappdata(kor_lent_f,'kor_lent_i',kor_lent_i);
         setappdata(kor_lent_f,'kor_lent_t',kor_lent_t);
         setappdata(kor_lent_f,'kor_lent_s',kor_lent_s);
+        setappdata(kor_lent_f,'kor_lent_l',ribos);
         setappdata(kor_lent_f,'kor_lent_r',kor_r);
         setappdata(kor_lent_f,'kor_lent_p',kor_p);
         uitable(kor_lent_f,'data',kor_r_,'ColumnName', kor_lent_k, 'RowName', kor_lent_h, ...
@@ -3794,6 +3826,7 @@ Ar_galima_vykdyti(hObject, eventdata, handles);
 function sklaidos_diagrama(hObject, eventdata, handles)
 ei = eventdata.Indices(1);
 si = eventdata.Indices(2);
+kor_lent_l=getappdata(gcf,'kor_lent_l');
 kor_lent_t=getappdata(gcf,'kor_lent_t');
 kor_lent_s=getappdata(gcf,'kor_lent_s');
 kor_lent_r=getappdata(gcf,'kor_lent_r');
@@ -3803,8 +3836,13 @@ kor_lent_d=getappdata(gcf,'kor_lent_d'); d=kor_lent_d(:,ei);
 kor_lent_a=getappdata(gcf,'kor_lent_a'); a=kor_lent_a(:,si);
 kor_lent_k=get(gcbo,'ColumnName');       s=kor_lent_k{si};
 kor_lent_h=get(gcbo,'RowName');          e=kor_lent_h{ei};
-l=get(gcbo,'Data');
-f=figure('NumberTitle','off','Name',[ e ' - ' s ]); % 'Menubar','none','Toolbar','none',
+%l=get(gcbo,'Data'); % html formatuoti duomenys
+if length(kor_lent_l) == 2;
+    ribos=[' [' num2str(kor_lent_l(1)) ' ' num2str(kor_lent_l(2)) ']' ];
+else
+    ribos='';
+end;
+f=figure('NumberTitle','off','Name',[ e ' - ' s ribos]); % 'Menubar','none','Toolbar','none',
 figure(f);
 plot(d,a,'o'); lsline;
 hold('on');
@@ -4016,10 +4054,12 @@ catch err;
     legenda(hObject, eventdata, handles);
 end;
 set(handles.togglebutton1,'Visible','off');
-set(h2,'Visible','on');
-drawnow;
+
 spausdinti=getappdata(handles.axes1, 'spausdinti');
-if ~isempty(spausdinti);
+if isempty(spausdinti);
+    set(h2,'Visible','on');
+    drawnow;
+else
     pavad=fullfile(get(handles.edit2,'String'), getappdata(handles.axes1, 'pavadinimas'));
     for i=1:length(spausdinti);
         try print(h2,pavad,spausdinti{i}); catch err; Pranesk_apie_klaida(err,'','',0) ;end;
@@ -4089,6 +4129,9 @@ function spausdinimas_pagal(hObject, eventdata, handles, raktas)
 % raktas - 'kanalai' | 'tiriamieji'
 Rinkmenu_id=get(handles.listbox1,'Value');
 if isempty(Rinkmenu_id); return; end;
+set(handles.listbox1,'Enable','off');
+kor_lent_h=getappdata(handles.figure1, 'kor_lent_h');
+setappdata(handles.figure1, 'kor_lent_h',[]);
 % pradinis_rodymas=get(handles.checkbox57, 'Value');
 set(handles.checkbox57, 'Value', 0);
 switch raktas;
@@ -4101,10 +4144,12 @@ switch raktas;
         pushbutton14_Callback(hObject, eventdata, handles);
         kanalai=get(handles.pushbutton14, 'UserData');
         rakto_nariai=kanalai;
+        reikia_visu=length(rakto_nariai) > 1;
     otherwise
         pradinis_vidurkinimas=get(handles.checkbox58, 'Value');
         % visuminį paveikslą spausdinsime dukart: mastelio parinkimui ir pg. parinktis
         set(handles.checkbox58, 'Value',0);
+        reikia_visu=length(Rinkmenu_id)>1;
         % rakto_nariai apibrėžti toliau
 end;
 paveikslu_sar={'BMP' 'JPEG' 'PNG' 'TIFF' 'EPS' 'EPS mono' 'PDF' 'PS' 'PS mono' 'SVG' };
@@ -4114,16 +4159,21 @@ if ~isempty(paveikslu_id);
     paveikslu_spausd={'-dbmp' '-djpeg' '-dpng' '-dtiff' '-depsc' '-deps' '-dpdf' '-dpsc' '-dps' '-dsvg'};
     paveikslai=paveikslu_spausd(paveikslu_id);
     set(handles.checkbox57, 'Value', 1);
-    if strcmpi(raktas,'kanalai');
-        spausdinimo_zingsnelis(hObject, eventdata, handles, kanalai, paveikslai, lokaliz('all'), [], []);
-        xlim=get(handles.axes1, 'XLim');
-        ylim=get(handles.axes1, 'YLim');
+    if reikia_visu
+        if strcmpi(raktas,'kanalai');
+            spausdinimo_zingsnelis(hObject, eventdata, handles, kanalai, paveikslai, lokaliz('all'), [], []);
+            xlim=get(handles.axes1, 'XLim');
+            ylim=get(handles.axes1, 'YLim');
+        else
+            ERP_perziura(hObject, eventdata, handles);
+            xlim=get(handles.axes1, 'XLim');
+            ylim=get(handles.axes1, 'YLim');
+            set(handles.checkbox58, 'Value',pradinis_vidurkinimas);
+            spausdinimo_zingsnelis(hObject, eventdata, handles, [], paveikslai, lokaliz('all'), xlim, ylim);
+        end;
     else
-        ERP_perziura(hObject, eventdata, handles);
-        xlim=get(handles.axes1, 'XLim');
-        ylim=get(handles.axes1, 'YLim');
-        set(handles.checkbox58, 'Value',pradinis_vidurkinimas);
-        spausdinimo_zingsnelis(hObject, eventdata, handles, [], paveikslai, lokaliz('all'), xlim, ylim);
+        xlim=[];
+        ylim=[];
     end;
     switch raktas
         case {'tiriamieji'}
@@ -4153,6 +4203,8 @@ switch raktas;
         set(handles.listbox1,'Value',Rinkmenu_id);
 end;
 ERP_perziura(hObject, eventdata, handles);
+set(handles.listbox1,'Enable','on');
+setappdata(handles.figure1, 'kor_lent_h',kor_lent_h);
 
 
 function spausdinimo_zingsnelis(hObject, eventdata, handles, kanalai, paveikslai, pavadinimas, xlim, ylim)
