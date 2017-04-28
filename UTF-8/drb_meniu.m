@@ -386,6 +386,9 @@ uimenu(handles.meniu_veiksmai,'Label',lokaliz('Vykdyti nesaugant ir palyginti'),
     'Accelerator','W','Callback',{@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_vykdymas_su_perziura', darbas, 1});
 end;
 
+uimenu(handles.meniu_veiksmai, 'separator','on', 'Label', lokaliz('Invertuoti irasu pasirinkima'), ...
+    'callback', {@drb_meniu_veiksmai_pasirinkimas_invertuotas, handles});
+
 uimenu(handles.meniu_veiksmai, 'Accelerator','O', 'separator','on', 'Label', lokaliz('Vizualizuoti duomenis'), ...
     'callback', {@nukreipimas_i_kita_darba, handles, darbas, 'eeg_ikelk_i_eeglab', ...
     'reikia_EEGLAB', 0, 'siulomas_kiekis', 1, 'command', 'pop_eeg_perziura(EEG(end), ''zymeti'', 0, ''tik_prasmingas'', 1);' });
@@ -447,6 +450,11 @@ uimenu(handles.meniu_veiksmai_os, 'Accelerator','U', 'Label', lokaliz('Atverti s
     'callback', {@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_atverti_aplanka_os', darbas, 'isvestis'}  );
 
 
+function drb_meniu_veiksmai_pasirinkimas_invertuotas(hObject, eventdata, handles)
+visi=get(handles.listbox1,'String');
+seni=get(handles.listbox1,'Value');
+nauji=setdiff(1:length(visi),seni);
+set(handles.listbox1,'Value',nauji);
 
 function drb_meniu_veiksmai_fltr_rod(hObject, eventdata, handles, darbas, fltr_tarp, varargin) %#ok
 fltr_rod = get(handles.edit_failu_filtras1, 'String');
