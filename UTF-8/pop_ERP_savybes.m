@@ -3712,30 +3712,48 @@ try
             end;
         end;
         if isempty(kor_lent_k); error('netinka'); end;
+        disp(' ');
+        disp(kor_lent_v);
         kor_lent_t='auto'; % 'Pearson' 'Spearman' 'auto'
-        if strcmp(kor_lent_t,'Spearman')
-            kor_lent_s='rho';
-        else
-            kor_lent_s='r';
-        end;
         if strcmpi(kor_lent_t,'auto')
             try
                 normalumas_d=NaN(1,length(kor_lent_h));
+                p=normalumas_d;
                 for kor_lent_d_i=1:size(kor_lent_d,2)
-                    normalumas_d(kor_lent_d_i)=swtest(kor_lent_d(:,kor_lent_d_i));
+                    [normalumas_d(kor_lent_d_i),p(kor_lent_d_i)]=swtest(kor_lent_d(:,kor_lent_d_i));
                 end;
                 if any(normalumas_d)
-                    disp(['Nenormalūs kintamieji:' sprintf('\n %s', kor_lent_h{find(normalumas_d)})] );
+                    disp('Nenormalūs kintamieji:');
+                    for i=find(normalumas_d);
+                        fprintf('\n %s (p = %f)', kor_lent_h{i}, p(i));
+                    end;
 %                 else
 %                     disp('Visi kintamieji normalūs.')
                 end;
                 
                 normalumas_a=NaN(1,length(kor_lent_k));
+                p=normalumas_a;
                 for kor_lent_a_i=1:size(kor_lent_a,2)
-                    normalumas_a(kor_lent_d_i)=swtest(kor_lent_a(:,kor_lent_a_i));
+                    [normalumas_a(kor_lent_a_i),p(kor_lent_a_i)]=swtest(kor_lent_a(:,kor_lent_a_i));
                 end;
                 if any(normalumas_a)
-                    disp(['Nenormalūs kanalai:' sprintf(' %s', kor_lent_k{find(normalumas_a)})] );
+                    disp('Nenormalūs kanalai:');
+                    for i=find(normalumas_a);
+                        kor_lent_a_i_d=kor_lent_a(:,i)';
+                        iqr1=iqr(kor_lent_a_i_d);
+                        isskirciu_koef=3; % 3 – išskirtis; 1.5 – sąlyginė išskirtis;
+                        isk_rib1=prctile(kor_lent_a_i_d,25)-isskirciu_koef*iqr1;
+                        isk_rib2=prctile(kor_lent_a_i_d,75)+isskirciu_koef*iqr1;
+                        find(kor_lent_a_i_d < isk_rib1);
+                        find(kor_lent_a_i_d > isk_rib2);
+                        isskirtys_i=[find(kor_lent_a_i_d < isk_rib1) find(kor_lent_a_i_d > isk_rib2)];
+                        if isempty(isskirtys_i);
+                            isskirtys='';
+                        else
+                            isskirtys=['; žr.: ' sprintf(' %s', kor_lent_i{isskirtys_i})];
+                        end;
+                        fprintf('%6s (p = %f)%s\n', kor_lent_k{i}, p(i), isskirtys) ;
+                    end;
 %                 else
 %                     disp('Visi kanalai normalūs.')
                 end;
@@ -3749,10 +3767,13 @@ try
                 %Pranesk_apie_klaida(err,'Koreliacijų lentelė','',0)
             end;
         end;
+        if strcmp(kor_lent_t,'Spearman')
+            kor_lent_s='rho';
+        else
+            kor_lent_s='r';
+        end;
         [kor_r,kor_p]=corr(kor_lent_d,kor_lent_a,'rows','pairwise','type',kor_lent_t); 
         kor_r_=num2cell(kor_r);
-        disp(' ');
-        disp(kor_lent_v);
         %disp(' '); disp([ 'r' kor_lent_k ; kor_lent_h' kor_r_]);
         disp(' ');
         for i=1:length(kor_lent_h);
@@ -3824,6 +3845,7 @@ drawnow;
 Ar_galima_vykdyti(hObject, eventdata, handles);
 
 function sklaidos_diagrama(hObject, eventdata, handles)
+try
 ei = eventdata.Indices(1);
 si = eventdata.Indices(2);
 kor_lent_l=getappdata(gcf,'kor_lent_l');
@@ -3844,13 +3866,18 @@ else
 end;
 f=figure('NumberTitle','off','Name',[ e ' - ' s ribos]); % 'Menubar','none','Toolbar','none',
 figure(f);
-plot(d,a,'o'); lsline;
+plot(d,a,'Marker','o','Color','black','LineStyle','none');
+l=lsline;
+set(l,'Linewidth',1);
 hold('on');
 text(d+diff(get(gca,'xlim'))/100,a+diff(get(gca,'ylim'))/50,kor_lent_i);
 xlabel(e, 'Interpreter', 'none');
 ylabel(s, 'Interpreter', 'none');
+xlim([floor(min(d)) floor(max(d)+1)])
 pvd=[kor_lent_t ' ' kor_lent_s ' = ' num2str(kor_lent_r(ei,si)) ', p = ' num2str(kor_lent_p(ei,si)) ];
 title(pvd);
+catch %err; Pranesk_apie_klaida(err,'','',0);
+end
 
 % --- Executes on button press in checkbox60.
 function checkbox60_Callback(hObject, eventdata, handles)
