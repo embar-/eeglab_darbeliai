@@ -62,8 +62,8 @@ end;
 
 if isempty(RINKMENOS); return; end;
 
-f=statusbar(lokaliz('Palaukite!'));
-statusbar('off',f);
+f=statusbar2015(lokaliz('Palaukite!'));
+statusbar2015('off',f);
 
 for i=1:length(RINKMENOS);
     try
@@ -94,9 +94,9 @@ for i=1:length(RINKMENOS);
     tok=toc(tici);
     p=i/length(RINKMENOS);
     if and(tok>1,p<0.5);
-        statusbar('on',f);
+        statusbar2015('on',f);
     end;
-    if isempty(statusbar(p,f));
+    if isempty(statusbar2015(p,f));
         break;
     end;
 

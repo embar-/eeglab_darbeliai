@@ -139,8 +139,7 @@ if EEG1.trials > 1 && EEG2.trials > 1;
         for uniq_ep_i=find([EEG1.event.laikas_ms]>=EEG1.times(EEG1.pnts+1)); 
             EEG1.event(uniq_ep_i).laikas_ms=EEG1.event(uniq_ep_i).laikas_ms+s1*floor((EEG1.event(uniq_ep_i).laikas_ms/EEG1.times(EEG1.pnts+1)));
         end;
-        for i=1:EEG1.trials-1; li=i*(EEG1.pnts+1); 
-            %for ei=find([EEG1.event.laikas_ms]>=EEG1.times(li)); EEG1.event(ei).laikas_ms=[EEG1.event(ei).laikas_ms]+s1; end;
+        for i=1:EEG1.trials-1; li=i*(EEG1.pnts+1);
             EEG1.times(li:end)=EEG1.times(li:end)+s1;
             EEG1.times_nan(li:end)=EEG1.times_nan(li:end)+s1;
         end;
@@ -148,8 +147,6 @@ if EEG1.trials > 1 && EEG2.trials > 1;
         EEG1.times=EEG1.times+s2;
         for uniq_ep_i=find(ismember({EEG1.event.type},{'boundary'})==0); EEG1.event(uniq_ep_i).laikas_ms=[EEG1.event(uniq_ep_i).laikas_ms]+s2; end;
     end;
-    EEG1.xmin=0.001*min(EEG1.times); if isempty(EEG1.xmin); EEG1.xmin=NaN; end;
-    EEG1.xmax=0.001*max(EEG1.times); if isempty(EEG1.xmax); EEG1.xmax=0; end;
 end;
 
 % epochuotų ir neepochuotų duomenų susiejimas
@@ -180,93 +177,117 @@ if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
                 end;
             end;
         else
-            EEG1_kopija=EEG1;
-            if EEG2.trials > 1;
-                [plotis1,pli]=max([trukme1,trukme2]);
-                if pli == 1; plotis1=plotis1+1/EEG1.srate; else plotis1=plotis1+1/EEG2.srate; end;
-                epochu_poslinkiai=sk/1000/plotis1;
-                sveikos_epochos_=arrayfun(@(i) epochu_poslinkiai(i) == round(epochu_poslinkiai(i)), 1:length(epochu_poslinkiai));
-                sveikos_epochos=find(sveikos_epochos_);
-                for nsvei=find(~sveikos_epochos_);
-                    skrtm1=sk(sveikos_epochos(find(sveikos_epochos>nsvei,1,'first')));
+            epochos1=[EEG1.event.epoch]; [~,epochos1_ivykiu_id_nuo]=unique(epochos1); epochos1_ivykiu_id_iki=[epochos1_ivykiu_id_nuo(2:end)-1 ; length(EEG1.event)];
+            epochos1_sutampanciu=epochos1(urid1_sutampa_i); %[EEG1.event(urid1_sutampa_i).epoch]; % sutampančių įvykių epochos
+            [epochos1_sutampa_prelim,uniq_ep1_i]=unique(epochos1_sutampanciu); % uniq_ep_i – įvykių indeksai, ties kuriais prasideda unikalios epochos
+            if EEG2.trials > 1
+                epochos2=[EEG2.event.epoch]; [~,epochos2_ivykiu_id_nuo]=unique(epochos2); epochos2_ivykiu_id_iki=[epochos2_ivykiu_id_nuo(2:end)-1 ; length(EEG2.event)];
+                plotis1=gauk_erp_ploti(EEG1,EEG2);
+                ivykiu_poslinkiai=sk/1000/plotis1;
+                ivykiu_poslinkiai_per_sveikas_epochas_=arrayfun(@(i) ivykiu_poslinkiai(i) == round(ivykiu_poslinkiai(i)), 1:length(ivykiu_poslinkiai));
+                ivykiu_poslinkiai_per_sveikas_epochas=find(ivykiu_poslinkiai_per_sveikas_epochas_);
+                for nsvei=find(~ivykiu_poslinkiai_per_sveikas_epochas_);
+                    skrtm1=sk(ivykiu_poslinkiai_per_sveikas_epochas(find(ivykiu_poslinkiai_per_sveikas_epochas>nsvei,1,'first')));
                     if isempty(skrtm1);
                         warning('Kažkuris vienas įvykis gali nušokti!');
                     else
                         sk(nsvei)=skrtm1;
                     end;
                 end;
-            end;
-            epochos=[EEG1.event.epoch];
-            epochos_sutampanciu=epochos(urid1_sutampa_i); %[EEG1.event(urid1_sutampa_i).epoch]; % sutampančių įvykių epochos
-            [~,uniq_ep_i]=unique(epochos_sutampanciu); % įvykių indeksai, ties kuriais prasideda unikalios epochos
-            urev=[];
-            for ii=1:length(uniq_ep_i);
-                i_nuo=uniq_ep_i(ii); % EEG1 ivykio, NUO kurio darbuojamės, indeksas sutampančių įvykių sąraše
-                if ii == length(uniq_ep_i);
-                    i_iki=uniq_ep_i(end); % EEG1 ivykio, IKI kurio darbuojamės, indeksas sutampančių įvykių sąraše
-                else i_iki=uniq_ep_i(ii+1)-1;
-                end;
-                %disp(['[suti: ' num2str(i_nuo) ':' num2str(i_iki) '; urev:' num2str(urid1(urid1_sutampa_i(i_nuo))) ':' num2str(urid1(urid1_sutampa_i(i_iki))) ']']);
-                if EEG2.trials > 1; eposl=sveikos_epochos_(i_nuo); else eposl=1; end;
-                ti1=(epochos_sutampanciu(i_nuo)-eposl)*(EEG1.pnts+1)+1;
-                ti2=(epochos_sutampanciu(i_iki))*(EEG1.pnts+1);
-                %disp(['[xtšk: ' num2str(ti1) ':' num2str(ti2) ']']);
-                EEG1.times(    ti1:ti2)=EEG1.times    (ti1:ti2) + sk(i_nuo);
-                EEG1.times_nan(ti1:ti2)=EEG1.times_nan(ti1:ti2) + sk(i_nuo);
-                
-                for eii=unique(epochos_sutampanciu(i_nuo:i_iki));
-                    % pereiname prie visų EEG1 įvykių
-                    vis=find(epochos == eii);
-                    %disp(['[vis: ' num2str(min(vis)) ':' num2str(max(vis)) ']']);
-                    kartojasi=find(ismember(urid1(vis), urev));
-                    if any(kartojasi);
-                        besikartojantys=urid1(vis(kartojasi));
-                        if EEG2.trials > 1;
-                            vi1 =find(ismember(urid1,besikartojantys(1)));
-                            vi1i=ismember(vi1,vis(kartojasi(1)));
-                            vi2 =find(ismember(urid2,besikartojantys(1)));
-                            vi2 =vi2(find(vi2>=vi1(vi1i),1,'first'));
-                        else
-                            vi2=find(ismember(urid2,besikartojantys(1)),1,'first');
-                        end;
-                        t2=EEG2.event(vi2).laikas_ms;
-                        t1=EEG1.event(vis(kartojasi(1))).laikas_ms;
-                        sk_=t2-t1;
-                        if EEG2.trials > 1;
-                            i_nuo_n=find(sk>sk_,1,'first');
-                            if ~isempty(i_nuo_n);
-                                sk(i_nuo)=sk(i_nuo_n);
-                            end;
-                        end;
+                [~,~,urid_sutampa_epXep_i_]=intersect(epochos1_sutampa_prelim,epochos1(urid1_sutampa_i(ivykiu_poslinkiai_per_sveikas_epochas)));
+                [epochos2_sutampa,urid2_sutampa_epXep_i_]=unique(epochos2(urid2_sutampa_i(urid_sutampa_epXep_i_)));
+                epochos1_sutampa=epochos1(urid1_sutampa_i(urid_sutampa_epXep_i_(urid2_sutampa_epXep_i_)));
+                epochos1_nesutampa=setdiff(1:EEG1.trials,epochos1_sutampa);
+                epochos2_nesutampa=setdiff(1:EEG2.trials,epochos2_sutampa);
+                epochu_n=length(epochos1_sutampa)+length(epochos1_nesutampa)+length(epochos2_nesutampa);
+                epochos_sutampa=epochos1_sutampa+epochos2_sutampa-[1:length(epochos1_sutampa)];
+                epoch_i1=1; epoch_i2=1;
+                for epoch_i=1:epochu_n
+                    t1i1=(epoch_i1-1)*(EEG1.pnts+1)+1; t1i2=epoch_i1*(EEG1.pnts+1);
+                    t2i1=(epoch_i2-1)*(EEG2.pnts+1)+1; t2i2=epoch_i2*(EEG2.pnts+1);
+                    if ismember(epoch_i,epochos_sutampa)
+                        EEG1.times(t1i1:t1i2)=((epoch_i-1)*plotis1 + [ ([ 1:EEG1.pnts EEG1.pnts+0.5]-1.5) / EEG1.srate ] ) * 1000 ;
+                        EEG2.times(t2i1:t2i2)=((epoch_i-1)*plotis1 + [ ([ 1:EEG2.pnts EEG2.pnts+0.5]-1.5) / EEG2.srate ] ) * 1000 ;
+                        epoch_i1=epoch_i1+1;
+                        epoch_i2=epoch_i2+1;
                     else
-                        sk_=sk(i_nuo);
+                        if epoch_i1 > EEG1.trials
+                            imti=2;
+                        elseif epoch_i2 > EEG2.trials
+                            imti=1;
+                        else
+                            min1=min(urid1(epochos1_ivykiu_id_nuo(epoch_i1):epochos1_ivykiu_id_iki(epoch_i1)));
+                            min2=min(urid2(epochos2_ivykiu_id_nuo(epoch_i2):epochos2_ivykiu_id_iki(epoch_i2)));
+                            [~,imti]=min([min1 min2]);
+                        end;
+                        if imti == 1
+                            EEG1.times(t1i1:t1i2)=((epoch_i-1)*plotis1 + [ ([ 1:EEG1.pnts EEG1.pnts+0.5]-1.5) / EEG1.srate ]) * 1000 ;
+                            epoch_i1=epoch_i1+1;
+                        else
+                            EEG2.times(t2i1:t2i2)=((epoch_i-1)*plotis1 + [ ([ 1:EEG2.pnts EEG2.pnts+0.5]-1.5) / EEG2.srate ]) * 1000 ;
+                            epoch_i2=epoch_i2+1;
+                        end;
                     end;
-                    for vi=vis;
-                        %disp([ num2str(eii) 'e ' num2str(vi) 'i [' num2str(EEG1.event(vi).urevent) '/' num2str(urid2(urid2_sutampa_i(i_nuo))) 'u]: ' EEG1.event(vi).type ' ' num2str(EEG1.event(vi).laikas_ms/1000) ' + ' num2str(sk_/1000) ' -> ' num2str((EEG1.event(vi).laikas_ms + sk_)/1000)]);
-                        EEG1.event(vi).laikas_ms=EEG1.event(vi).laikas_ms + sk_;
-                    end;
-                    %disp('-');
-                    urev=[urev EEG1.event(vis).urevent];
                 end;
-                %disp('--');
-                
-            end;
-            ivTipai={EEG1.event.type};
-            if EEG2.trials <= 1;
-                EEG1.event(ismember(ivTipai,{'boundary'}))=[];
-            end;
-            if ~isempty(EEG1.times(diff(EEG1.times) < 0)) || ~isempty(EEG2.times(diff(EEG2.times) < 0));
-                wrn=warning('off','backtrace');
-                warning('Epochuoti įrašai nedera tarpusavyje!');
-                warning(wrn.state, 'backtrace');
-                EEG1=EEG1_kopija; 
-                clear EEG1_kopija;
+                EEG1.times_nan=EEG1.times + 0*EEG1.times_nan;
+                EEG2.times_nan=EEG2.times + 0*EEG2.times_nan;
+                for ei=1:length(EEG1.event)
+                    ei_lat=min(max(1,round(EEG1.event(ei).latency)),length(EEG1.times));
+                    EEG1.event(ei).laikas_ms = EEG1.times(ei_lat) + ((ei_lat - EEG1.event(ei).latency) / EEG1.srate ) * 1000;
+                    EEG1.event(ei).laikas_s = EEG1.event(ei).laikas_ms/1000;
+                end;
+                for ei=1:length(EEG2.event)
+                    ei_lat=min(max(1,round(EEG2.event(ei).latency)),length(EEG2.times));
+                    EEG2.event(ei).laikas_ms = EEG2.times(ei_lat) + ((ei_lat - EEG2.event(ei).latency) / EEG2.srate ) * 1000;
+                    EEG2.event(ei).laikas_s = EEG2.event(ei).laikas_ms/1000;
+                end;
+            else
+                urev=[];
+                for ii=1:length(uniq_ep1_i);
+                    i_nuo=uniq_ep1_i(ii); % EEG1 ivykio, NUO kurio darbuojamės, indeksas sutampančių įvykių sąraše
+                    if ii == length(uniq_ep1_i);
+                        i_iki=uniq_ep1_i(end); % EEG1 ivykio, IKI kurio darbuojamės, indeksas sutampančių įvykių sąraše
+                    else
+                        i_iki=uniq_ep1_i(ii+1)-1;
+                    end;
+                    ti1=(epochos1_sutampanciu(i_nuo)-1)*(EEG1.pnts+1)+1;
+                    ti2=(epochos1_sutampanciu(i_iki))*(EEG1.pnts+1);
+                    %disp(['[xtšk: ' num2str(ti1) ':' num2str(ti2) ']']);
+                    EEG1.times(    ti1:ti2)=EEG1.times    (ti1:ti2) + sk(i_nuo);
+                    EEG1.times_nan(ti1:ti2)=EEG1.times_nan(ti1:ti2) + sk(i_nuo);
+                    for eii=unique(epochos1_sutampanciu(i_nuo:i_iki));
+                        % pereiname prie visų EEG1 įvykių
+                        vis=find(epochos1 == eii);
+                        %disp(['[vis: ' num2str(min(vis)) ':' num2str(max(vis)) ']']);
+                        kartojasi=find(ismember(urid1(vis), urev));
+                        if any(kartojasi);
+                            besikartojantys=urid1(vis(kartojasi));
+                            vi2=find(ismember(urid2,besikartojantys(1)),1,'first');
+                            t2=EEG2.event(vi2).laikas_ms;
+                            t1=EEG1.event(vis(kartojasi(1))).laikas_ms;
+                            sk_=t2-t1;
+                        else
+                            sk_=sk(i_nuo);
+                        end;
+                        for vi=vis;
+                            %disp([ num2str(eii) 'e ' num2str(vi) 'i [' num2str(EEG1.event(vi).urevent) '/' num2str(urid2(urid2_sutampa_i(i_nuo))) 'u]: ' EEG1.event(vi).type ' ' num2str(EEG1.event(vi).laikas_ms/1000) ' + ' num2str(sk_/1000) ' -> ' num2str((EEG1.event(vi).laikas_ms + sk_)/1000)]);
+                            EEG1.event(vi).laikas_ms=EEG1.event(vi).laikas_ms + sk_;
+                        end
+                        %disp('-');
+                        urev=[urev EEG1.event(vis).urevent];
+                    end
+                    %disp('--');
+                end;
+                EEG1.event(ismember({EEG1.event.type},{'boundary'}))=[];
             end;
         end;
-        EEG1.xmin=0.001*min(EEG1.times); if isempty(EEG1.xmin); EEG1.xmin=NaN; end;
-        EEG1.xmax=0.001*max(EEG1.times); if isempty(EEG1.xmax); EEG1.xmax=0; end;
     end;
 end;
+
+EEG1.xmin=0.001*min(EEG1.times); if isempty(EEG1.xmin); EEG1.xmin=NaN; end;
+EEG1.xmax=0.001*max(EEG1.times); if isempty(EEG1.xmax); EEG1.xmax=0; end;
+EEG2.xmin=0.001*min(EEG2.times); if isempty(EEG2.xmin); EEG2.xmin=NaN; end;
+EEG2.xmax=0.001*max(EEG2.times); if isempty(EEG2.xmax); EEG2.xmax=0; end;
 
 if ~isempty(getappdata(a,'zymeti'));
     %assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
@@ -807,6 +828,7 @@ end;
 for i=ivRodykles;
     EEG.event(i).laikas_ms=ivLaikai(i);
     EEG.event(i).type     =ivTipai{i};
+    EEG.event(i).latency  =EEG.event(i).latency + floor(EEG.event(i).latency/(EEG.pnts));
 end;
 if dim3 <= 1 ;
     if ~reikia_ribozenkliu;
@@ -1173,6 +1195,9 @@ try
                 asisR='y'; asisN=2;
             end;
         end;
+    end;
+    if ~isempty(findobj(act,'Type','uicontrol','Style','listbox','-depth',0));
+        return
     end;
 catch % Paprastai klaida būna, jei kompiuteris lagina
     return;

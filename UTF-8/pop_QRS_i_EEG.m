@@ -1258,10 +1258,8 @@ for i=1:Pasirinktu_failu_N;
         
         %set(handles.uipanel6,'Title', ['Duomenų apdorojimas: ' num2str(0 + DarboNr + str2num(get(handles.text_atlikta_darbu,'String'))) ' darb., ' num2str(i) '/' num2str(Pasirinktu_failu_N) ' įr.']);
         
-        
     else
-        msgbox(sprintf([lokaliz('Time:') ' %s\n' lokaliz('Path:') ' %s\n' lokaliz('File:') ' %s'], ...
-            t, pwd, Rinkmena),err.identifier,'error');
+        Pranesk_apie_klaida(lokaliz('Empty dataset'), lokaliz('Darbas'), fullfile(KELIAS_, Rinkmena_));
     end;
     
     

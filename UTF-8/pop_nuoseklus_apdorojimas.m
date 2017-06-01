@@ -2151,9 +2151,11 @@ for i=1:Pasirinktu_failu_N;
 
                     if get(handles.checkbox_epoch_b,'Value') == 1 ;
                         %EEG = pop_rmbase( EEG, 1000 * get(handles.edit_epoch_b,'UserData'));
-						EEG = pop_rmbase( EEG, 1000 * str2num(get(handles.edit_epoch_b,'String')));
+						[EEG, LASTCOM] = pop_rmbase( EEG, 1000 * str2num(get(handles.edit_epoch_b,'String')));
+                        EEG = eegh(LASTCOM, EEG);
                         EEG = eeg_checkset( EEG );
                     end;
+
                 catch err;
                     Pranesk_apie_klaida(err, lokaliz('Epoching'), NaujaRinkmena);
                     DarboPorcijaAtlikta=1;
@@ -2224,13 +2226,10 @@ for i=1:Pasirinktu_failu_N;
                 disp('+');
             end;
         end;
-
+        if PERZIURA; pop_eeg_perziura(EEG0, EEG, 'title', [Rinkmena_ ' + ' NaujaRinkmena], 'zymeti', 0); end;
     else
-        msgbox(sprintf([lokaliz('Time:') ' %s\n' lokaliz('Path:') ' %s\n' lokaliz('File:') ' %s'], ...
-               t, pwd, Rinkmena),lokaliz('Empty dataset'),'error');
+        Pranesk_apie_klaida(lokaliz('Empty dataset'), lokaliz('Darbas'), fullfile(KELIAS_, Rinkmena_));
     end;
-
-    if PERZIURA; pop_eeg_perziura(EEG0, EEG, 'title', [Rinkmena_ ' + ' NaujaRinkmena], 'zymeti', 0); end;
 
     % Isvalyti atminti
     STUDY = []; CURRENTSTUDY = 0; ALLEEG = []; EEG=[]; CURRENTSET=[];

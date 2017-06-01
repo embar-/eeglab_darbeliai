@@ -1772,7 +1772,11 @@ try
     Ivykiai_=unique(iv_tipai(~ismember(iv_tipai,'boundary')));
     if ~isempty(Ivykiai_);
         ivyk_QRSi=find(ismember(Ivykiai_,{'R' 'r' 'QRS'}));
-        if ~isempty(ivyk_QRSi); ivyk_QRSi=ivyk_QRSi(1); else ivyk_QRSi=1; end;
+        if ~isempty(ivyk_QRSi);
+            ivyk_QRSi=ivyk_QRSi(1);
+        else
+            ivyk_QRSi=1;
+        end;
         ivyk_QRSi=listdlg(...
             'ListString',Ivykiai_,...
             'SelectionMode','single',...
@@ -1780,8 +1784,13 @@ try
             'PromptString',lokaliz('Select QRS event:'),...
             'OKString',lokaliz('OK'),...
             'CancelString',lokaliz('Cancel'));
-        ivyk_QRS=Ivykiai_{ivyk_QRSi};
-        ivyk_kit=setdiff(Ivykiai_,ivyk_QRS);
+        if isempty(ivyk_QRSi);
+            ivyk_QRS='';
+            ivyk_kit=Ivykiai_;
+        else
+            ivyk_QRS=Ivykiai_{ivyk_QRSi};
+            ivyk_kit=setdiff(Ivykiai_,ivyk_QRS);
+        end;
         if ~isempty(ivyk_kit);
             ivyk_kiti=listdlg(...
             'ListString',ivyk_kit,...
@@ -2220,10 +2229,10 @@ end;
 set(handles.figure1,'pointer','watch');
 
 % % statusbar
-f=statusbar(lokaliz('Palaukite!'));
-statusbar('on',f);
+f=statusbar2015(lokaliz('Palaukite!'));
+statusbar2015('on',f);
 p=0;
-statusbar(p,f);
+statusbar2015(p,f);
 
 try
     leisti_apversti=~isempty(get(gcf,'currentModifier'));

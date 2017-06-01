@@ -490,8 +490,8 @@ sablonai={{[get(handles.edit4,'String')] [get(handles.edit10,'String')] ...
           {'%s%s%s%s%s%s%s' '%i.set'            '%1'  '%2'  '%3'  '%4' }} ;
 
 tici=tic;
-f=statusbar(lokaliz('Searching template...'));
-statusbar('off',f);
+f=statusbar2015(lokaliz('Searching template...'));
+statusbar2015('off',f);
 
 for sablono_i=1:length(sablonai);
     sablonas=sablonai{sablono_i};
@@ -518,9 +518,9 @@ for sablono_i=1:length(sablonai);
     tok=toc(tici);
     p=sablono_i/length(sablonai);
     if and(tok>1,p<0.5);
-        statusbar('on',f);
+        statusbar2015('on',f);
     end;
-    if isempty(statusbar(p,f));
+    if isempty(statusbar2015(p,f));
         break;
     end;
     
@@ -1368,8 +1368,8 @@ STUDY = []; CURRENTSTUDY = 0;
 
 % Isimink laika  - veliau bus galimybe paziureti, kiek laiko uztruko
 pradzios_laikas=tic;
-f=statusbar(get(handles.pushbutton1,'String'));
-statusbar('off',f);
+f=statusbar2015(get(handles.pushbutton1,'String'));
+statusbar2015('off',f);
 
 for i=1:Pasirinktu_failu_N;
     Rinkmena=Pasirinkti_failu_pavadinimai{i};
@@ -1379,9 +1379,9 @@ for i=1:Pasirinktu_failu_N;
     tok=toc(pradzios_laikas);
     p=(i-1)/Pasirinktu_failu_N;
     if and(tok>1,p<0.5);
-        statusbar('on',f);
+        statusbar2015('on',f);
     end;
-    if isempty(statusbar(p,f));
+    if isempty(statusbar2015(p,f));
         break;
     end;
     fprintf('\n === %s %d/%d (%.2f%%) ===\n%s\n', lokaliz('Opened file'), i, Pasirinktu_failu_N, i/Pasirinktu_failu_N*100, RinkmenaAtverimuiSuKeliu);
