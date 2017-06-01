@@ -1,14 +1,14 @@
-Darbeliai v2017.04.01.1
+Darbeliai v2017.06.01.1
 
-LT: 
-(pop_)eegplot_w atnaujinimas ištaisant suderinamumą
-su MATLAB R2015 ir senesnėmis versijomis.
-Pakatalogių numeracija bent dviženkliais skaičiais.
-Išsamesni pranešimai apie klaidas, be to, juos 
-patogiau kopijuoti. Kiti smulkūs pakeitimai.
+LT:
+Per veiksmų meniu galima invertuoti pasirinktus įrašus.
+Parinkčių pavadinime įrašius |, parinktys grupuojamos į katalogus.
+EEG peržiūros patobulinimai.
+Kiti smulkūs pakeitimai.
 
 EN:
-Update of (pop_)eegplot_w to fix compatibility
-with MATLAB R2015 and older versions.
-Numeration of subdirectories with at least 2 digits.
-More verbose messages about errors. Other minor changes.
+New option in actions meniu for inverting of selected records.
+Presets can by grouped into folders by
+entering | symbol in preset name.
+Native version of EEG viewer improvements.
+Other minor changes.

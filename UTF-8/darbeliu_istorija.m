@@ -1,6 +1,12 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2017.06.01.1
+% + Per veiksmų meniu galima invertuoti pasirinktus įrašus.
+% + Parinkčių pavadinime įrašius |, parinktys grupuojamos į katalogus.
+% ~ EEG peržiūros patobulinimai.
+% ~ Kiti smulkūs pakeitimai.
+%
 % v2017.04.01.1
 % ~ (pop_)eegplot_w atnaujinimas ištaisant suderinamumą
 %   su MATLAB R2015 ir senesnėmis versijomis.
@@ -14,7 +20,6 @@
 % v2017.02.13.1
 % ~ eegplot_w veiks greičiau.
 % + eegplot_w įvykių žymėjime trauks prie karpymo vietų.
-%
 %
 % v2017.02.03.1
 % + eegplot_w ir pop_eegplot_w leidžia atmetinėti kanalus/komponentes,
