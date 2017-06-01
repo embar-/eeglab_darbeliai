@@ -280,68 +280,6 @@ if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
                 end;
                 EEG1.event(ismember({EEG1.event.type},{'boundary'}))=[];
             end;
-            % Epochuoti su epochuotais
-                if EEG2.trials > 1
-                    sutampantys_laiko_indeksai_e=repmat((epochos1_sutampa-1)'*(EEG1.pnts+1),1,EEG1.pnts+1);
-                    sutampantys_laiko_indeksai_t=repmat([1:EEG1.pnts+1],length(epochos1_sutampa),1);
-                    sutampantys_laiko_indeksai=sutampantys_laiko_indeksai_e(:)+sutampantys_laiko_indeksai_t(:);
-                    nesutampantys_laiko_indeksai=setdiff(1:length(EEG1.times),sutampantys_laiko_indeksai);
-                    laiko_luziai_paslinkti=0;
-                    laiko_luzis=find(diff(EEG1.times)<0, 1);
-                    %for laiko_luzis=laiko_luziai;
-                    while ~isempty(laiko_luzis)
-                        disp(' ')
-                        assignin('base','EEG1',EEG1); assignin('base','EEG2',EEG2);
-                        EEG1_nusoke_nuo=laiko_luzis+1
-                        if ismember(EEG1_nusoke_nuo,nesutampantys_laiko_indeksai)
-                            EEG1_nusoke_nuo_=sutampantys_laiko_indeksai(find(sutampantys_laiko_indeksai >= EEG1_nusoke_nuo, 1))
-                            if isempty(EEG1_nusoke_nuo_)
-                                warning(sprintf('%d tuščias %d, %f ms', ismember(EEG1_nusoke_nuo,nesutampantys_laiko_indeksai), EEG1_nusoke_nuo, EEG1.times(EEG1_nusoke_nuo)/1000))
-                                sutampantys_laiko_indeksai_pask=sutampantys_laiko_indeksai(end)
-                                epochos1_sutampa(end)
-                                
-                                EEG1_nusoke_nuo_=EEG1_nusoke_nuo+EEG1.pnts
-                            end;
-                        else
-                            EEG1_nusoke_nuo_=EEG1_nusoke_nuo;
-                        end
-                        if ~isempty(EEG1_nusoke_nuo_)
-                            EEG2_nusoke_nuo=find( EEG2.times >= EEG1.times(EEG1_nusoke_nuo_), 1);
-                            laiko_suolis=EEG1.times(laiko_luzis)-EEG1.times(laiko_luzis+1)+500/EEG1.srate
-                            if laiko_suolis <= 0
-                                warning(sprintf('%d neteigiamas %d, %f ms', ismember(EEG1_nusoke_nuo,nesutampantys_laiko_indeksai), EEG1_nusoke_nuo, EEG1.times(EEG1_nusoke_nuo)/1000))
-                                laiko_suolis=plotis1*1000
-                            end;
-                            [EEG1.times(EEG1_nusoke_nuo)/1000 EEG2.times(EEG2_nusoke_nuo)/1000]
-                            EEG1.times(EEG1_nusoke_nuo:end) = EEG1.times(EEG1_nusoke_nuo:end)+laiko_suolis;
-                            EEG1.times_nan(EEG1_nusoke_nuo:end) = EEG1.times_nan(EEG1_nusoke_nuo:end)+laiko_suolis;
-                            EEG1.times_bnd(EEG1_nusoke_nuo:end) = EEG1.times_bnd(EEG1_nusoke_nuo:end)+laiko_suolis;
-                            EEG2.times(EEG2_nusoke_nuo:end) = EEG2.times(EEG2_nusoke_nuo:end)+laiko_suolis;
-                            EEG2.times_nan(EEG2_nusoke_nuo:end) = EEG2.times_nan(EEG2_nusoke_nuo:end)+laiko_suolis;
-                            EEG2.times_bnd(EEG2_nusoke_nuo:end) = EEG2.times_bnd(EEG2_nusoke_nuo:end)+laiko_suolis;
-                            laiko_luziai_paslinkti=1;
-                        else
-                            warning(sprintf('%d ciklas: %d, %f ms', ismember(EEG1_nusoke_nuo,nesutampantys_laiko_indeksai), EEG1_nusoke_nuo, EEG1.times(EEG1_nusoke_nuo)/1000))
-                            break
-                        end;
-                        %naujas_skirtumas1=EEG1.times(EEG1_nusoke_nuo)-EEG1.times(EEG1_nusoke_nuo-1)
-                        d=diff(EEG1.times);
-                        laiko_luzis=find(diff(EEG1.times)<0, 1);
-                        d(laiko_luzis);
-                    end;
-                    if laiko_luziai_paslinkti;
-                        for ei=1:length(EEG1.event)
-                            ei_lat=min(max(1,round(EEG1.event(ei).latency)),length(EEG1.times));
-                            EEG1.event(ei).laikas_ms = EEG1.times(ei_lat) + ((ei_lat - EEG1.event(ei).latency) / EEG1.srate ) * 1000;
-                            EEG1.event(ei).laikas_s = EEG1.event(ei).laikas_ms/1000;
-                        end;
-                        for ei=1:length(EEG2.event)
-                            ei_lat=min(max(1,round(EEG2.event(ei).latency)),length(EEG2.times));
-                            EEG2.event(ei).laikas_ms = EEG2.times(ei_lat) + ((ei_lat - EEG2.event(ei).latency) / EEG2.srate ) * 1000;
-                            EEG2.event(ei).laikas_s = EEG2.event(ei).laikas_ms/1000;
-                        end;
-                    end;
-                end;
         end;
     end;
 end;
