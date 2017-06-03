@@ -1,7 +1,7 @@
 %
 % Pakeitimai:
 % ------------------------
-% v2017.06.01.1
+% v2017.06.03.1
 % + Per veiksmų meniu galima invertuoti pasirinktus įrašus.
 % + Parinkčių pavadinime įrašius |, parinktys grupuojamos į katalogus.
 % ~ EEG peržiūros patobulinimai.
