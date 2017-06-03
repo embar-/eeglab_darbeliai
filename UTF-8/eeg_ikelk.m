@@ -33,10 +33,12 @@ end;
         fprintf('\n%s\n%s...\n', Kelias_ir_rinkmena, lokaliz('ne EEGLAB rinkmena'));
         try % Importuoti per BIOSIG
             fprintf('%s %s...\n', lokaliz('Trying again with'), 'BIOSIG');
-            diary_bsn0=get(0,'Diary'); diary_zrn0=get(0,'DiaryFile');
+            diary_bsn0=get(0,'Diary');
+            if strcmp(diary_bsn0,'on'); diary_zrn0=get(0,'DiaryFile'); diary('off'); end;
             diary_zrn2=tempname; diary(diary_zrn2); diary('on');
             EEG=pop_biosig(Kelias_ir_rinkmena);
-            diary(diary_zrn0); diary(diary_bsn0); 
+            diary('off');
+            if strcmp(diary_bsn0,'on'); diary(diary_zrn0); diary(diary_bsn0); end;
             if isempty(EEG.data); 
                 error(lokaliz('Empty dataset'));
             end;

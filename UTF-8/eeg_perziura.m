@@ -155,7 +155,25 @@ if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
     urid1={EEG1.event.urevent}; urid1(arrayfun(@(i) isempty(urid1{i}), 1:length(urid1)))={NaN}; urid1=cell2mat(urid1);
     urid2={EEG2.event.urevent}; urid2(arrayfun(@(i) isempty(urid2{i}), 1:length(urid2)))={NaN}; urid2=cell2mat(urid2);
     urid1_sutampa_i=find(ismember(urid1,urid2));
-    [~,urid2_sutampa_i]=ismember(urid1(urid1_sutampa_i),urid2);
+    if isequal(sort(urid2),unique(urid2))
+        [~,urid2_sutampa_i]=ismember(urid1(urid1_sutampa_i),urid2);
+    else
+        % tapi gali būti lyginant epochuotus su epochuotais
+        urid2_sutampa_i=nan(size(urid1_sutampa_i));
+        for i=1:length(urid1_sutampa_i)
+            ui=find(ismember(urid2,urid1(urid1_sutampa_i(i))));
+            if length(ui) == 1
+                urid2_sutampa_i(i)=ui;
+            else
+                ui_nesikartoja=setdiff(ui,urid2_sutampa_i);
+                if ~isempty(ui_nesikartoja);
+                    urid2_sutampa_i(i)=ui_nesikartoja(1);
+                else
+                    urid2_sutampa_i(i)=ui(end);
+                end;
+            end;
+        end;
+    end;
     urid_sutampa_tipas1={EEG1.event(urid1_sutampa_i).type};
     urid_sutampa_tipas2={EEG2.event(urid2_sutampa_i).type};
     sutampa_ivykiai=0;
@@ -177,9 +195,11 @@ if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
                 end;
             end;
         else
-            epochos1=[EEG1.event.epoch]; [~,epochos1_ivykiu_id_nuo]=unique(epochos1); epochos1_ivykiu_id_iki=[epochos1_ivykiu_id_nuo(2:end)-1 ; length(EEG1.event)];
+            epochos1=[EEG1.event.epoch];
+            [~,epochos1_ivykiu_id_nuo]=unique(epochos1);
+            epochos1_ivykiu_id_iki=[epochos1_ivykiu_id_nuo(2:end)-1 ; length(EEG1.event)];
             epochos1_sutampanciu=epochos1(urid1_sutampa_i); %[EEG1.event(urid1_sutampa_i).epoch]; % sutampančių įvykių epochos
-            [epochos1_sutampa_prelim,uniq_ep1_i]=unique(epochos1_sutampanciu); % uniq_ep_i – įvykių indeksai, ties kuriais prasideda unikalios epochos
+            [~,uniq_ep1_i]=unique(epochos1_sutampanciu); % uniq_ep_i – įvykių indeksai, ties kuriais prasideda unikalios epochos
             if EEG2.trials > 1
                 epochos2=[EEG2.event.epoch]; [~,epochos2_ivykiu_id_nuo]=unique(epochos2); epochos2_ivykiu_id_iki=[epochos2_ivykiu_id_nuo(2:end)-1 ; length(EEG2.event)];
                 plotis1=gauk_erp_ploti(EEG1,EEG2);
@@ -194,7 +214,9 @@ if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
                         sk(nsvei)=skrtm1;
                     end;
                 end;
-                [~,~,urid_sutampa_epXep_i_]=intersect(epochos1_sutampa_prelim,epochos1(urid1_sutampa_i(ivykiu_poslinkiai_per_sveikas_epochas)));
+                urid1_sutampa_i_sveiki=urid1_sutampa_i(ivykiu_poslinkiai_per_sveikas_epochas);
+                epochos_gal_sutampa=unique(epochos1(urid1_sutampa_i_sveiki));
+                [~,~,urid_sutampa_epXep_i_]=intersect(epochos_gal_sutampa,epochos1(urid1_sutampa_i));
                 [epochos2_sutampa,urid2_sutampa_epXep_i_]=unique(epochos2(urid2_sutampa_i(urid_sutampa_epXep_i_)));
                 epochos1_sutampa=epochos1(urid1_sutampa_i(urid_sutampa_epXep_i_(urid2_sutampa_epXep_i_)));
                 epochos1_nesutampa=setdiff(1:EEG1.trials,epochos1_sutampa);
