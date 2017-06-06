@@ -1,14 +1,11 @@
 Darbeliai v2017.06.03.1
 
 LT:
-Per veiksmų meniu galima invertuoti pasirinktus įrašus.
-Parinkčių pavadinime įrašius |, parinktys grupuojamos į katalogus.
-EEG peržiūros patobulinimai.
-Kiti smulkūs pakeitimai.
+Galimybė invertuoti įrašų pasirinkimą.
+Naujų parinkčių pavadinimo viduryje 
+įrašius |, jos grupuosimos į aplankus.
 
 EN:
-New option in actions meniu for inverting of selected records.
+It is possible to invert selection of records.
 Presets can by grouped into folders by
 entering | symbol in preset name.
-Native version of EEG viewer improvements.
-Other minor changes.
