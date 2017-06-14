@@ -258,7 +258,9 @@ Rinkmenos=get(handles.listbox1,'String');
 Rinkmena=Rinkmenos{id};
 [EEG]=eeg_ikelk(Kelias, Rinkmena);
 if isempty(EEG); return; end;
-eeg_perziura('perkurti', EEG, [], 'f', handles.figure1, 'a', handles.axes1);
+y_koef=getappdata(handles.axes1,'y_koef');
+plotis=diff(get(handles.axes1, 'XLim'));
+eeg_perziura('perkurti', EEG, [], 'f', handles.figure1, 'a', handles.axes1, 'y_koef', y_koef, 'plotis', plotis);
 set(handles.figure1,'Name',Rinkmena);
 
 function listbox1B_Callback(~, ~, handles)
@@ -279,7 +281,9 @@ else
     set(handles.listbox2,'Value',id2(1));
 end;
 
-eeg_perziura('perkurti', EEG, EEG2, 'f', handles.figure1, 'a', handles.axes1);
+y_koef=getappdata(handles.axes1,'y_koef');
+plotis=diff(get(handles.axes1, 'XLim'));
+eeg_perziura('perkurti', EEG, EEG2, 'f', handles.figure1, 'a', handles.axes1, 'y_koef', y_koef, 'plotis', plotis);
 if isempty(Rinkmena2)
     set(handles.figure1,'Name',Rinkmena);
 else
@@ -306,7 +310,9 @@ else
     [EEG]=eeg_ikelk(Kelias, Rinkmena);
 end;
 
-eeg_perziura('perkurti', EEG, EEG2, 'f', handles.figure1, 'a', handles.axes1);
+y_koef=getappdata(handles.axes1,'y_koef');
+plotis=diff(get(handles.axes1, 'XLim'));
+eeg_perziura('perkurti', EEG, EEG2, 'f', handles.figure1, 'a', handles.axes1, 'y_koef', y_koef, 'plotis', plotis);
 set(handles.figure1,'Name', [Rinkmena ' + ' Rinkmena2]);
 
 function pushbutton_v1_Callback(hObject, eventdata, handles)

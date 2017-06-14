@@ -528,6 +528,12 @@ end;
 setappdata(a,'EEG1',EEG1);
 setappdata(a,'EEG2',EEG2);
 
+try if g(1).y_koef(1) > 0
+        setappdata(a,'y_koef',g(1).y_koef(1));
+    end;
+catch;
+end;
+
 %Plotis
 leisti_tarpus=0;
 if     (EEG1.trials > 1) && isempty(EEG2.times);
@@ -540,10 +546,17 @@ elseif (EEG1.trials > 1) && (EEG2.trials > 1);
     else [plotis1,i]=max([(EEG1.xmax_org - EEG1.xmin_org),(EEG2.xmax_org - EEG2.xmin_org)]);
         if i==1; plotis1=plotis1+1/EEG1.srate; else plotis1=plotis1+1/EEG2.srate; end;
     end;
-else plotis1=1;
-     leisti_tarpus=1;
+else
+    plotis1=1;
+    leisti_tarpus=1;
 end;
-plotis2=ceil(5/plotis1);
+try
+    if g(1).plotis(1) > 0; plotis=g(1).plotis(1); end;
+catch;
+    plotis=5;
+end;
+
+plotis2=ceil(plotis/plotis1);
 setappdata(a,'zingsnis',1/plotis2);
 plotis=plotis1*plotis2;
 
@@ -948,7 +961,11 @@ if or(cx ~= LX(1), plotis ~= (max(LX)-min(LX))) ;
     LX=[cx cx+plotis];
     set(parentAx, 'xLim', LX);
 end;
-try setappdata(parentAx,'y_koef',g(1).y_koef(1)); catch; end;
+try if g(1).y_koef(1) > 0
+        setappdata(parentAx,'y_koef',g(1).y_koef(1));
+    end;
+catch;
+end;
 
 zymekliu_spalvosA={ [0 0.9 0] [0.8 0 0.8]}; % {'g' 'm'}
 zymekliu_spalvosB={ 'b' [1 0.8 0]}; % {'g' 'm'}
