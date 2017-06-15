@@ -444,7 +444,7 @@ x2=x2(:); if size(x2,1) == 1; x2=x2'; end;
 if ~any(~n); return; end;
 x1_=unique(x1);
 [~,x1ir]=ismember(x1,x1_);
-if isempty(which('knnsearch'));
+if ~isempty(which('knnsearch'));
     %[idx,D]=knnsearch(x2,x1);
     [idx_,D_]=knnsearch(x2,x1_); % jei dubliuojasi x1, šis variantas bus greitesnis
 else
