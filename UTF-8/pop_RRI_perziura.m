@@ -1466,19 +1466,27 @@ try
     if median(diff(Laikai(:))) < 100;
         Laikai=Laikai*1000;
     end;
+    try EKG_laikai=handles.EKG_laikai;
+        pradziu_skirtumas=EKG_laikai(1)*1000   - Laikai(1);
+        pabaigu_skirtumas=EKG_laikai(end)*1000 - Laikai(end);
+        if (pradziu_skirtumas) > 0 && ...
+           (pradziu_skirtumas < pabaigu_skirtumas) && ...
+           (pradziu_skirtumas  + 5000 > pabaigu_skirtumas)
+           Laikai=Laikai+(2*EKG_laikai(1)-EKG_laikai(2))*1000; % t.y. Laikai=Laikai + EKG_laikai(1) - 1/sampling_rate
+        end;
+    catch %err; Pranesk_apie_klaida(err,'','',0)
+    end
     set(handles.axes_rri,'UserData',Laikai);
     handles.zmkl_lks=[]; handles.zmkl_pvd={};
-    pushbutton_atstatyti_Callback(hObject, eventdata, handles);
-    guidata(handles.figure1, handles);
 catch err;
     Pranesk_apie_klaida(err,mfilename,rinkmena,1,1);
     %warning(err.message);
     %w=warndlg(err.message);
     %uiwait(w);
     set(handles.axes_rri,'UserData',SeniLaikai);
-    pushbutton_atstatyti_Callback(hObject, eventdata, handles);
-    guidata(handles.figure1, handles);
 end;
+pushbutton_atstatyti_Callback(hObject, eventdata, handles);
+guidata(handles.figure1, handles);
 susildyk(hObject, eventdata, handles);
 drawnow;
 
