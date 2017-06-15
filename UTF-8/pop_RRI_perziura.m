@@ -306,7 +306,6 @@ set(handles.pushbutton_atstatyti,'Backgroundcolor','remove');
 set(handles.pushbutton_atnaujinti,'Backgroundcolor','remove');
 set(handles.checkbox_rri,'Value',1); 
 set(handles.Nejungti,'State','on');
-set(handles.anotacijos, 'State','on');
 handles.hlink_OK = linkprop([findobj(handles.figure1,'Tag','Perduoti')' handles.pushbutton_OK handles.OK],{'Visible' 'Enable'});
 handles.hlink_EKG = linkprop([handles.checkbox_ekg findobj(handles.figure1,'Tag','ekg_rodyti')' findobj(handles.figure1,'Tag','Aptikti_EKG_QRS')' ],{'Enable'});
 handles.fig_brush=brush(handles.figure1);
@@ -319,6 +318,11 @@ handles.pradines_fig=findobj(handles.figure1);
 setappdata(handles.figure1,'istorija',struct('RRI','','Laikai','','Nejungti',''));
 setappdata(handles.figure1,'istorijosNr',0);
 set([handles.figure1 handles.axes_rri], 'Interruptible','off');
+
+set(handles.anotacijos, 'State','off'); 
+% Tuščia anotacija reikalinga dar prieš grafikus
+handles.anot=RRI_perziuros_anotacija('prideti',handles.figure1,handles.axes_rri); % sukurti
+anotacijos_OffCallback(hObject, eventdata, handles);
 
 %% Grafikai
 handles=pirmieji_grafikai(hObject, eventdata, handles);
@@ -335,7 +339,6 @@ set(handles.pushbutton_OK,'Visible', fastif(get(handles.figure1,'userdata'),'on'
 drawnow;
 
 %% Anotacijų paruošimas
-handles.anot=RRI_perziuros_anotacija('prideti',handles.figure1,handles.axes_rri); % sukurti
 if strcmp(get(handles.aktyvusis, 'State'),'off');
     aktyvusis_OffCallback(hObject, eventdata, handles); % paslepti
 end;
@@ -650,6 +653,10 @@ switch button
         pushbutton_OK_Callback(hObject, eventdata, handles);
     otherwise
         disp(lokaliz('Canceled'));
+        modifiers = get(gcf,'currentModifier');
+        if ismember('control',modifiers) && ismember('shift',modifiers)
+            susildyk(hObject, eventdata, handles);
+        end;
 end;
 
 %%
@@ -992,7 +999,6 @@ end;
 set(handles.pushbutton_atnaujinti,'UserData',1);
 try delete(findobj(handles.figure1,'Tag','naujasR')); catch; end;
 susildyk(hObject, eventdata, handles);
-istorijos_busena(hObject, eventdata, handles);
 figure1_ResizeFcn(hObject, eventdata, handles);
 handles.t=tic;
 guidata(handles.figure1, handles);
@@ -2522,7 +2528,7 @@ function anotacijos_OffCallback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 setappdata(handles.axes_rri,'MouseInMainAxesFnc', {'eval' ...
-    'set(hFig,''Pointer'',''arrow''); RRI_perziuros_anotacija; '});
+    'set(hFig,''Pointer'',''arrow''); '});
 setappdata(handles.figure1,'anotRod',0);
 RRI_perziuros_anotacija('slepti');
 guidata(handles.figure1, handles);
@@ -2625,7 +2631,7 @@ set(findobj(handles.figure1,'Tag','istorija_tolyn'),'Enable',...
     'on','off'));
 refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
-drawnow;
+%drawnow;
 
 
 function istorija_vykdoma(hObject, eventdata, handles)
