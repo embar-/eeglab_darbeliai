@@ -104,7 +104,8 @@ if and(nargin, ischar(p))
       if p
          set(f,'Name',p);
       end
-      set(f,'CloseRequestFcn','set(gcbo,''UserData'',-abs(get(gcbo,''UserData'')));','UserData',[curtime curtime 0]);
+      set(f,'CloseRequestFcn', @close_do_not_close ,... 
+            'UserData',[curtime curtime 0]);
    end
    drawnow;
 elseif and((nargin == 2), ~isempty(check(f))) % update
@@ -221,4 +222,17 @@ text(198,20,'0:00:00',a);
 %
 function modify(f,t,p,v)
 set(findobj(f,'Tag',t),p,v);
+
+function close_do_not_close(~,~,~)
+modifiers=get(gcbo,'currentModifier');
+if ismember('control',modifiers) && ismember('shift',modifiers) ;
+    delete(gcbo);
+else
+    set(gcbo,'UserData',-abs(get(gcbo,'UserData')));
+    s=warning('off','backtrace');
+    warning(['Parent function will know about your inquiry to terminate operation. ' ...
+        'If you really need to close this dialog, hold both Ctrl and Shift keys. ' ...
+        'Note: prematurely closing statusbar may lead to unexpected errors in parent function.']);
+    warning(s);
+end;
 
