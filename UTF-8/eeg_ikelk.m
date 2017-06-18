@@ -22,7 +22,7 @@ end;
         if ~iscellstr(ivykiai);
             for i=1:length(ivykiai);
                 try
-                    EEG.event(i).type=str2num(EEG.event(i).type);
+                    EEG.event(i).type=num2str(EEG.event(i).type);
                 catch
                 end
             end;
