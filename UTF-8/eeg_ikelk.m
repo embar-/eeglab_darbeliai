@@ -16,6 +16,14 @@ if isfield(g,'tikrinti_papildinius');
 end;
 
     [Kelias_,Rinkmena_]=rinkmenos_tikslinimas(Kelias,Rinkmena);
+    if exist(fullfile(Kelias_,Rinkmena_),'file') ~= 2
+        [wrn_b]=warning('off','backtrace');
+        warning(sprintf('%s\n%s\n%s', [lokaliz('Rinkmena nerasta') ':'], ...
+           fullfile(Kelias,Rinkmena), fullfile(Kelias_,Rinkmena_)));
+        EEG=[]; % Belieka tuščią grąžinti...
+        warning(wrn_b);
+        return;
+    end;
     try % Importuoti kaip EEGLAB *.set
         EEG = pop_loadset('filename',Rinkmena_,'filepath',Kelias_);
         ivykiai={EEG.event.type};
@@ -31,9 +39,11 @@ end;
         Kelias_ir_rinkmena=fullfile(Kelias_, Rinkmena_);
         % Pranesk_apie_klaida(lasterr, mfilename, Kelias_ir_rinkmena, 0);
         fprintf('\n%s\n%s...\n', Kelias_ir_rinkmena, lokaliz('ne EEGLAB rinkmena'));
+        
+        
+        fprintf('%s %s...\n', lokaliz('Trying again with'), 'BIOSIG');
+        diary_bsn0=get(0,'Diary');
         try % Importuoti per BIOSIG
-            fprintf('%s %s...\n', lokaliz('Trying again with'), 'BIOSIG');
-            diary_bsn0=get(0,'Diary');
             if strcmp(diary_bsn0,'on'); diary_zrn0=get(0,'DiaryFile'); diary('off'); end;
             diary_zrn2=tempname; diary(diary_zrn2); diary('on');
             EEG=pop_biosig(Kelias_ir_rinkmena);
@@ -53,7 +63,7 @@ end;
             if ~ischar(diary_prn); diary_prn=''; end;
             fclose(diary_fid);
             delete(diary_zrn2);
-            if (exist(diary_zrn0,'file') == 2) && (~strcmp(diary_zrn0,'diary')); 
+            if exist('diary_zrn0','var') && (exist(diary_zrn0,'file') == 2) && (~strcmp(diary_zrn0,'diary')); 
                 diary(diary_zrn0);
             end;
             diary(diary_bsn0);
@@ -104,23 +114,18 @@ end;
                     if tikrinti_papildinius
                         if isempty(PAPILDINIAI_JAU_PATIKRINTI)
                             PAPILDINIAI_JAU_PATIKRINTI=1;
-                            wrnmsg=[lokaliz('Ikelti nepavyko') drb_uzklausa('papildiniai')];
-                            warning(sprintf('%s\n',wrnmsg{:}));
-                            warndlg(wrnmsg,lokaliz('Duomenu ikelimas'));
-                        else
-                            warning(lokaliz('Ikelti nepavyko'));
+                            trukstami_papildniai=[drb_uzklausa('papildiniai')];
+                            if ~isempty(trukstami_papildniai)
+                                wrnmsg=[lokaliz('Ikelti nepavyko') trukstami_papildniai];
+                                warning(sprintf('%s\n',wrnmsg{:}));
+                                warndlg(wrnmsg,lokaliz('Duomenu ikelimas'));
+                            end;
                         end;
                     end;
-                    try % Bent tuščią EEGLAB EEG struktūrą grąžinti
-                        [~, EEG] = pop_newset([],[],[]);
-                    catch %; Pranesk_apie_klaida(lasterr, mfilename, Kelias_ir_rinkmena, 0);
-                        % Belieka tuščią grąžinti...
-                        EEG=[];
-                    end;
+                    warning(lokaliz('Ikelti nepavyko'));
+                    EEG=[]; % Belieka tuščią grąžinti...
                 end;
             end;
             warning(wrn_b);
         end;
     end;
-    
-    
