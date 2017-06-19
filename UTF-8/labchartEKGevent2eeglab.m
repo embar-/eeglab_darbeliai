@@ -197,9 +197,12 @@ elseif and ( g.Bendri.LabChart_dydis == g.Unikalus_kodai.dydis, g.Bendri.EEG_dyd
     else
         error('Vidinė klaida');
     end;
-% Kitu atveju nenagrinekim (teoriskai galetu keli kodai kartotis; ju kiekis gali buti vienodas arba ne)
 else
-    error('Nepavyko');
+% Kitu atveju, nėra garantijų, kad pavyks, bet bandyti galima
+% (teoriskai galetu keli kodai kartotis; ju kiekis gali buti vienodas arba ne)
+    if g.Bendri.EEG_dydis < 2 || g.Bendri.LabChart_dydis < 2
+        error('Nepavyko');
+    end;
 end;
 
 g.Netvarkingi_poslinkiai = true ; 
@@ -282,29 +285,35 @@ if g.Netvarkingi_poslinkiai ;
     if g.Tarpai_tarp_ivykiu.daugmaz_sutampa ;
         % ir jei EGG ivykius atitinkantys Labchart ivykiai tikrai
         % nesikartoja (yra unikalus)
-        if g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(:,2) == unique(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(:,2)) ;
-            g.Tarpai_tarp_ivykiu.EEG_ir_Labchart_palyginimas = [ g.Tarpai_tarp_ivykiu.LabChart(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(1:length(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart)-1,2),1) g.Tarpai_tarp_ivykiu.EEG(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(1:length(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart)-1,1),1) ] ;
-            % ans = [ g.Bendri.LabChart(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(1:length(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart)-1,2),2) g.Bendri.EEG(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(1:length(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart)-1,1),2) ] ;
-            g.Poslinkis.kiekvieno = bsxfun(@minus,g.Bendri.LabChart(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(:,2),2),g.Bendri.EEG(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(:,1),2)) ;
-            g.Poslinkis.vidutinis = mean(g.Poslinkis.kiekvieno) ;
-            g.Poslinkis.paklaidos = g.Poslinkis.kiekvieno - g.Poslinkis.vidutinis ;
-            % Del visa pikto patikrinti galutini varianta:
-            g.Poslinkis.max= max(g.Poslinkis.paklaidos) ;
-            g.Poslinkis.min= min(g.Poslinkis.paklaidos) ;
-            str=['Maksimalus nukrypimas buvo (ms):   ' num2str(g.Poslinkis.max) ] ; disp(str);
-            str=['Minimalus  nukrypimas buvo (ms):   ' num2str(g.Poslinkis.min) ] ; disp(str);
-            str=['Nustatyta leidziama paklaida (ms): ' num2str(g.Leidziama_paklaida) ] ; disp(str);
-            if and(g.Poslinkis.max < g.Leidziama_paklaida , g.Poslinkis.min > 0 - g.Leidziama_paklaida ) ;
-                str='Valio! Algoritmas rado sutampancius ivykius, nors ivykiu skaicius skiriasi!' ; disp(str);
-            else
-                str='Vidine klaida: dar reikia tobulinti algoritma, ieskanti atitinkanciu ivykiu net tada, kai ivykiu kiekis skiriasi. Bandykite padidinti didziausia leidziama paklaida.' ; 
-                error(str);
-                %return
-            end ;
-        else
-            error('Nepavyko');            
-            %return ;
+        N_atitinkanciu     =length(       g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(:,2));
+        N_atitinkanciu_unik=length(unique(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(:,2)));
+        if N_atitinkanciu ~= N_atitinkanciu_unik ;
+            dviprasmiski_labch=find(diff(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(:,2))==0);
+            nedviprasmidki_idx=setdiff(1:N_atitinkanciu, unique([dviprasmiski_labch; dviprasmiski_labch + 1]));
+            g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart=g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(nedviprasmidki_idx,:);
         end;
+        N_atitinkanciu_=length(       g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(:,2));
+        if N_atitinkanciu_ < 2;
+            error('Per mažai sutampančių įvykių');
+        end;
+        g.Tarpai_tarp_ivykiu.EEG_ir_Labchart_palyginimas = [ g.Tarpai_tarp_ivykiu.LabChart(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(1:length(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart)-1,2),1) g.Tarpai_tarp_ivykiu.EEG(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(1:length(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart)-1,1),1) ] ;
+        % ans = [ g.Bendri.LabChart(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(1:length(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart)-1,2),2) g.Bendri.EEG(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(1:length(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart)-1,1),2) ] ;
+        g.Poslinkis.kiekvieno = bsxfun(@minus,g.Bendri.LabChart(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(:,2),2),g.Bendri.EEG(g.Tarpai_tarp_ivykiu.EEG_tinka_LabChart(:,1),2)) ;
+        g.Poslinkis.vidutinis = mean(g.Poslinkis.kiekvieno) ;
+        g.Poslinkis.paklaidos = g.Poslinkis.kiekvieno - g.Poslinkis.vidutinis ;
+        % Del visa pikto patikrinti galutini varianta:
+        g.Poslinkis.max= max(g.Poslinkis.paklaidos) ;
+        g.Poslinkis.min= min(g.Poslinkis.paklaidos) ;
+        str=['Maksimalus nukrypimas buvo (ms):   ' num2str(g.Poslinkis.max) ] ; disp(str);
+        str=['Minimalus  nukrypimas buvo (ms):   ' num2str(g.Poslinkis.min) ] ; disp(str);
+        str=['Nustatyta leidziama paklaida (ms): ' num2str(g.Leidziama_paklaida) ] ; disp(str);
+        if and(g.Poslinkis.max < g.Leidziama_paklaida , g.Poslinkis.min > 0 - g.Leidziama_paklaida ) ;
+            str='Valio! Algoritmas rado sutampancius ivykius, nors ivykiu skaicius skiriasi!' ; disp(str);
+        else
+            str='Vidine klaida: dar reikia tobulinti algoritma, ieskanti atitinkanciu ivykiu net tada, kai ivykiu kiekis skiriasi. Bandykite padidinti didziausia leidziama paklaida.' ;
+            error(str);
+            %return
+        end ;
     else
         error('Nepavyko');
         %return;
