@@ -1,6 +1,10 @@
 %
 % Pakeitimai:
 % ------------------------
+% + Analizuoti sudėtingesnius įvykių susiejimo su Labchart įrašais atvejus.
+% ~ nepavykus į kelti su eeg_ikelk, visada grąžinti [].
+% ~ įkeliant su eeg_ikelk įvykiai konvertuojami į raidinius.
+%
 % v2017.06.03.1
 % + Per veiksmų meniu galima invertuoti pasirinktus įrašus.
 % + Parinkčių pavadinime įrašius |, parinktys grupuojamos į katalogus.
