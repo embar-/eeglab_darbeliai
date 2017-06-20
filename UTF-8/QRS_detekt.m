@@ -50,6 +50,32 @@ else
     leisti_apversti=1;
 end;
 
+for i=1:length(mode)
+    RR_idx_1=QRS_detekt_single(EKG, SR, mode(i), leisti_apversti);
+    if i == 1
+        RR_idx=RR_idx_1;
+    else
+        [idx_,D_]=knnsearch(RR_idx_1,RR_idx);
+        if isempty(idx_); RR_idx=[]; break; end;
+        sut_i=find( D_/SR <= 0.066 );
+        RR_idx_a=RR_idx(sut_i);
+        RR_idx_b=RR_idx_1(idx_(sut_i));
+        if median(EKG([RR_idx_a ; RR_idx_b])) < median(EKG);
+            EKG=-EKG;
+        end;
+        RR_idx=arrayfun(@(x) ...
+            one_peak_index(EKG,RR_idx_a(x),RR_idx_b(x)), [1:length(sut_i)])';
+        RR_idx=unique(RR_idx);
+    end;
+end;
+
+RRI=1000/SR*diff(RR_idx);
+
+
+function [RR_idx]=QRS_detekt_single(EKG, SR, mode, leisti_apversti);
+
+RR_idx=[];
+
 switch mode
 
     case {1 , '1', 'PT' }
@@ -68,7 +94,8 @@ switch mode
         end;
         
         % QRS
-        [qrs_amp_raw,qrs_i_raw,delay]=...
+        %[qrs_amp_raw,qrs_i_raw,delay]=...
+        [~,qrs_i_raw,~]=...
             QRS_detekt_Pan_Tompkin(EKG,SR,0);
         RR_idx=[qrs_i_raw]';
 
@@ -106,8 +133,8 @@ switch mode
             if ekg_apversta(EKG,SR,0); EKG=-EKG; end;
         end;
         
-        [R_i,R_amp,S_i,S_amp,T_i,T_amp,Q_i,Q_amp,heart_rate,buffer_plot]= ...
-            QRS_detekt_adaptive_Sedghamiz(double(EKG),SR,0);
+        %[R_i,R_amp,S_i,S_amp,T_i,T_amp,Q_i,Q_amp,heart_rate,buffer_plot]= ...
+        R_i = QRS_detekt_adaptive_Sedghamiz(double(EKG),SR,0);
         RR_idx=R_i';
         
         
@@ -116,9 +143,11 @@ switch mode
 end;
 
 
-RRI=1000/SR*diff(RR_idx);
 
-return;
-
-
+function i=one_peak_index(signal,i1,i2)
+i_min=min([i1 i2]);
+i_max=max([i1 i2]);
+d=signal([i_min:i_max]);
+[~,i]=max(d);
+i=i_min+i-1;
 

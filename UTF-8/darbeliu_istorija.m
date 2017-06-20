@@ -1,6 +1,13 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2017.06.20.1
+% ~ Ištaisyti nuo v2017.02.03.1 esančią pop_eeg_peržiūros klaidą, kai 
+%   atsisakoma rodyti ICA kreives, nors EEG.icaact yra.
+% + Analizuoti sudėtingesnius įvykių susiejimo su Labchart įrašais atvejus.
+% ~ nepavykus į kelti su eeg_ikelk, visada grąžinti [].
+% ~ įkeliant su eeg_ikelk įvykiai konvertuojami į raidinius.
+%
 % v2017.06.03.1
 % + Per veiksmų meniu galima invertuoti pasirinktus įrašus.
 % + Parinkčių pavadinime įrašius |, parinktys grupuojamos į katalogus.
@@ -33,7 +40,7 @@
 %   iškylantį langą, o ne vis naujame atskirame lange
 %
 % v2016.12.28.1
-% + Įkeliant duomenis informuoti trūkstamus papildinius importavimui.
+% + Įkeliant duomenis informuoti apie trūkstamus papildinius importavimui.
 %
 % v2016.11.08.1
 % + Naudotojui pranešti apie trūkstamus papildinius rinkmenoms nuskaityti.
