@@ -24,17 +24,9 @@ end;
         warning(wrn_b);
         return;
     end;
+    
     try % Importuoti kaip EEGLAB *.set
         EEG = pop_loadset('filename',Rinkmena_,'filepath',Kelias_);
-        ivykiai={EEG.event.type};
-        if ~iscellstr(ivykiai);
-            for i=1:length(ivykiai);
-                try
-                    EEG.event(i).type=num2str(EEG.event(i).type);
-                catch
-                end
-            end;
-        end;
     catch 
         Kelias_ir_rinkmena=fullfile(Kelias_, Rinkmena_);
         % Pranesk_apie_klaida(lasterr, mfilename, Kelias_ir_rinkmena, 0);
@@ -129,3 +121,16 @@ end;
             warning(wrn_b);
         end;
     end;
+    
+    try
+        ivykiai={EEG.event.type};
+        if ~iscellstr(ivykiai);
+            for i=1:length(ivykiai);
+                try
+                    EEG.event(i).type=num2str(EEG.event(i).type);
+                catch
+                end
+            end;
+        end;
+    catch
+    end
