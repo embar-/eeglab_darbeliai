@@ -1,6 +1,8 @@
 %
 % Pakeitimai:
 % ------------------------
+% ~ Ištaisyti nuo v2017.02.03.1 esančią pop_eeg_peržiūros klaidą, kai 
+%   atsisakoma rodyti ICA kreives, nors EEG.icaact yra.
 % + Analizuoti sudėtingesnius įvykių susiejimo su Labchart įrašais atvejus.
 % ~ nepavykus į kelti su eeg_ikelk, visada grąžinti [].
 % ~ įkeliant su eeg_ikelk įvykiai konvertuojami į raidinius.
