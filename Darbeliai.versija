@@ -1,11 +1,13 @@
-Darbeliai v2017.06.03.1
+Darbeliai v2017.07.01.1
 
 LT:
-Galimybė invertuoti įrašų pasirinkimą.
-Naujų parinkčių pavadinimo viduryje 
-įrašius |, jos grupuosimos į aplankus.
+1. Ištaisyti nuo v2017.02.03.1 esančią pop_eeg_peržiūros klaidą,
+kai atsisakoma rodyti ICA kreives, nors EEG.icaact yra.
+2. Įkeliant EEG įrašus su eeg_įkelk, skaitinius įvykius bandoma
+konvertuoti į raidinius (numatytasis EEGLAB tipas).
 
 EN:
-It is possible to invert selection of records.
-Presets can by grouped into folders by
-entering | symbol in preset name.
+1. If EEG.icaact exist, display ICA curves in
+pop_eeg_perziura again (bug existed since v2017.02.03.1)
+2. Try convert numeric EEG events into alphanumeric
+(default type of EEGLAB event variables)
