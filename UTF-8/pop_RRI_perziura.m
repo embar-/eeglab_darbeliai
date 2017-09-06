@@ -336,7 +336,7 @@ set(handles.edit_ribos,'UserData',1);
 set(handles.pushbutton_atnaujinti,'UserData',1);
 %set(handles.figure1,'toolbar','figure');
 set(handles.pushbutton_OK,'Visible', fastif(get(handles.figure1,'userdata'),'on','off'));
-drawnow;
+%drawnow;
 
 %% Anotacijų paruošimas
 if strcmp(get(handles.aktyvusis, 'State'),'off');
@@ -728,7 +728,7 @@ axes(handles.axes_rri);
 guidata(handles.figure1, handles);
 %assignin('base','handles_edit',handles);
 set(handles.figure1,'pointer','arrow');
-drawnow;
+%drawnow;
 
 % --- Executes during object creation, after setting all properties.
 function edit_ribos_CreateFcn(hObject, eventdata, handles)
@@ -841,7 +841,7 @@ set(handles.figure1,'pointer','watch');
 set(handles.pushbutton_atnaujinti,'Enable','off');
 set(handles.atnaujinti,'Enable','off');
 guidata(hObject,handles);
-drawnow;
+%drawnow;
 rri_lin=[handles.RRI_lin handles.RRI_tsk ];
 if get(handles.checkbox_ekg,'Value');
     Laikai_=get([rri_lin handles.EKG_tsk],'XData');
@@ -1488,7 +1488,6 @@ end;
 pushbutton_atstatyti_Callback(hObject, eventdata, handles);
 guidata(handles.figure1, handles);
 susildyk(hObject, eventdata, handles);
-drawnow;
 
 
 % --------------------------------------------------------------------
@@ -1538,7 +1537,6 @@ catch err;
     guidata(handles.figure1, handles);
 end;
 susildyk(hObject, eventdata, handles);
-drawnow;
 
 
 % --------------------------------------------------------------------
@@ -1702,8 +1700,6 @@ catch err;
 end;
 susildyk(hObject, eventdata, handles);
 set(handles.figure1,'pointer','arrow');
-figure(handles.figure1);
-drawnow;
 
 
 % --------------------------------------------------------------------
@@ -1858,8 +1854,6 @@ catch err;
 end;
 susildyk(hObject, eventdata, handles);
 set(handles.figure1,'pointer','arrow');
-figure(handles.figure1);
-drawnow;
 
 
 % --------------------------------------------------------------------
@@ -2077,8 +2071,6 @@ catch err;
 end;
 susildyk(hObject, eventdata, handles);
 set(handles.figure1,'pointer','arrow');
-figure(handles.figure1);
-drawnow;
 
 
 % --------------------------------------------------------------------
@@ -2200,8 +2192,6 @@ catch err;
 end;
 susildyk(hObject, eventdata, handles);
 set(handles.figure1,'pointer','arrow');
-figure(handles.figure1);
-drawnow;
 
 % --------------------------------------------------------------------
 function Aptikti_EKG_QRS_Callback(hObject, eventdata, handles)
@@ -2216,8 +2206,6 @@ catch err;
 end;
 susildyk(hObject, eventdata, handles);
 guidata(handles.figure1, handles);
-figure(handles.figure1);
-drawnow;
 
 
 function Aptikti_EKG_QRS_Callback2(hObject, eventdata, handles)
