@@ -39,6 +39,11 @@ function kelias = Tikras_Kelias(kelias_tikrinimui)
 
 kelias_dabar=pwd;
 [wrn_b]=warning('off','backtrace');
+aukstesnis=fileparts(kelias_tikrinimui);
+while ~exist(kelias_tikrinimui,'dir') && ~strcmp(kelias_tikrinimui,aukstesnis)
+    kelias_tikrinimui=aukstesnis;
+    aukstesnis=fileparts(kelias_tikrinimui);
+end;
 try
     cd(kelias_tikrinimui);
 catch
