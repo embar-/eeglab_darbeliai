@@ -554,6 +554,7 @@ disp(['EEG.' grupes_tipas ' =' sprintf(' ''%s''', unik_grupes{pasirinkti}) '; N 
 
 function drb_meniu_veiksmai_fltr_rod(hObject, eventdata, handles, darbas, fltr_tarp, varargin) %#ok
 fltr_rod = get(handles.edit_failu_filtras1, 'String');
+fltr_rod2=fltr_rod;
 s=find(ismember(fltr_rod,filesep),1,'first');
 if ~isempty(s); 
   if s>2 && length(fltr_rod) > 2*s-3;
@@ -561,9 +562,9 @@ if ~isempty(s);
         fltr_rod2 = fltr_rod(1:s-3);
     end;
   end;
-else fltr_rod2=fltr_rod;
 end;
 fltr_rod = [fltr_rod ';.' filesep fltr_tarp filesep fltr_rod2 ];
+fltr_rod=strrep(fltr_rod,';;',';');
 set(handles.edit_failu_filtras1, 'String', fltr_rod);
 nukreipimas_gui2(hObject, eventdata, handles, darbas, 'atnaujink_rodomus_failus');
 
