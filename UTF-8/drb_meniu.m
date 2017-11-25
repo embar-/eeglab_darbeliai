@@ -506,15 +506,22 @@ end
 kelias=get(handles.edit1,'String');
 visi=get(handles.listbox1,'String');
 if isempty(visi); return; end;
-%seni=get(handles.listbox1,'Value');
+seni_id=get(handles.listbox1,'Value');
+if isempty(seni_id)
+    ikeliami_id=1:length(visi);
+else
+    ikeliami_id=seni_id;
+end
+fprintf('Įkelsima EEG įrašų: %d/%d\n',length(ikeliami_id),length(visi));
+ikeliami=visi(ikeliami_id);
 tipas_yra_raidinis=ismember(grupes_tipas, tinkami_tipai_raidiniai);
 if tipas_yra_raidinis
     grupes_duomenys={};
 else
     grupes_duomenys=[];
 end;
-for i=1:length(visi)
-    EEGTMP=eeg_ikelk(kelias, visi{i}, 'loadmode','info');
+for i=1:length(ikeliami)
+    EEGTMP=eeg_ikelk(kelias, ikeliami{i}, 'loadmode','info');
     nario_duomenys=eval(['EEGTMP.' grupes_tipas]);
     if isnumeric(nario_duomenys) && tipas_yra_raidinis
         nario_duomenys=num2str(nario_duomenys);
@@ -544,12 +551,12 @@ pasirinkti=listdlg(...
 %else pasirinkti=1;
 %end
 if isempty(pasirinkti); return; end;
-nauji=find(ismember(grupes_duomenys,unik_grupes(pasirinkti)));
-%nauji=intersect(1:length(nauji),seni);
-disp(['EEG.' grupes_tipas ' =' sprintf(' ''%s''', unik_grupes{pasirinkti}) '; N = ' num2str(length(nauji))])
+pasirinkti_ikeliamu_id=find(ismember(grupes_duomenys,unik_grupes(pasirinkti)));
+nauji_id=ikeliami_id(pasirinkti_ikeliamu_id);
+disp(['EEG.' grupes_tipas ' =' sprintf(' ''%s''', unik_grupes{pasirinkti}) '; N = ' num2str(length(nauji_id))])
 %if unik_grupiu_N > 1
-    disp(visi(nauji))
-    set(handles.listbox1,'Value',nauji);
+    disp(visi(nauji_id))
+    set(handles.listbox1,'Value',nauji_id);
 %end
 
 function drb_meniu_veiksmai_fltr_rod(hObject, eventdata, handles, darbas, fltr_tarp, varargin) %#ok
