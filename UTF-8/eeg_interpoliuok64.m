@@ -44,8 +44,6 @@
 
 function EEG = eeg_interpoliuok64(EEG, varargin)
 
-disp('Kanalų interpoliavimas')
-
 if nargin > 1; Reikalingi_kanalai=varargin{1};
 else           Reikalingi_kanalai= ...
         {'Fp1' 'Fpz' 'Fp2' 'F7' 'F3' 'Fz' 'F4' 'F8' 'FC5' 'FC1' 'FC2' 'FC6' 'M1' 'T7' 'C3' 'Cz' 'C4' ... 
@@ -161,6 +159,7 @@ else
 end;
 
 % Sukurti naują EEG.chanlocs
+EEG.chanlocs2=struct();
 for k=1:length(Reikalingi_kanalai) ;
     EEG.chanlocs2(k).labels=    NORIMU_KANALU_DUOMENYS{k,1}         ;
     EEG.chanlocs2(k).type=      NORIMU_KANALU_DUOMENYS{k,2}         ;
@@ -178,7 +177,7 @@ end ;
 
 %% Pats interpoliavimas
 
-[EEG, LASTCOM] = pop_interp(EEG, [EEG.chanlocs2], 'spherical');
+[EEG, LASTCOM] = pop_interp(EEG, EEG.chanlocs2, 'spherical');
 EEG = eegh(LASTCOM, EEG);
 
 %% Atmesti nepasirinktus
