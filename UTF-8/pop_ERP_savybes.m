@@ -8,7 +8,7 @@
 % GUI versija
 %
 %
-% (C) 2014-2015 Mindaugas Baranauskas
+% (C) 2014-2018 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -864,7 +864,7 @@ for i=1:Pasirinktu_failu_N;
 			   error([lokaliz('Not epoched data!') ' ' lokaliz('File') ': ' Rinkmena]);
 			end;
         else
-            EEGTMP = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_,'loadmode','info');
+            EEGTMP = eeg_ikelk(KELIAS_, Rinkmena_, 'loadmode','info');
             EEGTMP.file=Rinkmena;
             if isempty(EEGTMP.epoch);
 			    [ALLEEGTMP, EEGTMP, ~] = eeg_store(ALLEEGTMP, EEGTMP,i);
@@ -3245,7 +3245,7 @@ try
 			end;
         else
             [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(Kelias,Rinkmena);
-            EEGTMP = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_,'loadmode','info');
+            EEGTMP = eeg_ikelk(KELIAS_, Rinkmena_, 'loadmode','info');
             EEGTMP.file=Rinkmena;
             if isempty(EEGTMP.epoch);
 			    [ALLEEGTMP, EEGTMP, ~] = eeg_store(ALLEEGTMP, EEGTMP,i);
