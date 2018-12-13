@@ -40,6 +40,7 @@ function kelias = Tikras_Kelias(kelias_tikrinimui)
 kelias_dabar=pwd;
 if ~ischar(kelias_tikrinimui)
     kelias=pwd;
+    warning(wrn_b);
     return;
 end;
 if isunix
@@ -54,6 +55,6 @@ try
     cd(kelias_tikrinimui);
 catch
 end;
-%warning(wrn_b);
+warning(wrn_b);
 kelias=pwd;
 cd(kelias_dabar);
