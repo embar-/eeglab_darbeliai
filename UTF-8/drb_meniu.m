@@ -465,12 +465,36 @@ uimenu(handles.meniu_veiksmai_os, 'Accelerator','U', 'Label', lokaliz('Atverti s
 
 
 function drb_meniu_veiksmai_pasirinkimas_invertuotas(hObject, eventdata, handles)
-visi=get(handles.listbox1,'String');
-seni=get(handles.listbox1,'Value');
+if isfield(handles,'listbox1')
+    saraso_vld=handles.listbox1;
+elseif isfield(handles,'listbox_tikri')
+    saraso_vld=handles.listbox_tikri;
+else
+    warning('Not implemented')
+    return
+end;
+visi=get(saraso_vld,'String');
+seni=get(saraso_vld,'Value');
 nauji=setdiff(1:length(visi),seni);
-set(handles.listbox1,'Value',nauji);
+set(saraso_vld,'Value',nauji);
 
 function drb_meniu_veiksmai_pasirinkimas_pagal(hObject, eventdata, handles, grupes_tipas)
+if isfield(handles,'listbox1')
+    saraso_vld=handles.listbox1;
+elseif isfield(handles,'listbox_tikri')
+    saraso_vld=handles.listbox_tikri;
+else
+    warning('Not implemented')
+    return
+end;
+if isfield(handles,'edit1')
+    kelio_vld=handles.edit1;
+elseif isfield(handles,'edit_tikri')
+    kelio_vld=handles.edit_tikri;
+else
+    warning('Not implemented')
+    return
+end;
 tinkami_tipai_raidiniai={'subject' 'group' 'condition' 'session'};
 tinkami_tipai_skaitiniai={'nbchan' 'trials' 'srate' 'xmin' 'xmax'};
 tinkami_tipai=[tinkami_tipai_raidiniai tinkami_tipai_skaitiniai];
@@ -503,10 +527,10 @@ switch grupes_tipas
     otherwise
         tipo_galininkas = '';
 end
-kelias=get(handles.edit1,'String');
-visi=get(handles.listbox1,'String');
+kelias=get(kelio_vld,'String');
+visi=get(saraso_vld,'String');
 if isempty(visi); return; end;
-seni_id=get(handles.listbox1,'Value');
+seni_id=get(saraso_vld,'Value');
 if isempty(seni_id)
     ikeliami_id=1:length(visi);
 else
@@ -535,6 +559,7 @@ end;
 unik_grupes=unique(grupes_duomenys);
 % Nenaudoti raidinio nuo pat pradžių tam, kad rikiavimas neiškreiptų skaičių
 if ~tipas_yra_raidinis
+    fprintf('N=%d, M=%f, SD=%f\n', length(grupes_duomenys), mean(grupes_duomenys), std(grupes_duomenys))
     grupes_duomenys=arrayfun(@num2str, grupes_duomenys,'UniformOutput',false );
     unik_grupes=arrayfun(@num2str, unik_grupes,'UniformOutput',false );
 end
@@ -556,7 +581,7 @@ nauji_id=ikeliami_id(pasirinkti_ikeliamu_id);
 disp(['EEG.' grupes_tipas ' =' sprintf(' ''%s''', unik_grupes{pasirinkti}) '; N = ' num2str(length(nauji_id))])
 %if unik_grupiu_N > 1
     disp(visi(nauji_id))
-    set(handles.listbox1,'Value',nauji_id);
+    set(saraso_vld,'Value',nauji_id);
 %end
 
 function drb_meniu_veiksmai_fltr_rod(hObject, eventdata, handles, darbas, fltr_tarp, varargin) %#ok
