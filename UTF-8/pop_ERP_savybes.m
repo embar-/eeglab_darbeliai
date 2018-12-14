@@ -661,6 +661,16 @@ end;
 % --- Pats darbo vykdymas
 function vykdymas(hObject, eventdata, handles)
 if strcmp(get(handles.pushbutton1,'Enable'),'off'); return; end;
+
+Ar_eksportuoti_savybes = ...
+get(handles.checkbox61,'Value') + get(handles.checkbox65,'Value') + ...
+get(handles.checkbox64,'Value') + get(handles.checkbox67,'Value') + ...
+get(handles.checkbox63,'Value') + get(handles.checkbox66,'Value') ;
+Ar_eksportuoti_ERP=get(handles.checkbox69,'Value');
+if ~(Ar_eksportuoti_savybes || Ar_eksportuoti_ERP)
+    return
+end;
+
 disp(' ');
 disp('===================================');
 disp('     S Į S P     S A V Y B Ė S     ');
@@ -668,6 +678,7 @@ disp(' ');
 disp( datestr(now, 'yyyy-mm-dd HH:MM:SS' ));
 disp('===================================');
 disp(' ');
+
 susaldyk(hObject, eventdata, handles);
 set(handles.pushbutton1,'Enable','off');
 % if get(handles.checkbox58, 'Value');
@@ -755,7 +766,7 @@ pradzios_laikas=tic;
 %     Reikalingi_kanalai={};
 % end;
 % 
-% Eksp=get(handles.checkbox69,'Value');
+% Ar_eksportuoti_ERP=get(handles.checkbox69,'Value');
 % laiko_intervalas=str2num(get(handles.edit51,'String'));
 % time_interval_erp=str2num(get(handles.edit70,'String'));
 %             
@@ -764,7 +775,7 @@ pradzios_laikas=tic;
 %     [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
 %     eeglab redraw;
 % 
-% [lentele]=pop_erp_area(ALLEEG, EEG, CURRENTSET,1,KELIAS_SAUGOJIMUI,Reikalingi_kanalai,laiko_intervalas,Eksp,time_interval_erp);
+% [lentele]=pop_erp_area(ALLEEG, EEG, CURRENTSET,1,KELIAS_SAUGOJIMUI,Reikalingi_kanalai,laiko_intervalas,Ar_eksportuoti_ERP,time_interval_erp);
 % if ~ispc;    
 %     save(fullfile(KELIAS_SAUGOJIMUI,[ 'ERP_plotas_' datestr(now, 'yyyy-mm-dd_HHMMSS') '.mat' ]),'lentele');
 % end;
@@ -798,12 +809,6 @@ sukauptos_klaidos={};
 axes(handles.axes1);
 datacursormode off;
 
-Ar_eksportuoti_savybes = ...
-get(handles.checkbox61,'Value') + get(handles.checkbox65,'Value') + ...
-get(handles.checkbox64,'Value') + get(handles.checkbox67,'Value') + ...
-get(handles.checkbox63,'Value') + get(handles.checkbox66,'Value') ;
-
-
 Naudoti_kanalu_vidurki=get(handles.checkbox59, 'Value');
 Epochuoti_pagal_stimulus_=get(handles.pushbutton11,'UserData') ;
 Pasirinkti_kanalai=get(handles.pushbutton14,'UserData');
@@ -814,7 +819,6 @@ else
     Reikalingi_kanalai={}; %Nebus keičiamas darbų eigoje
     Reikalingi_kanalai_sukaupti={}; % bus keičiamas darbų eigoje
 end;
-Eksp=get(handles.checkbox69,'Value');
 ribos=str2num(get(handles.edit51,'String'));%*1000;
 time_interval_erp=str2num(get(handles.edit70,'String'));
 
@@ -910,7 +914,7 @@ for i=1:Pasirinktu_failu_N;
                         end;
                     end;
                 EEGTMP = pop_selectevent( EEGTMP, ...
-                    'type', Epochuoti_pagal_stimulus ,...
+                    'type', Epochuoti_pagal_stimulus, ...
                     'deleteevents','off',...
                     'deleteepochs','on',...
                     'invertepochs','off');
@@ -3308,7 +3312,7 @@ try
                         end;
                     end;
                 EEGTMP = pop_selectevent( EEGTMP, ...
-                    'type', Epochuoti_pagal_stimulus ,...
+                    'type', Epochuoti_pagal_stimulus, ...
                     'deleteevents','off',...
                     'deleteepochs','on',...
                     'invertepochs','off');
