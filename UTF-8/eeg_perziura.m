@@ -681,7 +681,11 @@ else%if 1 == 0 % tai tik eksperimentavimui
         set(a, 'XMinorTick', 'off', 'XMinorGrid', 'off');
     end;
 end;
-plotis2=ceil(5/plotis1);
+try
+    plotis2=ceil(g.plotis/plotis1);
+catch
+    plotis2=ceil(5/plotis1);
+end;
 setappdata(a,'zingsnis',1/plotis2);
 plotis=plotis1*plotis2;
 
