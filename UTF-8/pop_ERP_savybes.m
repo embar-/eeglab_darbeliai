@@ -885,11 +885,11 @@ for i=1:Pasirinktu_failu_N;
                         catch
                             orig_epoch=Epochuoti_pagal_stimulus_(i_epoch); % skaičiams
                         end;
-                        %disp(orig_epoch);disp(isstr(orig_epoch));
+                        %disp(orig_epoch);disp(ischar(orig_epoch));
                         if isnumeric(orig_epoch);
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus num2str(orig_epoch)];
-                        elseif isstr(orig_epoch);
-                            if isstr(EEGTMP.event(1).type);
+                        elseif ischar(orig_epoch);
+                            if ischar(EEGTMP.event(1).type);
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus orig_epoch];
                             else
                                 % Skaitinis į raidinį
@@ -3283,11 +3283,11 @@ try
                         catch
                             orig_epoch=Epochuoti_pagal_stimulus_(i_epoch); % skaičiams
                         end;
-                        %disp(orig_epoch);disp(isstr(orig_epoch));
+                        %disp(orig_epoch);disp(ischar(orig_epoch));
                         if isnumeric(orig_epoch);
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus num2str(orig_epoch)];
-                        elseif isstr(orig_epoch);
-                            if isstr(EEGTMP.event(1).type);
+                        elseif ischar(orig_epoch);
+                            if ischar(EEGTMP.event(1).type);
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus orig_epoch];
                             else
                                 % Skaitinis į raidinį
