@@ -222,20 +222,21 @@ set(handles.text_apdorotini_kanalai,'String',lokaliz('all'));
 set(handles.text_apdorotini_kanalai,'TooltipString','');
 set(handles.pushbutton_apdorotini_kanalai,'UserData',{});
 
-VISI_KANALAI_66={'Fp1' 'Fpz' 'Fp2' 'F7' 'F3' 'Fz' 'F4' 'F8' 'FC5' 'FC1' 'FC2' 'FC6' 'M1' 'T7' 'C3' 'Cz' 'C4' 'T8' 'M2' 'CP5' 'CP1' 'CP2' 'CP6' 'P7' 'P3' 'Pz' 'P4' 'P8' 'POz' 'O1' 'Oz' 'O2' 'AF7' 'AF3' 'AF4' 'AF8' 'F5' 'F1' 'F2' 'F6' 'FC3' 'FCz' 'FC4' 'C5' 'C1' 'C2' 'C6' 'CP3' 'CPz' 'CP4' 'P5' 'P1' 'P2' 'P6' 'PO5' 'PO3' 'PO4' 'PO6' 'FT7' 'FT8' 'TP7' 'TP8' 'PO7' 'PO8' 'EOG' 'EOGh';};
-kan_i=[1:3 5:7 9:12 15:17 20:23 25:27 29:58 65 66];
-Parinkti_kanalai=VISI_KANALAI_66(kan_i);
+VISI_KANALAI={'Fp1' 'Fpz' 'Fp2' 'F7' 'F3' 'Fz' 'F4' 'F8' 'FC5' 'FC1' 'FC2' 'FC6' 'M1' 'T7' 'C3' 'Cz' 'C4' 'T8' 'M2' 'CP5' 'CP1' 'CP2' 'CP6' 'P7' 'P3' 'Pz' 'P4' 'P8' 'POz' 'O1' 'Oz' 'O2' 'AF7' 'AF3' 'AF4' 'AF8' 'F5' 'F1' 'F2' 'F6' 'FC3' 'FCz' 'FC4' 'C5' 'C1' 'C2' 'C6' 'CP3' 'CPz' 'CP4' 'P5' 'P1' 'P2' 'P6' 'PO5' 'PO3' 'PO4' 'PO6' 'FT7' 'FT8' 'TP7' 'TP8' 'PO7' 'PO8' 'EOG' 'EOGh' 'EOGv';};
+kan_i=[1:3 5:7 9:12 15:17 20:23 25:27 29:58 65:67];
+Parinkti_kanalai=VISI_KANALAI(kan_i);
 Parinkti_kanalai_str=[Parinkti_kanalai{1}];
 for i=2:length(Parinkti_kanalai);
     Parinkti_kanalai_str=[Parinkti_kanalai_str ' ' Parinkti_kanalai{i}];
 end;
+set(handles.text8,'String',num2str(length(Parinkti_kanalai)));
 set(handles.text8,'TooltipString',Parinkti_kanalai_str);
 set(handles.pushbutton9,'UserData',Parinkti_kanalai);
 
 
 %disp(get(handles.pushbutton7,'UserData'));
 kan_i=[5 7 25 27 41 43 48 50];
-Parinkti_kanalai=VISI_KANALAI_66(kan_i);
+Parinkti_kanalai=VISI_KANALAI(kan_i);
 Parinkti_kanalai_str=[Parinkti_kanalai{1}];
 for i=2:length(Parinkti_kanalai);
     Parinkti_kanalai_str=[Parinkti_kanalai_str ' ' Parinkti_kanalai{i}];

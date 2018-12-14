@@ -4,15 +4,18 @@
 function [EEG]=eeg_ikelk(Kelias, Rinkmena, varargin)
 
 persistent PAPILDINIAI_JAU_PATIKRINTI
-
 try
-    g=struct(varargin);
+    g=struct(varargin{:});
 catch
     g=struct;
 end;
 tikrinti_papildinius=1;
 if isfield(g,'tikrinti_papildinius');
     tikrinti_papildinius=g.tikrinti_papildinius;
+end;
+loadmode='all';
+if isfield(g,'loadmode');
+    loadmode=g.loadmode;
 end;
 
     [Kelias_,Rinkmena_]=rinkmenos_tikslinimas(Kelias,Rinkmena);
@@ -26,7 +29,7 @@ end;
     end;
     
     try % Importuoti kaip EEGLAB *.set
-        EEG = pop_loadset('filename',Rinkmena_,'filepath',Kelias_);
+        EEG = pop_loadset('filename',Rinkmena_,'filepath',Kelias_,'loadmode',loadmode);
     catch 
         Kelias_ir_rinkmena=fullfile(Kelias_, Rinkmena_);
         % Pranesk_apie_klaida(lasterr, mfilename, Kelias_ir_rinkmena, 0);

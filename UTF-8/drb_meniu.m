@@ -386,7 +386,21 @@ uimenu(handles.meniu_veiksmai,'Label',lokaliz('Vykdyti nesaugant ir palyginti'),
     'Accelerator','W','Callback',{@nukreipimas_gui1, handles, 'drb_meniu_veiksmai_vykdymas_su_perziura', darbas, 1});
 end;
 
-uimenu(handles.meniu_veiksmai, 'separator','on', 'Label', lokaliz('Invertuoti irasu pasirinkima'), ...
+handles.meniu_veiksmai_pasirinkti_pagal = uimenu(handles.meniu_veiksmai, 'separator','on',...
+    'Label', [lokaliz('Pasirinkti rinkmenas pagal') '...']);
+uimenu(handles.meniu_veiksmai_pasirinkti_pagal, 'Label', lokaliz('(pagal) tiriamaji'), ...
+    'callback', {@drb_meniu_veiksmai_pasirinkimas_pagal, handles, 'subject'});
+uimenu(handles.meniu_veiksmai_pasirinkti_pagal, 'Label', lokaliz('(pagal) grupe'), ...
+    'callback', {@drb_meniu_veiksmai_pasirinkimas_pagal, handles, 'group'});
+uimenu(handles.meniu_veiksmai_pasirinkti_pagal, 'Label', lokaliz('(pagal) salyga'), ...
+    'callback', {@drb_meniu_veiksmai_pasirinkimas_pagal, handles, 'condition'});
+uimenu(handles.meniu_veiksmai_pasirinkti_pagal, 'Label', lokaliz('(pagal) sesija'), ...
+    'callback', {@drb_meniu_veiksmai_pasirinkimas_pagal, handles, 'session'});
+uimenu(handles.meniu_veiksmai_pasirinkti_pagal, 'Label', lokaliz('(pagal) kanalu N'), ...
+    'callback', {@drb_meniu_veiksmai_pasirinkimas_pagal, handles, 'nbchan'});
+uimenu(handles.meniu_veiksmai_pasirinkti_pagal, 'Label', lokaliz('(pagal) epochu N'), ...
+    'callback', {@drb_meniu_veiksmai_pasirinkimas_pagal, handles, 'trials'});
+uimenu(handles.meniu_veiksmai, 'Label', lokaliz('Invertuoti irasu pasirinkima'), ...
     'callback', {@drb_meniu_veiksmai_pasirinkimas_invertuotas, handles});
 
 uimenu(handles.meniu_veiksmai, 'Accelerator','O', 'separator','on', 'Label', lokaliz('Vizualizuoti duomenis'), ...
@@ -451,13 +465,128 @@ uimenu(handles.meniu_veiksmai_os, 'Accelerator','U', 'Label', lokaliz('Atverti s
 
 
 function drb_meniu_veiksmai_pasirinkimas_invertuotas(hObject, eventdata, handles)
-visi=get(handles.listbox1,'String');
-seni=get(handles.listbox1,'Value');
+if isfield(handles,'listbox1')
+    saraso_vld=handles.listbox1;
+elseif isfield(handles,'listbox_tikri')
+    saraso_vld=handles.listbox_tikri;
+else
+    warning('Not implemented')
+    return
+end;
+visi=get(saraso_vld,'String');
+seni=get(saraso_vld,'Value');
 nauji=setdiff(1:length(visi),seni);
-set(handles.listbox1,'Value',nauji);
+set(saraso_vld,'Value',nauji);
+
+function drb_meniu_veiksmai_pasirinkimas_pagal(hObject, eventdata, handles, grupes_tipas)
+if isfield(handles,'listbox1')
+    saraso_vld=handles.listbox1;
+elseif isfield(handles,'listbox_tikri')
+    saraso_vld=handles.listbox_tikri;
+else
+    warning('Not implemented')
+    return
+end;
+if isfield(handles,'edit1')
+    kelio_vld=handles.edit1;
+elseif isfield(handles,'edit_tikri')
+    kelio_vld=handles.edit_tikri;
+else
+    warning('Not implemented')
+    return
+end;
+tinkami_tipai_raidiniai={'subject' 'group' 'condition' 'session'};
+tinkami_tipai_skaitiniai={'nbchan' 'trials' 'srate' 'xmin' 'xmax'};
+tinkami_tipai=[tinkami_tipai_raidiniai tinkami_tipai_skaitiniai];
+if nargin < 4 || isempty(grupes_tipas) || ~ischar(grupes_tipas) || ~ismember(grupes_tipas, tinkami_tipai)
+    tinkami_tipai_sarase=cellfun(@(x) ['EEG.' x], tinkami_tipai,'UniformOutput',false);
+    tipo_n=listdlg(...
+        'Name', lokaliz('Pasirinkite'), ...
+        'PromptString', [lokaliz('Pasirinkti rinkmenas pagal') ':'], ... 
+        'ListString', tinkami_tipai_sarase,...
+        'SelectionMode', 'single',...
+        'InitialValue', 2,...
+        'OKString', lokaliz('OK'),...
+        'CancelString', lokaliz('Cancel'));
+    if isempty(tipo_n); return; end;
+    grupes_tipas=tinkami_tipai{tipo_n};
+end;
+switch grupes_tipas
+    case 'subject'
+        tipo_galininkas = lokaliz('(pagal) tiriamaji');
+    case 'group'
+        tipo_galininkas = lokaliz('(pagal) grupe');
+    case 'condition'
+        tipo_galininkas = lokaliz('(pagal) salyga');
+    case 'session'
+        tipo_galininkas = lokaliz('(pagal) sesija');
+    case 'nbchan'
+        tipo_galininkas = lokaliz('(pagal) kanalu N');
+    case 'trials'
+        tipo_galininkas = lokaliz('(pagal) epochu N');
+    otherwise
+        tipo_galininkas = '';
+end
+kelias=get(kelio_vld,'String');
+visi=get(saraso_vld,'String');
+if isempty(visi); return; end;
+seni_id=get(saraso_vld,'Value');
+if isempty(seni_id)
+    ikeliami_id=1:length(visi);
+else
+    ikeliami_id=seni_id;
+end
+fprintf('Įkelsima EEG įrašų: %d/%d\n',length(ikeliami_id),length(visi));
+ikeliami=visi(ikeliami_id);
+tipas_yra_raidinis=ismember(grupes_tipas, tinkami_tipai_raidiniai);
+if tipas_yra_raidinis
+    grupes_duomenys={};
+else
+    grupes_duomenys=[];
+end;
+for i=1:length(ikeliami)
+    EEGTMP=eeg_ikelk(kelias, ikeliami{i}, 'loadmode','info');
+    nario_duomenys=eval(['EEGTMP.' grupes_tipas]);
+    if isnumeric(nario_duomenys) && tipas_yra_raidinis
+        nario_duomenys=num2str(nario_duomenys);
+    end
+    if tipas_yra_raidinis
+        grupes_duomenys{i}=nario_duomenys;
+    else
+        grupes_duomenys(i)=nario_duomenys;
+    end;
+end;
+unik_grupes=unique(grupes_duomenys);
+% Nenaudoti raidinio nuo pat pradžių tam, kad rikiavimas neiškreiptų skaičių
+if ~tipas_yra_raidinis
+    fprintf('N=%d, M=%f, SD=%f\n', length(grupes_duomenys), mean(grupes_duomenys), std(grupes_duomenys))
+    grupes_duomenys=arrayfun(@num2str, grupes_duomenys,'UniformOutput',false );
+    unik_grupes=arrayfun(@num2str, unik_grupes,'UniformOutput',false );
+end
+unik_grupiu_N=length(unik_grupes);
+%if unik_grupiu_N > 1
+pasirinkti=listdlg(...
+    'Name', lokaliz('Pasirinkite'), ...
+    'PromptString', [lokaliz('Pasirinkti pagal') ' ' tipo_galininkas ':'], ... % paaiškinimas
+    'ListString', unik_grupes,...
+    'SelectionMode', 'multiple',...
+    'InitialValue', 1:unik_grupiu_N,...
+    'OKString', lokaliz('OK'),...
+    'CancelString', lokaliz('Cancel'));
+%else pasirinkti=1;
+%end
+if isempty(pasirinkti); return; end;
+pasirinkti_ikeliamu_id=find(ismember(grupes_duomenys,unik_grupes(pasirinkti)));
+nauji_id=ikeliami_id(pasirinkti_ikeliamu_id);
+disp(['EEG.' grupes_tipas ' =' sprintf(' ''%s''', unik_grupes{pasirinkti}) '; N = ' num2str(length(nauji_id))])
+%if unik_grupiu_N > 1
+    disp(visi(nauji_id))
+    set(saraso_vld,'Value',nauji_id);
+%end
 
 function drb_meniu_veiksmai_fltr_rod(hObject, eventdata, handles, darbas, fltr_tarp, varargin) %#ok
 fltr_rod = get(handles.edit_failu_filtras1, 'String');
+fltr_rod2=fltr_rod;
 s=find(ismember(fltr_rod,filesep),1,'first');
 if ~isempty(s); 
   if s>2 && length(fltr_rod) > 2*s-3;
@@ -465,9 +594,9 @@ if ~isempty(s);
         fltr_rod2 = fltr_rod(1:s-3);
     end;
   end;
-else fltr_rod2=fltr_rod;
 end;
 fltr_rod = [fltr_rod ';.' filesep fltr_tarp filesep fltr_rod2 ];
+fltr_rod=strrep(fltr_rod,';;',';');
 set(handles.edit_failu_filtras1, 'String', fltr_rod);
 nukreipimas_gui2(hObject, eventdata, handles, darbas, 'atnaujink_rodomus_failus');
 

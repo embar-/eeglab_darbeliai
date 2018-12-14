@@ -251,8 +251,18 @@ if isfield(EEG1.event, 'urevent') && isfield(EEG2.event, 'urevent');
                         end;
                     end;
                 end;
-                EEG1.times_nan=EEG1.times + 0*EEG1.times_nan;
-                EEG2.times_nan=EEG2.times + 0*EEG2.times_nan;
+                el1=[length(EEG1.times) length(EEG1.times_nan)];
+                if el1(1) == el1(2)
+                    EEG1.times_nan=EEG1.times + 0*EEG1.times_nan;
+                else
+                    warning('Nesutampa EEG1 laiko taškų kiekis: %d ir %d', el1(1), el1(2))
+                end;
+                el2=[length(EEG2.times) length(EEG2.times_nan)];
+                if el2(1) == el2(2)
+                    EEG2.times_nan=EEG2.times + 0*EEG2.times_nan;
+                else
+                    warning('Nesutampa EEG2 laiko taškų kiekis: %d ir %d', el2(1), el2(2))
+                end;
                 for ei=1:length(EEG1.event)
                     ei_lat=min(max(1,round(EEG1.event(ei).latency)),length(EEG1.times));
                     EEG1.event(ei).laikas_ms = EEG1.times(ei_lat) + ((ei_lat - EEG1.event(ei).latency) / EEG1.srate ) * 1000;
@@ -681,7 +691,11 @@ else%if 1 == 0 % tai tik eksperimentavimui
         set(a, 'XMinorTick', 'off', 'XMinorGrid', 'off');
     end;
 end;
-plotis2=ceil(5/plotis1);
+try
+    plotis2=ceil(g.plotis/plotis1);
+catch
+    plotis2=ceil(5/plotis1);
+end;
 setappdata(a,'zingsnis',1/plotis2);
 plotis=plotis1*plotis2;
 
@@ -834,7 +848,7 @@ if dim3 > 1;
     EEG.times=[0:(dim2-1)*dim3-1]/EEG.srate*1000; % ms
     EEG.times=reshape(EEG.times, dim2-1, dim3);
     EEG.times_nan=[EEG.times; nan(1,dim3)]; EEG.times_nan=EEG.times_nan(:)';
-    EEG.times(end+1,:)=EEG.times(end,:)+0.5/EEG.srate*1000; EEG.times=EEG.times(    :)';
+    EEG.times(end+1,:)=EEG.times(end,:)+0.5/EEG.srate*1000; EEG.times=EEG.times(:)';
     EEG.xmin_org=EEG.xmin;
     EEG.xmax_org=EEG.xmax;
     for i=0:dim3;

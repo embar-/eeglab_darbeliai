@@ -8,7 +8,7 @@
 % GUI versija
 %
 %
-% (C) 2014-2015 Mindaugas Baranauskas
+% (C) 2014-2018 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -661,6 +661,16 @@ end;
 % --- Pats darbo vykdymas
 function vykdymas(hObject, eventdata, handles)
 if strcmp(get(handles.pushbutton1,'Enable'),'off'); return; end;
+
+Ar_eksportuoti_savybes = ...
+get(handles.checkbox61,'Value') + get(handles.checkbox65,'Value') + ...
+get(handles.checkbox64,'Value') + get(handles.checkbox67,'Value') + ...
+get(handles.checkbox63,'Value') + get(handles.checkbox66,'Value') ;
+Ar_eksportuoti_ERP=get(handles.checkbox69,'Value');
+if ~(Ar_eksportuoti_savybes || Ar_eksportuoti_ERP)
+    return
+end;
+
 disp(' ');
 disp('===================================');
 disp('     S Į S P     S A V Y B Ė S     ');
@@ -668,6 +678,7 @@ disp(' ');
 disp( datestr(now, 'yyyy-mm-dd HH:MM:SS' ));
 disp('===================================');
 disp(' ');
+
 susaldyk(hObject, eventdata, handles);
 set(handles.pushbutton1,'Enable','off');
 % if get(handles.checkbox58, 'Value');
@@ -755,7 +766,7 @@ pradzios_laikas=tic;
 %     Reikalingi_kanalai={};
 % end;
 % 
-% Eksp=get(handles.checkbox69,'Value');
+% Ar_eksportuoti_ERP=get(handles.checkbox69,'Value');
 % laiko_intervalas=str2num(get(handles.edit51,'String'));
 % time_interval_erp=str2num(get(handles.edit70,'String'));
 %             
@@ -764,7 +775,7 @@ pradzios_laikas=tic;
 %     [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
 %     eeglab redraw;
 % 
-% [lentele]=pop_erp_area(ALLEEG, EEG, CURRENTSET,1,KELIAS_SAUGOJIMUI,Reikalingi_kanalai,laiko_intervalas,Eksp,time_interval_erp);
+% [lentele]=pop_erp_area(ALLEEG, EEG, CURRENTSET,1,KELIAS_SAUGOJIMUI,Reikalingi_kanalai,laiko_intervalas,Ar_eksportuoti_ERP,time_interval_erp);
 % if ~ispc;    
 %     save(fullfile(KELIAS_SAUGOJIMUI,[ 'ERP_plotas_' datestr(now, 'yyyy-mm-dd_HHMMSS') '.mat' ]),'lentele');
 % end;
@@ -798,12 +809,6 @@ sukauptos_klaidos={};
 axes(handles.axes1);
 datacursormode off;
 
-Ar_eksportuoti_savybes = ...
-get(handles.checkbox61,'Value') + get(handles.checkbox65,'Value') + ...
-get(handles.checkbox64,'Value') + get(handles.checkbox67,'Value') + ...
-get(handles.checkbox63,'Value') + get(handles.checkbox66,'Value') ;
-
-
 Naudoti_kanalu_vidurki=get(handles.checkbox59, 'Value');
 Epochuoti_pagal_stimulus_=get(handles.pushbutton11,'UserData') ;
 Pasirinkti_kanalai=get(handles.pushbutton14,'UserData');
@@ -814,7 +819,6 @@ else
     Reikalingi_kanalai={}; %Nebus keičiamas darbų eigoje
     Reikalingi_kanalai_sukaupti={}; % bus keičiamas darbų eigoje
 end;
-Eksp=get(handles.checkbox69,'Value');
 ribos=str2num(get(handles.edit51,'String'));%*1000;
 time_interval_erp=str2num(get(handles.edit70,'String'));
 
@@ -864,7 +868,7 @@ for i=1:Pasirinktu_failu_N;
 			   error([lokaliz('Not epoched data!') ' ' lokaliz('File') ': ' Rinkmena]);
 			end;
         else
-            EEGTMP = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_,'loadmode','info');
+            EEGTMP = eeg_ikelk(KELIAS_, Rinkmena_, 'loadmode','info');
             EEGTMP.file=Rinkmena;
             if isempty(EEGTMP.epoch);
 			    [ALLEEGTMP, EEGTMP, ~] = eeg_store(ALLEEGTMP, EEGTMP,i);
@@ -881,14 +885,28 @@ for i=1:Pasirinktu_failu_N;
                         catch
                             orig_epoch=Epochuoti_pagal_stimulus_(i_epoch); % skaičiams
                         end;
-                        %disp(orig_epoch);disp(isstr(orig_epoch));
+                        %disp(orig_epoch);disp(ischar(orig_epoch));
                         if isnumeric(orig_epoch);
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus num2str(orig_epoch)];
-                        elseif isstr(orig_epoch);
-                            if isstr(EEGTMP.event(1).type);
+                        elseif ischar(orig_epoch);
+                            if ischar(EEGTMP.event(1).type);
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus orig_epoch];
                             else
+                                % Skaitinis į raidinį
+                                warning('Tikėtasi raidinių įvykių, o ne skaitinių! Kovertuojama...')
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus num2str(str2num(orig_epoch))];
+                                try
+                                    ivykiai={EEGTMP.event.type};
+                                    if ~iscellstr(ivykiai);
+                                        for ii=1:length(ivykiai);
+                                            try
+                                                EEGTMP.event(ii).type=num2str(EEGTMP.event(ii).type);
+                                            catch
+                                            end
+                                        end;
+                                    end;
+                                catch
+                                end
                             end;                            
                         else
                             warning([lokaliz('Internal error') '. ']);
@@ -896,7 +914,7 @@ for i=1:Pasirinktu_failu_N;
                         end;
                     end;
                 EEGTMP = pop_selectevent( EEGTMP, ...
-                    'type', Epochuoti_pagal_stimulus ,...
+                    'type', Epochuoti_pagal_stimulus, ...
                     'deleteevents','off',...
                     'deleteepochs','on',...
                     'invertepochs','off');
@@ -1032,7 +1050,6 @@ end;
 
 %% ERP savybių surinkimas, kai prašoma vidurkinti
 
-%if 1==0;
 if get(handles.checkbox58, 'Value');
   if and(Ar_eksportuoti_savybes,get(handles.checkbox58, 'Value'));
             
@@ -1110,19 +1127,22 @@ if get(handles.checkbox58, 'Value');
                     ALLEEG__(grpid).file=grpsar{grpid};
                     for k=1:uniq_kan_N;
                         tmp=[];
-                        di=1;
+                        di=0;
                         for d=grpnar{grpid};
-                            %if get(handles.checkbox59, 'Value');
-                            %else
-                            idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
-                            tmp(di,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
                             di=di+1;
-                            %end;
+                            idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
+                            if ~isempty(idx);
+                                 tmp(di,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                            else%if ~isempty(tmp)
+                                 warning(sprintf('„%s“ grupės rinkmena „%s“ neturi %s kanalo', grpsar{grpid}, ALLEEG_(d).file, uniq_kan{k}));
+                             end;
                         end;
-                        ALLEEG__(grpid).erp_data(k,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
+                        if ~isempty(tmp)
+                            ALLEEG__(grpid).erp_data(k,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
+                        else
+                            warning(lokaliz('Internal error'));
+                        end;
                     end;
-                    %legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),1)={grpsar{grpid}};
-                    %legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),2)=uniq_kan';
                     
                     [ERP_savyb(grpid).plotas,        ERP_savyb(grpid).vid_ampl,...
                         ERP_savyb(grpid).pusplocio_x,ERP_savyb(grpid).pusplocio_y,...
@@ -1275,7 +1295,7 @@ end;
 
 %% Eksportuoti pačius ERP duomenis, o ne savybes
 
-if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
+if and(~isempty(ALLEEG_(1).file),Ar_eksportuoti_ERP);
     
     %% Eksportuoti RAGU programai
     
@@ -3245,7 +3265,7 @@ try
 			end;
         else
             [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(Kelias,Rinkmena);
-            EEGTMP = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_,'loadmode','info');
+            EEGTMP = eeg_ikelk(KELIAS_, Rinkmena_, 'loadmode','info');
             EEGTMP.file=Rinkmena;
             if isempty(EEGTMP.epoch);
 			    [ALLEEGTMP, EEGTMP, ~] = eeg_store(ALLEEGTMP, EEGTMP,i);
@@ -3257,6 +3277,12 @@ try
             end;
             [ALLEEGTMP, EEGTMP, ~] = eeg_store(ALLEEGTMP, EEGTMP,i);
             [~, EEGTMP, ~] = pop_newset(EEGTMP, EEGTMP, 1,'retrieve',1,'study',0);
+            if isempty(EEGTMP.data);
+                listbox1_val=setdiff(get(handles.listbox1,'Value'),i);
+                if and(isempty(listbox1_val),length(Fs)==1); listbox1_val=1; end;
+                set(handles.listbox1,'Value',listbox1_val);
+                error([lokaliz('Empty dataset') '. ' lokaliz('File') ': ' Rinkmena]);
+            end;
             if ~isempty(Epochuoti_pagal_stimulus_);
                     Epochuoti_pagal_stimulus={};
                     for i_epoch=1:length(Epochuoti_pagal_stimulus_) ;
@@ -3265,14 +3291,28 @@ try
                         catch
                             orig_epoch=Epochuoti_pagal_stimulus_(i_epoch); % skaičiams
                         end;
-                        %disp(orig_epoch);disp(isstr(orig_epoch));
+                        %disp(orig_epoch);disp(ischar(orig_epoch));
                         if isnumeric(orig_epoch);
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus num2str(orig_epoch)];
-                        elseif isstr(orig_epoch);
-                            if isstr(EEGTMP.event(1).type);
+                        elseif ischar(orig_epoch);
+                            if ischar(EEGTMP.event(1).type);
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus orig_epoch];
                             else
+                                % Skaitinis į raidinį
+                                warning('Tikėtasi raidinių įvykių, o ne skaitinių! Kovertuojama...')
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus num2str(str2num(orig_epoch))];
+                                try
+                                    ivykiai={EEGTMP.event.type};
+                                    if ~iscellstr(ivykiai);
+                                        for ii=1:length(ivykiai);
+                                            try
+                                                EEGTMP.event(ii).type=num2str(EEGTMP.event(ii).type);
+                                            catch
+                                            end
+                                        end;
+                                    end;
+                                catch
+                                end
                             end;                            
                         else
                             warning([lokaliz('Internal error') '. ']);
@@ -3280,19 +3320,12 @@ try
                         end;
                     end;
                 EEGTMP = pop_selectevent( EEGTMP, ...
-                    'type', Epochuoti_pagal_stimulus ,...
+                    'type', Epochuoti_pagal_stimulus, ...
                     'deleteevents','off',...
                     'deleteepochs','on',...
                     'invertepochs','off');
             end;
-            if isempty(EEGTMP.data);                
-			    listbox1_val=setdiff(get(handles.listbox1,'Value'),i);
-                if and(isempty(listbox1_val),length(Fs)==1); listbox1_val=1; end;
-                set(handles.listbox1,'Value',listbox1_val);
-                error([lokaliz('Empty dataset') '. ' lokaliz('File') ': ' Rinkmena]);
-            end;
             EEGTMP=setfield(EEGTMP,'chanlocs2',[]);
-            EEGTMP=setfield(EEGTMP,'erp_data',[]);
             EEGTMP=setfield(EEGTMP,'chans',{});
             %ALLEEGTMP(i)=EEGTMP;
             %[~, EEGTMP, ~] = eeg_store(ALLEEGTMP, EEGTMP);
@@ -3439,21 +3472,33 @@ try
                         grpsar{grpid}='?';
                     end;
                     ALLEEG__(grpid).file=grpsar{grpid};
+                    ALLEEG__(grpid).filepath='';
+                    ALLEEG__(grpid).filename='';
+                    ALLEEG__(grpid).pnts=ALLEEG_(grpid).pnts;
                     ALLEEG__(grpid).times=ALLEEG_(grpid).times;
                     ALLEEG__(grpid).srate=ALLEEG_(grpid).srate;
+                    ALLEEG__(grpid).chanlocs=struct('labels',[], 'type',[], 'theta',[], 'radius',[], 'X',[], 'Y',[], 'Z',[], 'sph_theta',[], 'sph_phi',[], 'sph_radius',[], 'urchan',[], 'ref', '');
+                    ki=0;
                     for k=1:uniq_kan_N;
                         tmp=[];
-                        di=1;
+                        di=0;
                         for d=grpnar{grpid};
                             idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
+                            di=di+1;
                             if ~isempty(idx);
                                 tmp(di,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                                chanlocs1=ALLEEG_(d).chanlocs(idx);
+                            elseif ~isempty(tmp)
+                                warning(sprintf('„%s“ grupės rinkmena „%s“ neturi %s kanalo', grpsar{grpid}, ALLEEG_(d).file, uniq_kan{k}));
                             end;
-                            di=di+1;
                         end;
-                        %assignin('base','tmp',tmp)
-                        ALLEEG__(grpid).erp_data(k,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
+                        if ~isempty(tmp)
+                            ki=ki+1;
+                            ALLEEG__(grpid).chanlocs(ki)=chanlocs1;
+                            ALLEEG__(grpid).erp_data(ki,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
+                        end;
                     end;
+                    ALLEEG__(grpid).nbchan=ki;
                     legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),1)={grpsar{grpid}};
                     legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),2)=uniq_kan';
                     

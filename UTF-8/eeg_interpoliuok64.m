@@ -6,7 +6,7 @@
 % 
 %%
 %
-% (C) 2016 Mindaugas Baranauskas
+% (C) 2016-2017 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -141,12 +141,16 @@ KANALU_DUOMENYS={
     'PO8','',144.142000000000,0.522311111111111,-68.7208994216315,-49.6689040281160,-5.95297869371352,-144.142000000000,-4.01600000000001,85,64,'';
     } ;
 
-NORIMU_KANALU_DUOMENYS=KANALU_DUOMENYS(find(ismember(KANALU_DUOMENYS(:,1),Reikalingi_kanalai)),:) ;
+Neinterpoliuojami_kanalai=setdiff(lower(Reikalingi_kanalai), lower(KANALU_DUOMENYS(:,1)));
+if ~isempty(Neinterpoliuojami_kanalai)
+    disp('Funkcijos vidinė kanalų struktūra neleidžia interpoliuoti kai kurių prašomų kanalų:');
+    disp(Neinterpoliuojami_kanalai);
+    Reikalingi_kanalai=intersect(lower(Reikalingi_kanalai), lower(KANALU_DUOMENYS(:,1)));
+end
+NORIMU_KANALU_DUOMENYS=KANALU_DUOMENYS(find(ismember(lower(KANALU_DUOMENYS(:,1)),lower(Reikalingi_kanalai))),:) ;
 
-% disp([length(NORIMU_KANALU_DUOMENYS) length(Reikalingi_kanalai)]);
 
 % Bandyti išlaikyti seną atskaitos sistemą
-
 reference=unique({EEG.chanlocs.ref});
 if length(reference) == 1;
     reference=reference{1};
@@ -155,7 +159,7 @@ else
 end;
 
 % Sukurti naują EEG.chanlocs
-
+EEG.chanlocs2=struct();
 for k=1:length(Reikalingi_kanalai) ;
     EEG.chanlocs2(k).labels=    NORIMU_KANALU_DUOMENYS{k,1}         ;
     EEG.chanlocs2(k).type=      NORIMU_KANALU_DUOMENYS{k,2}         ;
@@ -173,7 +177,7 @@ end ;
 
 %% Pats interpoliavimas
 
-[EEG, LASTCOM] = pop_interp(EEG, [EEG.chanlocs2], 'spherical');
+[EEG, LASTCOM] = pop_interp(EEG, EEG.chanlocs2, 'spherical');
 EEG = eegh(LASTCOM, EEG);
 
 %% Atmesti nepasirinktus

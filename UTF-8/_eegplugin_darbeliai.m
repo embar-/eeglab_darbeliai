@@ -201,7 +201,8 @@ curdir=[curdir filesep];
 
 
 % Atnaujinti eegplot_w1.1.2 > eegplot_w1.1.3
-if exist(fullfile(curdir,'external','pop_eegplot_w.m'),'file') == 2 || ...
+if 0; % ištrinkite šią eilutę ir atkomentuokite tolesnę
+%if exist(fullfile(curdir,'external','pop_eegplot_w.m'),'file') == 2 || ...
    exist(fullfile(curdir,'external','eegplot_w.m'),'file') == 2
    eeglab_plugins_dir=fileparts(fileparts(curdir));
 

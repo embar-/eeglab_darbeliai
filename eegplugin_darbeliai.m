@@ -201,7 +201,8 @@ curdir=[curdir filesep];
 
 
 % Atnaujinti eegplot_w1.1.2 > eegplot_w1.1.3
-if exist(fullfile(curdir,'external','pop_eegplot_w.m'),'file') == 2 || ...
+if 0; % ištrinkite šią eilutę ir atkomentuokite tolesnę
+%if exist(fullfile(curdir,'external','pop_eegplot_w.m'),'file') == 2 || ...
    exist(fullfile(curdir,'external','eegplot_w.m'),'file') == 2
    eeglab_plugins_dir=fileparts(fileparts(curdir));
 
@@ -407,7 +408,6 @@ if and((exist('atnaujinimas.m','file') == 2),...
    
 end;
 
-
 % Ieskoti Ragu
 if ~(exist('Ragu.m','file') == 2 ) ;
     eeglab_plugin_dir=([ fileparts(which('eeglab')) filesep 'plugins' filesep ]);
@@ -497,8 +497,8 @@ if and(exist('atnaujinimas.m','file') == 2,...
       h=gcf;
       %msgbox(Tekstas, lokaliz('Nauja versija'));
       uimenu( darbeliai_m, 'Label', Atnaujinimo_meniu_pavadinimas, ...
-          'separator','off', ...
-          'foregroundcolor', 'r', 'userdata', on, 'Callback', [ 'atnaujinimas ;' ] );
+          'separator','off', 'userdata', on, ...
+          'foregroundcolor', 'r', 'Callback', [ 'atnaujinimas ;' ] );
       figure(h);
    else
       Atnaujinimo_meniu_pavadinimas=lokaliz('Check for updates');
