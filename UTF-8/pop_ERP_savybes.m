@@ -1050,7 +1050,6 @@ end;
 
 %% ERP savybių surinkimas, kai prašoma vidurkinti
 
-%if 1==0;
 if get(handles.checkbox58, 'Value');
   if and(Ar_eksportuoti_savybes,get(handles.checkbox58, 'Value'));
             
@@ -1126,21 +1125,24 @@ if get(handles.checkbox58, 'Value');
                     ALLEEG__(grpid).times=ALLEEG_(grpid).times;
                     ALLEEG__(grpid).srate=ALLEEG_(grpid).srate;
                     ALLEEG__(grpid).file=grpsar{grpid};
+                    ki=0;
                     for k=1:uniq_kan_N;
                         tmp=[];
-                        di=1;
+                        di=0;
                         for d=grpnar{grpid};
-                            %if get(handles.checkbox59, 'Value');
-                            %else
-                            idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
-                            tmp(di,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
                             di=di+1;
-                            %end;
+                            idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
+                            if ~isempty(idx);
+                                 tmp(di,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                             elseif ~isempty(tmp)
+                                 warning(sprintf('„%s“ grupės rinkmena „%s“ neturi %s kanalo', grpsar{grpid}, ALLEEG_(d).file, uniq_kan{k}));
+                             end;
                         end;
-                        ALLEEG__(grpid).erp_data(k,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
+                        if ~isempty(tmp)
+                            ki=ki+1;
+                            ALLEEG__(grpid).erp_data(ki,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
+                        end;
                     end;
-                    %legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),1)={grpsar{grpid}};
-                    %legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),2)=uniq_kan';
                     
                     [ERP_savyb(grpid).plotas,        ERP_savyb(grpid).vid_ampl,...
                         ERP_savyb(grpid).pusplocio_x,ERP_savyb(grpid).pusplocio_y,...
@@ -3275,6 +3277,12 @@ try
             end;
             [ALLEEGTMP, EEGTMP, ~] = eeg_store(ALLEEGTMP, EEGTMP,i);
             [~, EEGTMP, ~] = pop_newset(EEGTMP, EEGTMP, 1,'retrieve',1,'study',0);
+            if isempty(EEGTMP.data);
+                listbox1_val=setdiff(get(handles.listbox1,'Value'),i);
+                if and(isempty(listbox1_val),length(Fs)==1); listbox1_val=1; end;
+                set(handles.listbox1,'Value',listbox1_val);
+                error([lokaliz('Empty dataset') '. ' lokaliz('File') ': ' Rinkmena]);
+            end;
             if ~isempty(Epochuoti_pagal_stimulus_);
                     Epochuoti_pagal_stimulus={};
                     for i_epoch=1:length(Epochuoti_pagal_stimulus_) ;
@@ -3317,14 +3325,7 @@ try
                     'deleteepochs','on',...
                     'invertepochs','off');
             end;
-            if isempty(EEGTMP.data);                
-			    listbox1_val=setdiff(get(handles.listbox1,'Value'),i);
-                if and(isempty(listbox1_val),length(Fs)==1); listbox1_val=1; end;
-                set(handles.listbox1,'Value',listbox1_val);
-                error([lokaliz('Empty dataset') '. ' lokaliz('File') ': ' Rinkmena]);
-            end;
             EEGTMP=setfield(EEGTMP,'chanlocs2',[]);
-            EEGTMP=setfield(EEGTMP,'erp_data',[]);
             EEGTMP=setfield(EEGTMP,'chans',{});
             %ALLEEGTMP(i)=EEGTMP;
             %[~, EEGTMP, ~] = eeg_store(ALLEEGTMP, EEGTMP);
@@ -3471,21 +3472,33 @@ try
                         grpsar{grpid}='?';
                     end;
                     ALLEEG__(grpid).file=grpsar{grpid};
+                    ALLEEG__(grpid).filepath='';
+                    ALLEEG__(grpid).filename='';
+                    ALLEEG__(grpid).pnts=ALLEEG_(grpid).pnts;
                     ALLEEG__(grpid).times=ALLEEG_(grpid).times;
                     ALLEEG__(grpid).srate=ALLEEG_(grpid).srate;
+                    ALLEEG__(grpid).chanlocs=struct('labels',[], 'type',[], 'theta',[], 'radius',[], 'X',[], 'Y',[], 'Z',[], 'sph_theta',[], 'sph_phi',[], 'sph_radius',[], 'urchan',[], 'ref', '');
+                    ki=0;
                     for k=1:uniq_kan_N;
                         tmp=[];
-                        di=1;
+                        di=0;
                         for d=grpnar{grpid};
                             idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
+                            di=di+1;
                             if ~isempty(idx);
                                 tmp(di,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
+                                chanlocs1=ALLEEG_(d).chanlocs(idx);
+                            elseif ~isempty(tmp)
+                                warning(sprintf('„%s“ grupės rinkmena „%s“ neturi %s kanalo', grpsar{grpid}, ALLEEG_(d).file, uniq_kan{k}));
                             end;
-                            di=di+1;
                         end;
-                        %assignin('base','tmp',tmp)
-                        ALLEEG__(grpid).erp_data(k,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
+                        if ~isempty(tmp)
+                            ki=ki+1;
+                            ALLEEG__(grpid).chanlocs(ki)=chanlocs1;
+                            ALLEEG__(grpid).erp_data(ki,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
+                        end;
                     end;
+                    ALLEEG__(grpid).nbchan=ki;
                     legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),1)={grpsar{grpid}};
                     legendoje((1+((grpid-1)*uniq_kan_N)):(uniq_kan_N*grpid),2)=uniq_kan';
                     
