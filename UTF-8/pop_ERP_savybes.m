@@ -1125,7 +1125,6 @@ if get(handles.checkbox58, 'Value');
                     ALLEEG__(grpid).times=ALLEEG_(grpid).times;
                     ALLEEG__(grpid).srate=ALLEEG_(grpid).srate;
                     ALLEEG__(grpid).file=grpsar{grpid};
-                    ki=0;
                     for k=1:uniq_kan_N;
                         tmp=[];
                         di=0;
@@ -1134,13 +1133,14 @@ if get(handles.checkbox58, 'Value');
                             idx=find(ismember(ALLEEG_(d).chans,uniq_kan{k}));
                             if ~isempty(idx);
                                  tmp(di,1:length(ALLEEG__(grpid).times))=ALLEEG_(d).erp_data(idx,:);
-                             elseif ~isempty(tmp)
+                            else%if ~isempty(tmp)
                                  warning(sprintf('„%s“ grupės rinkmena „%s“ neturi %s kanalo', grpsar{grpid}, ALLEEG_(d).file, uniq_kan{k}));
                              end;
                         end;
                         if ~isempty(tmp)
-                            ki=ki+1;
-                            ALLEEG__(grpid).erp_data(ki,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
+                            ALLEEG__(grpid).erp_data(k,1:length(ALLEEG__(grpid).times))=mean(tmp,1);
+                        else
+                            warning(lokaliz('Internal error'));
                         end;
                     end;
                     
