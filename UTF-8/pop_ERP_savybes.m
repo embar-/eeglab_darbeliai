@@ -888,7 +888,21 @@ for i=1:Pasirinktu_failu_N;
                             if isstr(EEGTMP.event(1).type);
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus orig_epoch];
                             else
+                                % Skaitinis į raidinį
+                                warning('Tikėtasi raidinių įvykių, o ne skaitinių! Kovertuojama...')
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus num2str(str2num(orig_epoch))];
+                                try
+                                    ivykiai={EEGTMP.event.type};
+                                    if ~iscellstr(ivykiai);
+                                        for ii=1:length(ivykiai);
+                                            try
+                                                EEGTMP.event(ii).type=num2str(EEGTMP.event(ii).type);
+                                            catch
+                                            end
+                                        end;
+                                    end;
+                                catch
+                                end
                             end;                            
                         else
                             warning([lokaliz('Internal error') '. ']);
@@ -3272,7 +3286,21 @@ try
                             if isstr(EEGTMP.event(1).type);
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus orig_epoch];
                             else
+                                % Skaitinis į raidinį
+                                warning('Tikėtasi raidinių įvykių, o ne skaitinių! Kovertuojama...')
                                 Epochuoti_pagal_stimulus=[Epochuoti_pagal_stimulus num2str(str2num(orig_epoch))];
+                                try
+                                    ivykiai={EEGTMP.event.type};
+                                    if ~iscellstr(ivykiai);
+                                        for ii=1:length(ivykiai);
+                                            try
+                                                EEGTMP.event(ii).type=num2str(EEGTMP.event(ii).type);
+                                            catch
+                                            end
+                                        end;
+                                    end;
+                                catch
+                                end
                             end;                            
                         else
                             warning([lokaliz('Internal error') '. ']);
