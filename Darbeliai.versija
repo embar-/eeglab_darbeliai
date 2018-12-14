@@ -1,13 +1,15 @@
-Darbeliai v2017.07.01.1
+Darbeliai v2018.12.14.1
 
 LT:
-1. Ištaisyti nuo v2017.02.03.1 esančią pop_eeg_peržiūros klaidą,
-kai atsisakoma rodyti ICA kreives, nors EEG.icaact yra.
-2. Įkeliant EEG įrašus su eeg_įkelk, skaitinius įvykius bandoma
+1. Naujas veiksmų meniu rinkmenų pasirinkimui pagal 
+meta duomenis.
+2. SĮSP savybių eksportavime skaitinius įvykius
 konvertuoti į raidinius (numatytasis EEGLAB tipas).
+3. Interpoliuoti kanalus tik remiantis vidine schema.
 
 EN:
-1. If EEG.icaact exist, display ICA curves in
-pop_eeg_perziura again (bug existed since v2017.02.03.1)
-2. Try convert numeric EEG events into alphanumeric
-(default type of EEGLAB event variables)
+1. New actions menu for selecting files by metadata.
+2. Convert numeric EEG events into alphanumeric
+(default type of EEGLAB event variables) while
+using dialog for export of ERP properties.
+3. Interpolate channels only by internal scheme.
