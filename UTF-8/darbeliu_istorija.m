@@ -1,6 +1,15 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2018.12.14
+% + Naujas veiksmų meniu rinkmenų pasirinkimui pagal meta duomenis.
+% ~ SĮSP savybių eksportavime skaitinius įvykius
+%   konvertuoti į raidinius (numatytasis EEGLAB tipas).
+% ~ Interpoliuoti kanalus tik remiantis vidine schema.
+% ~ Jei katalogo nėra, pirmiau tikrinti viršesnį.
+% ~ Numatytuoju atveju tarp atrenkamų kanalų bus ir EOGv.
+% + eeg_peržiūra: priimti laiko pločio parametrą.
+%
 % v2017.06.20.1
 % ~ Ištaisyti nuo v2017.02.03.1 esančią pop_eeg_peržiūros klaidą, kai 
 %   atsisakoma rodyti ICA kreives, nors EEG.icaact yra.
