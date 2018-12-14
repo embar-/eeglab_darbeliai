@@ -1293,7 +1293,7 @@ end;
 
 %% Eksportuoti pačius ERP duomenis, o ne savybes
 
-if and(~isempty(ALLEEG_(1).file),get(handles.checkbox69,'Value'));
+if and(~isempty(ALLEEG_(1).file),Ar_eksportuoti_ERP);
     
     %% Eksportuoti RAGU programai
     
