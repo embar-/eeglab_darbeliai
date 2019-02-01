@@ -201,7 +201,7 @@ curdir=[curdir filesep];
 
 
 % Atnaujinti eegplot_w1.1.2 > eegplot_w1.1.3
-if 0; % ištrinkite šią eilutę ir atkomentuokite tolesnę
+if 0; % istrinkite sia eilute ir atkomentuokite tolesne
 %if exist(fullfile(curdir,'external','pop_eegplot_w.m'),'file') == 2 || ...
    exist(fullfile(curdir,'external','eegplot_w.m'),'file') == 2
    eeglab_plugins_dir=fileparts(fileparts(curdir));
@@ -254,7 +254,7 @@ if ~isempty(lc{1});
 end;
 
 %encoding='windows-1257';
-
+disp([' Koduote: ' encoding]);
 utfdir=[curdir 'UTF-8' filesep ];
 encdir=[curdir encoding filesep ];
 olddir=[curdir '___' filesep ];
@@ -513,6 +513,7 @@ end;
 LC_='';
 try LC_=[lc(1) ' ' lc(2)]; catch; end;
 try LC=javaObject ('java.util.Locale',''); LC_=LC.getDefault(); catch; end;
+disp([' Kalba: ' char(LC_) ]);
 if strcmp(LC_,'lt_LT');
 uimenu( darbeliai_m, 'Label',  [ lokaliz('Apie') ' ' vers ] , ...
           'separator','off', 'userdata', on, 'callback', ...

@@ -254,7 +254,7 @@ if ~isempty(lc{1});
 end;
 
 %encoding='windows-1257';
-
+disp([' Koduotė: ' encoding]);
 utfdir=[curdir 'UTF-8' filesep ];
 encdir=[curdir encoding filesep ];
 olddir=[curdir '___' filesep ];
@@ -513,6 +513,7 @@ end;
 LC_='';
 try LC_=[lc(1) ' ' lc(2)]; catch; end;
 try LC=javaObject ('java.util.Locale',''); LC_=LC.getDefault(); catch; end;
+disp([' Kalba: ' char(LC_) ]);
 if strcmp(LC_,'lt_LT');
 uimenu( darbeliai_m, 'Label',  [ lokaliz('Apie') ' ' vers ] , ...
           'separator','off', 'userdata', on, 'callback', ...
