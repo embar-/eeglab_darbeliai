@@ -3789,8 +3789,8 @@ try
                         isskirciu_koef=3; % 3 – išskirtis; 1.5 – sąlyginė išskirtis;
                         isk_rib1=prctile(kor_lent_a_i_d,25)-isskirciu_koef*iqr1;
                         isk_rib2=prctile(kor_lent_a_i_d,75)+isskirciu_koef*iqr1;
-                        find(kor_lent_a_i_d < isk_rib1);
-                        find(kor_lent_a_i_d > isk_rib2);
+                        %find(kor_lent_a_i_d < isk_rib1);
+                        %find(kor_lent_a_i_d > isk_rib2);
                         isskirtys_i=[find(kor_lent_a_i_d < isk_rib1) find(kor_lent_a_i_d > isk_rib2)];
                         if isempty(isskirtys_i);
                             isskirtys='';
