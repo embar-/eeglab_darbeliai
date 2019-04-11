@@ -36,7 +36,6 @@ function [RR_idx,RRI]=QRS_detekt(EKG, sampling_rate, mode, varargin)
 %%
 
 SR=sampling_rate;
-qrs=[]; 
 RR_idx=[];
 
 if length(EKG)/SR < 2.5 ; 
@@ -121,8 +120,7 @@ switch mode
         % Suppappola, S.; Sun, Y., "Nonlinear transforms of ECG signals
         % for digital QRS detection: A quantitative analysis",
         % IEEE Trans. Biomed. Eng., 41/4, April 1994
-        qrs=QRS_detekt_mobd(EKG,SR);
-        RR_idx=qrs;
+        RR_idx=QRS_detekt_mobd(EKG,SR);
         
         
     case {4, '4'}
