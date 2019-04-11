@@ -128,7 +128,7 @@ function scrollHandles = scrollplot2(varargin)
         end
 
         % Ensure that all supplied handles are valid HG handles
-        if isempty(plotHandles) | ~all(ishandle(plotHandles))  %#ok for Matlab 6 compatibility (note that Matlab 6 did not have ishghandle())
+        if isempty(plotHandles) || ~all(ishandle(plotHandles))  %#ok for Matlab 6 compatibility (note that Matlab 6 did not have ishghandle())
             myError('YMA:scrollplot:invalidHandle','invalid plot handle(s) passed to scrollplot');
         end
 
@@ -368,7 +368,7 @@ function hScroll = addScrollPlot(hAx,axName)
 
     % Set the mouse callbacks
     winFcn = get(hFig,'WindowButtonMotionFcn');
-    if ~isempty(winFcn) & ~isequal(winFcn,@mouseMoveCallback) & (~iscell(winFcn) | ~isequal(winFcn{1},@mouseMoveCallback))  %#ok for Matlab 6 compatibility
+    if ~isempty(winFcn) & ~isequal(winFcn,@mouseMoveCallback) & (~iscell(winFcn) || ~isequal(winFcn{1},@mouseMoveCallback))  %#ok for Matlab 6 compatibility
         setappdata(hFig, 'scrollplot_oldButtonMotionFcn',winFcn);
     end
     set(hFig,'WindowButtonMotionFcn',@mouseMoveCallback);
@@ -487,7 +487,7 @@ function [pvPairs, axName] = preProcessArgs(pvPairs)
             case {'axis','axes'}
                 axName = pvPairs{idx+1};
                 % Ensure we got a valid axis name: 'x','y','xy' or 'yx'
-                if ~ischar(axName) | ~any(strcmpi(axName,{'x','y','xy','yx'}))  %#ok for Matlab 6 compatibility
+                if ~ischar(axName) || ~any(strcmpi(axName,{'x','y','xy','yx'}))  %#ok for Matlab 6 compatibility
                     myError('YMA:scrollplot:invalidProperty','Invalid scrollplot ''Axis'' property value: only ''x'',''y'' & ''xy'' are accepted');
                 end
                 % Remove from the PV pairs list and move on
@@ -743,7 +743,7 @@ function mouseWithinPatch(hFig,inDragMode,hAx,scrollPatch,cx,isOverBar)
         else
             winUpFcn = get(hFig,'WindowButtonUpFcn');
         end
-        if isempty(winUpFcn) | (~isequal(winUpFcn,@mouseUpCallback) & (~iscell(winUpFcn) | ~isequal(winUpFcn{1},@mouseUpCallback)))  %#ok for Matlab 6 compatibility
+        if isempty(winUpFcn) || (~isequal(winUpFcn,@mouseUpCallback) & (~iscell(winUpFcn) || ~isequal(winUpFcn{1},@mouseUpCallback)))  %#ok for Matlab 6 compatibility
 
             % Set the ButtonUpFcn callbacks
             if ~isempty(winUpFcn)
@@ -1021,7 +1021,7 @@ function mouseDownCallback(varargin)
         if isempty(hFig) & ~isempty(varargin)  %#ok for Matlab 6 compatibility
             hFig = ancestor(varargin{1},'figure');
         end
-        if isempty(hFig) | ~ishandle(hFig),  return;  end  %#ok just in case..
+        if isempty(hFig) || ~ishandle(hFig),  return;  end  %#ok just in case..
         setappdata(hFig, 'scrollplot_mouseUpPointer',getptr(hFig));
         newPtr = getappdata(hFig, 'scrollplot_mouseDownPointer');
         if ~isempty(newPtr)
@@ -1107,7 +1107,7 @@ function mouseUpCallback(varargin)
                 hFig = ancestor(varargin{1},'figure');
             end
         end
-        if isempty(hFig) | ~ishandle(hFig),  return;  end  %#ok just in case..
+        if isempty(hFig) || ~ishandle(hFig),  return;  end  %#ok just in case..
         if isappdata(hFig, 'scrollplot_mouseUpPointer')
             mouseUpPointer = getappdata(hFig, 'scrollplot_mouseUpPointer');
             set(hFig,mouseUpPointer{:});
@@ -1121,7 +1121,7 @@ function mouseUpCallback(varargin)
 
         % Try to chain the original WindowButtonUpFcn (if available)
         oldFcn = getappdata(hFig, 'scrollplot_oldButtonUpFcn');
-        if ~isempty(oldFcn) & ~isequal(oldFcn,@mouseUpCallback) & (~iscell(oldFcn) | ~isequal(oldFcn{1},@mouseUpCallback))  %#ok for Matlab 6 compatibility
+        if ~isempty(oldFcn) & ~isequal(oldFcn,@mouseUpCallback) & (~iscell(oldFcn) || ~isequal(oldFcn{1},@mouseUpCallback))  %#ok for Matlab 6 compatibility
             hgfeval(oldFcn);
         end
     catch
@@ -1224,7 +1224,7 @@ function setOnce(hndl,propName,propValue)
 %% Callback for parent axes property changes
 function parentAxesChanged(schemaProp, eventData, hFig, hAx, hScrollPatch, hScrollBars, propName)  %#ok - first 2 are unused
     try
-        if isempty(hFig) | ~ishandle(hFig),  return;  end  %#ok just in case..
+        if isempty(hFig) || ~ishandle(hFig),  return;  end  %#ok just in case..
         newPropVal = get(hAx,propName);        
         hScroll = get(hScrollPatch, 'Parent');
         axName  = get(hScroll, 'userdata');
