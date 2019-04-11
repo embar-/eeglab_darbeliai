@@ -132,15 +132,16 @@ end
     
     %% Locate the R wave location by finding the highest local maxima
       if state == 1 % look for the highest peak
-          
-            if  currentmax > buffer_plot(i-window)
+
+          window400ms=round(0.040*fs);
+            if  currentmax > buffer_plot(i-window) && ind > window400ms
                 dum = dum + 1;
                 if dum > 4 
                 R_i = [R_i ind];%save index
                 R_amp = [R_amp buffer_plot(ind)]; %save index
-                % Locate Q wave
-                [Q_tamp Q_ti] = min(buffer_plot(ind-round(0.040*fs):(ind)));
-                Q_ti = ind-round(0.040*fs) + Q_ti -1;
+                % Locate Q
+                [Q_tamp Q_ti] = min(buffer_plot(ind-window400ms:(ind)));
+                Q_ti = ind-window400ms + Q_ti -1;
                 Q_i = [Q_i Q_ti];
                 Q_amp = [Q_amp Q_tamp];
                 
