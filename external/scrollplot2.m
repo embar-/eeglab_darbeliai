@@ -768,9 +768,9 @@ function mouseWithinPatch(hFig,inDragMode,hAx,scrollPatch,cx,isOverBar)
             end
             scrollBarIdx = getappdata(hFig, 'scrollplot_clickedBarIdx');
             scrollBars = sort(findobj(hAx, 'tag','scrollBar'));
-            %barsXs = cellfun(@(c)c(1),get(scrollBars,dataStr));  % cellfun is very limited on Matlab 6...
-            barsXs = getFirstVals(get(scrollBars,dataStr));
-            if barsXs(1)>barsXs(2)  % happens after dragging one bar beyond the other
+            %barXs = cellfun(@(c)c(1),get(scrollBars,dataStr));  % cellfun is very limited on Matlab 6...
+            barXs = getFirstVals(get(scrollBars,dataStr));
+            if barXs(1)>barXs(2)  % happens after dragging one bar beyond the other
                 scrollBarIdx = 3 - scrollBarIdx;  % []=>[], 1=>2, 2=>1
                 scrollBars = scrollBars([2,1]);
             end
