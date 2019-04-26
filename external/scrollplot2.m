@@ -901,18 +901,24 @@ function mouseMoveCallback(varargin)
                 if or(isempty(fja1),~isempty(branot)) ; 
                     fja0=''; try fja0=getappdata(cAx,'originalButtonDownFcn'); catch;  end;
                     if ~isnumeric(fja0);
-                        axes(cAx);
+                        if ~isequal(cAx,gca)
+                            axes(cAx);
+                        end
                         set(cAx,'ButtonDownFcn',fja0);
                     end;
                     fjaM=getappdata(cAx,'MouseInMainAxesFnc_BrushModeCont');
                     if ~isnumeric(fjaM);
-                        axes(cAx);
+                        if ~isequal(cAx,gca)
+                            axes(cAx);
+                        end
                         try feval(fjaM{:}); catch; end;
                     end;
                 else
                     fjaM=getappdata(cAx,'MouseInMainAxesFnc');
                     if ~isnumeric(fjaM);
-                        axes(cAx);
+                        if ~isequal(cAx,gca)
+                            axes(cAx);
+                        end
                         try feval(fjaM{:}); catch; end;
                     end;
                 end;
