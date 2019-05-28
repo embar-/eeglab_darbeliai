@@ -1803,7 +1803,7 @@ try
         catch err;
             Kanalai=arrayfun(@(i) sprintf('%d', i), [1:Kanalu_N], 'UniformOutput', false);
         end;
-        KanaloNr=find(ismember(Kanalai,{'EKG' 'ECG'}),1);
+        KanaloNr=find(ismember(Kanalai,{'EKG' 'ECG' 'EKG_CH5'}),1);
         if isempty(KanaloNr); KanaloNr=1; end;
            KanaloNr=listdlg(...
             'ListString',Kanalai,...
@@ -1857,7 +1857,11 @@ try
     end;
     
     EKG=[double(EEG.data(KanaloNr,di))]';
-    if ekg_apversta(EKG,EKG_Hz,0); EKG=-EKG; end;
+    if round(mean(EKG)) ~= 0
+        try EKG=fun_ECG_Filter(EKG_Hz,EKG); catch; end;
+    end
+    
+    if ekg_apversta(EKG(1:min(10000,end)),EKG_Hz,0); EKG=-EKG; end;
     handles.EKG=EKG;
     handles.EKG_laikai=[EKG_laikai / 1000]'; % sekundėmis
     handles.EKG_Hz=EKG_Hz;
