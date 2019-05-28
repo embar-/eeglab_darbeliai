@@ -859,6 +859,7 @@ set(handles.pushbutton_atnaujinti,'Enable','off');
 set(handles.atnaujinti,'Enable','off');
 guidata(hObject,handles);
 %drawnow;
+nejungti=str2num(get(handles.edit_nejungti,'String'));
 langelio_ribos_x=get(handles.axes_rri,'xlim');
 rri_lin=[handles.RRI_lin handles.RRI_tsk ];
 if get(handles.checkbox_ekg,'Value');
@@ -880,93 +881,80 @@ end;
 
 
 if iscell(RRI_);
-    if length(RRI_) < 2 ; RRI_(2)=RRI_(1); Laikai_(2)=Laikai_(1); end;
-    if length(RRI_) < 3 ; RRI_(3)=RRI_(1); Laikai_(3)=Laikai_(1); end;
-    if length(RRI_{3})==1;
-        if isnan(RRI_{3}); RRI_(3)=RRI_(1); Laikai_(3)=Laikai_(1); end;
-    end;
-    RRI1=RRI_{1}; RRI2=RRI_{2}; RRI3=RRI_{3};
-    RRI__=nan(length(Laikai__),1);
-    for i=1:length(Laikai__);
-            ri1=find(Laikai_{1}==Laikai__(i)); 
-            ri2=find(Laikai_{2}==Laikai__(i)); 
-            ri3=find(Laikai_{3}==Laikai__(i)); 
-            if ri1>length(RRI1); warning('kažas negerai'); disp('ri1='); disp(ri1); ri1=ri1(ri1<=length(RRI1)); end;
-            if ri2>length(RRI2); warning('kažas negerai'); disp('ri2='); disp(ri2); ri2=ri2(ri2<=length(RRI2)); end;
-            if ri3>length(RRI3); warning('kažas negerai'); disp('ri3='); disp(ri3); ri3=ri3(ri3<=length(RRI3)); end;
+    if length(RRI_) == 1 || ...
+      (length(RRI_) == 2 && isequal(RRI_(1),RRI_(2)) && isequal(Laikai_(1),Laikai_(2))) || ...
+      (length(RRI_) == 3 && isequal(RRI_(1),RRI_(2)) && isequal(RRI_(1),RRI_(3)) && isequal(Laikai_(1),Laikai_(2)) && isequal(Laikai_(1),Laikai_(3)))
+        RRI__=RRI_{1}; Laikai__=Laikai__{1};
+    elseif (length(RRI_) == 2 && isequal(Laikai_(1),Laikai_(2)))
+        RRI__=(RRI_{1}+RRI_{2}) ./ 2;
+    elseif (length(RRI_) == 3 && isequal(Laikai_(1),Laikai_(2)) && isequal(Laikai_(1),Laikai_(3)))
+        RRI__=(RRI_{1}+RRI_{2}+RRI_{3}) ./ 3;
+    else
+        if length(RRI_) < 2 ; RRI_(2)=RRI_(1); Laikai_(2)=Laikai_(1); end;
+        if length(RRI_) < 3 ; RRI_(3)=RRI_(1); Laikai_(3)=Laikai_(1); end;
+        if length(RRI_{3})==1;
+            if isnan(RRI_{3}); RRI_(3)=RRI_(1); Laikai_(3)=Laikai_(1); end;
+        end;
+        RRI1=RRI_{1}; RRI2=RRI_{2}; RRI3=RRI_{3};
+        RRI__=nan(length(Laikai__),1);
+        for i=1:length(Laikai__);
+            ri1=find(ismember(Laikai_{1},Laikai__(i)));
+            ri2=find(ismember(Laikai_{2},Laikai__(i)));
+            ri3=find(ismember(Laikai_{3},Laikai__(i)));
+            % if ri1>length(RRI1); warning('kažas negerai'); disp('ri1='); disp(ri1); ri1=ri1(ri1<=length(RRI1)); end;
+            % if ri2>length(RRI2); warning('kažas negerai'); disp('ri2='); disp(ri2); ri2=ri2(ri2<=length(RRI2)); end;
+            % if ri3>length(RRI3); warning('kažas negerai'); disp('ri3='); disp(ri3); ri3=ri3(ri3<=length(RRI3)); end;
             if isempty(ri1); r1=NaN; else r1=RRI1(ri1); end;
             if isempty(ri2); r2=NaN; else r2=RRI2(ri2); end;
             if isempty(ri3); r3=NaN; else r3=RRI3(ri3); end;
-            if length(r1)>1; warning('kažas negerai'); disp('r1='); disp(r1); r1=unique(r1); if length(r1)>1; r1=r1(r1>0); end; end;
-            if length(r2)>1; warning('kažas negerai'); disp('r2='); disp(r2); r2=unique(r2); if length(r2)>1; r2=r2(r2>0); end; end;
-            if length(r3)>1; warning('kažas negerai'); disp('r3='); disp(r3); r3=unique(r3); if length(r3)>1; r3=r3(r3>0); end; end;
-        try % Dėl visa pikto gaudykim klaidą kertinėje atnaujinimo vietoje
-            r=(r1+r2+r3)/3; % NaN + 1 = NaN
-            RRI__(i,1)=r; 
-        catch err;
-            Pranesk_apie_klaida(err);
-            assignin('base','RRI__',RRI__);
-            assignin('base','r1',r1);
-            assignin('base','r2',r2);
-            assignin('base','r3',r3);
-            pause(5);
-            uiresume;
-            assignin('base','r', r);
-            rethrow(err);
+            % if length(r1)>1; warning('kažas negerai'); disp('r1='); disp(r1); r1=unique(r1); if length(r1)>1; r1=r1(r1>0); end; end;
+            % if length(r2)>1; warning('kažas negerai'); disp('r2='); disp(r2); r2=unique(r2); if length(r2)>1; r2=r2(r2>0); end; end;
+            % if length(r3)>1; warning('kažas negerai'); disp('r3='); disp(r3); r3=unique(r3); if length(r3)>1; r3=r3(r3>0); end; end;
+            try % Dėl visa pikto gaudykim klaidą kertinėje atnaujinimo vietoje
+                r=(r1+r2+r3)/3; % NaN + 1 = NaN
+                RRI__(i,1)=r;
+            catch err;
+                Pranesk_apie_klaida(err);
+                assignin('base','RRI__',RRI__);
+                assignin('base','r1',r1);
+                assignin('base','r2',r2);
+                assignin('base','r3',r3);
+                pause(5);
+                uiresume;
+                assignin('base','r', r);
+                rethrow(err);
+            end;
         end;
-    end;
-
+    end
 else
     RRI__=RRI_;
 end;
 
-if length(RRI__)>1;
+if length(RRI__)>1 && sum(~isnan(RRI__))>1;
 
     Laikai3=Laikai__(~isnan(RRI__));
     RRI___=[0 ; 1000 * diff(Laikai3)];
 
-    if ~get(handles.checkbox_rri,'Value');
-
-        Laikai=Laikai3;
-        RRI=RRI___;
-    else
-
-        if length(RRI___)>1;
-
-            Laikai=[Laikai3(1) ; ( Laikai3(1)*2 + Laikai3(2))/3  ];
-            RRI=[RRI___(1) ; NaN ];
-            for i=2:length(RRI___);
-                nejungti=str2num(get(handles.edit_nejungti,'String'));
-                if RRI___(i) > nejungti(1);
-                    Laikai(end+1)=(Laikai3(i-1)+2*Laikai3(i))/3;
-                    RRI(end+1)=NaN;
-
-                    Laikai(end+1)=Laikai3(i);
-                    RRI(end+1)=0;
-
-                    if ~(i==length(RRI___));
-                        Laikai(end+1)=(Laikai3(i)*2+Laikai3(i+1))/3;
-                        RRI(end+1)=NaN;
-                    end;
-
-                else
-                    Laikai(end+1)=Laikai3(i);
-                    RRI(end+1)=RRI___(i);
-                end;
-            end;
-
+    if length(RRI___)>1;
+        if ~get(handles.checkbox_rri,'Value');
+            Laikai=[Laikai3(1); NaN ; Laikai3(2:end)];
+            RRI=[RRI___ ];
         else
-            %warning('QRS?');
-            Laikai=Laikai__;
-            RRI=RRI__;
+            ni=find(RRI___ > nejungti(1));
+            Laikai_n=[Laikai3 ; (Laikai3(1)*2+Laikai3(2))/3 ; (Laikai3(ni-1)+2*Laikai3(ni))/3 ; (2*Laikai3(ni)+Laikai3(min(end,ni+1)))/3 ]; 
+            [Laikai,j]=sort(Laikai_n);
+            RRI_n=[RRI___ ; NaN(2*length(ni)+1,1)];
+            RRI_n(ni)=0;
+            RRI=RRI_n(j);
         end;
-
-
+    else
+        Laikai=[0 ; 1; 30]+Laikai3(1);
+        RRI=[0 ; NaN ; 1000];
     end;
 else
     warning('QRS?');
-    Laikai=Laikai__;
-    RRI=RRI__;
+    Laikai=[0 ; 1; 30];
+    RRI=[0 ; NaN ; 1000];
 end;
 
 % Pakeitimų žurnalas
