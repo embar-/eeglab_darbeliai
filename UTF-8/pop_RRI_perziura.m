@@ -312,6 +312,7 @@ handles.fig_brush=brush(handles.figure1);
 handles.axes_rri_padetis=get(handles.axes_rri,'Position');
 set(handles.axes_rri,'ButtonDownFcn',@(hObject,eventdata)pop_RRI_perziura('axes_rri_ButtonDownFcn',hObject,eventdata,guidata(hObject)));
 setappdata(handles.axes_rri,'originalButtonDownFcn',get(handles.axes_rri,'ButtonDownFcn'));
+setappdata(handles.axes_rri,'MouseDragFnc','if strcmp(axName,''x''); pop_RRI_perziura(''optimalus_rodymasx'',gcbf,[],guidata(gcbf),cx,diff(barXs)); end; ');
 setappdata(handles.figure1,'ButtonDownFcnX','pop_RRI_perziura(''optimalus_rodymasx'',gcbf,[],guidata(gcbf),cx,diff(barXs))');
 setappdata(handles.figure1,'ButtonDownFcnY','pop_RRI_perziura(''optimalus_rodymasy'',gcbf,[],guidata(gcbf),cx,diff(barXs))');
 handles.pradines_fig=findobj(handles.figure1);
@@ -824,6 +825,8 @@ dbr=max(dbr,xmin+plt/2);
 nxmin=dbr-plt/2;
 nxmax=nxmin+plt;
 set(handles.axes_rri,'XLim',[nxmin nxmax]);
+handles=rodyk_tik_langeli(handles);
+
 
 % --- Executes on button press in atnaujinti.
 function pushbutton_atnaujinti_Callback(hObject, eventdata, handles)
@@ -844,6 +847,7 @@ set(handles.pushbutton_atnaujinti,'Enable','off');
 set(handles.atnaujinti,'Enable','off');
 guidata(hObject,handles);
 %drawnow;
+langelio_ribos_x=get(handles.axes_rri,'xlim');
 rri_lin=[handles.RRI_lin handles.RRI_tsk ];
 if get(handles.checkbox_ekg,'Value');
     Laikai_=get([rri_lin handles.EKG_tsk],'XData');
@@ -857,6 +861,12 @@ if iscell(Laikai_);
 else
     Laikai__=[unique([Laikai_])]';
 end;
+% idx1=find(Laikai__>=langelio_ribos_x(1),1,'first');
+% idx2=find(Laikai__<=langelio_ribos_x(1),1,'last');
+% Laikai__=Laikai__(idx1:idx2);
+% RRI_=RRI_(idx1:idx2);
+
+
 if iscell(RRI_);
     if length(RRI_) < 2 ; RRI_(2)=RRI_(1); Laikai_(2)=Laikai_(1); end;
     if length(RRI_) < 3 ; RRI_(3)=RRI_(1); Laikai_(3)=Laikai_(1); end;
@@ -962,12 +972,17 @@ if and(~isempty(handles.EKG),get(handles.checkbox_ekg,'Value'));
     %handles.EKG_=mat2gray_octave(handles.EKG)*100-125+EKGposlinkis;
     EKG_=mat2gray_octave(handles.EKG); EKG_=EKG_ .* 10 ./ std(EKG_);
     handles.EKG_=EKG_- max(EKG_) + median(EKG_) + EKGposlinkis - 50;
-    set(handles.EKG_lin,'XData',handles.EKG_laikai,'YData',handles.EKG_);
+    if length(handles.EKG_laikai) > 10000
+        handles=rodyk_tik_langeli(handles);
+    else
+        set(handles.EKG_lin,'XData',handles.EKG_laikai,'YData',handles.EKG_);
+    end
     handles.EKG_R=0*RRI'-20+EKGposlinkis;
     set(handles.EKG_tsk,'XData',Laikai','YData',handles.EKG_R);
 else
     set([handles.EKG_lin handles.EKG_tsk],'XData',0,'YData',NaN);
 end;
+
 NY1=0; if get(handles.checkbox_ekg,'Value'); NY1=NY1-100; end; 
 NY2=1500; %if ~isempty(RRI(find([RRI(:)] >0))); NY2=min(max(RRI)+30,1500); end;
 NX1=5*floor(min([Laikai ; handles.EKG_laikai])/5);
@@ -982,6 +997,7 @@ if ismember('scrollHandles', fields(handles));
         set(handles.scrollHandles,'YLim',[NY1 NY2]);
     end;
 end;
+
 for h=[handles.RRI_lin handles.RRI_tsk handles.EKG_tsk [handles.ScrollHandlesCldrL]'];
     try
         if length(get(h,'BrushData')) ~= length(get(h,'XData'));
@@ -990,6 +1006,7 @@ for h=[handles.RRI_lin handles.RRI_tsk handles.EKG_tsk [handles.ScrollHandlesCld
     catch
     end;
 end;
+
 %handles.b0=brush(handles.figure1);
 %set(handles.b0, 'ActionPreCallback', 'disp(0)', 'enable', 'on' );
 %set(handles.b0, 'ActionPostCallback', @(hObject,eventdata)pushbutton_atnaujinti_Callback(hObject,eventdata,handles), 'enable', 'on' );
@@ -1013,6 +1030,19 @@ anotacijos_atnaujinimas(hObject, eventdata, handles);
 %set(handles.figure1,'pointer',Peliukas);
 set(handles.figure1,'pointer','arrow');
 
+function handles=rodyk_tik_langeli(handles)
+langelio_ribos_x=get(handles.axes_rri,'xlim');
+if ~isempty(handles.EKG) && get(handles.checkbox_ekg,'Value') && length(handles.EKG_laikai) > 10000
+% EKG
+    EKG_i_nuo=find(handles.EKG_laikai < langelio_ribos_x(1), 1, 'last');  if isempty(EKG_i_nuo); EKG_i_nuo=1; end;
+    EKG_i_iki=find(handles.EKG_laikai > langelio_ribos_x(2), 1, 'first'); if isempty(EKG_i_iki); EKG_i_iki=length(handles.EKG_laikai); end;
+    set(handles.EKG_lin,'XData',handles.EKG_laikai(EKG_i_nuo:EKG_i_iki),'YData',handles.EKG_((EKG_i_nuo:EKG_i_iki)));
+% EKG taškai
+%     Laikai=getappdata(handles.axes_rri,'Laikai');
+%     EKG_tsk_nuo=find(Laikai < langelio_ribos_x(1), 1, 'last');  if isempty(EKG_tsk_nuo); EKG_tsk_nuo=1; end;
+%     EKG_tsk_iki=find(Laikai > langelio_ribos_x(2), 1, 'first'); if isempty(EKG_tsk_iki); EKG_tsk_iki=length(Laikai); end;
+%     set(handles.EKG_tsk,'XData',Laikai(EKG_tsk_nuo:EKG_tsk_iki)','YData',handles.EKG_R(EKG_tsk_nuo:EKG_tsk_iki));
+end
 
 function naujas_dantelis(hObject, eventdata, handles)
 RRI_perziuros_anotacija('salinti');
@@ -1192,6 +1222,7 @@ switch ck
         lim_nj=max(lim_dbr(1) - lim_plt * 0.2, lim_max(1) - lim_plt * 0.2);
         lim_nj=[lim_nj lim_plt + lim_nj];
         set(handles.axes_rri,'XLim',lim_nj);
+        handles=rodyk_tik_langeli(handles);
         anotacijos_atnaujinimas(hObject, eventdata, handles);
     case 'rightarrow'
         %disp('>');
@@ -1201,6 +1232,7 @@ switch ck
         lim_nj=min(lim_dbr(2) + lim_plt * 0.2, lim_max(2) + lim_plt * 0.2);
         lim_nj=[lim_nj - lim_plt lim_nj];
         set(handles.axes_rri,'XLim',lim_nj);
+        handles=rodyk_tik_langeli(handles);
         anotacijos_atnaujinimas(hObject, eventdata, handles);
     case 'pageup'
         %disp('<');
@@ -1210,6 +1242,7 @@ switch ck
         lim_nj=max(lim_dbr(1) - lim_plt * 1.0, lim_max(1) - lim_plt * 0.2);
         lim_nj=[lim_nj lim_plt + lim_nj];
         set(handles.axes_rri,'XLim',lim_nj);
+        handles=rodyk_tik_langeli(handles);
         anotacijos_atnaujinimas(hObject, eventdata, handles);
     case 'pagedown'
         %disp('>');
@@ -1219,6 +1252,7 @@ switch ck
         lim_nj=min(lim_dbr(2) + lim_plt * 1.0, lim_max(2) + lim_plt * 0.2);
         lim_nj=[lim_nj - lim_plt lim_nj];
         set(handles.axes_rri,'XLim',lim_nj);
+        handles=rodyk_tik_langeli(handles);
         anotacijos_atnaujinimas(hObject, eventdata, handles);
     case 'home'
         lim_dbr=get(handles.axes_rri,'XLim');
@@ -1227,6 +1261,7 @@ switch ck
         lim_nj=lim_max(1) - lim_plt * 0.2;
         lim_nj=[lim_nj lim_plt + lim_nj];
         set(handles.axes_rri,'XLim',lim_nj);
+        handles=rodyk_tik_langeli(handles);
         anotacijos_atnaujinimas(hObject, eventdata, handles);
     case 'end'
         lim_dbr=get(handles.axes_rri,'XLim');
@@ -1235,6 +1270,7 @@ switch ck
         lim_nj=lim_max(2) + lim_plt * 0.2;
         lim_nj=[lim_nj - lim_plt lim_nj];
         set(handles.axes_rri,'XLim',lim_nj);
+        handles=rodyk_tik_langeli(handles);
         anotacijos_atnaujinimas(hObject, eventdata, handles);
     case {'subtract','hyphen'}
         lim_dbr=get(handles.axes_rri,'XLim');
@@ -1360,6 +1396,7 @@ else
         set(handles.axes_rri,[asisR 'lim'],lim_nj);
     end;
 end;
+handles=rodyk_tik_langeli(handles);
 catch err;
         Pranesk_apie_klaida(err,mfilename,'',0);
 end;
@@ -2519,6 +2556,7 @@ end;
 catch err;
         Pranesk_apie_klaida(err,mfilename,'',0);
 end;
+handles=rodyk_tik_langeli(handles);
 anotacijos_atnaujinimas(hObject, eventdata, handles);
 %guidata(handles.figure1, handles);
 
