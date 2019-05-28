@@ -489,7 +489,7 @@ try
     handles.ScrollHandlesCldrK=findobj(handles.scrollHandles,'-not','Tag','scrollDataLine');
     handles.ScrollHandlesCldrL=findobj(handles.scrollHandles,'Tag','scrollDataLine');
     for i=1:length(handles.ScrollHandlesCldrL); l=handles.ScrollHandlesCldrL(i);
-        dx=get(l,'XData'); %dy=get(l,'YData'); 
+        dx=get(l,'XData'); 
         if size(dx) == [1 2]; %#ok
             if strcmp(get(get(l,'parent'),'userdata'),'y');
                 delete(l);
@@ -676,8 +676,10 @@ set(handles.edit_ribos,'UserData',1);
 set(handles.figure1,'pointer','watch');
 
 RRI_=get([handles.RRI_lin handles.RRI_tsk],'YData');
-if iscell(RRI_); RRI=RRI_{1};
-else RRI=RRI_;
+if iscell(RRI_);
+    RRI=RRI_{1};
+else
+    RRI=RRI_;
 end;
 % Taškų žymėjimas
 %b0=brush(handles.figure1);
@@ -951,7 +953,6 @@ if length(RRI__)>1;
 
 
     end;
-
 else
     warning('QRS?');
     Laikai=Laikai__;
@@ -1012,12 +1013,12 @@ end;
 %set(handles.b0, 'ActionPostCallback', @(hObject,eventdata)pushbutton_atnaujinti_Callback(hObject,eventdata,handles), 'enable', 'on' );
 %figure(handles.figure1); linkdata('on');
 %handles.susietas=linkdata(handles.figure1)
-set(handles.pushbutton_atnaujinti,'UserData',0);
-if get(handles.edit_ribos,'UserData');
+% set(handles.pushbutton_atnaujinti,'UserData',0);
+% if get(handles.edit_ribos,'UserData');
 %     edit_ribos_Callback(hObject, eventdata, handles);
-end;
+% end;
 set(handles.pushbutton_atnaujinti,'UserData',1);
-try delete(findobj(handles.figure1,'Tag','naujasR')); catch; end;
+%try delete(findobj(handles.figure1,'Tag','naujasR')); catch; end;
 susildyk(hObject, eventdata, handles);
 % figure1_ResizeFcn(hObject, eventdata, handles);
 handles.t=tic;
@@ -1663,7 +1664,6 @@ if length(x) == 1 ;
     set(handles.edit_nejungti,'UserData',regexprep(num2str(x), '[ ]*', ' '));
 end;
 set(handles.edit_nejungti,'String',num2str(get(handles.edit_nejungti,'UserData')));
-
 pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
 %guidata(handles.figure1, handles);
 
