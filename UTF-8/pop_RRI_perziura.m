@@ -330,7 +330,11 @@ handles=pirmieji_grafikai(hObject, eventdata, handles);
 susaldyk(hObject, eventdata, handles);
 
 % Įtartinų taškų žymėjimas
-edit_ribos_Callback(hObject, eventdata, handles);
+set(handles.pushbutton_atnaujinti,'UserData',0);
+if get(handles.edit_ribos,'UserData');
+    edit_ribos_Callback(hObject, eventdata, handles);
+end
+set(handles.pushbutton_atnaujinti,'UserData',1);
 
 %Kita
 set(handles.edit_ribos,'UserData',1);
@@ -542,7 +546,7 @@ pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
 if get(handles.checkbox_ekg,'Value');
     set(handles.ekg_rodyti,'State','on');
 end;
-refreshdata(handles.figure1,'caller');
+%refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
 
 
