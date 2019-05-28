@@ -701,26 +701,32 @@ end;
 ribos=str2num(get(handles.edit_ribos,'String'));
 %hB = findobj(handles.figure1,'-property','BrushData');
 hB = [handles.RRI_lin handles.RRI_tsk handles.EKG_tsk [handles.ScrollHandlesCldrR]'];
-for h = hB;
-    try   senas=get(h,'BrushData') ;   senas = (senas > 0) ;
-    catch;
-        try datamanager.enableBrushing(h); catch; end;
-        senas=zeros(1,length(RRI)) ; senas = (senas > 0) ;
-    end;
-    try
-        if get(handles.pushbutton_atnaujinti,'UserData');
+for i=1:length(hB)
+    h = hB(i);
+    if isobject(h) && isvalid(h)
+        try   senas=get(h,'BrushData') ;   senas = (senas > 0) ;
+        catch;
+            try datamanager.enableBrushing(h); catch; end;
             senas=zeros(1,length(RRI)) ; senas = (senas > 0) ;
         end;
-        if length(ribos) == 1;
-            naujas = [RRI<ribos(1)] - [RRI==0] ;
-        elseif length(ribos) == 2;
-            naujas = [RRI<ribos(1)] - [RRI==0] + [RRI>ribos(2)] ;
+        try
+            if get(handles.pushbutton_atnaujinti,'UserData');
+                senas=zeros(1,length(RRI)) ; senas = (senas > 0) ;
+            end;
+            if length(ribos) == 1;
+                naujas = [RRI<ribos(1)] - [RRI==0] ;
+            elseif length(ribos) == 2;
+                naujas = [RRI<ribos(1)] - [RRI==0] + [RRI>ribos(2)] ;
+            end;
+            if length(senas) == length(naujas)
+                suminis = round([senas + naujas] / 2) ;
+                set(h,'BrushData', suminis );
+            end
+        catch err;
+            i
+            Pranesk_apie_klaida(err,mfilename,'',0);
         end;
-        suminis = round([senas + naujas] / 2) ;
-        set(h,'BrushData', suminis );
-    catch err;
-        Pranesk_apie_klaida(err,mfilename,'',0);
-    end;
+    end
 end;
 try set(handles.ScrollHandlesCldrL,'hittest','off'); catch; end;
 try set(handles.ScrollHandlesCldrR,'hittest','off'); catch; end;
