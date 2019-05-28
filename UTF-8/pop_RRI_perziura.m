@@ -498,6 +498,15 @@ try
             end;
         elseif isequal(length(dx),length(handles.Laikai));
             set(l,'Tag','RRI_slinkiklyje','color',[0.5 0.5 0.5]);
+            if length(dx) > 10000
+                % supaprastinti dideles kreives slankikliuose
+                dy=get(l,'YData');
+                dy_N=length(YData);
+                YData_N_1=10^(floor(log10(dy_N))-3);
+                YData_N_2=floor(dy_N/YData_N_1);
+                XData=reshape(dx(1:YData_N_1*YData_N_2),YData_N_1,YData_N_2); XData=[min(XData,[],1,'omitnan')' mean(XData,1,'omitnan')']'; set(l,'XData', XData(:));
+                YData=reshape(dy(1:YData_N_1*YData_N_2),YData_N_1,YData_N_2); YData=[min(YData,[],1,'omitnan')' max(YData,[],1,'omitnan')']'; set(l,'YData', YData(:));
+            end
         else
             delete(l);
         end;
