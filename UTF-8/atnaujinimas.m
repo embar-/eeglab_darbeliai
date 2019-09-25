@@ -68,7 +68,7 @@ if ~isempty(findobj('tag', 'Darbeliai'));
 end;
 if ~isempty(findobj('tag', 'Darbeliai'));
     warning('Darbeliai atverti!');
-return;
+    return;
 end;
 
 % mfilename_folder=regexprep(mfilename('fullpath'),[ mfilename '$'],'');
