@@ -151,26 +151,20 @@ for i=1:NumberOfFiles ;
     File=FileNames{i} ;
     disp(File);
 
-    if ~isempty(which('rinkmenos_tikslinimas.m'));
-        [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(PathName,File);
-    else
-        [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(PathName,File));
-        Rinkmena_=[Rinkmena_ galune];
-        KELIAS_=Tikras_Kelias(KELIAS_);
-    end;
-
-    if FilterIndex == 1 ;
-        %EEG = pop_loadset('filename',File);
-        EEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_);
-        [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
-    elseif FilterIndex == 2 ;
-        % Importuoti
-        EEG=pop_fileio(fullfile(KELIAS_,Rinkmena_));
-    else
-        EEG = eeg_ikelk(KELIAS_,Rinkmena_);
-    end;
-    
     try
+    
+        [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(PathName,File);
+
+        if FilterIndex == 1 ;
+            %EEG = pop_loadset('filename',File);
+            EEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_);
+            [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
+        elseif FilterIndex == 2 ;
+            % Importuoti
+            EEG=pop_fileio(fullfile(KELIAS_,Rinkmena_));
+        else
+            EEG = eeg_ikelk(KELIAS_,Rinkmena_);
+        end;
         
         EEG = eeg_checkset( EEG );
         

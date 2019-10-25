@@ -82,7 +82,7 @@ statusbar2015('on',h);
 Rinkmenos2={};
 for f=1:length(Rinkmenos);
     [KELIAS__,Rinkmena__]=rinkmenos_tikslinimas(Kelias,Rinkmenos{f});
-    if exist(fullfile(KELIAS__,Rinkmena__ ),'file') == 2;
+    if exist(fullfile(KELIAS__,Rinkmena__ ),'file')
         Rinkmenos2{end+1,1}=Rinkmenos{f};
         Rinkmenos2{end,2}=KELIAS__;
         Rinkmenos2{end,3}=Rinkmena__;
