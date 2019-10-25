@@ -1,7 +1,11 @@
-% [KELIAS,Rinkmena]=rinkmenos_tikslinimas(KELIAS,Rinkmena)
+% [KELIAS,Rinkmena]=rinkmenos_tikslinimas(KELIAS0,Rinkmena0)
+% Patikslinti kelią ir rinkmeną, jei kartais Rinkmena0 savyje turi
+% santykinį poaplankį (tada prie KELIO pridedamas tas santykinis poaplankis)
+% arba net visą absoliutų kelią (tada KELIAS0 ignoruojamas, o naudojamas
+% su Rinkmena0 einantis kelias).
 
 %
-% (C) 2015 Mindaugas Baranauskas
+% (C) 2015,2019 Mindaugas Baranauskas
 %
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,17 +41,27 @@
 % Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 %
 
-function [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(KELIAS,Rinkmena)
 
-    [KELIAS_,Rinkmena_,galune]=fileparts(Rinkmena);
-    Rinkmena_=[Rinkmena_ galune];
-    if isempty(KELIAS_);
-        KELIAS_=Tikras_Kelias(KELIAS);
-    elseif ~strcmp(pwd,KELIAS_);
-        KELIAS_SUM=Tikras_Kelias(fullfile(KELIAS,KELIAS_));
-        if ~strcmp(pwd,KELIAS_SUM);
-            KELIAS_=KELIAS_SUM;
+function [KELIAS,Rinkmena,KELIAS_su_RINKMENA]=rinkmenos_tikslinimas(KELIAS0,Rinkmena0)
+
+    [KELIAS1,Rinkmena,galune]=fileparts(Rinkmena0);
+    Rinkmena=[Rinkmena galune];
+    if isempty(KELIAS1) && exist(fullfile(Tikras_Kelias(KELIAS0),Rinkmena),'file')
+        % Jei kintamajame "Rinkmena0" nebuvo poaplankio, pradinis "KELIAS" greičiausiai geras,
+        % belieka patikslinti per "Tikras_Kelias"
+        KELIAS=Tikras_Kelias(KELIAS0);
+    elseif strcmp(Tikras_Kelias(KELIAS1),KELIAS1) && exist(fullfile(Tikras_Kelias(KELIAS1),Rinkmena),'file') 
+        % jei "KELIAS_" yra absoliutus, o ne santykinis kelias
+        KELIAS=Tikras_Kelias(KELIAS1);
+    else
+        % Poaplankį pridėkime prie pradinio kelio
+        KELIAS2=Tikras_Kelias(fullfile(KELIAS0,KELIAS1));
+        if exist(fullfile(KELIAS2,Rinkmena),'file')
+            KELIAS=KELIAS2;
+        %elseif exist(fullfile(pwd,KELIAS1,Rinkmena),'file')
+        %    KELIAS=pwd;
         else
-            KELIAS_=Tikras_Kelias(KELIAS_);
-        end;
-    end;    
+            error(lokaliz('Rinkmena nerasta'));
+        end
+    end
+    KELIAS_su_RINKMENA=fullfile(KELIAS,Rinkmena);
