@@ -42,7 +42,7 @@ if ~ischar(kelias_tikrinimui)
     kelias=pwd;
     warning(wrn_b);
     return;
-end;
+end
 if isunix
     kelias_tikrinimui=regexprep(kelias_tikrinimui,'^file://','');
 end
@@ -50,11 +50,11 @@ aukstesnis=fileparts(kelias_tikrinimui);
 while ~exist(kelias_tikrinimui,'dir') && ~strcmp(kelias_tikrinimui,aukstesnis)
     kelias_tikrinimui=aukstesnis;
     aukstesnis=fileparts(kelias_tikrinimui);
-end;
+end
 try
     cd(kelias_tikrinimui);
 catch
-end;
+end
 warning(wrn_b);
 kelias=pwd;
 cd(kelias_dabar);
