@@ -43,7 +43,7 @@
 
 
 function [KELIAS,Rinkmena,KELIAS_su_RINKMENA]=rinkmenos_tikslinimas(KELIAS0,Rinkmena0)
-
+% Jei "Rinkmena0" savyje turi santykinį poaplankį arba net visą absoliutų kelią, patikslinti kelią ir rinkmeną.
     [KELIAS1,Rinkmena,galune]=fileparts(Rinkmena0);
     Rinkmena=[Rinkmena galune];
     if isempty(KELIAS1) && exist(fullfile(Tikras_Kelias(KELIAS0),Rinkmena),'file')
