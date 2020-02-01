@@ -41,31 +41,31 @@ if nargin > 0
     err = varargin{1};
 else
     err = lasterror ;%#ok
-end;
+end
 
 if nargin > 1
     Darbelis = varargin{2};
 else
     Darbelis = '?' ;
-end;
+end
 
 if nargin > 2
     Rinkmena = varargin{3};
 else
     Rinkmena = '?' ;
-end;
+end
 
 if nargin > 3
     dialogas = varargin{4};
 else
     dialogas = 1 ;
-end;
+end
 
 if nargin > 4
     laukti  = varargin{5};
 else
     laukti  = 0 ;
-end;
+end
 
 %assignin('base', 'err', err)
 disp(' ');
@@ -74,7 +74,7 @@ h=[];
 t=datestr(now, 'yyyy-mm-dd HH:MM:SS'); disp(t);
 if ischar(err)
     err=struct('identifier','','message',err,'stack','');
-end;
+end
 msg=sprintf('%s\n\n%s\n',err.identifier, err.message);
 if ~isempty(err.stack)
     for i=1:(length(err.stack)-1)
@@ -83,9 +83,9 @@ if ~isempty(err.stack)
             err.stack(i).line, ...
             err.stack(i).name, ...
             err.stack(i).line ) ;
-    end;
+    end
     msg=sprintf('%s\n\n  %s\n\n',msg,err.stack(end).name);
-end;
+end
 %msg=sprintf('%s\n\n',msg);
 s=warning('off','backtrace');
 warning(msg);
@@ -104,23 +104,23 @@ if strcmp('MATLAB:binder:loadFailure',err.identifier)
    waitfor(h); h=[];
    
    error(lokaliz('You must restart MATLAB because of internal error.'));
-end;
+end
 
 warning(s.state,'backtrace');
 
 
 if ~dialogas
     return;
-end;
+end
 msg2=sprintf('%s\n',strrep(regexprep(err.message,'<a href="[^<]*">','"'),'</a>','"'));
 for i=1:(length(err.stack)-1)
     msg2=sprintf('%s\n> %s:%d', msg2, ...
         err.stack(i).name, ... %err.stack(i).file, ...
         err.stack(i).line ) ; 
-end;
+end
 if ~isempty(err.stack)
     msg2=sprintf('%s\n %s\n',msg2,err.stack(end).name);
-end;
+end
 
 h=findobj('tag','EEGLAB Darbeliu klaidos langas');
 m=findobj('tag','EEGLAB Darbeliu klaidos tekstas');
@@ -142,7 +142,7 @@ if or(isempty(h),isempty(m))
     uicontrol('style','pushbutton','string',lokaliz('Close'),...
         'position', [220 20 190 30], 'callback', 'delete(gcf)');
     set(m,'units','normalized');
-end;
+end
 mt=get(m,'string');
 set(m,'string', [ mt ; ...
     [lokaliz('Time:') ' ' t] ; ...
@@ -152,7 +152,7 @@ set(m,'string', [ mt ; ...
 
 if laukti
    waitfor(h); h=[];
-end;
+end
 
 function kopijuoti(~,~,m)
 tekstas = get(m,'string');
