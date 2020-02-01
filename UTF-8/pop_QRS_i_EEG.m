@@ -981,9 +981,13 @@ for i=1:Pasirinktu_failu_N;
                     if isempty(laikai);
                         error(lokaliz('Programa negavo QRS'));
                     end;
+                    if size(laikai,1) == 1 && size(laikai,2) > 1
+                        laikai=laikai';
+                    end
                     laikai=laikai_be_tarpu(laikai, Laikai0, Ivykiai0, Poslink0);
                     laikai=num2cell(laikai);
-                    ivykiai={}; ivykiai(1:length(laikai),1)={QRS_ivykis};
+                    ivykiai={};
+                    ivykiai(1:length(laikai),1)={QRS_ivykis};
                     
                     % Pašalinti senus QRS_ivykis tipo įvykius
                     if isfield(EEG.event,'type');
