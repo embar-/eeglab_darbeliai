@@ -1,5 +1,14 @@
 function [RR_idx,RRI]=QRS_detekt(EKG, sampling_rate, mode, varargin)
+%[RR_idx,RRI]=QRS_detekt(EKG,sampling_rate)
 %[RR_idx,RRI]=QRS_detekt(EKG,sampling_rate,mode)
+%
+% mode – veiksena(-os) arba algoritmas (-ai):
+%        1 arba 'PT'  - Pan ir Tompkin
+%        2 arba 'DPI' - Ramakrishnan ir kt. pagal „Dynamic Plosion Index“
+%        3 arba 'ECGlab', 'MOBD' - Suppappola ir Sun pagal 
+%               „multiplication of backward differences“
+%        4 – Sedghamiz adaptive detector
+%        Jei nenurodyta jokia veiksena, naudojamos trys veiksenos – [1 2 3].
 %
 % Ši programa yra laisva. Jūs galite ją platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
@@ -32,16 +41,22 @@ function [RR_idx,RRI]=QRS_detekt(EKG, sampling_rate, mode, varargin)
 % Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 %
 %%
-% (C) 2014-2015 Mindaugas Baranauskas
+% (C) 2014-2015, 2020 Mindaugas Baranauskas
 %%
 
 SR=sampling_rate;
+qrs=[]; 
 RR_idx=[];
 
 if length(EKG)/SR < 2.5 ; 
    warning('EKG too short!');
    return; 
 end;
+
+
+if nargin < 3 ;
+    mode = [1 2 3];
+end
 
 if nargin > 3 ;
     leisti_apversti=varargin{1};
@@ -75,9 +90,9 @@ function [RR_idx]=QRS_detekt_single(EKG, SR, mode, leisti_apversti);
 
 RR_idx=[];
 
-switch mode
+switch lower(mode)
 
-    case {1 , '1', 'PT' }
+    case {1 , '1', 'pt' }
         %% Pan-Tompkin algorithm, implemented by Hooman Sedghamiz, 2014
         % PAN.J, TOMPKINS. W.J,"A Real-Time QRS Detection Algorithm" IEEE
         % TRANSACTIONS ON BIOMEDICAL ENGINEERING, VOL. BME-32, NO. 3, MARCH 1985.
@@ -104,23 +119,26 @@ switch mode
         end;
 
         
-    case {2 , '2', 'DPI', 'dpi' }
-        %% Threshold-Independent QRS Detection Using the Dynamic Plosion Index
-        %  A. G. Ramakrishnan and A. P. Prathosh and T. V. Ananthapadmanabhaha.
+    case {2 , '2', 'dpi' }
+        %% Dynamic Plosion Index
+        % A. G. Ramakrishnan, A. P. Prathosh, T. V. Ananthapadmanabhaha.
         % "Threshold-Independent QRS Detection Using the Dynamic Plosion Index".
-        %  IEEE Signal Processing Letters, accepted for publication, 2014.
+        % IEEE Signal Processing Letters, accepted for publication, 2014.
+        % DOI: 10.1109/LSP.2014.2308591
         wind=1800 ; % default value by authors is wind=1800
         param=5 ; % default value by authors is param=5
         qrs=QRS_detekt_DPI(EKG,SR,wind,param);
         RR_idx=[qrs(2:end)]';
         
         
-    case {3, '3' , 'ECGlab', 'ECGLAB', 'ecglab' }
-        %% from ECGlab 2.0
+    case {3, '3' , 'ecglab', 'mobd' }
+        %% from ECGlab 2.0: multiplication of backward differences (MOBD)
         % Suppappola, S.; Sun, Y., "Nonlinear transforms of ECG signals
         % for digital QRS detection: A quantitative analysis",
         % IEEE Trans. Biomed. Eng., 41/4, April 1994
-        RR_idx=QRS_detekt_mobd(EKG,SR);
+        % DOI: 10.1109/10.284971
+        qrs=QRS_detekt_mobd(EKG,SR);
+        RR_idx=qrs;
         
         
     case {4, '4'}
