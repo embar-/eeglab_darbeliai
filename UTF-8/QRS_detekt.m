@@ -8,7 +8,7 @@ function [RR_idx,RRI]=QRS_detekt(EKG, sampling_rate, mode, varargin)
 %        3 arba 'ECGlab', 'MOBD' - Suppappola ir Sun pagal 
 %               „multiplication of backward differences“
 %        4 – Sedghamiz adaptive detector
-%        Jei nenurodyta jokia veiksena, naudojamos trys veiksenos – [1 2 3].
+%        Jei nenurodyta jokia veiksena, naudojama 'PT'.
 %
 % Ši programa yra laisva. Jūs galite ją platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
@@ -55,7 +55,7 @@ end;
 
 
 if nargin < 3 ;
-    mode = [1 2 3];
+    mode = 'PT';
 end
 
 if nargin > 3 ;
