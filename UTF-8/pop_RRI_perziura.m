@@ -2502,7 +2502,7 @@ switch i
     otherwise
         Importuoti_EEGLab_Callback(hObject, eventdata, handles, rinkmena)
 end;
-guidata(handles.figure1,handles);
+%guidata(handles.figure1,handles);
 
 
 function [R_laikai,RRI]=R_laikai_ir_RRI_pagal_handles(handles)
