@@ -2937,3 +2937,12 @@ Laikai=Laikai(find(bd));
 t=min(Laikai(find(Laikai > (xvid+0.001))));
 optimalus_rodymasx(hObject, eventdata, handles, t, 0);
 guidata(handles.figure1,handles);
+
+function res = fastif(s1, s2, s3)
+% Author: Arnaud Delorme, CNL / Salk Institute, 2001
+% Copyright (C) 2001 Arnaud Delorme, Salk Institute, arno@salk.edu
+if s1
+	res = s2;
+else
+	res = s3;
+end
