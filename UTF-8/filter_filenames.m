@@ -11,7 +11,7 @@
 %         veiksena - [0|1]:
 %                    0 – rezultatas kiekvienam raktažodžio nariui grąžinamas
 %                        atskirame narvelyje;
-%                    1 – grąžinamas vienas nekartojančių failų sąrašas (numatyta).
+%                    1 – grąžinamas vienas nesikartojančių failų sąrašas (numatyta).
 %
 % English: filter names of files
 % USAGE:
@@ -65,85 +65,89 @@
 
 function [files]=filter_filenames(varargin)
 files={};
-if nargin > 0;
+if nargin > 0
     filter_string=varargin{1};
 else
     filter_string='*';
-end;
+end
 
-if nargin > 1;
+if nargin > 1
     mode=varargin{2};
 else
     mode=1;
-end;
+end
 
 
-if isempty(filter_string);
+if isempty(filter_string)
     filter_string='*';
-end;
+end
 
-if ~ischar(filter_string);
-    if iscellstr(filter_string);
-        for i=1:length(filter_string);
+if ~ischar(filter_string)
+    if iscellstr(filter_string)
+        for i=1:length(filter_string)
             files=[files ;  filter_filenames(filter_string{i},mode)]; %#ok
-        end;
-        if mode;
+        end
+        if mode
             files={files{:}};
             [~,i]=unique(files);
             files=files(sort(i));
-        end;
+        end
         return;
     else
         warning('*');
         filter_string='*';
-    end;
-end;
+    end
+end
+while strfind(filter_string,'**')
+    filter_string=strrep(filter_string,'**','*');
+end
 
 flt=textscan(filter_string, '%s', 'delimiter', ';');
 dir_out=cellfun(@(x) filter_filenames2(flt{1}{x}, (x == 1)), num2cell(1:length(flt{1})),'UniformOutput',false);
-for i=1:length(dir_out);
+for i=1:length(dir_out)
     files_and_dirs={dir_out{i}.name};
     files_idx=find([dir_out{i}.isdir] == 0 );
     files=[files ; { files_and_dirs(files_idx) } ]; %#ok
-end;
+end
 
-if mode;
+if mode
     path_orig=pwd; path0='';
     files_absolute={};
     files2={};
-    for f=[files{:}];
+    for f=[files{:}]
         [path1,file1,ext1]=fileparts(f{1});
-        if ~isempty(path1) && ~strcmp(path0,path1); 
-            cd(path_orig); cd(path1);
+        if ~isempty(path1) && ~strcmp(path0,path1)
+            cd(path_orig); 
+            try cd(path1); catch; end
             path0=path1;
-        end;
+        end
         file_absolute=fullfile(pwd,[file1 ext1]);
-        if ~ismember(file_absolute, files_absolute);
+        if ~ismember(file_absolute, files_absolute)
             files_absolute=[files_absolute {file_absolute}]; %#ok
             files2=[files2, {f{1}}]; %#ok
-        end;
-    end;
+        end
+    end
     [~,i]=unique(files2);
     files=files2(sort(i));
     cd(path_orig);
-end;
+end
 
 function rez=filter_filenames2(str, naujai)
 rez=struct('name',{},'isdir',{});
 persistent dir_; 
-if naujai; 
+if naujai
     dir_='' ; 
-end;
+end
 [dir_n,f,t]=fileparts(str);
-if ~isempty(dir_n);
+if ~isempty(dir_n)
     dir_=dir_n;
-    if ~strcmp(dir_(end),filesep);
+    if ~strcmp(dir_(end),filesep)
         dir_=[dir_ filesep];
-    end;
+    end
     dir_=filter_dir(dir_ );
     str=[f t];
-end;
-if ismember(pathsep,dir_);
+end
+if ismember(pathsep,dir_)
     seplocs = strfind(dir_,pathsep);
     loc1 = [1 seplocs(1:end-1)+1];
     loc2 = seplocs(1:end)-1;
@@ -151,89 +155,93 @@ if ismember(pathsep,dir_);
     %disp(pathfolders');
 else
     pathfolders={dir_};
-end;
-for i=1:length(pathfolders);
-    rez_=dir([pathfolders{i} str]);
-    for j=1:length(rez_);
-        rez_(j).name=[pathfolders{i} rez_(j).name];
-    end;
-    if isempty(rez);
-        rez=rez_;
-    else
-        rez=[rez;rez_]; %#ok
-    end;
-end;
+end
+for i=1:length(pathfolders)
+    if ismember('*',pathfolders{i})
+        % arba filter_dir funkcija nesugebejo patikslinti kelio
+        %warning('Nepavyko patikslinti %s kelio', pathfolders{i})
+    else 
+        try
+            rez_=dir(fullfile(pathfolders{i}, str));
+            %rez_=dir(strrep([pathfolders{i} str],'\','/')) % testavimui
+            for j=1:length(rez_)
+                rez_(j).name=fullfile(pathfolders{i}, rez_(j).name);
+            end
+            if isempty(rez)
+                rez=rez_;
+            else
+                rez=[rez;rez_]; %#ok
+            end
+        catch
+            warning('Netikėta klaida "%s" kelyje ieškant "%s" rinkmenų',pathfolders{i}, str)
+        end
+    end
+end
 
 function dirstr=filter_dir(dirstr)
 
-if ~strcmp(dirstr(end),pathsep);
+if ~strcmp(dirstr(end),pathsep)
     dirstr=[dirstr pathsep];
-end;
+end
 
-if ismember('*',dirstr);
+if ismember('*',dirstr)
     seplocs = strfind(dirstr,pathsep);
     loc1 = [1 seplocs(1:end-1)+1];
     loc2 = seplocs(1:end)-1;
     pathfolders = arrayfun(@(a,b) dirstr(a:b), loc1, loc2, 'UniformOutput', false);
     dirstr='';
-    for i=1:length(pathfolders);
+    for i=1:length(pathfolders)
         d=pathfolders{i};
         %disp(d);
-        if ismember('*',d);
+        if ismember('*',d)
             [dir1, dir21, dir22]=fileparts(d);
+            dir1=pasalink_pasvirusius_bruksnius_gale(dir1);
             dir2=[dir21 dir22];
             dir3='';
-            while and(ismember('*',dir1),or(~isempty([dir21 dir22]),isempty(dir2)));
+            while ismember('*',dir1) && ...
+               ( ~isempty([dir21 dir22]) || ... % jei tuščia kartojant ciklą - reikia nebeįmanoma nieko daugiau pašalinti nuo galo
+                  isempty(dir2)) % pirmas ciklo prasukimai, jei gale buvo filesep
                 [dir1, dir21, dir22]=fileparts(dir1);
+                dir1=pasalink_pasvirusius_bruksnius_gale(dir1);
                 dir3=dir2;
                 dir2=[dir21  dir22 filesep dir2]; %#ok
-            end;
-            if isempty(dir1); dir1='.'; end;
+            end
+            if isempty(dir1); dir1='.'; end
             %disp([dir1 filesep dir21 dir22 ' x ' dir3]);
             dir_out=dir([dir1 filesep dir21 dir22]);
             files_and_dirs={dir_out.name};
             dir_idx=find([dir_out.isdir] == 1 );
             dir_idx=intersect(dir_idx,find(ismember(files_and_dirs,{'.' '..'})==0));
-            if ~isempty(dir_idx);
+            if ~isempty(dir_idx)
+                dir3=pasalink_pasvirusius_bruksnius_gale(dir3);
                 if ~strcmp(dir1(end),filesep); dir1=[dir1 filesep]; end; %#ok
-                if ispc;
-                    filesepar='\\';
-                    dir1=strrep(dir1,filesep,filesepar);
-                    % Windows'uose gali lūžti, jei \ interpretuoja ne kaip aplankų skyriklį
-                    % Tačiau nutrynus \\, gali paskutinį aplanką klaidingai sujungti su failu...
-                    dir3=regexprep(dir3,[filesepar '$'],'');
-                else
-                    filesepar=filesep;
-                end;
-                dirstr_= sprintf([dir1 '%s' filesepar dir3 pathsep], files_and_dirs{dir_idx});
+                dirstr_c=cellfun(@(v) [dir1 v filesep dir3 pathsep], files_and_dirs(dir_idx), 'UniformOutput',false );
+                dirstr_c=unique(dirstr_c);
+                dirstr_= [dirstr_c{:}];
                 dirstr=[dirstr filter_dir(dirstr_)]; %#ok
+            elseif ismember('*',d)
+                % kelyje su * nieko nera: nera kaip isskleisti,
+                if isempty(dirstr)
+                    % bet tiek reikia grazinti, kad neziuretu i "./" kataloga...
+                    % ir butinai gale prideti filesep, kad nebutu netycia **
+                    dirstr=[d filesep pathsep ];
+                end
             else
                 dirstr=[dirstr d pathsep ]; %#ok
-            end;
+            end
         else
             dirstr=[dirstr d pathsep ]; %#ok
-        end;
-    end;
-end;
+        end
+    end
+end
 
-function locfiles=eeg_channel_locations
-str='*.elp;*.elc;*.loc;*.locs;*.eloc;*.sph;*.xyz;*.asc;*.sfp;*.ced;*.dat';
-locfiles={};
-path__=fileparts(which('eeglab.m'));
-pathstr=genpath(path__);
-seplocs = strfind(pathstr, pathsep);
-loc1 = [1 seplocs(1:end-1)+1];
-loc2 = seplocs(1:end)-1;
-pathfolders = arrayfun(@(a,b) pathstr(a:b), loc1, loc2, 'UniformOutput', false);
-files=cellfun(@(i) filter_filenames(fullfile(pathfolders{i},str)), num2cell(1:length(pathfolders)),'UniformOutput',false);
-non_empty_paths_idx=find(cellfun(@(i) ~isempty(files{i}), num2cell(1:length(files))));
-non_empty_paths=pathfolders(non_empty_paths_idx);
-for i=1:length(non_empty_paths_idx);
-    path_=regexprep(non_empty_paths{i},['^' path__ ],'');
-    files_=files{non_empty_paths_idx(i)};
-    for j=1:length(files_);
-        locfiles=[locfiles(:) {path_ filesep files_{j}}];
-    end;
-end;
-
-
+function dir1=pasalink_pasvirusius_bruksnius_gale(dir1)
+if ispc
+    while ~isempty(dir1) && ( strcmp(dir1(end),'\') || strcmp(dir1(end),'/') )
+        dir1=dir1(1:end-1);
+    end
+elseif isunix
+    while length(dir1) > 1 && strcmp(dir1(end),'/')
+        dir1=dir1(1:end-1);
+    end
+end
