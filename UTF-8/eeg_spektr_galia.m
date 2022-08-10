@@ -5,7 +5,7 @@
 %
 %% Gauna pasirinktų failų spektrinį galios tankį
 %
-% (c) 2014-2016 Mindaugas Baranauskas
+% (c) 2014-2022 Mindaugas Baranauskas
 
 
 %%
@@ -242,6 +242,7 @@ for i=1:NumberOfFiles ;
                 'freqrange',[0 EEG.srate/2],...
                 'electrodes','off',...
                 'winsize',EEG.srate*DUOMENYS.VISU.lango_ilgis_sekundemis,...
+                'overlap',EEG.srate*DUOMENYS.VISU.lango_ilgis_sekundemis*0.5,...
                 'nfft',EEG.srate*DUOMENYS.VISU.fft_tasku_herce,...
                 'plot',AR_GRAFIKAS );
             
