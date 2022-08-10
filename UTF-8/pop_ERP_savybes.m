@@ -1269,10 +1269,14 @@ if and(Ar_eksportuoti_savybes,~isempty(ALLEEG_(1).file));
         switch get(handles.popupmenu9,'Value')
             case 1
                 lakstas=lango_intervalas_zodziu;
-                xlswrite(fullfile(KELIAS_SAUGOJIMUI,dokumentas_savybiu_eksportui), Excel_lentele, lakstas);
+                if exist('writecell','file') == 2 
+                    writecell(Excel_lentele,[dok '.xlsx'],'Sheet',lakstas); % įrašo į Excel XLSX, MATLAB versijoms nuo R2019a
+                else
+                    xlswrite(dok,Excel_lentele,lakstas); % įrašo į Excel XLS, MATLAB versijoms iki R2018b
+                end
             case 2
                 %%
-                dok=[regexprep(dok,'.txt$','') '.txt']; % visada .txt galūnė
+                dok=[regexprep(dok,'.txt$','') '.txt']; % visada .txt galūnė, vienguba jei ir taip yra
                 dok_id=fopen(dok,'w');
                 %size(Excel_lentele)
                 for eilut=1:size(Excel_lentele,1);
@@ -1286,7 +1290,7 @@ if and(Ar_eksportuoti_savybes,~isempty(ALLEEG_(1).file));
                 open(dok);
             case 3
                 ERP_info=Excel_lentele;
-                save(fullfile(KELIAS_SAUGOJIMUI,dokumentas_savybiu_eksportui),'ERP_info','ERP_savyb','lentele');
+                save(dok,'ERP_info','ERP_savyb','lentele');
         end;
     catch err;
         warning(err.message);
@@ -1297,20 +1301,16 @@ end;
 
 if and(~isempty(ALLEEG_(1).file),Ar_eksportuoti_ERP);
     
-    %% Eksportuoti RAGU programai
-    
-    if get(handles.popupmenu10,'Value')==1;
-        
+  switch get(handles.popupmenu10,'Value')
+ 
+    case 1  
+    %% Eksportuoti RAGU programai        
         DarboNr=DarboNr+1;
         Darbo_eigos_busena(handles, 'Eksportuoti į RAGU...', DarboNr, length(ALLEEG_), length(ALLEEG_));
         eksportuoti_ragu_programai(ALLEEG_, ALLEEG_, 1, 1, KELIAS_SAUGOJIMUI);
-                
-    end;
     
-    
+    case 2
     %% Eksportuoti į TXT
-    
-    if get(handles.popupmenu10,'Value')==2;
         
         DarboNr=DarboNr+1;
         
@@ -1331,18 +1331,15 @@ if and(~isempty(ALLEEG_(1).file),Ar_eksportuoti_ERP);
                 Pranesk_apie_klaida(err,'','',0);
             end;
         end;
-    end;
     
+    case 3
     %% Eksportuoti į Excel
-    % Nebaigta    
-    
-    if get(handles.popupmenu10,'Value')==3;
         
         DarboNr=DarboNr+1;
     
         %Darbo_eigos_busena(handles, 'Eksportuoti į TXT...', DarboNr, 0, length(ALLEEG_));
         
-        excel_dokumentas_erp=dokumentas_savybiu_eksportui;
+        excel_dokumentas_erp=fullfile(KELIAS_SAUGOJIMUI,[dokumentas_savybiu_eksportui '.erp.xlsx']);
                 
         for eeg_i=1:length(ALLEEG_);
             try
@@ -1369,27 +1366,29 @@ if and(~isempty(ALLEEG_(1).file),Ar_eksportuoti_ERP);
                 else
                     laksto_pav=num2str(i);
                 end;
-                %if ispc
-                    xlswrite(excel_dokumentas_erp, ERP_lentele, laksto_pav );
-                    disp(excel_dokumentas_erp);
+                
+                if exist('writecell','file') == 2 
+                    writecell(ERP_lentele,excel_dokumentas_erp,'Sheet',laksto_pav); % įrašo į Excel XLSX, MATLAB versijoms nuo R2019a
+                else%if ispc
+                    xlswrite(excel_dokumentas_erp,ERP_lentele,laksto_pav); % įrašo į Excel XLS, MATLAB versijoms iki R2018b
                 %elseif 1 == 0;
                     %disp('Abejoju, ar kitoje nei Windows sistemoje MATLAB ras Excel');
                 %    csvwrite([csv_dokumentas_erp '_' laksto_pav '.csv'], ERP_lentele );
-                %end ;
-                %disp(' ');
+                end
+                disp(excel_dokumentas_erp);
+                
             catch err;
                 Pranesk_apie_klaida(err,'','',0);
             end;
         end;
-    end;
     
+    case 4
     %% Eksportuoti į MAT
     
-    if get(handles.popupmenu10,'Value')==4;
         [ERP_MAT.Kanalai, ERP_MAT.Laikai, ERP_MAT.Rinkmenos, ERP_MAT.Amplitude_KxLxR] = ...
             eksportuoti_erp_mat(ALLEEG_, ALLEEG_, 1, 1, KELIAS_SAUGOJIMUI);
         assignin('base', 'ERP_MAT', ERP_MAT);
-    end;
+  end;
 
 end;
 
@@ -3967,9 +3966,9 @@ function popupmenu10_Callback(hObject, eventdata, handles)
 %        contents{get(hObject,'Value')} returns selected item from popupmenu10
 if get(handles.popupmenu10,'Value') == 3;
     set(handles.edit70,'Visible','on');
-    if ~ispc;
-        warning([ lokaliz('Export ERP') ': Excel + Windows!']);
-        warndlg('Excel + Windows!', lokaliz('Export ERP'));
+    if ~ispc && exist('writecell','file') ~= 2;
+        warning([ lokaliz('Export ERP') ': XLSX = Excel + Windows!']);
+        warndlg('XLSX = Excel + Windows!', lokaliz('Export ERP'));
     end;
 else    
     set(handles.edit70,'Visible','off');
