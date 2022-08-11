@@ -10,7 +10,9 @@
 % R_laikai_ms=pop_RRI_perziura(R_laikai_ms, veiksena, EKG, EKG_laikai)
 % R_laikai_ms=pop_RRI_perziura(R_laikai_ms, veiksena, EKG, EKG_laikai, zymekliu_laikai, zymekliu_pavadinimai)
 %
-% (C) 2014-2015 Mindaugas Baranauskas
+% veiksena – [0|1] mygtukas taisytų laikų grąžinimui (numatyta 0 = ne)
+%
+% (C) 2014-2022 Mindaugas Baranauskas
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -418,7 +420,7 @@ if and(~isempty(handles.EKG),...
     set(handles.checkbox_ekg,'Enable','on');
     %hold off;
     % EKGposlinkis Y ašyje
-    EKGposlinkis=min(RRI(RRI(:)>0));
+    EKGposlinkis=max(min(RRI(RRI(:)>0)),600);
     if isempty(EKGposlinkis); EKGposlinkis=0; end;
     %handles.EKG_=mat2gray_octave(handles.EKG)*100-125+EKGposlinkis;
     EKG_=mat2gray_octave(handles.EKG); EKG_=EKG_ .* 100;% ./ std(EKG_(1:min(handles.EKG_Hz*10,end)));
@@ -984,7 +986,7 @@ setappdata(handles.axes_rri,'RRI', RRI);
 set(rri_lin,'XData',Laikai','YData',RRI'); % ritmograma pagrindiniame paveiksle
 set(findobj(handles.figure1,'Tag','RRI_slinkiklyje'),'XData',Laikai','YData',RRI'); % ritmograma slinkikliuose
 if and(~isempty(handles.EKG),get(handles.checkbox_ekg,'Value'));
-    EKGposlinkis=min(RRI(RRI(:)>0));
+    EKGposlinkis=max(min(RRI(RRI(:)>0)),600);
     if isempty(EKGposlinkis); EKGposlinkis=1000; end;
     %handles.EKG_=mat2gray_octave(handles.EKG)*100-125+EKGposlinkis;
     EKG_=mat2gray_octave(handles.EKG); EKG_=EKG_ .* 100;% ./ std(EKG_);
@@ -1205,7 +1207,11 @@ elseif round(santykis) == 1
     RRintrp1a=interp1([R_laikai(max(2,RLi-4):RLi-1); RLieskomas-RRintrp1; R_laikai(RLi+1:min(RLi+4,end))],[RRI(max(1,RLi-5):RLi-2); RRI(RLi-1)-RRintrp1; RRI(RLi:min(RLi+3,end))],RLieskomas,'spline');
     RRintrp2=interp1([R_laikai(max(2,RLi-4):RLi-1); RLieskomas; R_laikai(RLi+1:min(RLi+4,end))],[RRI(max(1,RLi-5):RLi-2); RRintrp1a; RRI(RLi:min(RLi+3,end))],RLieskomas-RRintrp1a,'spline');
     RRintrp1b=interp1([R_laikai(max(2,RLi-4):RLi-1); RLieskomas-RRintrp1a; R_laikai(RLi+1:min(RLi+4,end))],[RRI(max(1,RLi-5):RLi-2); RRintrp2; RRI(RLi:min(RLi+3,end))],RLieskomas,'spline');
-    RRintrp1=mean([RRintrp1a,RRintrp1b]);
+    if ~ismember('shift',get(gcf,'currentModifier'))
+        RRintrp1=RRintrp1b;
+    else
+        RRintrp1=mean([RRintrp1a,RRintrp1b]);
+    end
 end
 nx_sek=round(RLieskomas-RRintrp1)/1000;
 naujas_dantelis_tiksliai(hObject, eventdata, handles,nx_sek);
@@ -1223,8 +1229,11 @@ if ~isequal(gca,handles.axes_rri)
 end
 try   
     %RRI_perziuros_anotacija('prideti',handles.figure1,handles.axes_rri));
-    feval(getappdata(handles.axes_rri,'MouseInMainAxesFnc'));
-catch
+    fja=getappdata(handles.axes_rri,'MouseInMainAxesFnc');
+    hFig=handles.figure1; %#ok - hFig gali būti panaudojamas žemiau eilutėje kaip "fja" viduje esantis kintamasis
+    feval(fja{:});
+    pause(0.01);
+catch %err; Pranesk_apie_klaida(err);
 end;
 guidata(handles.figure1, handles);
 
@@ -1354,10 +1363,10 @@ switch ck
             cp=get(handles.axes_rri,'CurrentPoint');
             set(handles.axes_rri,'Units',oldu);
             pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
-            if ismember('shift',modifiers)
-                naujas_dantelis_apytiksliai(hObject, eventdata, handles,cp(1));
-            elseif ismember('alt',modifiers)
+            if ismember('alt',modifiers)
                 naujas_dantelis_interp(hObject, eventdata, handles,cp(1));
+            elseif ismember('shift',modifiers)
+                naujas_dantelis_apytiksliai(hObject, eventdata, handles,cp(1));
             end
         elseif ismember('control',modifiers);
             pop_RRI_perziura;
@@ -2661,7 +2670,7 @@ function anotacijos_OffCallback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 setappdata(handles.axes_rri,'MouseInMainAxesFnc', {'eval' ...
-    'set(hFig,''Pointer'',''arrow''); '});
+    'set(hFig,''Pointer'',''arrow''); RRI_perziuros_anotacija; '});
 setappdata(handles.figure1,'anotRod',0);
 RRI_perziuros_anotacija('slepti');
 guidata(handles.figure1, handles);
