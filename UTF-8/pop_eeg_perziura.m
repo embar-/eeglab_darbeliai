@@ -205,14 +205,17 @@ if laukti
     set(f, 'UserData', 1);
 end;
 
+eeg_perziura_param={'figure', f, 'axes', a};
+try eeg_perziura_param=[eeg_perziura_param  {'plotis' g(1).plotis}]; catch; end
+
 if isempty(EEG2)
     if zymeti
-        eeg_perziura(EEG1, EEG1, 'figure', f, 'axes', a);
+        eeg_perziura(EEG1, EEG1, eeg_perziura_param{:});
     else
-        eeg_perziura(EEG1, []  , 'figure', f, 'axes', a);
+        eeg_perziura(EEG1, []  , eeg_perziura_param{:});
     end;
 else
-        eeg_perziura(EEG1, EEG2, 'figure', f, 'axes', a);
+        eeg_perziura(EEG1, EEG2, eeg_perziura_param{:});
 end;
 
 if isempty(EEG1.data)
