@@ -1154,6 +1154,8 @@ function axisComponent = getAxisComponent(hFig)
             axisComponent = [];
             
             s=warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+            warning('off', 'MATLAB:ui:javacomponent:FunctionToBeRemoved');
+            warning('off', 'MATLAB:ui:javaframe:PropertyToBeRemoved');
             javaFrame = get(hFig,'JavaFrame');
             warning(s);
             axisComponent = get(javaFrame,'AxisComponent');
