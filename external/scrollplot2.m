@@ -1042,8 +1042,6 @@ function mouseDownCallback(varargin)
         cp = get(hAx,'CurrentPoint');
 
         % Check whether the curser is over any side bar
-        barXs = [-inf,inf];
-        scrollBarIdx = [];
         scrollPatch = findobj(hAx, 'tag','scrollPatch');
         if ~isempty(scrollPatch)
             
@@ -1091,6 +1089,10 @@ function mouseDownCallback(varargin)
                 set(scrollBars(1), dataStr,barsXs(2)*[1,1]);
                 set(scrollBars(2), dataStr,barsXs(1)*[1,1]);
             end
+        else
+            scrollBarIdx = [];
+            cx=[];
+            barXs = [-inf,inf];
         end
         
         setappdata(hFig, 'scrollplot_clickedBarIdx',scrollBarIdx);
