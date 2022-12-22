@@ -1,15 +1,13 @@
-Darbeliai v2019.02.01.1
+Darbeliai v2022.12.22.1
 
 LT:
-1. Naujas veiksmų meniu rinkmenų pasirinkimui pagal 
-meta duomenis.
-2. SĮSP savybių eksportavime skaitinius įvykius
-konvertuoti į raidinius (numatytasis EEGLAB tipas).
-3. Interpoliuoti kanalus tik remiantis vidine schema.
+1. EEG galios skaičiavimams 50% lango persidengimas.
+2. Patikimesnis poaplankių turinio rodymas.
+3. Rinkmenų pasirinkimui pagal įrašo trukmę.
+4. SĮSP bandyti eksportuoti į 1 dokumentą, jei įmanoma.
 
 EN:
-1. New actions menu for selecting files by metadata.
-2. Convert numeric EEG events into alphanumeric
-(default type of EEGLAB event variables) while
-using dialog for export of ERP properties.
-3. Interpolate channels only by internal scheme.
+1. EEG power calculation with 50% window overlap.
+2. More reliable listing of sub-directories.
+3. New Actions menu for selecting records by duration.
+4. ERP export to one document, if possible.
