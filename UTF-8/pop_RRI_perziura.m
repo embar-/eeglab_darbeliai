@@ -10,7 +10,9 @@
 % R_laikai_ms=pop_RRI_perziura(R_laikai_ms, veiksena, EKG, EKG_laikai)
 % R_laikai_ms=pop_RRI_perziura(R_laikai_ms, veiksena, EKG, EKG_laikai, zymekliu_laikai, zymekliu_pavadinimai)
 %
-% (C) 2014-2015 Mindaugas Baranauskas
+% veiksena – [0|1] mygtukas taisytų laikų grąžinimui (numatyta 0 = ne)
+%
+% (C) 2014-2022 Mindaugas Baranauskas
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -183,7 +185,7 @@ h25 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','P', 'Callback',@(hObje
 % Importuoti
 h14 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','I', 'Callback',' ', 'Separator','on', 'Label','Importuoti', 'Tag','Importuoti');
 % Importuoti_laikus
-h15 = uimenu( 'Parent',h14, 'Accelerator','L', 'Callback',@(hObject,eventdata)pop_RRI_perziura('Importuoti_laikus_Callback',hObject,eventdata,guidata(hObject)), 'Label','QRS laikus', 'Tag','Importuoti_laikus');
+h15 = uimenu( 'Parent',h14, 'Accelerator','L', 'Callback',@(hObject,eventdata)pop_RRI_perziura('Importuoti_laikus_Callback',hObject,eventdata,guidata(hObject)), 'Label','R laikus', 'Tag','Importuoti_laikus');
 % Importuoti_RRI
 h16 = uimenu( 'Parent',h14, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Importuoti_RRI_Callback',hObject,eventdata,guidata(hObject)), 'Label','RRI', 'Tag','Importuoti_RRI');
 % EKG_is_TXT
@@ -196,14 +198,14 @@ h19 = uimenu( 'Parent',h14, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Imp
 h20 = uimenu( 'Parent',h14, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Importuoti_EEGLab_Callback',hObject,eventdata,guidata(hObject)), 'Label','EEG *.set, *.edf, *.cnt...', 'Tag','EEGLab');
 % Eksportuoti
 handles.m_Eksportuoti = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','E', 'Callback',' ', 'Label','Eksportuoti', 'Tag','Eksportuoti');
-% Eksportuoti_laikus
-h22 = uimenu( 'Parent',handles.m_Eksportuoti, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Eksportuoti_laikus_Callback',hObject,eventdata,guidata(hObject)), 'Label','QRS laikus', 'Tag','Eksportuoti_laikus');
 % Eksportuoti_RRI
 h23 = uimenu( 'Parent',handles.m_Eksportuoti, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Eksportuoti_RRI_Callback',hObject,eventdata,guidata(hObject)), 'Label','RRI', 'Tag','Eksportuoti_RRI');
+% Eksportuoti_laikus
+h22 = uimenu( 'Parent',handles.m_Eksportuoti, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Eksportuoti_laikus_Callback',hObject,eventdata,guidata(hObject)), 'Label','R laikus į TXT', 'Tag','Eksportuoti_laikus');
 % Užverti neperduodant laikų
 h27 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','X', 'Callback',@(hObject,eventdata)pop_RRI_perziura('figure1_CloseRequestFcn',hObject,eventdata,guidata(hObject)), 'Separator','on', 'Label','Užverti', 'Tag','Uzverti');
 % Perduoti laikus ir užverti, jei atidaryta iš kitos programos
-h26 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','Q', 'Callback',@(hObject,eventdata)pop_RRI_perziura('pushbutton_OK_Callback',hObject,eventdata,guidata(hObject)), 'Separator','off', 'Visible','off', 'Label','Pateikti QRS laikus', 'Tag','Perduoti');
+h26 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','Q', 'Callback',@(hObject,eventdata)pop_RRI_perziura('pushbutton_OK_Callback',hObject,eventdata,guidata(hObject)), 'Separator','off', 'Visible','off', 'Label','Pateikti R laikus', 'Tag','Perduoti');
 
 
 % Taisa
@@ -216,7 +218,7 @@ h43 = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','Y', 'Callback',@(hObject,
 h32 = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','R', 'Callback',@(hObject,eventdata)pop_RRI_perziura('naujas_dantelis',hObject,eventdata,guidata(hObject)), 'separator', 'on', 'Label','Pridėti tašką ranka', 'Tag','Naujas_dantelis');
 % Salinti
 h33 = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','D', 'Callback',@(hObject,eventdata)pop_RRI_perziura('salinti_pazymetuosius1',hObject,eventdata,guidata(hObject)), 'Label','Pašalinti pažymėtus taškus', 'Tag','Salinti');
-handles.m_Aptikti_EKG_QRS = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','K', 'Callback',@(hObject,eventdata)pop_RRI_perziura('Aptikti_EKG_QRS_Callback',hObject,eventdata,guidata(hObject)), 'Label','Aptikti EKG QRS', 'Separator','on', 'Tag','Aptikti_EKG_QRS');
+handles.m_Aptikti_EKG_QRS = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','K', 'Callback',@(hObject,eventdata)pop_RRI_perziura('Aptikti_EKG_QRS_Callback',hObject,eventdata,guidata(hObject)), 'Label','Aptikti EKG QRS', 'Separator','on', 'Tag','Aptikti_EKG_QRS','Enable','off');
 
 
 % Rodymas
@@ -306,12 +308,13 @@ set(handles.pushbutton_atstatyti,'Backgroundcolor','remove');
 set(handles.pushbutton_atnaujinti,'Backgroundcolor','remove');
 set(handles.checkbox_rri,'Value',1); 
 set(handles.Nejungti,'State','on');
-handles.hlink_OK = linkprop([findobj(handles.figure1,'Tag','Perduoti')' handles.pushbutton_OK handles.OK],{'Visible' 'Enable'});
-handles.hlink_EKG = linkprop([handles.checkbox_ekg findobj(handles.figure1,'Tag','ekg_rodyti')' findobj(handles.figure1,'Tag','Aptikti_EKG_QRS')' ],{'Enable'});
+handles.hlink_OK = linkprop([findobj(handles.figure1,'Tag','Perduoti')' handles.pushbutton_OK handles.OK],{'Visible'});
+%handles.hlink_EKG = linkprop([handles.checkbox_ekg findobj(handles.figure1,'Tag','ekg_rodyti')' findobj(handles.figure1,'Tag','Aptikti_EKG_QRS')' ],{'Enable'});
 handles.fig_brush=brush(handles.figure1);
 handles.axes_rri_padetis=get(handles.axes_rri,'Position');
 set(handles.axes_rri,'ButtonDownFcn',@(hObject,eventdata)pop_RRI_perziura('axes_rri_ButtonDownFcn',hObject,eventdata,guidata(hObject)));
 setappdata(handles.axes_rri,'originalButtonDownFcn',get(handles.axes_rri,'ButtonDownFcn'));
+setappdata(handles.axes_rri,'MouseDragFnc','if strcmp(axName,''x''); pop_RRI_perziura(''optimalus_rodymasx'',gcbf,[],guidata(gcbf),cx,diff(barXs)); end; ');
 setappdata(handles.figure1,'ButtonDownFcnX','pop_RRI_perziura(''optimalus_rodymasx'',gcbf,[],guidata(gcbf),cx,diff(barXs))');
 setappdata(handles.figure1,'ButtonDownFcnY','pop_RRI_perziura(''optimalus_rodymasy'',gcbf,[],guidata(gcbf),cx,diff(barXs))');
 handles.pradines_fig=findobj(handles.figure1);
@@ -329,7 +332,11 @@ handles=pirmieji_grafikai(hObject, eventdata, handles);
 susaldyk(hObject, eventdata, handles);
 
 % Įtartinų taškų žymėjimas
-edit_ribos_Callback(hObject, eventdata, handles);
+set(handles.pushbutton_atnaujinti,'UserData',0);
+if get(handles.edit_ribos,'UserData');
+    edit_ribos_Callback(hObject, eventdata, handles);
+end
+set(handles.pushbutton_atnaujinti,'UserData',1);
 
 %Kita
 set(handles.edit_ribos,'UserData',1);
@@ -360,6 +367,13 @@ setappdata(handles.axes_rri,'MouseInMainAxesFnc_BrushModeCont',{'eval', [ ...
     'set(findobj(hFig,''Tag'',''toggle_brush''),''state'',''on''); ' ...
     'brush(hFig,''on''); ' ]});
 
+setappdata(handles.figure1,'scrollplot_ViewUpdater',{'eval', [ ...
+    'set(findobj(hFig,''Tag'',''aktyvusis''), ''Enable'',''off''); ' ...
+    'set(findobj(hFig,''Tag'',''anotacijos''),''Enable'',''off''); ' ...
+    'set(findobj(hFig,''Tag'',''toggle_brush''),''state'',''on''); ' ...
+    'brush(hFig,''on''); ' ]});
+susildyk(hObject, eventdata, handles);
+
 % Update handles structure
 guidata(handles.figure1, handles);
 
@@ -375,14 +389,21 @@ set(handles.figure1,'pointer','watch');
 Pradiniai_laikai=get(handles.axes_rri,'UserData');
 
 if length(Pradiniai_laikai)>1;
-    handles.Laikai=0.001*[Pradiniai_laikai(1) ; ( Pradiniai_laikai(1)*2 + Pradiniai_laikai(2))/3 ; Pradiniai_laikai(2:end)];
-    handles.RRI=[0 ; NaN ; diff(Pradiniai_laikai)] ;
+    Laikai=0.001*[Pradiniai_laikai(1) ; ( Pradiniai_laikai(1)*2 + Pradiniai_laikai(2))/3 ; Pradiniai_laikai(2:end)];
+    RRI=[0 ; NaN ; diff(Pradiniai_laikai)];
     set(handles.aktyvusis, 'State','on');
-else isempty(Pradiniai_laikai);
-    handles.Laikai=[0 ; 1; 30];
-    handles.RRI=[0 ; NaN ; 1000];
+    vardas=getappdata(handles.figure1,'vardas');
+    if isempty(vardas)
+        vardas='';
+    end
+    set(handles.figure1, 'Name', [mfilename ' - ' vardas])
+else %isempty(Pradiniai_laikai);
+    Laikai=[0 ; 1; 30];
+    RRI=[0 ; NaN ; 1000];
     set(handles.aktyvusis, 'State','off');
 end;
+setappdata(handles.axes_rri,'Laikai', Laikai);
+setappdata(handles.axes_rri,'RRI', RRI);
 
 %Grafikai
 axes(handles.axes_rri); cla;
@@ -399,11 +420,12 @@ if and(~isempty(handles.EKG),...
     set(handles.checkbox_ekg,'Enable','on');
     %hold off;
     % EKGposlinkis Y ašyje
-    EKGposlinkis=min(handles.RRI(handles.RRI(:)>0));
+    EKGposlinkis=max(min(RRI(RRI(:)>0)),600);
     if isempty(EKGposlinkis); EKGposlinkis=0; end;
     %handles.EKG_=mat2gray_octave(handles.EKG)*100-125+EKGposlinkis;
-    EKG_=mat2gray_octave(handles.EKG); EKG_=EKG_ .* 10 ./ std(EKG_);
-    handles.EKG_=EKG_- max(EKG_) + median(EKG_) + EKGposlinkis - 50;
+    EKG_=mat2gray_octave(handles.EKG); EKG_=EKG_ .* 100;% ./ std(EKG_(1:min(handles.EKG_Hz*10,end)));
+    handles.EKG_=EKG_ + max(EKG_) - quantile(EKG_,0.75) + EKGposlinkis - 170;
+    %handles.EKG_=EKG_- max(EKG_) + median(EKG_) + EKGposlinkis - 50;
     handles.EKG_lin=line(handles.EKG_laikai,handles.EKG_,'color','r');
     set(handles.EKG_lin,'Tag','EKG_lin','hittest','off');
     % % Galėjome piešti su plot – bettada linijas braukia Brush veiksena, jas gali ištrinti
@@ -411,15 +433,15 @@ if and(~isempty(handles.EKG),...
     %set(handles.EKG_lin,'Tag','EKG_lin','XDataSource','','YDataSource','','hittest','off');
     %handles.EKG_lin=get(handles.axes_rri,'Children');
     %try
-    handles.EKG_R=0*handles.RRI-20+EKGposlinkis;
-    handles.EKG_tsk=plot(handles.Laikai,handles.EKG_R,'o','color','g');
+    handles.EKG_R=0*RRI-20+EKGposlinkis;
+    handles.EKG_tsk=plot(Laikai,handles.EKG_R,'o','color','g');
     set(handles.EKG_tsk,'Tag','EKG_tsk','XDataSource','','YDataSource','','hittest','off');%,'MarkerFaceColor','w');
     %linijos=get(handles.axes_rri,'Children');
     %handles.EKG_tsk=linijos(find(~ismember(linijos,handles.EKG_lin)));
     %catch err;
     %warning(err.message);
     %end
-    %[hAx,~,hLine2] =plotyy(handles.Laikai,handles.RRI,handles.EKG_laikai,handles.EKG);
+    %[hAx,~,hLine2] =plotyy(Laikai,RRI,handles.EKG_laikai,handles.EKG);
     %set(hLine2,'color','r');
     %set(hAx(2),'ycolor','r');
     %ylabel(hAx(2),'EKG');
@@ -436,11 +458,11 @@ end;
 handles.EKG_tsk_=[];
 
 % RRI grafikas
-handles.RRI_lin=plot(handles.Laikai,handles.RRI,'color','b');
+handles.RRI_lin=plot(Laikai,RRI,'color','b');
 set(handles.RRI_lin,'Tag','RRI_lin','XDataSource','','YDataSource','','hittest','off');
 % linijos=get(handles.axes_rri,'Children');
 % handles.RRI_lin=linijos(find(~ismember(linijos,[handles.EKG_lin handles.EKG_tsk])));
-handles.RRI_tsk=plot(handles.Laikai,handles.RRI,'o','color','k');
+handles.RRI_tsk=plot(Laikai,RRI,'o','color','k');
 set(handles.RRI_tsk,'Tag','RRI_tsk','XDataSource','','YDataSource','','hittest','off');%,'MarkerFaceColor','w');
 % linijos=get(handles.axes_rri,'Children');
 % handles.RRI_tsk=linijos(find(~ismember(linijos,[handles.EKG_lin handles.RRI_lin handles.EKG_tsk])));
@@ -450,9 +472,6 @@ set(handles.RRI_tsk,'Tag','RRI_tsk','XDataSource','','YDataSource','','hittest',
 % set(get(handles.axes_rri,'Children'),'XDataSource','handles.Laikai');
 % set(get(handles.axes_rri,'Children'),'YDataSource','handles.RRI');
 % %linkdata(handles.figure1,'on');
-%
-% handles.Laikai=0.001*Pradiniai_laikai;
-% handles.RRI=[NaN ; diff(Pradiniai_laikai)] ;
 
 %
 %dpm=datamanager.linkplotmanager;
@@ -469,18 +488,18 @@ try
     nereikia_slinkties=0;
     try nereikia_slinkties=sum(ishandle(handles.scrollHandles)); catch, end;
     if nereikia_slinkties; 
-        set(handles.scrollHandles,'XLim',[max(0,handles.Laikai(1)-5) 5*ceil(handles.Laikai(end)/5)]);
+        set(handles.scrollHandles,'XLim',[max(0,Laikai(1)-5) 5*ceil(Laikai(end)/5)]);
         set(handles.scrollHandles(2),'YLim',[0 1500]);
         error('Sliktis jau yra'); 
     end;
     if get(handles.checkbox_ekg,'Value'); xlangas=30 ; else xlangas=300 ; end;
-    WindowSizeX=min(xlangas,max(handles.Laikai));
+    WindowSizeX=min(xlangas,max(Laikai));
     WindowSizeY=max(300,...
-            min(1500,50+max(handles.RRI)) - ...
-            max(0,min(handles.RRI(handles.RRI > 0))-80) );
-    MaxY=min(1500,30+max(handles.RRI));
-    MinX=max(0,handles.Laikai(1)-5);
-    XLim=[MinX 5*ceil(handles.Laikai(end)/5)];
+            min(1500,50+max(RRI)) - ...
+            max(0,min(RRI(RRI > 0))-80) );
+    MaxY=min(1500,30+max(RRI));
+    MinX=max(0,Laikai(1)-5);
+    XLim=[MinX 5*ceil(Laikai(end)/5)];
     handles.scrollHandles = scrollplot2('Axis','XY',...
         'WindowSizeX', WindowSizeX, 'WindowSizeY', WindowSizeY,...
         'MinX', MinX, 'MaxY', MaxY) ;
@@ -489,15 +508,24 @@ try
     handles.ScrollHandlesCldrK=findobj(handles.scrollHandles,'-not','Tag','scrollDataLine');
     handles.ScrollHandlesCldrL=findobj(handles.scrollHandles,'Tag','scrollDataLine');
     for i=1:length(handles.ScrollHandlesCldrL); l=handles.ScrollHandlesCldrL(i);
-        dx=get(l,'XData'); %dy=get(l,'YData'); 
+        dx=get(l,'XData'); 
         if size(dx) == [1 2]; %#ok
             if strcmp(get(get(l,'parent'),'userdata'),'y');
                 delete(l);
             else
                 if length(unique(dx)) == 1; set(l,'Tag','Zymeklis_slinkiklyje'); end;
             end;
-        elseif isequal(length(dx),length(handles.Laikai));
+        elseif isequal(length(dx),length(Laikai));
             set(l,'Tag','RRI_slinkiklyje','color',[0.5 0.5 0.5]);
+            if length(dx) > 10000
+                % supaprastinti dideles kreives slankikliuose
+                dy=get(l,'YData');
+                dy_N=length(YData);
+                YData_N_1=10^(floor(log10(dy_N))-3);
+                YData_N_2=floor(dy_N/YData_N_1);
+                XData=reshape(dx(1:YData_N_1*YData_N_2),YData_N_1,YData_N_2); XData=[min(XData,[],1,'omitnan')' mean(XData,1,'omitnan')']'; set(l,'XData', XData(:));
+                YData=reshape(dy(1:YData_N_1*YData_N_2),YData_N_1,YData_N_2); YData=[min(YData,[],1,'omitnan')' max(YData,[],1,'omitnan')']'; set(l,'YData', YData(:));
+            end
         else
             delete(l);
         end;
@@ -525,7 +553,7 @@ set(handles.axes_rri,'YGrid','on','Xgrid','on','TickDir','out');
 figure1_ResizeFcn(hObject, eventdata, handles);
 
 % Taisymų žurnalavimas
-istorijos_tikrinimas(hObject, eventdata, handles, handles.RRI, handles.Laikai);
+istorijos_tikrinimas(hObject, eventdata, handles, RRI, Laikai);
  
 % Užbaigimas
 handles.t=0; % Pakutinio atnaujinimo laikas
@@ -533,7 +561,7 @@ pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
 if get(handles.checkbox_ekg,'Value');
     set(handles.ekg_rodyti,'State','on');
 end;
-refreshdata(handles.figure1,'caller');
+%refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
 
 
@@ -548,7 +576,7 @@ try
     catch; ribos=[0 1500]; % Jei pirmą kartą
     end;
     try    RRI=get(handles.RRI_tsk,'YData'); % Jei atnaujinama
-    catch; RRI=handles.RRI; % Jei pirmą kartą
+    catch; RRI=getappdata(handles.axes_rri,'RRI'); % Jei pirmą kartą 
     end;
     vidur=min(RRI(find(RRI(:)>0))) -30;
     if isempty(vidur); vidur=1000; end; 
@@ -583,7 +611,7 @@ catch %err; Pranesk_apie_klaida(err,mfilename,'',0);
 end;
 %drawnow;
 % %pause(5);
-refreshdata(handles.figure1,'caller');
+%refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
 
 %%
@@ -618,20 +646,14 @@ function pushbutton_OK_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 %guidata(handles.figure1, handles);
 pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
-%Laikai=get(get(handles.axes_rri,'Children'),'XData'); %handles.Laikai;  %get(handles.axes_rri,'UserData');
-Laikai_=get([handles.RRI_lin handles.RRI_tsk],'XData');
-if iscell(Laikai_);  Laikai=Laikai_{1};
-else Laikai=Laikai_;
-end;
-RRI_=get([handles.RRI_lin handles.RRI_tsk],'YData');
-if iscell(RRI_); RRI=RRI_{1};
-else RRI=RRI_;
-end;
-
+RRI=getappdata(handles.axes_rri,'RRI');
 idx=find(~isnan(RRI));
-%idx=[1 idx];
-Laikai=Laikai(idx);
-handles.output=1000*Laikai';
+Laikai_=getappdata(handles.axes_rri,'Laikai');
+Laikai=Laikai_(idx);
+if size(Laikai,2) > 1 && size(Laikai,1) == 1
+    Laikai=Laikai';
+end
+handles.output=1000*Laikai;
 guidata(handles.figure1, handles);
 uiresume;
 
@@ -676,8 +698,10 @@ set(handles.edit_ribos,'UserData',1);
 set(handles.figure1,'pointer','watch');
 
 RRI_=get([handles.RRI_lin handles.RRI_tsk],'YData');
-if iscell(RRI_); RRI=RRI_{1};
-else RRI=RRI_;
+if iscell(RRI_);
+    RRI=RRI_{1};
+else
+    RRI=RRI_;
 end;
 % Taškų žymėjimas
 %b0=brush(handles.figure1);
@@ -691,30 +715,36 @@ end;
 %set(b0, 'ActionPreCallback', @(gcf,eventdata)pop_RRI_perziura('pushbutton_atnaujinti_Callback',gcf,eventdata,guidata(gcf)), 'enable', 'on' );
 %set(b0, 'ActionPostCallback', @(hObject,eventdata)pop_RRI_perziura('pushbutton_atnaujinti_Callback',hObject,eventdata,guidata(hObject)), 'enable', 'on' );
 %set(b0, 'ActionPostCallback', , 'enable', 'on' );
-guidata(handles.figure1, handles);
+%guidata(handles.figure1, handles);
 ribos=str2num(get(handles.edit_ribos,'String'));
 %hB = findobj(handles.figure1,'-property','BrushData');
 hB = [handles.RRI_lin handles.RRI_tsk handles.EKG_tsk [handles.ScrollHandlesCldrR]'];
-for h = hB;
-    try   senas=get(h,'BrushData') ;   senas = (senas > 0) ;
-    catch;
-        try datamanager.enableBrushing(h); catch; end;
-        senas=zeros(1,length(RRI)) ; senas = (senas > 0) ;
-    end;
-    try
-        if get(handles.pushbutton_atnaujinti,'UserData');
+for i=1:length(hB)
+    h = hB(i);
+    if isobject(h) && isvalid(h)
+        try   senas=get(h,'BrushData') ;   senas = (senas > 0) ;
+        catch;
+            try datamanager.enableBrushing(h); catch; end;
             senas=zeros(1,length(RRI)) ; senas = (senas > 0) ;
         end;
-        if length(ribos) == 1;
-            naujas = [RRI<ribos(1)] - [RRI==0] ;
-        elseif length(ribos) == 2;
-            naujas = [RRI<ribos(1)] - [RRI==0] + [RRI>ribos(2)] ;
+        try
+            if get(handles.pushbutton_atnaujinti,'UserData');
+                senas=zeros(1,length(RRI)) ; senas = (senas > 0) ;
+            end;
+            if length(ribos) == 1;
+                naujas = [RRI<ribos(1)] - [RRI==0] ;
+            elseif length(ribos) == 2;
+                naujas = [RRI<ribos(1)] - [RRI==0] + [RRI>ribos(2)] ;
+            end;
+            if length(senas) == length(naujas)
+                suminis = round([senas + naujas] / 2) ;
+                set(h,'BrushData', suminis );
+            end
+        catch err;
+            i
+            Pranesk_apie_klaida(err,mfilename,'',0);
         end;
-        suminis = round([senas + naujas] / 2) ;
-        set(h,'BrushData', suminis );
-    catch err;
-        Pranesk_apie_klaida(err,mfilename,'',0);
-    end;
+    end
 end;
 try set(handles.ScrollHandlesCldrL,'hittest','off'); catch; end;
 try set(handles.ScrollHandlesCldrR,'hittest','off'); catch; end;
@@ -722,7 +752,7 @@ try set(handles.ScrollHandlesCldrZ,'hittest','off'); catch; end;
 try set(handles.ScrollHandlesCldrK,'hittest','on'); catch; end;
 %set(handles.figure1,'ButtonDownFcn', 'brush off');
 %brush(handles.figure1,get(b0,'Enable'));
-axes(handles.axes_rri);
+%axes(handles.axes_rri);
 % guidata(handles.figure1, handles);
 % refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
@@ -751,17 +781,19 @@ set(handles.figure1,'pointer','watch');
 susaldyk(hObject, eventdata, handles);
 Pradiniai_laikai=get(handles.axes_rri,'UserData');
 if length(Pradiniai_laikai)>1;
-    handles.Laikai=0.001*[Pradiniai_laikai(1) ; ( Pradiniai_laikai(1)*2 + Pradiniai_laikai(2))/3 ; Pradiniai_laikai(2:end)];
-    handles.RRI=[0 ; NaN ; diff(Pradiniai_laikai)] ;
+    Laikai=0.001*[Pradiniai_laikai(1) ; ( Pradiniai_laikai(1)*2 + Pradiniai_laikai(2))/3 ; Pradiniai_laikai(2:end)];
+    RRI=[0 ; NaN ; diff(Pradiniai_laikai)] ;
     set(handles.aktyvusis, 'State','on');
-else isempty(Pradiniai_laikai);
-    handles.Laikai=[0 ; 1; 30];
-    handles.RRI=[0 ; NaN ; 1500];
+else %isempty(Pradiniai_laikai);
+    Laikai=[0 ; 1; 30];
+    RRI=[0 ; NaN ; 1500];
     set(handles.aktyvusis, 'State','off');
 end;
+setappdata(handles.axes_rri,'Laikai', Laikai);
+setappdata(handles.axes_rri,'RRI', RRI);
 set([handles.RRI_lin handles.RRI_tsk],'Visible','off');
-set([handles.RRI_lin handles.RRI_tsk handles.EKG_tsk],'XData',handles.Laikai);
-set([handles.RRI_lin handles.RRI_tsk handles.EKG_tsk],'YData',handles.RRI);
+set([handles.RRI_lin handles.RRI_tsk handles.EKG_tsk],'XData',Laikai);
+set([handles.RRI_lin handles.RRI_tsk handles.EKG_tsk],'YData',RRI);
 setappdata(handles.figure1,'istorijosNr',0);
 istorijos_busena(hObject, eventdata, handles);
 pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
@@ -769,7 +801,7 @@ optimalus_rodymasx(hObject, eventdata, handles);
 optimalus_rodymasy(hObject, eventdata, handles);
 set([handles.RRI_lin handles.RRI_tsk],'Visible','on');
 edit_ribos_Callback(hObject, eventdata, handles);
-
+guidata(handles.figure1,handles);
 
 function optimalus_rodymasy(hObject, eventdata, handles, varargin)
 % Y ašyje
@@ -783,6 +815,7 @@ if nargin > 4;
     nymin=max(-40, dbr - plt/2);
     nymax=nymin+plt;
     set(handles.axes_rri,'YLim',[nymin nymax]);
+    guidata(handles.figure1,handles);
     return;
 end;
 RRI=get(handles.RRI_tsk,'YData');
@@ -801,6 +834,7 @@ if ~isempty(RRI_galiojantys);
 else
     set(handles.axes_rri,'YLim',[800 1100]);
 end;
+guidata(handles.figure1,handles);
 
 function optimalus_rodymasx(hObject, eventdata, handles, varargin)
 %X ašyje
@@ -811,9 +845,10 @@ if nargin > 4; plt=varargin{2};
 else           plt=30; % Optimalus plotis
 end;
 if plt <= 0; plt=diff(get(handles.axes_rri,'XLim')); end;
-if isempty(handles.EKG_laikai); 
-     Laikai=handles.Laikai; 
-else Laikai=handles.EKG_laikai; 
+if isempty(handles.EKG_laikai);
+    Laikai=getappdata(handles.axes_rri,'Laikai');
+else
+    Laikai=handles.EKG_laikai;
 end;
 xmin=max(0,min(Laikai)-1);
 xmax=max(xmin+plt,max(Laikai));
@@ -822,6 +857,10 @@ dbr=max(dbr,xmin+plt/2);
 nxmin=dbr-plt/2;
 nxmax=nxmin+plt;
 set(handles.axes_rri,'XLim',[nxmin nxmax]);
+%handles=rodyk_tik_langeli(handles);
+guidata(handles.figure1,handles);
+%toc(t)
+
 
 % --- Executes on button press in atnaujinti.
 function pushbutton_atnaujinti_Callback(hObject, eventdata, handles)
@@ -842,6 +881,8 @@ set(handles.pushbutton_atnaujinti,'Enable','off');
 set(handles.atnaujinti,'Enable','off');
 guidata(hObject,handles);
 %drawnow;
+nejungti=str2num(get(handles.edit_nejungti,'String'));
+%langelio_ribos_x=get(handles.axes_rri,'xlim');
 rri_lin=[handles.RRI_lin handles.RRI_tsk ];
 if get(handles.checkbox_ekg,'Value');
     Laikai_=get([rri_lin handles.EKG_tsk],'XData');
@@ -855,116 +896,113 @@ if iscell(Laikai_);
 else
     Laikai__=[unique([Laikai_])]';
 end;
-if iscell(RRI_);
-    if length(RRI_) < 2 ; RRI_(2)=RRI_(1); Laikai_(2)=Laikai_(1); end;
-    if length(RRI_) < 3 ; RRI_(3)=RRI_(1); Laikai_(3)=Laikai_(1); end;
-    if length(RRI_{3})==1;
-        if isnan(RRI_{3}); RRI_(3)=RRI_(1); Laikai_(3)=Laikai_(1); end;
-    end;
-    RRI1=RRI_{1}; RRI2=RRI_{2}; RRI3=RRI_{3};
-    RRI__=nan(length(Laikai__),1);
-    for i=1:length(Laikai__);
-            ri1=find(Laikai_{1}==Laikai__(i)); 
-            ri2=find(Laikai_{2}==Laikai__(i)); 
-            ri3=find(Laikai_{3}==Laikai__(i)); 
-            if ri1>length(RRI1); warning('kažas negerai'); disp('ri1='); disp(ri1); ri1=ri1(ri1<=length(RRI1)); end;
-            if ri2>length(RRI2); warning('kažas negerai'); disp('ri2='); disp(ri2); ri2=ri2(ri2<=length(RRI2)); end;
-            if ri3>length(RRI3); warning('kažas negerai'); disp('ri3='); disp(ri3); ri3=ri3(ri3<=length(RRI3)); end;
-            if isempty(ri1); r1=NaN; else r1=RRI1(ri1); end;
-            if isempty(ri2); r2=NaN; else r2=RRI2(ri2); end;
-            if isempty(ri3); r3=NaN; else r3=RRI3(ri3); end;
-            if length(r1)>1; warning('kažas negerai'); disp('r1='); disp(r1); r1=unique(r1); if length(r1)>1; r1=r1(r1>0); end; end;
-            if length(r2)>1; warning('kažas negerai'); disp('r2='); disp(r2); r2=unique(r2); if length(r2)>1; r2=r2(r2>0); end; end;
-            if length(r3)>1; warning('kažas negerai'); disp('r3='); disp(r3); r3=unique(r3); if length(r3)>1; r3=r3(r3>0); end; end;
-        try % Dėl visa pikto gaudykim klaidą kertinėje atnaujinimo vietoje
-            r=(r1+r2+r3)/3; % NaN + 1 = NaN
-            RRI__(i,1)=r; 
-        catch err;
-            Pranesk_apie_klaida(err);
-            assignin('base','RRI__',RRI__);
-            assignin('base','r1',r1);
-            assignin('base','r2',r2);
-            assignin('base','r3',r3);
-            pause(5);
-            uiresume;
-            assignin('base','r', r);
-            rethrow(err);
-        end;
-    end;
+% idx1=find(Laikai__>=langelio_ribos_x(1),1,'first');
+% idx2=find(Laikai__<=langelio_ribos_x(1),1,'last');
+% Laikai__=Laikai__(idx1:idx2);
+% RRI_=RRI_(idx1:idx2);
 
+
+if iscell(RRI_);
+    if length(RRI_) == 1 || ...
+      (length(RRI_) == 2 && isequal(RRI_(1),RRI_(2)) && isequal(Laikai_(1),Laikai_(2))) || ...
+      (length(RRI_) == 3 && isequal(RRI_(1),RRI_(2)) && isequal(RRI_(1),RRI_(3)) && isequal(Laikai_(1),Laikai_(2)) && isequal(Laikai_(1),Laikai_(3)))
+        RRI__=RRI_{1}; Laikai__=Laikai__{1};
+    elseif (length(RRI_) == 2 && isequal(Laikai_(1),Laikai_(2)))
+        RRI__=(RRI_{1}+RRI_{2}) ./ 2;
+    elseif (length(RRI_) == 3 && isequal(Laikai_(1),Laikai_(2)) && isequal(Laikai_(1),Laikai_(3)))
+        RRI__=(RRI_{1}+RRI_{2}+RRI_{3}) ./ 3;
+    else
+        if length(RRI_) < 2 ; RRI_(2)=RRI_(1); Laikai_(2)=Laikai_(1); end;
+        if length(RRI_) < 3 ; RRI_(3)=RRI_(1); Laikai_(3)=Laikai_(1); end;
+        if length(RRI_{3})==1;
+            if isnan(RRI_{3}); RRI_(3)=RRI_(1); Laikai_(3)=Laikai_(1); end;
+        end;
+        RRI1=RRI_{1}; RRI2=RRI_{2}; RRI3=RRI_{3};
+        RRI__=nan(length(Laikai__),1);
+        for i=1:length(Laikai__);
+            ri1=find(ismember(Laikai_{1},Laikai__(i)));
+            ri2=find(ismember(Laikai_{2},Laikai__(i)));
+            ri3=find(ismember(Laikai_{3},Laikai__(i)));
+            if isempty(ri1) || ri1 == length(RRI1)+1; r1=NaN; elseif ri1 < length(RRI1); r1=RRI1(ri1); end;
+            if isempty(ri2) || ri2 == length(RRI2)+1; r2=NaN; elseif ri2 < length(RRI2); r2=RRI2(ri2); end;
+            if isempty(ri3) || ri3 == length(RRI3)+1; r3=NaN; elseif ri3 < length(RRI3); r3=RRI3(ri3); end;
+            try % Dėl visa pikto gaudykim klaidą kertinėje atnaujinimo vietoje
+                r=(r1+r2+r3)/3; % NaN + 1 = NaN
+                RRI__(i,1)=r;
+            catch err;
+                Pranesk_apie_klaida(err);
+                assignin('base','RRI__',RRI__);
+                assignin('base','r1',r1);
+                assignin('base','r2',r2);
+                assignin('base','r3',r3);
+                pause(5);
+                uiresume;
+                assignin('base','r', r);
+                rethrow(err);
+            end;
+        end;
+    end
 else
     RRI__=RRI_;
 end;
 
-if length(RRI__)>1;
-
+if length(RRI__)>1 && sum(~isnan(RRI__))>1;
+    
     Laikai3=Laikai__(~isnan(RRI__));
     RRI___=[0 ; 1000 * diff(Laikai3)];
-
-    if ~get(handles.checkbox_rri,'Value');
-
-        Laikai=Laikai3;
-        RRI=RRI___;
-    else
-
-        if length(RRI___)>1;
-
-            Laikai=[Laikai3(1) ; ( Laikai3(1)*2 + Laikai3(2))/3  ];
-            RRI=[RRI___(1) ; NaN ];
-            for i=2:length(RRI___);
-                nejungti=str2num(get(handles.edit_nejungti,'String'));
-                if RRI___(i) > nejungti(1);
-                    Laikai(end+1)=(Laikai3(i-1)+2*Laikai3(i))/3;
-                    RRI(end+1)=NaN;
-
-                    Laikai(end+1)=Laikai3(i);
-                    RRI(end+1)=0;
-
-                    if ~(i==length(RRI___));
-                        Laikai(end+1)=(Laikai3(i)*2+Laikai3(i+1))/3;
-                        RRI(end+1)=NaN;
-                    end;
-
-                else
-                    Laikai(end+1)=Laikai3(i);
-                    RRI(end+1)=RRI___(i);
-                end;
-            end;
-
-        else
-            %warning('QRS?');
-            Laikai=Laikai__;
-            RRI=RRI__;
+    
+    if length(RRI___)>1;
+        
+        
+        if ~get(handles.checkbox_rri,'Value');
+            Laikai=[Laikai3(1); NaN ; Laikai3(2:end)];
+            RRI=[RRI___(1); NaN ; RRI___(2:end) ];
+        else            
+            ni=find(RRI___ > nejungti(1));
+            Laikai_n=[Laikai3 ; (Laikai3(1)*2+Laikai3(2))/3 ; (Laikai3(ni-1)+2*Laikai3(ni))/3 ; (2*Laikai3(ni)+Laikai3(min(end,ni+1)))/3 ]; 
+            [Laikai,j]=sort(Laikai_n);
+            RRI_n=[RRI___ ; NaN(2*length(ni)+1,1)];
+            RRI_n(ni)=0;
+            RRI=RRI_n(j);
         end;
-
-
+        
+    else
+        Laikai=[0 ; 1; 30]+Laikai3(1);
+        RRI=[0 ; NaN ; 1000];
     end;
-
 else
     warning('QRS?');
-    Laikai=Laikai__;
-    RRI=RRI__;
+    Laikai=[0 ; 1; 30];
+    RRI=[0 ; NaN ; 1000];
 end;
 
 % Pakeitimų žurnalas
 istorijos_tikrinimas(hObject, eventdata, handles, RRI, Laikai);
 
 % Grafikai
-handles.RRI=RRI; handles.Laikai=Laikai; % šiedu nėra tikri „handles“, t.y. tai ne objektai
+%handles.RRI=RRI; handles.Laikai=Laikai; % šiedu nėra tikri „handles“, t.y. tai ne objektai
+setappdata(handles.axes_rri,'Laikai', Laikai);
+setappdata(handles.axes_rri,'RRI', RRI);
 set(rri_lin,'XData',Laikai','YData',RRI'); % ritmograma pagrindiniame paveiksle
 set(findobj(handles.figure1,'Tag','RRI_slinkiklyje'),'XData',Laikai','YData',RRI'); % ritmograma slinkikliuose
 if and(~isempty(handles.EKG),get(handles.checkbox_ekg,'Value'));
-    EKGposlinkis=min(RRI(RRI(:)>0));
+    EKGposlinkis=max(min(RRI(RRI(:)>0)),600);
     if isempty(EKGposlinkis); EKGposlinkis=1000; end;
     %handles.EKG_=mat2gray_octave(handles.EKG)*100-125+EKGposlinkis;
-    EKG_=mat2gray_octave(handles.EKG); EKG_=EKG_ .* 10 ./ std(EKG_);
-    handles.EKG_=EKG_- max(EKG_) + median(EKG_) + EKGposlinkis - 50;
-    set(handles.EKG_lin,'XData',handles.EKG_laikai,'YData',handles.EKG_);
+    EKG_=mat2gray_octave(handles.EKG); EKG_=EKG_ .* 100;% ./ std(EKG_);
+    %handles.EKG_=EKG_- max(EKG_) + median(EKG_) + EKGposlinkis - 50;
+    handles.EKG_=EKG_ + max(EKG_) - quantile(EKG_,0.75) + EKGposlinkis - 170;
+    if length(handles.EKG_laikai) > 10000
+        handles=rodyk_tik_langeli(handles);
+    else
+        set(handles.EKG_lin,'XData',handles.EKG_laikai,'YData',handles.EKG_);
+    end
     handles.EKG_R=0*RRI'-20+EKGposlinkis;
     set(handles.EKG_tsk,'XData',Laikai','YData',handles.EKG_R);
 else
     set([handles.EKG_lin handles.EKG_tsk],'XData',0,'YData',NaN);
 end;
+
 NY1=0; if get(handles.checkbox_ekg,'Value'); NY1=NY1-100; end; 
 NY2=1500; %if ~isempty(RRI(find([RRI(:)] >0))); NY2=min(max(RRI)+30,1500); end;
 NX1=5*floor(min([Laikai ; handles.EKG_laikai])/5);
@@ -979,6 +1017,7 @@ if ismember('scrollHandles', fields(handles));
         set(handles.scrollHandles,'YLim',[NY1 NY2]);
     end;
 end;
+
 for h=[handles.RRI_lin handles.RRI_tsk handles.EKG_tsk [handles.ScrollHandlesCldrL]'];
     try
         if length(get(h,'BrushData')) ~= length(get(h,'XData'));
@@ -987,29 +1026,44 @@ for h=[handles.RRI_lin handles.RRI_tsk handles.EKG_tsk [handles.ScrollHandlesCld
     catch
     end;
 end;
+
 %handles.b0=brush(handles.figure1);
 %set(handles.b0, 'ActionPreCallback', 'disp(0)', 'enable', 'on' );
 %set(handles.b0, 'ActionPostCallback', @(hObject,eventdata)pushbutton_atnaujinti_Callback(hObject,eventdata,handles), 'enable', 'on' );
 %figure(handles.figure1); linkdata('on');
 %handles.susietas=linkdata(handles.figure1)
-set(handles.pushbutton_atnaujinti,'UserData',0);
-if get(handles.edit_ribos,'UserData');
-    %edit_ribos_Callback(hObject, eventdata, handles);
-end;
+% set(handles.pushbutton_atnaujinti,'UserData',0);
+% if get(handles.edit_ribos,'UserData');
+%     edit_ribos_Callback(hObject, eventdata, handles);
+% end;
 set(handles.pushbutton_atnaujinti,'UserData',1);
-try delete(findobj(handles.figure1,'Tag','naujasR')); catch; end;
+%try delete(findobj(handles.figure1,'Tag','naujasR')); catch; end;
 susildyk(hObject, eventdata, handles);
-figure1_ResizeFcn(hObject, eventdata, handles);
+% figure1_ResizeFcn(hObject, eventdata, handles);
 handles.t=tic;
 guidata(handles.figure1, handles);
-refreshdata(handles.figure1,'caller');
-guidata(handles.figure1, handles);
+%refreshdata(handles.figure1,'caller');
+%guidata(handles.figure1, handles);
 %assignin('base','handles',handles);
-figure(handles.figure1);
+%figure(handles.figure1);
 anotacijos_atnaujinimas(hObject, eventdata, handles);
 %set(handles.figure1,'pointer',Peliukas);
 set(handles.figure1,'pointer','arrow');
 
+function handles=rodyk_tik_langeli(handles)
+langelio_ribos_x=get(handles.axes_rri,'xlim');
+if ~isempty(handles.EKG) && get(handles.checkbox_ekg,'Value') && length(handles.EKG_laikai) > 10000
+% EKG
+    EKG_i_nuo=find(handles.EKG_laikai < langelio_ribos_x(1), 1, 'last');  if isempty(EKG_i_nuo); EKG_i_nuo=1; end;
+    EKG_i_iki=find(handles.EKG_laikai > langelio_ribos_x(2), 1, 'first'); if isempty(EKG_i_iki); EKG_i_iki=length(handles.EKG_laikai); end;
+    set(handles.EKG_lin,'XData',handles.EKG_laikai(EKG_i_nuo:EKG_i_iki),'YData',handles.EKG_(EKG_i_nuo:EKG_i_iki));
+% EKG taškai
+%     Laikai=getappdata(handles.axes_rri,'Laikai');
+%     EKG_tsk_nuo=find(Laikai < langelio_ribos_x(1), 1, 'last');  if isempty(EKG_tsk_nuo); EKG_tsk_nuo=1; end;
+%     EKG_tsk_iki=find(Laikai > langelio_ribos_x(2), 1, 'first'); if isempty(EKG_tsk_iki); EKG_tsk_iki=length(Laikai); end;
+%     set(handles.EKG_tsk,'XData',Laikai(EKG_tsk_nuo:EKG_tsk_iki)','YData',handles.EKG_R(EKG_tsk_nuo:EKG_tsk_iki));
+end
+guidata(handles.figure1,handles);
 
 function naujas_dantelis(hObject, eventdata, handles)
 RRI_perziuros_anotacija('salinti');
@@ -1019,15 +1073,15 @@ set(handles.figure1,'Pointer','cross'); drawnow;
 b='escape';
 try [x,~,b]=ginput(1); catch err; Pranesk_apie_klaida(err,mfilename); end;
 set(handles.figure1,'Pointer','arrow');
-if and(ismember(num2str(b),{'1' '2' '3' 'space'}),isequal(gca,handles.axes_rri));
+if ismember(num2str(b),{'1' '2' '3' 'space'}) && isequal(gca,handles.axes_rri)
     naujas_dantelis_apytiksliai(hObject, eventdata, handles, x);
 end;
 susildyk(hObject, eventdata, handles);
-refreshdata(handles.figure1,'caller');
+%refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
         
 
-function naujas_dantelis_apytiksliai(hObject, eventdata, handles,x_sek)
+function naujas_dantelis_apytiksliai(hObject, eventdata, handles, x_sek)
 if isempty(handles.EKG_laikai); 
     naujas_dantelis_tiksliai(hObject, eventdata, handles,x_sek);
     return; 
@@ -1045,14 +1099,14 @@ else
     [~,y]=max(handles.EKG(ii));
 end;
 nx_sek=handles.EKG_laikai(ii(y));
-disp(sprintf('x=%.4f; nx=%.4f; nx-x=%.4f; leidžiama paklaida=%.1f ms', x_sek,nx_sek,nx_sek-x_sek,plotis_sek*1000));
+fprintf('x=%.4f; nx=%.4f; nx-x=%.4f; leidžiama paklaida=%.1f ms\n', x_sek,nx_sek,nx_sek-x_sek,plotis_sek*1000);
 %handles.EKG_tsk_=plot(nx_sek,handles.EKG_(ii(y)),'o','color','b','hittest','off','Tag','naujasR'); %laikinas
 naujas_dantelis_tiksliai(hObject, eventdata, handles,nx_sek);
-refreshdata(handles.figure1,'caller');
+%refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
 
 
-function naujas_dantelis_tiksliai(hObject, eventdata, handles,x_sek)
+function naujas_dantelis_tiksliai(hObject, eventdata, handles, x_sek)
 perspeta=0;
 if get(handles.checkbox_ekg,'Value');
     elementai=[handles.RRI_lin handles.RRI_tsk handles.EKG_tsk]; %
@@ -1121,7 +1175,48 @@ set(elementai,'Visible','on');
 drawnow;
 %guidata(handles.figure1, handles);
 %refreshdata(handles.figure1,'caller');
-%guidata(handles.figure1, handles);
+guidata(handles.figure1, handles);
+
+
+
+function naujas_dantelis_interp(hObject, eventdata, handles, x_sek)
+x_ms=x_sek*1000;
+[R_laikai,RRI]=R_laikai_ir_RRI_pagal_handles(handles);
+if x_ms <= R_laikai(2) || x_ms >= R_laikai(end-1) || length(R_laikai) < 3
+    warning('Pasirinktoje vietoje negalime interpoliuoti.')
+    naujas_dantelis_tiksliai(hObject, eventdata, handles,x_sek);
+    return;
+end
+RLi=find(R_laikai > x_ms, 1, 'first');
+ribos=str2num(get(handles.edit_ribos,'String'));
+geri=unique(sort([ find(RRI > ribos(1) & RRI < ribos(2)) ; RLi-1]));
+%blogi=setdiff(1:length(RRI),geri)
+RRI=RRI(geri);
+RL0=R_laikai(RLi); 
+R_laikai=R_laikai([1; 1+geri]);
+RLi=find(ismember(R_laikai,RL0));
+%RLint=R_laikai(RLi-1)+1:R_laikai(RLi+1)-1;
+RLieskomas=R_laikai(RLi);
+RRintrp1=interp1(R_laikai([max(2,RLi-4):RLi-1 RLi+1:min(RLi+4,end)]),RRI([max(1,RLi-5):RLi-2 RLi:min(RLi+3,end)]),RLieskomas,'spline');
+RRintrp2=interp1(R_laikai([max(2,RLi-4):RLi-1 RLi+1:min(RLi+4,end)]),RRI([max(1,RLi-5):RLi-2 RLi:min(RLi+3,end)]),RLieskomas-RRintrp1,'spline');
+santykis=(RRI(RLi-1)-RRintrp1)/RRintrp2;
+if santykis < 2/3
+    warning('Automatiškai nepavyko rasti vietos naujam taškui.')
+    return
+elseif round(santykis) == 1
+    RRintrp1a=interp1([R_laikai(max(2,RLi-4):RLi-1); RLieskomas-RRintrp1; R_laikai(RLi+1:min(RLi+4,end))],[RRI(max(1,RLi-5):RLi-2); RRI(RLi-1)-RRintrp1; RRI(RLi:min(RLi+3,end))],RLieskomas,'spline');
+    RRintrp2=interp1([R_laikai(max(2,RLi-4):RLi-1); RLieskomas; R_laikai(RLi+1:min(RLi+4,end))],[RRI(max(1,RLi-5):RLi-2); RRintrp1a; RRI(RLi:min(RLi+3,end))],RLieskomas-RRintrp1a,'spline');
+    RRintrp1b=interp1([R_laikai(max(2,RLi-4):RLi-1); RLieskomas-RRintrp1a; R_laikai(RLi+1:min(RLi+4,end))],[RRI(max(1,RLi-5):RLi-2); RRintrp2; RRI(RLi:min(RLi+3,end))],RLieskomas,'spline');
+    if ~ismember('shift',get(gcf,'currentModifier'))
+        RRintrp1=RRintrp1b;
+    else
+        RRintrp1=mean([RRintrp1a,RRintrp1b]);
+    end
+end
+nx_sek=round(RLieskomas-RRintrp1)/1000;
+naujas_dantelis_tiksliai(hObject, eventdata, handles,nx_sek);
+%refreshdata(handles.figure1,'caller');
+guidata(handles.figure1, handles);
 
 
 function anotacijos_atnaujinimas(hObject, eventdata, handles)
@@ -1129,12 +1224,18 @@ overObcj=hittest;
 if ~or(isequal(overObcj,handles.axes_rri),is_family(overObcj,handles.axes_rri));
     return;
 end;
-figure(handles.figure1); axes(handles.axes_rri);
+if ~isequal(gca,handles.axes_rri)
+    axes(handles.axes_rri);
+end
 try   
     %RRI_perziuros_anotacija('prideti',handles.figure1,handles.axes_rri));
-    feval(getappdata(handles.axes_rri,'MouseInMainAxesFnc'));
-catch
+    fja=getappdata(handles.axes_rri,'MouseInMainAxesFnc');
+    hFig=handles.figure1; %#ok - hFig gali būti panaudojamas žemiau eilutėje kaip "fja" viduje esantis kintamasis
+    feval(fja{:});
+    pause(0.01);
+catch %err; Pranesk_apie_klaida(err);
 end;
+guidata(handles.figure1, handles);
 
 % --- Executes on key press with focus on figure1 and none of its controls.
 function figure1_KeyPressFcn(hObject, eventdata, handles)
@@ -1187,6 +1288,7 @@ switch ck
         lim_nj=max(lim_dbr(1) - lim_plt * 0.2, lim_max(1) - lim_plt * 0.2);
         lim_nj=[lim_nj lim_plt + lim_nj];
         set(handles.axes_rri,'XLim',lim_nj);
+        handles=rodyk_tik_langeli(handles);
         anotacijos_atnaujinimas(hObject, eventdata, handles);
     case 'rightarrow'
         %disp('>');
@@ -1196,6 +1298,7 @@ switch ck
         lim_nj=min(lim_dbr(2) + lim_plt * 0.2, lim_max(2) + lim_plt * 0.2);
         lim_nj=[lim_nj - lim_plt lim_nj];
         set(handles.axes_rri,'XLim',lim_nj);
+        handles=rodyk_tik_langeli(handles);
         anotacijos_atnaujinimas(hObject, eventdata, handles);
     case 'pageup'
         %disp('<');
@@ -1205,6 +1308,7 @@ switch ck
         lim_nj=max(lim_dbr(1) - lim_plt * 1.0, lim_max(1) - lim_plt * 0.2);
         lim_nj=[lim_nj lim_plt + lim_nj];
         set(handles.axes_rri,'XLim',lim_nj);
+        handles=rodyk_tik_langeli(handles);
         anotacijos_atnaujinimas(hObject, eventdata, handles);
     case 'pagedown'
         %disp('>');
@@ -1214,6 +1318,7 @@ switch ck
         lim_nj=min(lim_dbr(2) + lim_plt * 1.0, lim_max(2) + lim_plt * 0.2);
         lim_nj=[lim_nj - lim_plt lim_nj];
         set(handles.axes_rri,'XLim',lim_nj);
+        handles=rodyk_tik_langeli(handles);
         anotacijos_atnaujinimas(hObject, eventdata, handles);
     case 'home'
         lim_dbr=get(handles.axes_rri,'XLim');
@@ -1222,6 +1327,7 @@ switch ck
         lim_nj=lim_max(1) - lim_plt * 0.2;
         lim_nj=[lim_nj lim_plt + lim_nj];
         set(handles.axes_rri,'XLim',lim_nj);
+        handles=rodyk_tik_langeli(handles);
         anotacijos_atnaujinimas(hObject, eventdata, handles);
     case 'end'
         lim_dbr=get(handles.axes_rri,'XLim');
@@ -1230,6 +1336,7 @@ switch ck
         lim_nj=lim_max(2) + lim_plt * 0.2;
         lim_nj=[lim_nj - lim_plt lim_nj];
         set(handles.axes_rri,'XLim',lim_nj);
+        handles=rodyk_tik_langeli(handles);
         anotacijos_atnaujinimas(hObject, eventdata, handles);
     case {'subtract','hyphen'}
         lim_dbr=get(handles.axes_rri,'XLim');
@@ -1250,13 +1357,17 @@ switch ck
         set(handles.axes_rri,'XLim',lim_nj);
         anotacijos_atnaujinimas(hObject, eventdata, handles);
     case 'n'
-        if ismember('shift',modifiers);
+        if ismember('shift',modifiers) || ismember('alt',modifiers)
             oldu=get(handles.axes_rri,'Units');
             set(handles.axes_rri,'Units','pixels');
             cp=get(handles.axes_rri,'CurrentPoint');
             set(handles.axes_rri,'Units',oldu);
             pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
-            naujas_dantelis_apytiksliai(hObject, eventdata, handles,cp(1));
+            if ismember('alt',modifiers)
+                naujas_dantelis_interp(hObject, eventdata, handles,cp(1));
+            elseif ismember('shift',modifiers)
+                naujas_dantelis_apytiksliai(hObject, eventdata, handles,cp(1));
+            end
         elseif ismember('control',modifiers);
             pop_RRI_perziura;
         else
@@ -1355,10 +1466,11 @@ else
         set(handles.axes_rri,[asisR 'lim'],lim_nj);
     end;
 end;
+handles=rodyk_tik_langeli(handles);
 catch err;
         Pranesk_apie_klaida(err,mfilename,'',0);
 end;
-anotacijos_atnaujinimas(hObject, eventdata, handles);
+%anotacijos_atnaujinimas(hObject, eventdata, handles);
 guidata(handles.figure1, handles);
 
 function salinti_pazymetuosius1(hObject, eventdata, handles)
@@ -1390,7 +1502,6 @@ function salinti_pazymetuosius1(hObject, eventdata, handles)
 
 
 function salinti_pazymetuosius2(hObject, eventdata, handles)
-
         pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
         hB = findobj(handles.figure1,'-property','BrushData');
         duom=get(hB(1),'BrushData');
@@ -1406,6 +1517,7 @@ function salinti_pazymetuosius2(hObject, eventdata, handles)
         set([handles.RRI_lin handles.RRI_tsk ],'YData',RRI');
         pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
         optimalus_rodymasy(hObject, eventdata, handles);
+        guidata(handles.figure1,handles);
 
 % --- Executes on button press in checkbox_ekg.
 function checkbox_ekg_Callback(hObject, eventdata, handles)
@@ -1440,6 +1552,7 @@ else
 end;
 pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
 guidata(handles.figure1, handles);
+%refreshdata(handles.figure1,'caller');
 
 
 % --------------------------------------------------------------------
@@ -1478,6 +1591,8 @@ try
     end
     set(handles.axes_rri,'UserData',Laikai);
     handles.zmkl_lks=[]; handles.zmkl_pvd={};
+    [~,vardas]=fileparts(rinkmena);
+    setappdata(handles.figure1,'vardas',vardas);
 catch err;
     Pranesk_apie_klaida(err,mfilename,rinkmena,1,1);
     %warning(err.message);
@@ -1524,8 +1639,9 @@ try
     handles.EKG=[];
     handles.EKG_laikai=[];
     handles.zmkl_lks=[]; handles.zmkl_pvd={};
+    [~,vardas]=fileparts(rinkmena);
+    setappdata(handles.figure1,'vardas',vardas);
     pushbutton_atstatyti_Callback(hObject, eventdata, handles);
-    guidata(handles.figure1, handles);
 catch err;
     Pranesk_apie_klaida(err,mfilename,rinkmena,1,1);
     %w=warndlg(err.message);
@@ -1534,9 +1650,9 @@ catch err;
     handles.EKG=Senas_EKG;
     handles.EKG_laikai=Senas_EKG_;
     pushbutton_atstatyti_Callback(hObject, eventdata, handles);
-    guidata(handles.figure1, handles);
 end;
 susildyk(hObject, eventdata, handles);
+guidata(handles.figure1,handles);
 
 
 % --------------------------------------------------------------------
@@ -1580,8 +1696,9 @@ if ~get(handles.checkbox_rri,'Value');
     set(handles.edit_nejungti,'Enable','off');
 end;
 if strcmp(get(handles.checkbox_ekg,'Visible'),'off');
-    set(findobj(handles.figure1,'Tag','Aptikti_EKG_QRS'),'Enable','off');
     set(handles.ekg_rodyti,'Enable','off');
+    o=findobj(handles.figure1,'Tag','Aptikti_EKG_QRS');
+    set(o,'Enable','off'); % objektai susieti su linkprop, tad pakanka pakeisti ti vieną iš jų.
     %set(handles.Eksportuoti_laikus,'Enable','off');
 end;
 
@@ -1604,7 +1721,7 @@ end;
 istorijos_busena(hObject, eventdata, handles);
 
 figure(handles.figure1);
-refreshdata(handles.figure1,'caller');
+%refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
 drawnow;
 
@@ -1621,10 +1738,9 @@ if length(x) == 1 ;
     set(handles.edit_nejungti,'UserData',regexprep(num2str(x), '[ ]*', ' '));
 end;
 set(handles.edit_nejungti,'String',num2str(get(handles.edit_nejungti,'UserData')));
-
 pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
-
 guidata(handles.figure1, handles);
+
 
 % --- Executes during object creation, after setting all properties.
 function edit_nejungti_CreateFcn(hObject, eventdata, handles)
@@ -1683,10 +1799,11 @@ try
     delete(dabartines_fig(~ismember(dabartines_fig,handles.pradines_fig)));
     set(handles.axes_rri,'Position',handles.axes_rri_padetis);
 
+    [~,vardas]=fileparts(rinkmena);
+    setappdata(handles.figure1,'vardas',vardas);
     handles=pirmieji_grafikai(hObject, eventdata, handles);
     
-    pushbutton_atstatyti_Callback(hObject, eventdata, handles);
-    guidata(handles.figure1, handles);
+    %pushbutton_atstatyti_Callback(hObject, eventdata, handles);
 catch err;
     Pranesk_apie_klaida(err,mfilename,rinkmena,1,1);
     %w=warndlg(err.message);
@@ -1696,10 +1813,10 @@ catch err;
     handles.EKG_laikai=Senas_EKG_;
     handles.EKG_Hz=Senas_EKG_HZ;
     pushbutton_atstatyti_Callback(hObject, eventdata, handles);
-    guidata(handles.figure1, handles);
 end;
 susildyk(hObject, eventdata, handles);
 set(handles.figure1,'pointer','arrow');
+guidata(handles.figure1,handles);
 
 
 % --------------------------------------------------------------------
@@ -1763,7 +1880,7 @@ try
         catch err;
             Kanalai=arrayfun(@(i) sprintf('%d', i), [1:Kanalu_N], 'UniformOutput', false);
         end;
-        KanaloNr=find(ismember(Kanalai,{'EKG' 'ECG'}),1);
+        KanaloNr=find(ismember(Kanalai,{'EKG' 'ECG' 'EKG_CH5'}),1);
         if isempty(KanaloNr); KanaloNr=1; end;
            KanaloNr=listdlg(...
             'ListString',Kanalai,...
@@ -1817,7 +1934,11 @@ try
     end;
     
     EKG=[double(EEG.data(KanaloNr,di))]';
-    if ekg_apversta(EKG,EKG_Hz,0); EKG=-EKG; end;
+    if round(mean(EKG)) ~= 0
+        try EKG=fun_ECG_Filter(EKG_Hz,EKG); catch; end;
+    end
+    
+    if ekg_apversta(EKG(1:min(10000,end)),EKG_Hz,0); EKG=-EKG; end;
     handles.EKG=EKG;
     handles.EKG_laikai=[EKG_laikai / 1000]'; % sekundėmis
     handles.EKG_Hz=EKG_Hz;
@@ -1837,10 +1958,14 @@ try
     delete(dabartines_fig(find(ismember(dabartines_fig,handles.pradines_fig)==0)));
     set(handles.axes_rri,'Position',handles.axes_rri_padetis);
 
+    if isempty(EEG.setname)
+        [~,vardas]=fileparts(rinkmena);
+    else
+        vardas=EEG.setname;
+    end
+    setappdata(handles.figure1,'vardas',vardas);
     handles=pirmieji_grafikai(hObject, eventdata, handles);
-    
-    pushbutton_atstatyti_Callback(hObject, eventdata, handles);
-    guidata(handles.figure1, handles);
+    %pushbutton_atstatyti_Callback(hObject, eventdata, handles);
 catch err;
     Pranesk_apie_klaida(err,mfilename,f,1,1);
     %w=warndlg(err.message);
@@ -1850,10 +1975,10 @@ catch err;
     handles.EKG_laikai=Senas_EKG_;
     handles.EKG_Hz=Senas_EKG_HZ;
     pushbutton_atstatyti_Callback(hObject, eventdata, handles);
-    guidata(handles.figure1, handles);
 end;
 susildyk(hObject, eventdata, handles);
 set(handles.figure1,'pointer','arrow');
+guidata(handles.figure1,handles);
 
 
 % --------------------------------------------------------------------
@@ -1945,7 +2070,7 @@ try
 %     if strcmp(get(handles.checkbox_ekg,'Visible'),'off');
 %         set(handles.checkbox_ekg,'Visible','on');
 %         handles.EKG_lin=plot(1,NaN,'color','r'); %handles.EKG_lin=plot(handles.EKG_laikai,handles.EKG_,'color','r');
-%         handles.EKG_tsk=plot(1,NaN,'o','color','g'); %handles.EKG_tsk=plot(handles.Laikai,handles.EKG_R,'o','color','g');
+%         handles.EKG_tsk=plot(1,NaN,'o','color','g'); %handles.EKG_tsk=plot(Laikai,handles.EKG_R,'o','color','g');
 %         brush(handles.figure1,'on');
 %     end;
 
@@ -2053,10 +2178,10 @@ try
     delete(dabartines_fig(find(ismember(dabartines_fig,handles.pradines_fig)==0)));
     set(handles.axes_rri,'Position',handles.axes_rri_padetis);
 
+    [~,vardas]=fileparts(rinkmena);
+    setappdata(handles.figure1,'vardas',vardas);
     handles=pirmieji_grafikai(hObject, eventdata, handles);
-
-    pushbutton_atstatyti_Callback(hObject, eventdata, handles);
-    guidata(handles.figure1, handles);
+    %pushbutton_atstatyti_Callback(hObject, eventdata, handles);
 catch err;
     Pranesk_apie_klaida(err, 'Importuoti_LabChartMAT', rinkmena, 0);
     %warning(err.message);
@@ -2067,10 +2192,10 @@ catch err;
     handles.EKG_laikai=Senas_EKG_;
     handles.EKG_Hz=Senas_EKG_HZ;
     pushbutton_atstatyti_Callback(hObject, eventdata, handles);
-    guidata(handles.figure1, handles);
 end;
 susildyk(hObject, eventdata, handles);
 set(handles.figure1,'pointer','arrow');
+guidata(handles.figure1,handles);
 
 
 % --------------------------------------------------------------------
@@ -2172,12 +2297,12 @@ try
     dabartines_fig=findobj(handles.figure1);
     delete(dabartines_fig(~ismember(dabartines_fig,handles.pradines_fig)));
     set(handles.axes_rri,'Position',handles.axes_rri_padetis);
-    guidata(handles.figure1, handles);
+    %guidata(handles.figure1, handles);
 
+    [~,vardas]=fileparts(rinkmena);
+    setappdata(handles.figure1,'vardas',vardas);
     handles=pirmieji_grafikai(hObject, eventdata, handles);
-
-    pushbutton_atstatyti_Callback(hObject, eventdata, handles);
-    guidata(handles.figure1, handles);
+    %pushbutton_atstatyti_Callback(hObject, eventdata, handles);
 catch err;
     Pranesk_apie_klaida(err, 'Importuoti_LabChartMAT', rinkmena, 0);
     %warning(err.message);
@@ -2188,10 +2313,10 @@ catch err;
     handles.EKG_laikai=Senas_EKG_;
     handles.EKG_Hz=Senas_EKG_HZ;
     pushbutton_atstatyti_Callback(hObject, eventdata, handles);
-    guidata(handles.figure1, handles);
 end;
 susildyk(hObject, eventdata, handles);
 set(handles.figure1,'pointer','arrow');
+guidata(handles.figure1,handles);
 
 % --------------------------------------------------------------------
 function Aptikti_EKG_QRS_Callback(hObject, eventdata, handles)
@@ -2289,15 +2414,23 @@ function axes_rri_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to axes_rri (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-setappdata(handles.axes_rri,'originalButtonDownFcn',get(handles.axes_rri,'ButtonDownFcn'));
-setappdata(handles.axes_rri,'update_fnc',get(handles.pushbutton_atnaujinti,'Callback'));
-%try delete(findall(handles.figure1,'Type','textbox','Tag','Anot')); catch; end;
-brush(handles.figure1,'on');
-set(handles.toggle_brush,'state','on');
-set(findobj(handles.figure1,'Tag','aktyvusis'),'Enable','off');
-set(findobj(handles.figure1,'Tag','anotacijos'),'Enable','off');
-set(handles.figure1,'Pointer','crosshair');
-
+if ~isfield(eventdata,'Button') ... % nepaspausta pele
+   || eventdata.Button == 1 % kairysis klavišas
+        setappdata(handles.axes_rri,'originalButtonDownFcn',get(handles.axes_rri,'ButtonDownFcn'));
+        setappdata(handles.axes_rri,'update_fnc',get(handles.pushbutton_atnaujinti,'Callback'));
+        %try delete(findall(handles.figure1,'Type','textbox','Tag','Anot')); catch; end;
+        brush(handles.figure1,'on');
+        set(handles.toggle_brush,'state','on');
+        set(findobj(handles.figure1,'Tag','aktyvusis'),'Enable','off');
+        set(findobj(handles.figure1,'Tag','anotacijos'),'Enable','off');
+        set(handles.figure1,'Pointer','crosshair');
+elseif eventdata.Button == 2 % vidurinis klavišas
+        pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
+elseif eventdata.Button == 3 % dešinysis klavišas
+        set(handles.toggle_brush,'state','off')
+        toggle_brush_OffCallback(hObject, eventdata, handles);
+end
+guidata(handles.figure1,handles);
 
 % --- Executes when figure1 is resized.
 function figure1_ResizeFcn(hObject, eventdata, handles)
@@ -2317,7 +2450,7 @@ function figure1_ResizeFcn(hObject, eventdata, handles)
     
     p0=get(handles.figure1,'Position');    
     set(handles.figure1,'Position',[p0(1:2) max(850,p0(3)) max(480,p0(4)) ]) ;
-    guidata(handles.figure1, handles);
+    %guidata(handles.figure1, handles);
     drawnow;
     p0=get(handles.figure1,'Position');
     p1=get(handles.text4,  'Position');
@@ -2337,6 +2470,8 @@ function figure1_ResizeFcn(hObject, eventdata, handles)
     % RRI_perziuros_anotacija atnaujins koeficientus
     setappdata(handles.axes_rri,'koefY',[]); 
     setappdata(handles.axes_rri,'koefX',[]);
+    
+    guidata(handles.figure1,handles);
 
 
 % --------------------------------------------------------------------
@@ -2376,7 +2511,26 @@ switch i
     otherwise
         Importuoti_EEGLab_Callback(hObject, eventdata, handles, rinkmena)
 end;
-    
+%guidata(handles.figure1,handles);
+
+
+function [R_laikai,RRI]=R_laikai_ir_RRI_pagal_handles(handles)
+% R_laikai ir RRI milisekundėmis ištraukiami iš grafikos objektų handles.RRI_lin handles.RRI_tsk
+Laikai_=get([handles.RRI_lin handles.RRI_tsk],'XData');
+if iscell(Laikai_)
+    Laikai=Laikai_{1};
+else
+    Laikai=Laikai_;
+end
+RRI_=get([handles.RRI_lin handles.RRI_tsk],'YData');
+if iscell(RRI_)
+    RRI=RRI_{1};
+else
+    RRI=RRI_;
+end
+Laikai=Laikai(~isnan(RRI));
+R_laikai=1000*Laikai';
+RRI=diff(R_laikai);
 
 % --------------------------------------------------------------------
 function Eksportuoti_Callback(hObject, eventdata, handles, varargin)
@@ -2385,36 +2539,22 @@ function Eksportuoti_Callback(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
 susaldyk(hObject, eventdata, handles);
-Laikai_=get([handles.RRI_lin handles.RRI_tsk],'XData');
-if iscell(Laikai_);  Laikai=Laikai_{1};
-else Laikai=Laikai_;
-end;
-RRI_=get([handles.RRI_lin handles.RRI_tsk],'YData');
-if iscell(RRI_); RRI=RRI_{1};
-else RRI=RRI_;
-end;
+vardas=getappdata(handles.figure1,'vardas');
+if isempty(vardas)
+    vardas='';
+end
 
-Laikai=Laikai(~isnan(RRI));
-handles.output=1000*Laikai';
-if iscell(Laikai_);  Laikai=Laikai_{1};
-else Laikai=Laikai_;
-end;
-RRI_=get([handles.RRI_lin handles.RRI_tsk],'YData');
-if iscell(RRI_); RRI=RRI_{1};
-else RRI=RRI_;
-end;
-Laikai=Laikai(~isnan(RRI));
-R_laikai=1000*Laikai';
-%R_laikai=Laikai';
-RRI=diff(R_laikai);
-guidata(handles.figure1, handles);
+[R_laikai,RRI]=R_laikai_ir_RRI_pagal_handles(handles);
+handles.output=R_laikai;
+
+%guidata(handles.figure1, handles);
 if isempty(R_laikai);
     w=warndlg('Nebus ko eksportuoti!'); uiwait(w);
     susildyk(hObject, eventdata, handles);
 else
     if nargin > 3; exp_tipas=varargin{1}; else exp_tipas=''; end;
     if isempty(exp_tipas);
-        exp_tipai={'R-R intervalai' 'QRS laikai' ' '};
+        exp_tipai={'R-R intervalai -> *.DAT' 'R laikai -> *.TXT' 'R laikai -> *.MAT' ' '};
         exp_tipas=listdlg(...
             'ListString',exp_tipai,...
             'SelectionMode','single',...
@@ -2430,8 +2570,10 @@ else
         case {1 'RRI'}
             g='*.dat'; d=RRI;      t='%.0f'; 
         case {2 'RRI_laikai' 'RRI laikai' 'QRS_laikai' 'QRS laikai' 'laikai'}
-            g='*.txt'; d=R_laikai; t='%.3f'; 
-        case {3 'EEGLAB'}
+            g='*.txt'; d=R_laikai; t='%.0f';
+        case {3 'R laikai -> *.MAT' 'R laikai -> *.MAT (KTU)'}
+            g='*.mat';
+        case {4 'EEGLAB'}
             if ~get(handles.checkbox_ekg,'Value'); 
                 susildyk(hObject, eventdata, handles); return; 
             end;
@@ -2440,7 +2582,7 @@ else
             warning('Netinkama veiksena');
             susildyk(hObject, eventdata, handles); return;
     end;
-    [f,p]=uiputfile({g; '*.*' ;});
+    [f,p]=uiputfile({g; '*.*' ;}, 'Nurodykite, kur įrašyti', strrep(g,'*',vardas));
     susildyk(hObject, eventdata, handles);
     if or(isempty(f),f==0) ; return ; end;
     try
@@ -2448,7 +2590,10 @@ else
             case {1 'RRI' ...
                   2 'RRI_laikai' 'RRI laikai' 'QRS_laikai' 'QRS laikai' 'laikai'}
                 dlmwrite(fullfile(p,f), num2cell(d), 'precision',t, 'newline', 'pc') ;
-            case {3 'EEGLAB'}
+            case {3 'R laikai -> *.MAT' 'R laikai -> *.MAT (KTU)'}
+                R_laikai_taisyti=R_laikai/1000;
+                save(fullfile(p,f), 'R_laikai_taisyti');
+            case {4 'EEGLAB'}
                 [~, EEG] = pop_newset([],[],[]);
                 EEG.chanlocs.labels='EKG';
                 EEG.data=handles.EKG';
@@ -2514,6 +2659,7 @@ end;
 catch err;
         Pranesk_apie_klaida(err,mfilename,'',0);
 end;
+handles=rodyk_tik_langeli(handles);
 anotacijos_atnaujinimas(hObject, eventdata, handles);
 guidata(handles.figure1, handles);
 
@@ -2524,7 +2670,7 @@ function anotacijos_OffCallback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 setappdata(handles.axes_rri,'MouseInMainAxesFnc', {'eval' ...
-    'set(hFig,''Pointer'',''arrow''); '});
+    'set(hFig,''Pointer'',''arrow''); RRI_perziuros_anotacija; '});
 setappdata(handles.figure1,'anotRod',0);
 RRI_perziuros_anotacija('slepti');
 guidata(handles.figure1, handles);
@@ -2549,6 +2695,7 @@ function Nejungti_ClickedCallback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.checkbox_rri,'Value',~get(handles.checkbox_rri,'Value'));
 checkbox_rri_Callback(hObject, eventdata, handles);
+guidata(handles.figure1,handles);
 
 
 % --------------------------------------------------------------------
@@ -2582,6 +2729,7 @@ function ekg_rodyti_ClickedCallback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.checkbox_ekg,'Value',~get(handles.checkbox_ekg,'Value'));
 checkbox_ekg_Callback(hObject, eventdata, handles);
+guidata(handles.figure1,handles);
 
 
 % --------------------------------------------------------------------
@@ -2595,7 +2743,7 @@ if istorijosNr < 2; return; end;
 istorijosNr=max(istorijosNr-1,1);
 setappdata(handles.figure1,'istorijosNr',istorijosNr);
 istorija_vykdoma(hObject, eventdata, handles);
-refreshdata(handles.figure1,'caller');
+%refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
 
 
@@ -2611,7 +2759,7 @@ if istorijosNr >= length(getappdata(handles.figure1,'istorija')); return; end;
 istorijosNr=min(istorijosNr+1,length(getappdata(handles.figure1,'istorija')));
 setappdata(handles.figure1,'istorijosNr',istorijosNr);
 istorija_vykdoma(hObject, eventdata, handles);
-refreshdata(handles.figure1,'caller');
+%refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
 
 
@@ -2625,7 +2773,7 @@ set(findobj(handles.figure1,'Tag','istorija_tolyn'),'Enable',...
     fastif(istorijosNr ~= 0 && ...
     istorijosNr < length(getappdata(handles.figure1,'istorija')), ...
     'on','off'));
-refreshdata(handles.figure1,'caller');
+%refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
 %drawnow;
 
@@ -2645,7 +2793,7 @@ set(handles.checkbox_rri,'Value',istorija(istorijosNr).Nejungti);
 handles.t=0;
 pushbutton_atnaujinti_Callback(hObject, eventdata, handles);
 istorijos_busena(hObject, eventdata, handles);
-refreshdata(handles.figure1,'caller');
+%refreshdata(handles.figure1,'caller');
 guidata(handles.figure1, handles);
 
 
@@ -2653,23 +2801,19 @@ function paseno=istorijos_tikrinimas2(istorija, istorijosNr, RRI, Laikai, Nejung
 if istorijosNr > length(istorija);
     paseno=1; return;
 end;
-RRI(find(isnan(RRI)))=Inf;
 if istorijosNr;
     RRI0   = istorija(istorijosNr).RRI;
     Laikai0= istorija(istorijosNr).Laikai;
-elseif (isequal(RRI, [0; Inf; Inf; 0]) && isequal(Laikai,[0; 10; 20; 30])) || ...
-       (isequal(RRI, [0; Inf;   1000]) && isequal(Laikai,[0; 1;      30])) || ...
-       (isequal(RRI, [0;       30000]) && isequal(Laikai,[0;         30]));
+elseif (isequaln(RRI, [0; NaN; NaN; 0]) && isequal(Laikai,[0; 10; 20; 30])) || ...
+       (isequaln(RRI, [0; NaN;   1000]) && isequal(Laikai,[0; 1;      30])) || ...
+       (isequaln(RRI, [0;       30000]) && isequal(Laikai,[0;         30]));
     paseno=0; return;
 elseif Nejungti;
     RRI0=[0; NaN; 1000]; Laikai0=[0; 1; 30];
 else
     RRI0=[0; 30000]; Laikai0=[0; 30];
 end;
-if ~isequal(Laikai0,Laikai) || ...
-        ~isequal(find( isnan(RRI0)),find( isnan(RRI))) || ...
-        ~isequal(find(~isnan(RRI0)),find(~isnan(RRI))) || ...
-        ~isequal(RRI0(~isnan(RRI0)), RRI(~isnan(RRI)));
+if ~isequaln(Laikai0,Laikai) || ~isequaln(RRI0, RRI);
     paseno=1;
 else
     paseno=0;
@@ -2691,6 +2835,7 @@ if istorijos_tikrinimas2(istorija, istorijosNr, RRI, Laikai, Nejungti);
 end;
 setappdata(handles.figure1,'istorija',istorija);
 setappdata(handles.figure1,'istorijosNr',istorijosNr);
+guidata(handles.figure1,handles);
 
 
 % --------------------------------------------------------------------
@@ -2717,7 +2862,8 @@ end;
 set(handles.Artinti2,'state','off');
 set(handles.toggle_brush,'state','off');
 set(handles.figure1,'Pointer','arrow');
-            
+guidata(handles.figure1,handles);
+
 
 % --------------------------------------------------------------------
 function toggle_brush_OffCallback(hObject, eventdata, handles)
@@ -2731,6 +2877,7 @@ else
     set(handles.anotacijos,'Enable','on');
 end;
 brush(handles.figure1,'off');
+guidata(handles.figure1,handles);
 
 
 function apie
@@ -2754,6 +2901,7 @@ if ~isempty(a);
         optimalus_rodymasx(hObject, eventdata, handles, t, 0);
     end;
 end;
+guidata(handles.figure1,handles);
 
 
 % --------------------------------------------------------------------
@@ -2775,6 +2923,7 @@ bd=sum(cell2mat(arrayfun(@(x) double(bd{x}), 1:length(bd), 'UniformOutput', fals
 Laikai=Laikai(find(bd));
 t=max(Laikai(find(Laikai < (xvid-0.001))));
 optimalus_rodymasx(hObject, eventdata, handles, t, 0);
+guidata(handles.figure1,handles);
 
 
 % --------------------------------------------------------------------
@@ -2796,3 +2945,13 @@ bd=sum(cell2mat(arrayfun(@(x) double(bd{x}), 1:length(bd), 'UniformOutput', fals
 Laikai=Laikai(find(bd));
 t=min(Laikai(find(Laikai > (xvid+0.001))));
 optimalus_rodymasx(hObject, eventdata, handles, t, 0);
+guidata(handles.figure1,handles);
+
+function res = fastif(s1, s2, s3)
+% Author: Arnaud Delorme, CNL / Salk Institute, 2001
+% Copyright (C) 2001 Arnaud Delorme, Salk Institute, arno@salk.edu
+if s1
+	res = s2;
+else
+	res = s3;
+end

@@ -29,7 +29,10 @@ function qrs=QRS_detekt_DPI(y,fs,sw,p)
 % http://mile.ee.iisc.ernet.in/QRS/
 %
 % Modifications by Mindaugas Baranauskas 2015:
-% Avoid crash in epoch_lpr_ec, if gcim1+ms20 exceeds size of y and sig.
+% - Avoid crash in epoch_lpr_ec, if gcim1+ms20 exceeds size of y and sig.
+% Modifications by Mindaugas Baranauskas 2022:
+% - No need for wrev;
+% - inform about smooth if missing; 
 
 if size(y,1) == 1
     
@@ -50,11 +53,7 @@ nn1= floor(8/freq_res);
 h1= 0.5-0.5*cos(pi.*(1:nn1)/(nn1));
 h2= ones( 1, floor(length(y)/2)-length(h1));
 h3= [ h1 h2];
-if exist('wrev.m','file');
-    h4= wrev(h3);
-else
-    h4= wrev_octave(h3);
-end;
+h4= h3(end:-1:1);
 h5= [ h3 h4];
 h5=h5.^4;
 g3= fft(y);
@@ -139,8 +138,10 @@ l=length(fff);
 
 if ~isempty(which('smooth'));
     fff1=smooth(fff);
-else
+elseif ~isempty(which('smooth2'));
     fff1=smooth2(fff);
+else
+    error('"smooth" function not found. Please install "Curve Fitting Toolbox"')
 end;
 
 fff(1:length(fff)-2)= fff1(3:length(fff));
@@ -215,13 +216,8 @@ indp1= (sort(indp,'descend'));
 
 indn1= (sort(indn,'descend'));
 
-if exist('wrev.m','file');
-    indp = wrev(indp1((1:sum(pp))));
-    indn = wrev(indn1((1:sum(pn))));
-else
-    indp = wrev_octave(indp1((1:sum(pp))));
-    indn = wrev_octave(indn1((1:sum(pn))));
-end;
+indp = indp1(sum(pp):-1:1);
+indn = indn1(sum(pn):-1:1);
 
 return;
 
@@ -262,11 +258,7 @@ freq_res= fs/length(y);
 
     h2= ones( 1, floor(length(y)/2)-length(h1));
     h3= [ h1 h2];
-    if exist('wrev.m','file');
-        h4= wrev(h3);
-    else
-        h4= wrev_octave(h3);
-    end;
+    h4= h3(end:-1:1);
     h5= [ h3 h4];
     
    h5=h5.^4;

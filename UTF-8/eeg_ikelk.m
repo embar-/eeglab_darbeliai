@@ -19,7 +19,7 @@ if isfield(g,'loadmode');
 end;
 
     [Kelias_,Rinkmena_]=rinkmenos_tikslinimas(Kelias,Rinkmena);
-    if exist(fullfile(Kelias_,Rinkmena_),'file') ~= 2
+    if ~exist(fullfile(Kelias_,Rinkmena_),'file')
         [wrn_b]=warning('off','backtrace');
         warning(sprintf('%s\n%s\n%s', [lokaliz('Rinkmena nerasta') ':'], ...
            fullfile(Kelias,Rinkmena), fullfile(Kelias_,Rinkmena_)));

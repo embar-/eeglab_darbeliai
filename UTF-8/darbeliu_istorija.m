@@ -1,6 +1,14 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2022.12.22.1
+% ~ EEG spektrinės galios skaičiavimams 50% lango persidengimas.
+% ~ Patikimesnis poaplankių turinio rodymas rinkmenų sąraše.
+% + Naujas veiksmų meniu rinkmenų pasirinkimui pagal įrašo trukmę.
+% ~ SĮSP bandyti eksportuoti į 1 dokumentą, jei įmanoma.
+% ~ SĮSP eksportavimui į Excel naudoti writecell, jei įmanoma
+%   (leis eksportuoti Linux sistemose nuo MATLAB R2019a).
+%
 % v2018.12.14
 % + Naujas veiksmų meniu rinkmenų pasirinkimui pagal meta duomenis.
 % ~ SĮSP savybių eksportavime skaitinius įvykius

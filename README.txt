@@ -1,9 +1,9 @@
 eeglab_darbeliai
 ================
 
-EEGLAB plugin Darbeliai created with intention to facilitate batch processing of selected EEG data files in graphical user interface (GUI). Darbeliai uses EEG data files in various formats (\*.set, \*.edf, \*.cnt and others) as input directly, and outputs processed data directly to files in EEGLAB data format (\*.set), so this in contrast to EEGLAB itseft where user must work with EEG datasets. So (in most cases) you no longer need to care about EEG data importing from raw EEG files into EEGLAB dataset and writing processed data back to file. 
+EEGLAB plugin Darbeliai created with intention to facilitate batch processing of selected EEG data files in graphical user interface (GUI). Darbeliai uses EEG data files in various formats (*.set, *.edf, *.cnt and others) as input directly, and outputs processed data directly to files in EEGLAB data format (*.set), so this in contrast to EEGLAB itseft where user must work with EEG datasets. So (in most cases) you no longer need to care about EEG data importing from raw EEG files into EEGLAB dataset and writing processed data back to file. 
 
-In Lithuanian – the most archaic live Indoeuropean language – *darbeliai* means *the little works*. 
+In Lithuanian – the most archaic live Indoeuropean language – "darbeliai" means "the little works". 
 This EEGLAB plugin allows you to acomplish these jobs:
 * rename EEG data files according dataset atributes (like subject, group, experiment condition or session), also extract these atributes from filenames and edit them manually (only EEGLAB *.set files supported);
 * execute sequence of selected EEG processing tasks; results of each separate task can be saved with different filename suffix and/or into different subfolder.
@@ -40,5 +40,5 @@ More information can be found https://github.com/embar-/eeglab_darbeliai/wiki/0.
  
 --
  
-  (C) 2014-2016 Mindaugas Baranauskas   
+  (C) 2014-2019 Mindaugas Baranauskas   
 

@@ -402,6 +402,10 @@ uimenu(handles.meniu_veiksmai_pasirinkti_pagal, 'Label', lokaliz('(pagal) kanalu
     'callback', {@drb_meniu_veiksmai_pasirinkimas_pagal, handles, 'nbchan'});
 uimenu(handles.meniu_veiksmai_pasirinkti_pagal, 'Label', lokaliz('(pagal) epochu N'), ...
     'callback', {@drb_meniu_veiksmai_pasirinkimas_pagal, handles, 'trials'});
+uimenu(handles.meniu_veiksmai_pasirinkti_pagal, 'Label', lokaliz('(pagal) laika nuo'), ...
+    'callback', {@drb_meniu_veiksmai_pasirinkimas_pagal, handles, 'xmin'});
+uimenu(handles.meniu_veiksmai_pasirinkti_pagal, 'Label', lokaliz('(pagal) laika iki'), ...
+    'callback', {@drb_meniu_veiksmai_pasirinkimas_pagal, handles, 'xmax'});
 uimenu(handles.meniu_veiksmai, 'Label', lokaliz('Invertuoti irasu pasirinkima'), ...
     'callback', {@drb_meniu_veiksmai_pasirinkimas_invertuotas, handles});
 
@@ -526,6 +530,10 @@ switch grupes_tipas
         tipo_galininkas = lokaliz('(pagal) kanalu N');
     case 'trials'
         tipo_galininkas = lokaliz('(pagal) epochu N');
+    case 'xmin'
+        tipo_galininkas = lokaliz('(pagal) laika nuo');
+    case 'xmax'
+        tipo_galininkas = lokaliz('(pagal) laika iki');
     otherwise
         tipo_galininkas = '';
 end

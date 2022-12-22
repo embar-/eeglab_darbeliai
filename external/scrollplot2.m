@@ -128,7 +128,7 @@ function scrollHandles = scrollplot2(varargin)
         end
 
         % Ensure that all supplied handles are valid HG handles
-        if isempty(plotHandles) | ~all(ishandle(plotHandles))  %#ok for Matlab 6 compatibility (note that Matlab 6 did not have ishghandle())
+        if isempty(plotHandles) || ~all(ishandle(plotHandles))  %#ok for Matlab 6 compatibility (note that Matlab 6 did not have ishghandle())
             myError('YMA:scrollplot:invalidHandle','invalid plot handle(s) passed to scrollplot');
         end
 
@@ -368,7 +368,7 @@ function hScroll = addScrollPlot(hAx,axName)
 
     % Set the mouse callbacks
     winFcn = get(hFig,'WindowButtonMotionFcn');
-    if ~isempty(winFcn) & ~isequal(winFcn,@mouseMoveCallback) & (~iscell(winFcn) | ~isequal(winFcn{1},@mouseMoveCallback))  %#ok for Matlab 6 compatibility
+    if ~isempty(winFcn) & ~isequal(winFcn,@mouseMoveCallback) & (~iscell(winFcn) || ~isequal(winFcn{1},@mouseMoveCallback))  %#ok for Matlab 6 compatibility
         setappdata(hFig, 'scrollplot_oldButtonMotionFcn',winFcn);
     end
     set(hFig,'WindowButtonMotionFcn',@mouseMoveCallback);
@@ -487,7 +487,7 @@ function [pvPairs, axName] = preProcessArgs(pvPairs)
             case {'axis','axes'}
                 axName = pvPairs{idx+1};
                 % Ensure we got a valid axis name: 'x','y','xy' or 'yx'
-                if ~ischar(axName) | ~any(strcmpi(axName,{'x','y','xy','yx'}))  %#ok for Matlab 6 compatibility
+                if ~ischar(axName) || ~any(strcmpi(axName,{'x','y','xy','yx'}))  %#ok for Matlab 6 compatibility
                     myError('YMA:scrollplot:invalidProperty','Invalid scrollplot ''Axis'' property value: only ''x'',''y'' & ''xy'' are accepted');
                 end
                 % Remove from the PV pairs list and move on
@@ -743,7 +743,7 @@ function mouseWithinPatch(hFig,inDragMode,hAx,scrollPatch,cx,isOverBar)
         else
             winUpFcn = get(hFig,'WindowButtonUpFcn');
         end
-        if isempty(winUpFcn) | (~isequal(winUpFcn,@mouseUpCallback) & (~iscell(winUpFcn) | ~isequal(winUpFcn{1},@mouseUpCallback)))  %#ok for Matlab 6 compatibility
+        if isempty(winUpFcn) || (~isequal(winUpFcn,@mouseUpCallback) & (~iscell(winUpFcn) || ~isequal(winUpFcn{1},@mouseUpCallback)))  %#ok for Matlab 6 compatibility
 
             % Set the ButtonUpFcn callbacks
             if ~isempty(winUpFcn)
@@ -768,9 +768,9 @@ function mouseWithinPatch(hFig,inDragMode,hAx,scrollPatch,cx,isOverBar)
             end
             scrollBarIdx = getappdata(hFig, 'scrollplot_clickedBarIdx');
             scrollBars = sort(findobj(hAx, 'tag','scrollBar'));
-            %barsXs = cellfun(@(c)c(1),get(scrollBars,dataStr));  % cellfun is very limited on Matlab 6...
-            barsXs = getFirstVals(get(scrollBars,dataStr));
-            if barsXs(1)>barsXs(2)  % happens after dragging one bar beyond the other
+            %barXs = cellfun(@(c)c(1),get(scrollBars,dataStr));  % cellfun is very limited on Matlab 6...
+            barXs = getFirstVals(get(scrollBars,dataStr));
+            if barXs(1)>barXs(2)  % happens after dragging one bar beyond the other
                 scrollBarIdx = 3 - scrollBarIdx;  % []=>[], 1=>2, 2=>1
                 scrollBars = scrollBars([2,1]);
             end
@@ -901,18 +901,24 @@ function mouseMoveCallback(varargin)
                 if or(isempty(fja1),~isempty(branot)) ; 
                     fja0=''; try fja0=getappdata(cAx,'originalButtonDownFcn'); catch;  end;
                     if ~isnumeric(fja0);
-                        axes(cAx);
+                        if ~isequal(cAx,gca)
+                            axes(cAx);
+                        end
                         set(cAx,'ButtonDownFcn',fja0);
                     end;
                     fjaM=getappdata(cAx,'MouseInMainAxesFnc_BrushModeCont');
                     if ~isnumeric(fjaM);
-                        axes(cAx);
+                        if ~isequal(cAx,gca)
+                            axes(cAx);
+                        end
                         try feval(fjaM{:}); catch; end;
                     end;
                 else
                     fjaM=getappdata(cAx,'MouseInMainAxesFnc');
                     if ~isnumeric(fjaM);
-                        axes(cAx);
+                        if ~isequal(cAx,gca)
+                            axes(cAx);
+                        end
                         try feval(fjaM{:}); catch; end;
                     end;
                 end;
@@ -1021,7 +1027,7 @@ function mouseDownCallback(varargin)
         if isempty(hFig) & ~isempty(varargin)  %#ok for Matlab 6 compatibility
             hFig = ancestor(varargin{1},'figure');
         end
-        if isempty(hFig) | ~ishandle(hFig),  return;  end  %#ok just in case..
+        if isempty(hFig) || ~ishandle(hFig),  return;  end  %#ok just in case..
         setappdata(hFig, 'scrollplot_mouseUpPointer',getptr(hFig));
         newPtr = getappdata(hFig, 'scrollplot_mouseDownPointer');
         if ~isempty(newPtr)
@@ -1036,8 +1042,6 @@ function mouseDownCallback(varargin)
         cp = get(hAx,'CurrentPoint');
 
         % Check whether the curser is over any side bar
-        barXs = [-inf,inf];
-        scrollBarIdx = [];
         scrollPatch = findobj(hAx, 'tag','scrollPatch');
         if ~isempty(scrollPatch)
             
@@ -1085,6 +1089,10 @@ function mouseDownCallback(varargin)
                 set(scrollBars(1), dataStr,barsXs(2)*[1,1]);
                 set(scrollBars(2), dataStr,barsXs(1)*[1,1]);
             end
+        else
+            scrollBarIdx = [];
+            cx=[];
+            barXs = [-inf,inf];
         end
         
         setappdata(hFig, 'scrollplot_clickedBarIdx',scrollBarIdx);
@@ -1107,7 +1115,7 @@ function mouseUpCallback(varargin)
                 hFig = ancestor(varargin{1},'figure');
             end
         end
-        if isempty(hFig) | ~ishandle(hFig),  return;  end  %#ok just in case..
+        if isempty(hFig) || ~ishandle(hFig),  return;  end  %#ok just in case..
         if isappdata(hFig, 'scrollplot_mouseUpPointer')
             mouseUpPointer = getappdata(hFig, 'scrollplot_mouseUpPointer');
             set(hFig,mouseUpPointer{:});
@@ -1121,7 +1129,7 @@ function mouseUpCallback(varargin)
 
         % Try to chain the original WindowButtonUpFcn (if available)
         oldFcn = getappdata(hFig, 'scrollplot_oldButtonUpFcn');
-        if ~isempty(oldFcn) & ~isequal(oldFcn,@mouseUpCallback) & (~iscell(oldFcn) | ~isequal(oldFcn{1},@mouseUpCallback))  %#ok for Matlab 6 compatibility
+        if ~isempty(oldFcn) & ~isequal(oldFcn,@mouseUpCallback) & (~iscell(oldFcn) || ~isequal(oldFcn{1},@mouseUpCallback))  %#ok for Matlab 6 compatibility
             hgfeval(oldFcn);
         end
     catch
@@ -1146,6 +1154,8 @@ function axisComponent = getAxisComponent(hFig)
             axisComponent = [];
             
             s=warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+            warning('off', 'MATLAB:ui:javacomponent:FunctionToBeRemoved');
+            warning('off', 'MATLAB:ui:javaframe:PropertyToBeRemoved');
             javaFrame = get(hFig,'JavaFrame');
             warning(s);
             axisComponent = get(javaFrame,'AxisComponent');
@@ -1224,7 +1234,7 @@ function setOnce(hndl,propName,propValue)
 %% Callback for parent axes property changes
 function parentAxesChanged(schemaProp, eventData, hFig, hAx, hScrollPatch, hScrollBars, propName)  %#ok - first 2 are unused
     try
-        if isempty(hFig) | ~ishandle(hFig),  return;  end  %#ok just in case..
+        if isempty(hFig) || ~ishandle(hFig),  return;  end  %#ok just in case..
         newPropVal = get(hAx,propName);        
         hScroll = get(hScrollPatch, 'Parent');
         axName  = get(hScroll, 'userdata');

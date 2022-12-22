@@ -66,16 +66,10 @@ f=statusbar2015(lokaliz('Palaukite!'));
 statusbar2015('off',f);
 galimi_kanalai=cell(length(RINKMENOS),1);
 for i=1:length(RINKMENOS);
-    Rinkmena=RINKMENOS{i};
-    if ~isempty(which('rinkmenos_tikslinimas.m'));
-        [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(KELIAS,Rinkmena);
-    else
-        [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(KELIAS,Rinkmena));
-        Rinkmena_=[Rinkmena_ galune];
-        KELIAS_=Tikras_Kelias(KELIAS_);
-    end;
-    galimi_kanalai{i,1}={};
     try
+        Rinkmena=RINKMENOS{i};
+        [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(KELIAS,Rinkmena);
+        galimi_kanalai{i,1}={};
         TMPEEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_,'loadmode','info');
         if ~isempty(TMPEEG);
             if ~isempty(TMPEEG.chanlocs);

@@ -56,12 +56,18 @@
 %
 function f=statusbar2015(varargin)
 
-if nargin > 0; p=varargin{1};
-else           p=lokaliz('Palaukite!');
+if nargin > 0;
+    p=varargin{1};
+elseif exist('lokaliz.m','file')
+    p=lokaliz('Palaukite!');
+else
+    p=lokalizuoki('Please wait!');
 end;
 
-if nargin > 1; f=varargin{2};
-else           f=[];
+if nargin > 1;
+    f=varargin{2};
+else
+    f=[];
 end;
 
 persistent visible;
@@ -75,7 +81,7 @@ if nargin < nargout           % get handles
 end
 curtime=86400*now;
 if and(nargin, ischar(p))
-   if or(isequal(p,'on'), isequal(p,'off'))
+   if isequal(p,'on') || isequal(p,'off')
       if nargin == 2
          if ~isempty(check(f))    % show/hide
             v=get(f,'Visible');
@@ -108,16 +114,16 @@ if and(nargin, ischar(p))
             'UserData',[curtime curtime 0]);
    end
    drawnow;
-elseif and((nargin == 2), ~isempty(check(f))) % update
+elseif nargin == 2 && ~isempty(check(f)) % update
    t=get(f,'UserData');
    if any(t < 0)              % confirm
-      if or(p >= 1, isequal(...
-              questdlg({lokaliz('Are you sure to stop the execution now?'),''},...
-                        lokaliz('Abort requested'),...
-                        lokaliz('Stop'),...
-                        lokaliz('Resume'),...
-                        lokaliz('Resume')),...
-                        lokaliz('Stop')))
+      if p >= 1 || isequal(...
+              questdlg({lokalizuoki('Are you sure to stop the execution now?'),''},...
+                        lokalizuoki('Abort requested'),...
+                        lokalizuoki('Stop'),...
+                        lokalizuoki('Resume'),...
+                        lokalizuoki('Resume')),...
+                        lokalizuoki('Stop'))
          delete(f);
          f=[];                % interrupt
          return;
@@ -202,8 +208,8 @@ a.FontWeight='bold';
 a.Units='pixels';
 a.VerticalAlignment='middle';
 text(136,70,'%',a);
-text(16,36,lokaliz('Elapsed time:'),a);
-text(16,20,lokaliz('Remaining:'),a);
+text(16,36,lokalizuoki('Elapsed time:'),a);
+text(16,20,lokalizuoki('Remaining:'),a);
 text(200,36,'',a);
 text(200,20,'',a);
 %
@@ -236,3 +242,40 @@ else
     warning(s);
 end;
 
+function tekstas=lokalizuoki(pradinis_tekstas)
+persistent LANG
+if exist('lokaliz.m','file')
+    tekstas=lokaliz(pradinis_tekstas);
+else
+    if isempty(LANG);
+       if usejava('awt');
+           LC=javaObject ('java.util.Locale','');
+           LC_current_locale=LC.getDefault();
+           LANG=char(LC_current_locale.getLanguage());
+       else
+           %LANG='lt';
+           LANG='en';
+       end
+    end
+    if strcmp(LANG,'lt')
+        if strcmp(pradinis_tekstas,'Please wait!')
+            tekstas='Palaukite!';
+        elseif strcmp(pradinis_tekstas,'Elapsed time:')
+            tekstas='Dirbama:';
+        elseif strcmp(pradinis_tekstas,'Remaining:')
+            tekstas='Liko:';
+        elseif strcmp(pradinis_tekstas,'Are you sure to stop the execution now?')
+            tekstas='Norite sustabdyti darbus?';
+        elseif strcmp(pradinis_tekstas,'Abort requested')
+            tekstas='Ketinimas nutraukti';
+        elseif strcmp(pradinis_tekstas,'Stop')
+            tekstas='Nutraukti';
+        elseif strcmp(pradinis_tekstas,'Resume')
+            tekstas='Vykdyti toliau';
+        else
+            tekstas=pradinis_tekstas;
+        end
+    else
+        tekstas=pradinis_tekstas;
+    end
+end

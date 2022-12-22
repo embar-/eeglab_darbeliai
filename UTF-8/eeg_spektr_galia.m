@@ -5,7 +5,7 @@
 %
 %% Gauna pasirinktų failų spektrinį galios tankį
 %
-% (c) 2014-2016 Mindaugas Baranauskas
+% (c) 2014-2022 Mindaugas Baranauskas
 
 
 %%
@@ -151,26 +151,20 @@ for i=1:NumberOfFiles ;
     File=FileNames{i} ;
     disp(File);
 
-    if ~isempty(which('rinkmenos_tikslinimas.m'));
-        [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(PathName,File);
-    else
-        [KELIAS_,Rinkmena_,galune]=fileparts(fullfile(PathName,File));
-        Rinkmena_=[Rinkmena_ galune];
-        KELIAS_=Tikras_Kelias(KELIAS_);
-    end;
-
-    if FilterIndex == 1 ;
-        %EEG = pop_loadset('filename',File);
-        EEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_);
-        [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
-    elseif FilterIndex == 2 ;
-        % Importuoti
-        EEG=pop_fileio(fullfile(KELIAS_,Rinkmena_));
-    else
-        EEG = eeg_ikelk(KELIAS_,Rinkmena_);
-    end;
-    
     try
+    
+        [KELIAS_,Rinkmena_]=rinkmenos_tikslinimas(PathName,File);
+
+        if FilterIndex == 1 ;
+            %EEG = pop_loadset('filename',File);
+            EEG = pop_loadset('filename',Rinkmena_,'filepath',KELIAS_);
+            [ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
+        elseif FilterIndex == 2 ;
+            % Importuoti
+            EEG=pop_fileio(fullfile(KELIAS_,Rinkmena_));
+        else
+            EEG = eeg_ikelk(KELIAS_,Rinkmena_);
+        end;
         
         EEG = eeg_checkset( EEG );
         
@@ -248,6 +242,7 @@ for i=1:NumberOfFiles ;
                 'freqrange',[0 EEG.srate/2],...
                 'electrodes','off',...
                 'winsize',EEG.srate*DUOMENYS.VISU.lango_ilgis_sekundemis,...
+                'overlap',EEG.srate*DUOMENYS.VISU.lango_ilgis_sekundemis*0.5,...
                 'nfft',EEG.srate*DUOMENYS.VISU.fft_tasku_herce,...
                 'plot',AR_GRAFIKAS );
             
