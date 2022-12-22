@@ -8,7 +8,7 @@
 % GUI versija
 %
 %
-% (C) 2014-2018 Mindaugas Baranauskas
+% (C) 2014-2022 Mindaugas Baranauskas
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -619,7 +619,7 @@ if and(get(handles.checkbox59,'Value'), and(...
         lokaliz('Question'), ...
         use_mean, use_ragu, use_ragu);
     if strcmp(button,use_mean);
-        set(handles.popupmenu10,'Value',2);
+        set(handles.popupmenu10,'Value',2+(exist('writecell','file') == 2) );
         set(handles.checkbox69,'Value',0);
         checkbox69_Callback(hObject, eventdata, handles);
     else%if strcmp(button,use_ragu);
@@ -1299,88 +1299,192 @@ end;
 
 %% Eksportuoti pačius ERP duomenis, o ne savybes
 
-if and(~isempty(ALLEEG_(1).file),Ar_eksportuoti_ERP);
+if and(~isempty(ALLEEG_(1).file),Ar_eksportuoti_ERP)
+  DarboNr=DarboNr+1;
     
   switch get(handles.popupmenu10,'Value')
  
     case 1  
-    %% Eksportuoti RAGU programai        
-        DarboNr=DarboNr+1;
+    %% Eksportuoti RAGU programai   
         Darbo_eigos_busena(handles, 'Eksportuoti į RAGU...', DarboNr, length(ALLEEG_), length(ALLEEG_));
         eksportuoti_ragu_programai(ALLEEG_, ALLEEG_, 1, 1, KELIAS_SAUGOJIMUI);
     
-    case 2
-    %% Eksportuoti į TXT
-        
-        DarboNr=DarboNr+1;
-        
-        %Darbo_eigos_busena(handles, 'Eksportuoti į TXT...', DarboNr, 0, length(ALLEEG_));
-        
-        for eeg_i=1:length(ALLEEG_);
-            try
-                Darbo_eigos_busena(handles, 'Eksportuoti į TXT...', DarboNr, eeg_i, length(ALLEEG_));
-                EEGTMP=ALLEEG_(eeg_i);
-                [~,Rinkmena_txt_exp,~]=fileparts(EEGTMP.file);
-                Rinkmena_txt_exp=fullfile(KELIAS_SAUGOJIMUI,[Rinkmena_txt_exp '.txt']);
-                EEGTMP.data=EEGTMP.erp_data; % EEG.erp_data is not standard EEGLAB param
-                disp(lokaliz('We use pre-processed data to speed up exporting data. Please ignore eeg_checkset warnings.'));
-                %lango_erp=[EEGTMP.erp_data(:,idx1:idx2,:)];
-                pop_export(EEGTMP, Rinkmena_txt_exp, 'transpose','on','elec','on','time','on','erp','on','precision',7);
-                disp(Rinkmena_txt_exp);
-            catch err;
-                Pranesk_apie_klaida(err,'','',0);
-            end;
-        end;
-    
-    case 3
-    %% Eksportuoti į Excel
-        
-        DarboNr=DarboNr+1;
-    
-        %Darbo_eigos_busena(handles, 'Eksportuoti į TXT...', DarboNr, 0, length(ALLEEG_));
-        
-        excel_dokumentas_erp=fullfile(KELIAS_SAUGOJIMUI,[dokumentas_savybiu_eksportui '.erp.xlsx']);
-                
-        for eeg_i=1:length(ALLEEG_);
-            try
-                Darbo_eigos_busena(handles, 'Eksportuoti į Excel...', DarboNr, eeg_i, length(ALLEEG_));
-                EEGTMP=ALLEEG_(eeg_i);
-                [~,Rinkmenos_pav,~]=fileparts(EEGTMP.file);
-                if isempty(time_interval_erp);
-                    idx_1=1;
-                    idx_2=length(EEGTMP.times);
-                else
-                    [~, idx_1] = min(abs(EEGTMP.times - time_interval_erp(1) )) ;
-                    [~, idx_2] = min(abs(EEGTMP.times - time_interval_erp(2) )) ;
-                end;
-                ERP{i}=[EEGTMP.erp_data(:,idx_1:idx_2)]'; %[mean([EEGTMP.data(:,idx_1:idx_2,:)],3)]';
-                EEGTMP.nbchan=size(EEGTMP.erp_data,1);
-                ERP_lentele={};                
-                ERP_lentele(1,1)={Rinkmenos_pav};
-                ERP_lentele(1,2:EEGTMP.nbchan + 1)={EEGTMP(1).chanlocs.labels};
-                ERP_lentele(2:length(EEGTMP.times(idx_1:idx_2))+1,1) = num2cell([EEGTMP.times(idx_1:idx_2)]');
-                ERP_lentele(2:length(EEGTMP.times(idx_1:idx_2))+1,2:EEGTMP.nbchan + 1)=num2cell(ERP{i});
-                
-                if ~isempty(ERP_lentele{1,1})
-                    laksto_pav=ERP_lentele{1,1}(1:min(length(ERP_lentele{1,1}),31));
-                else
-                    laksto_pav=num2str(i);
-                end;
-                
-                if exist('writecell','file') == 2 
-                    writecell(ERP_lentele,excel_dokumentas_erp,'Sheet',laksto_pav); % įrašo į Excel XLSX, MATLAB versijoms nuo R2019a
-                else%if ispc
-                    xlswrite(excel_dokumentas_erp,ERP_lentele,laksto_pav); % įrašo į Excel XLS, MATLAB versijoms iki R2018b
-                %elseif 1 == 0;
-                    %disp('Abejoju, ar kitoje nei Windows sistemoje MATLAB ras Excel');
-                %    csvwrite([csv_dokumentas_erp '_' laksto_pav '.csv'], ERP_lentele );
-                end
-                disp(excel_dokumentas_erp);
-                
-            catch err;
-                Pranesk_apie_klaida(err,'','',0);
-            end;
-        end;
+      case {2 3}
+          %% Eksportuoti į TXT arba Excel
+          Pakanka_vienos_lenteles=1;
+          
+          for eeg_i=1:length(ALLEEG_)
+              try
+                  EEGTMP=ALLEEG_(eeg_i);
+                  if isempty(time_interval_erp)
+                      idx_1=1;
+                      idx_2=length(EEGTMP.times);
+                  else
+                      [~, idx_1] = min(abs(EEGTMP.times - time_interval_erp(1) )) ;
+                      [~, idx_2] = min(abs(EEGTMP.times - time_interval_erp(2) )) ;
+                  end
+                  ERP{eeg_i}=[EEGTMP.erp_data(:,idx_1:idx_2)]'; %[mean([EEGTMP.data(:,idx_1:idx_2,:)],3)]';
+                  
+                  if size(EEGTMP.erp_data,1) > 1 % vienas kanalas
+                      Pakanka_vienos_lenteles=0;
+                  end
+                  if eeg_i==1
+                      SISP_laikai=EEGTMP.times(idx_1:idx_2);
+                      SISP_kanalai={EEGTMP(1).chanlocs.labels};
+                  elseif ~isequal(EEGTMP.times(idx_1:idx_2),SISP_laikai) || ~isequal({EEGTMP(1).chanlocs.labels},SISP_kanalai)
+                      Pakanka_vienos_lenteles=0;
+                  end
+              catch
+              end
+          end
+          
+          switch get(handles.popupmenu10,'Value')
+              
+              case 2
+                  %% Eksportuoti į TXT
+                  
+                  if ~Pakanka_vienos_lenteles % get(handles.checkbox59,'Value')
+                      % vidurkinimas išjungtas - kiekvienas įrašas atskirame lakšte
+                      for eeg_i=1:length(ALLEEG_);
+                          try
+                              Darbo_eigos_busena(handles, 'Eksportuoti į TXT...', DarboNr, eeg_i, length(ALLEEG_));
+                              EEGTMP=ALLEEG_(eeg_i);
+                              [~,Rinkmena_txt_exp,~]=fileparts(EEGTMP.file);
+                              Rinkmena_txt_exp=fullfile(KELIAS_SAUGOJIMUI,[Rinkmena_txt_exp '.txt']);
+                              EEGTMP.data=EEGTMP.erp_data; % EEG.erp_data is not standard EEGLAB param
+                              disp(lokaliz('We use pre-processed data to speed up exporting data. Please ignore eeg_checkset warnings.'));
+                              %lango_erp=[EEGTMP.erp_data(:,idx1:idx2,:)];
+                              pop_export(EEGTMP, Rinkmena_txt_exp, 'transpose','on','elec','on','time','on','erp','on','precision',7);
+                              disp(Rinkmena_txt_exp);
+                          catch err;
+                              Pranesk_apie_klaida(err,'','',0);
+                          end;
+                      end;
+                  else
+                      Darbo_eigos_busena(handles, 'Eksportuoti į TXT...', DarboNr, 0, length(ALLEEG_));
+                      for eeg_i=1:length(ALLEEG_);
+                          try
+                              [~,Rinkmenos_pav,~]=fileparts(EEGTMP.file);
+                              if isempty(Rinkmenos_pav)
+                                  Rinkmenos_pav=num2str(eeg_i);
+                              end
+                              if eeg_i==1
+                                  EEGTMP=ALLEEG_(eeg_i);
+                                  EEGTMP.data=EEGTMP.erp_data; % EEG.erp_data is not standard EEGLAB param
+                                  EEGTMP(1).chanlocs.labels=Rinkmenos_pav;
+                              else
+                                  EEGTMP.data(end+1,:)=ALLEEG_(eeg_i).erp_data; % EEG.erp_data is not standard EEGLAB param
+                                  EEGTMP(1).chanlocs(eeg_i).labels=Rinkmenos_pav;
+                              end
+                          catch err;
+                              Pranesk_apie_klaida(err,'','',0);
+                          end;
+                      end;
+                      try
+                          Rinkmena_txt_exp=fullfile(KELIAS_SAUGOJIMUI,[dokumentas_savybiu_eksportui '.' SISP_kanalai{1} '.erp.txt']);
+                          %lango_erp=[EEGTMP.erp_data(:,idx1:idx2,:)];
+                          disp(lokaliz('We use pre-processed data to speed up exporting data. Please ignore eeg_checkset warnings.'));
+                          pop_export(EEGTMP, Rinkmena_txt_exp, 'transpose','on','elec','on','time','on','erp','on','precision',7);
+                          disp(Rinkmena_txt_exp);
+                      catch err;
+                          Pranesk_apie_klaida(err,'','',0);
+                      end;
+                  end
+                  
+              case 3
+                  %% Eksportuoti į Excel
+                  
+                  excel_dokumentas_erp=fullfile(KELIAS_SAUGOJIMUI,[dokumentas_savybiu_eksportui '.erp.xlsx']);
+                  
+                  if ~Pakanka_vienos_lenteles % get(handles.checkbox59,'Value')
+                      % vidurkinimas išjungtas - kiekvienas įrašas atskirame lakšte
+                      
+                      for eeg_i=1:length(ALLEEG_);
+                          try
+                              Darbo_eigos_busena(handles, 'Eksportuoti į Excel...', DarboNr, eeg_i, length(ALLEEG_));
+                              EEGTMP=ALLEEG_(eeg_i);
+                              [~,Rinkmenos_pav,~]=fileparts(EEGTMP.file);
+                              if isempty(time_interval_erp);
+                                  idx_1=1;
+                                  idx_2=length(EEGTMP.times);
+                              else
+                                  [~, idx_1] = min(abs(EEGTMP.times - time_interval_erp(1) )) ;
+                                  [~, idx_2] = min(abs(EEGTMP.times - time_interval_erp(2) )) ;
+                              end;
+                              ERP{eeg_i}=[EEGTMP.erp_data(:,idx_1:idx_2)]'; %[mean([EEGTMP.data(:,idx_1:idx_2,:)],3)]';
+                              EEGTMP.nbchan=size(EEGTMP.erp_data,1);
+                              SISP_laikai=EEGTMP.times(idx_1:idx_2);
+                              ERP_lentele={};
+                              ERP_lentele(1,1)={Rinkmenos_pav};
+                              ERP_lentele(1,2:EEGTMP.nbchan + 1)={EEGTMP(1).chanlocs.labels};
+                              ERP_lentele(2:length(SISP_laikai)+1,1) = num2cell(SISP_laikai');
+                              ERP_lentele(2:length(SISP_laikai)+1,2:EEGTMP.nbchan + 1)=num2cell(ERP{eeg_i});
+                              
+                              if ~isempty(ERP_lentele{1,1})
+                                  laksto_pav=ERP_lentele{1,1}(1:min(length(ERP_lentele{1,1}),31));
+                              else
+                                  laksto_pav=num2str(eeg_i);
+                              end;
+                              
+                              if exist('writecell','file') == 2
+                                  writecell(ERP_lentele,excel_dokumentas_erp,'Sheet',laksto_pav); % įrašo į Excel XLSX, MATLAB versijoms nuo R2019a
+                              else%if ispc
+                                  xlswrite(excel_dokumentas_erp,ERP_lentele,laksto_pav); % įrašo į Excel XLS, MATLAB versijoms iki R2018b
+                                  %elseif 1 == 0;
+                                  %disp('Abejoju, ar kitoje nei Windows sistemoje MATLAB ras Excel');
+                                  %    csvwrite([csv_dokumentas_erp '_' laksto_pav '.csv'], ERP_lentele );
+                              end
+                              disp(excel_dokumentas_erp);
+                              
+                          catch err;
+                              Pranesk_apie_klaida(err,'','',0);
+                          end;
+                      end;
+                      
+                  else
+                      % vidurkinimas įjungtas – viskas viename lakšte
+                      Darbo_eigos_busena(handles, 'Eksportuoti į Excel...', DarboNr, 0, length(ALLEEG_));
+                      ERP_lentele={};
+                      
+                      for eeg_i=1:length(ALLEEG_)
+                          try
+                              Darbo_eigos_busena(handles, 'Eksportuoti į Excel...', DarboNr, eeg_i, length(ALLEEG_));
+                              EEGTMP=ALLEEG_(eeg_i);
+                              [~,Rinkmenos_pav,~]=fileparts(EEGTMP.file);
+                              if eeg_i == 1
+                                  ERP_lentele(2:length(SISP_laikai)+1,1) = num2cell(SISP_laikai');
+                                  ERP_lentele(1,1)={lokaliz('time')}; % {EEGTMP(1).chanlocs.labels};
+                                  if isempty(SISP_kanalai{1}) || ~ischar(SISP_kanalai{1})
+                                      laksto_pav=lokaliz('ERP');
+                                  else
+                                      laksto_pav=SISP_kanalai{1};
+                                  end
+                              end
+                              
+                              if ~isempty(Rinkmenos_pav)
+                                  ERP_lentele(1,1+eeg_i)={Rinkmenos_pav};
+                              else
+                                  ERP_lentele(1,1+eeg_i)={num2str(eeg_i)};
+                              end
+                              ERP_lentele(2:length(SISP_laikai)+1,1+eeg_i)=num2cell(ERP{eeg_i});
+                              
+                          catch err
+                              Pranesk_apie_klaida(err,'','',0);
+                          end
+                      end
+                      
+                      if exist('writecell','file') == 2
+                          writecell(ERP_lentele,excel_dokumentas_erp,'Sheet',laksto_pav); % įrašo į Excel XLSX, MATLAB versijoms nuo R2019a
+                      else%if ispc
+                          xlswrite(excel_dokumentas_erp,ERP_lentele,laksto_pav); % įrašo į Excel XLS, MATLAB versijoms iki R2018b
+                          %elseif 1 == 0;
+                          %disp('Abejoju, ar kitoje nei Windows sistemoje MATLAB ras Excel');
+                          %    csvwrite([csv_dokumentas_erp '_' laksto_pav '.csv'], ERP_lentele );
+                      end
+                      disp(excel_dokumentas_erp);
+                      
+                  end
+          end
     
     case 4
     %% Eksportuoti į MAT
@@ -2644,7 +2748,7 @@ set(handles.checkbox_baigti_anksciau,'String',lokaliz('Break work'));
 set(handles.checkbox_pabaigus_i_apdorotu_aplanka,'String',lokaliz('Go to saved files directory when completed'));
 set(handles.checkbox_pabaigus_atverti,'String',lokaliz('Load saved files in EEGLAB when completed'));
 set(handles.togglebutton1,'String', lokaliz('Cancel'));
-set(handles.popupmenu10,'Value',2);
+set(handles.popupmenu10,'Value',2+(exist('writecell','file') == 2) );
 set(handles.popupmenu10,'String',{'Ragu' 'TXT', 'Excel', 'Matlab'});
 set(handles.popupmenu11,'String', ...
     {lokaliz('of all files'), ...
