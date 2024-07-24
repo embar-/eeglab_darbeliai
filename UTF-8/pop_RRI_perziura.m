@@ -1017,6 +1017,9 @@ if ismember('scrollHandles', fields(handles));
         set(handles.scrollHandles,'YLim',[NY1 NY2]);
     end;
 end;
+if ~isfield(handles,'ScrollHandlesCldrL')
+    handles.ScrollHandlesCldrL=[];
+end
 
 for h=[handles.RRI_lin handles.RRI_tsk handles.EKG_tsk [handles.ScrollHandlesCldrL]'];
     try
