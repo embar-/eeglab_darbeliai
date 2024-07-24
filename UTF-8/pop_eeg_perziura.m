@@ -360,7 +360,9 @@ atnaujink_rodomus_failus(hObject, eventdata, handles.edit2, handles.listbox2, ha
 
 function atnaujink_rodoma_kelia_ir_failus(hObject, eventdata, handles)
 atnaujink_rodoma_kelia_ir_failus1(hObject, eventdata, handles);
-atnaujink_rodoma_kelia_ir_failus2(hObject, eventdata, handles);
+if isfield(handles,'edit2')
+    atnaujink_rodoma_kelia_ir_failus2(hObject, eventdata, handles);
+end
 
 % Atnaujink rodoma kelia
 function atnaujink_rodoma_darbini_kelia(~, ~, h_edit, h_pushbutton_v)
