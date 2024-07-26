@@ -320,9 +320,24 @@ function drb_parinktis_irasymas_tikrasis(konfig_rinkm, Darbeliai, darbas)
 % konfig_rinkm - rinkmena, į kurią įrašyti (su keliu)
 % Darbeliai    - konfigūracija
 % darbas       - tik informacijai, iš kurios pirminės funkcijos/lango kviečiama
-try   movefile([konfig_rinkm '~'], [konfig_rinkm '~~' ], 'f'); catch; end  % dviem keitimais senesnė konfigūracija
-try   movefile(konfig_rinkm, [konfig_rinkm '~' ], 'f'); catch; end  % vienu keitimu senesnė konfigūracija
-try   save(konfig_rinkm,'Darbeliai');  % naujausia konfigūracija
+
+% dviem keitimais senesnė konfigūracija perkeliama
+if exist([konfig_rinkm '~'], 'file') == 2
+    try movefile([konfig_rinkm '~'], [konfig_rinkm '~~' ], 'f'); catch; end
+end
+% vienu keitimu senesnė konfigūracija
+if exist(konfig_rinkm, 'file') == 2
+    d = dir(konfig_rinkm);
+    if ~strcmp(datestr(d.datenum, 'yyyy-mm-dd'), datestr(now, 'yyyy-mm-dd')) % nesutampa su šiandiena
+        % Papildomai nukopijuoti ankstesnės dienos konfigūraciją į EEGLAB/plugins katalogą su „.bak" priesaga
+        konfig_rinkm_bak = fullfile(fileparts(which('eeglab')),'plugins', 'Darbeliai_config.bak');
+        try copyfile(konfig_rinkm, konfig_rinkm_bak, 'f'); catch; end
+    end
+    % ir bet kuriuo atveju perkelti tame pačiame kataloge
+    try   movefile(konfig_rinkm, [konfig_rinkm '~' ], 'f'); catch; end
+end
+% naujausia konfigūracija
+try   save(konfig_rinkm,'Darbeliai');
 catch err; Pranesk_apie_klaida(err, darbas, konfig_rinkm, 0);
 end
 
