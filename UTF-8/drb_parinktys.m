@@ -196,11 +196,7 @@ saranka=saranka(setdiff([1:esami_N], esami_nr(pasirinkti))); %#ok
 eval(['Darbeliai.dialogai.' darbas '.saranka=saranka ;']);
 
 % Įrašymas
-try   movefile([konfig_rinkm '~'], [konfig_rinkm '~~' ], 'f'); catch; end;
-try   movefile(konfig_rinkm, [konfig_rinkm '~' ], 'f'); catch; end;
-try   save(konfig_rinkm,'Darbeliai');
-catch err; Pranesk_apie_klaida(err, darbas, konfig_rinkm, 0);
-end;
+drb_parinktis_irasymas_tikrasis(konfig_rinkm, Darbeliai, darbas)
 
 % meniu
 drb_meniu(hObject, eventdata, handles, 'visas', darbas);
@@ -308,11 +304,7 @@ saranka(p).versija   = vers ;
 eval(['Darbeliai.dialogai.' darbas '.saranka=saranka; ']);
 
 % Įrašymas
-try   movefile([konfig_rinkm '~'], [konfig_rinkm '~~' ], 'f'); catch; end;
-try   movefile(konfig_rinkm, [konfig_rinkm '~' ], 'f'); catch; end;
-try   save(konfig_rinkm,'Darbeliai');
-catch err; Pranesk_apie_klaida(err, darbas, konfig_rinkm, 0);
-end;
+drb_parinktis_irasymas_tikrasis(konfig_rinkm, Darbeliai, darbas)
 
 if ~strcmpi(vardas,'paskutinis')
     setappdata(handles.figure1,'paskiausiai_ikeltas_rinkinys',vardas);
@@ -321,6 +313,18 @@ guidata(hObject,handles);
 
 % meniu
 drb_meniu(hObject, eventdata, handles, 'visas', darbas);
+
+
+function drb_parinktis_irasymas_tikrasis(konfig_rinkm, Darbeliai, darbas)
+% Pats tikrasis konfigūracijos įrašymas į diską:
+% konfig_rinkm - rinkmena, į kurią įrašyti (su keliu)
+% Darbeliai    - konfigūracija
+% darbas       - tik informacijai, iš kurios pirminės funkcijos/lango kviečiama
+try   movefile([konfig_rinkm '~'], [konfig_rinkm '~~' ], 'f'); catch; end  % dviem keitimais senesnė konfigūracija
+try   movefile(konfig_rinkm, [konfig_rinkm '~' ], 'f'); catch; end  % vienu keitimu senesnė konfigūracija
+try   save(konfig_rinkm,'Darbeliai');  % naujausia konfigūracija
+catch err; Pranesk_apie_klaida(err, darbas, konfig_rinkm, 0);
+end
 
 
 function [vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(pradinis_vardas, pradinis_komentaras, darbas, saranka1, saranka2, neklausti)
@@ -655,11 +659,7 @@ end;
 eval(['Darbeliai.dialogai.' darbas '.saranka=saranka; ']);
 
 % Įrašymas
-try   movefile([konfig_rinkm '~'], [konfig_rinkm '~~' ], 'f'); catch; end;
-try   movefile(konfig_rinkm, [konfig_rinkm '~' ], 'f'); catch; end;
-try   save(konfig_rinkm,'Darbeliai');
-catch err; Pranesk_apie_klaida(err, darbas, konfig_rinkm, 0);
-end;
+drb_parinktis_irasymas_tikrasis(konfig_rinkm, Darbeliai, darbas)
 
 
 switch darbas
