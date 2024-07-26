@@ -79,14 +79,14 @@ function konfig_OpeningFcn(hObject, eventdata, handles, varargin)
 
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 Darbeliai_nuostatos_senos.lokale={ '' ; '' ; '' ; } ;
-if (exist('atnaujinimas.m','file') == 2) ;
+if (exist('atnaujinimas.m','file') == 2)
     Darbeliai_nuostatos_senos.tikrinti_versija=1;
 else
     Darbeliai_nuostatos_senos.tikrinti_versija=0;
     set(handles.popupmenu2,'Enable','off');
     set(handles.checkbox1, 'Enable','off');
     set(handles.checkbox2, 'Enable','off');
-end;
+end
 Darbeliai_nuostatos_senos.meniu_ragu=1;
 Darbeliai_nuostatos_senos.diegti_auto=0;
 Darbeliai_nuostatos_senos.stabili_versija=0;
@@ -104,9 +104,9 @@ try
     Darbeliai_nuostatos_senos.savita_versija   = Darbeliai.nuostatos.savita_versija;
     Darbeliai_nuostatos_senos.url_atnaujinimui = Darbeliai.nuostatos.url_atnaujinimui;
     Darbeliai_nuostatos_senos.url_atnaujinimui = Darbeliai.nuostatos.url_versijai;
-catch err;
+catch %err;
     %warning(err.message);
-end;
+end
 
 set(handles.popupmenu2,'String',{lokaliz('Stable version') ; lokaliz('Trunk version'); lokaliz('Kita')});
 switch Darbeliai_nuostatos_senos.stabili_versija
@@ -116,7 +116,7 @@ switch Darbeliai_nuostatos_senos.stabili_versija
         stabili_versija=2;
     otherwise
         stabili_versija=3;
-end;
+end
 set(handles.popupmenu2,'Value',stabili_versija);
 set(handles.popupmenu2,'UserData',stabili_versija);
 set(handles.checkbox1,'Value',Darbeliai_nuostatos_senos.tikrinti_versija);
@@ -134,30 +134,29 @@ locale_text(hObject, eventdata, handles);
 data_file=fullfile('..','lokaliz.mat');
 try
     load(fullfile(function_dir,data_file), 'LC_info', '-mat');
-catch err;
+catch
     LC_info=struct('LANG', {'--'}, 'COUNTRY', {''}, 'VARIANT', {''});
-end;
+end
 set(handles.text2,'String', {LC_info.LANG ; LC_info.COUNTRY ; LC_info.VARIANT });
 
-cur_lc=java.util.Locale.getDefault();
+%cur_lc=java.util.Locale.getDefault();
 
 list={};
-for i=1:length(LC_info);
+for i=1:length(LC_info)
     tmp_lc=java.util.Locale(LC_info(i).LANG,LC_info(i).COUNTRY,LC_info(i).VARIANT);
-    mode2=tmp_lc.getLanguage();
     tmp_name=char(tmp_lc.getDisplayName(java.util.Locale(tmp_lc.getLanguage(),tmp_lc.getCountry(),tmp_lc.getVariant())));
     %list{i}=[ char(tmp_lc.getLanguage()) '_' char(tmp_lc.getCountry()) ' - ' tmp_name];
     list{i}=tmp_name;
 
-    if strcmp(Darbeliai_nuostatos_senos.lokale{1},LC_info(i).LANG);
-        if strcmp(Darbeliai_nuostatos_senos.lokale{2},LC_info(i).COUNTRY);
-            if strcmp(Darbeliai_nuostatos_senos.lokale{3},LC_info(i).VARIANT);
+    if strcmp(Darbeliai_nuostatos_senos.lokale{1},LC_info(i).LANG)
+        if strcmp(Darbeliai_nuostatos_senos.lokale{2},LC_info(i).COUNTRY)
+            if strcmp(Darbeliai_nuostatos_senos.lokale{3},LC_info(i).VARIANT)
                 set(handles.popupmenu1,'Value',i);
-            end;
-        end;
-    end;
+            end
+        end
+    end
 
-end;
+end
 %disp(list);
 list=char(list);
 list={lokaliz('auto_lang') ; list(2:end,:)};
@@ -213,8 +212,8 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 try
     close(mfilename);
-catch err;
-end;
+catch
+end
 
 % --- Executes on button press in pushbutton3.
 function pushbutton3_Callback(hObject, eventdata, handles)
@@ -222,13 +221,13 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 v=findall(handles.figure1);
-for i=1:length(v); try set(v(i),'Enable','off'); catch err; end; end;
+for i=1:length(v); try set(v(i),'Enable','off'); catch; end; end
 
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
     load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'), 'Darbeliai', '-mat');
-catch err;
-end;
+catch
+end
 
 Darbeliai.nuostatos=[];
 
@@ -252,41 +251,41 @@ switch get(handles.popupmenu2,'Value')
             %Darbeliai.nuostatos.stabili_versija= nst.stabili_versija;
             Darbeliai.nuostatos.url_atnaujinimui=nst.url_atnaujinimui;
             Darbeliai.nuostatos.url_versijai=nst.url_versijai;
-        catch err;
+        catch err
             Pranesk_apie_klaida(err,'konfig','',0);
             Darbeliai.nuostatos.stabili_versija=-1;
             Darbeliai.nuostatos.url_atnaujinimui='';
             Darbeliai.nuostatos.url_versijai='';
-        end;
-end;
+        end
+end
 Darbeliai.nuostatos.tikrinti_versija=get(handles.checkbox1,'Value');
 Darbeliai.nuostatos.diegti_auto     =get(handles.checkbox2,'Value');
 Darbeliai.nuostatos.meniu_ragu      =get(handles.checkbox3,'Value');
 Darbeliai.nuostatos.konf_laikas     =datestr(now, 'yyyy-mm-dd_HHMMSS');
 locale_idx=get(handles.popupmenu1,'Value');
 
-if get(handles.checkbox3,'Value') ~= get(handles.checkbox3,'UserData');
+if get(handles.checkbox3,'Value') ~= get(handles.checkbox3,'UserData')
     restart_eeglab=1;
 else
     restart_eeglab=0;
-end;
+end
 
-if locale_idx > 1;
+if locale_idx > 1
     lc=get(handles.text2,'String');
     lc=lc([1 2 3] + ((locale_idx - 1) * 3));
 
     tmp_lc=java.util.Locale.getDefault();
-    if strcmp(char(tmp_lc.getLanguage()),lc(1));
-        if strcmp(char(tmp_lc.getCountry()),lc(2));
-            if ~strcmp(char(tmp_lc.getVariant()),lc(3));
+    if strcmp(char(tmp_lc.getLanguage()),lc(1))
+        if strcmp(char(tmp_lc.getCountry()),lc(2))
+            if ~strcmp(char(tmp_lc.getVariant()),lc(3))
                 restart_eeglab=1;
-            end;
+            end
         else
             restart_eeglab=1;
-        end;
+        end
     else
         restart_eeglab=1;
-    end;
+    end
 
     java.util.Locale.setDefault(java.util.Locale(lc(1),lc(2),lc(3)));
     disp(char(java.util.Locale.getDefault()));
@@ -294,7 +293,7 @@ if locale_idx > 1;
 
 else
     Darbeliai.nuostatos.lokale={ '' ; '' ; '' ; } ;
-end;
+end
 save(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'),'Darbeliai');
 pause(2);
 
@@ -302,16 +301,16 @@ pakeista_savita_versija=0;
 try 
     s=get(handles.uipanel1,'UserData');
     pakeista_savita_versija=s.pakeista_savita_versija;
-catch err;
-end;
+catch
+end
 if or(get(handles.popupmenu2,'Value') ~= get(handles.popupmenu2,'UserData'),...
-  and(get(handles.popupmenu2,'Value') == 3, pakeista_savita_versija));
+  and(get(handles.popupmenu2,'Value') == 3, pakeista_savita_versija))
     figure1_CloseRequestFcn(hObject, eventdata, handles);
     atnaujinimas(Darbeliai.nuostatos.url_atnaujinimui) ;
     return;
-end;
+end
 
-if restart_eeglab ;
+if restart_eeglab
     %pushbutton2_Callback(hObject, eventdata, handles);
     close(findobj('tag', 'EEGLAB'));
     clear('lokaliz');
@@ -320,10 +319,10 @@ if restart_eeglab ;
     drawnow;
     evalin('base','eeglab redraw');
     drawnow;
-end ;
+end
 
-v=[]; try v=findall(handles.figure1); catch err; end;
-for i=1:length(v); try set(v(i),'Enable','on'); catch err; end; end;
+v=[]; try v=findall(handles.figure1); catch; end
+for i=1:length(v); try set(v(i),'Enable','on'); catch; end; end
 
 
 % --- Executes on selection change in popupmenu1.
@@ -360,7 +359,7 @@ if get(handles.checkbox1,'Value')
     set(handles.checkbox2,'Enable','on');
 else
     set(handles.checkbox2,'Enable','off');
-end;
+end
 
 % --- Executes when user attempts to close figure1.
 function figure1_CloseRequestFcn(hObject, eventdata, handles)
@@ -371,8 +370,8 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % Hint: delete(hObject) closes the figure
 try
     delete(handles.figure1);
-catch err;
-end;
+catch
+end
 
 
 % --- Executes during object deletion, before destroying properties.
@@ -399,18 +398,18 @@ function popupmenu2_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns popupmenu2 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupmenu2
-if get(handles.popupmenu2,'Value') == 3,
+if get(handles.popupmenu2,'Value') == 3
     pakeista_savita_versija=0;
     try
         s=get(handles.uipanel1,'UserData');
         pakeista_savita_versija=s.pakeista_savita_versija;
-    catch err;
-    end;
+    catch
+    end
     set(handles.pushbutton3,'Enable',fastif(pakeista_savita_versija,'off','on'));
     drawnow;
     try
         drbst=github_darbeliu_versijos;
-        if isempty(drbst); warning('Nerasta kitų versijų') ; return; end;
+        if isempty(drbst); warning('Nerasta kitų versijų') ; return; end
 %         disp(' ');
 %         disp('- - - - - - - - - - - - - - - - - -');
 %         disp(' ');
@@ -423,7 +422,7 @@ if get(handles.popupmenu2,'Value') == 3,
             'SelectionMode','single','ListSize',[400 300],...
             'ListString',{drbst.versija_},...
             'InitialValue',i(end));
-        if ~v; return; end;
+        if ~v; return; end
         drbst_=drbst(s);
         drbst_.pakeista_savita_versija=1;
         disp(' ');
@@ -437,12 +436,12 @@ if get(handles.popupmenu2,'Value') == 3,
             sprintf('%s\n \n%s',drbst_.versija_,drbst_.komentaras));
         set(handles.uipanel1,'UserData',drbst_);
         set(handles.pushbutton3,'Enable','off');
-    catch err;
+    catch err
         Pranesk_apie_klaida(err,'Konfig','',0);
-    end;
+    end
 else    
     set(handles.pushbutton3,'Enable','on');
-end;
+end
 
 % --- Executes during object creation, after setting all properties.
 function popupmenu2_CreateFcn(hObject, eventdata, handles)
