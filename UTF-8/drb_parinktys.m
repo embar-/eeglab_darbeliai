@@ -69,8 +69,8 @@ function drb_parinktis_ikelti(hObject, eventdata, handles, konfig_rinkm, darbas,
 versija_par='';
 versija_plg='';
 try
-    load(konfig_rinkm);   
-    eval([ 'saranka=Darbeliai.dialogai.' darbas '.saranka;' ]);
+    load(konfig_rinkm, 'Darbeliai', '-mat');   
+    saranka = Darbeliai.dialogai.(darbas).saranka;
     esami={saranka.vardas}; 
     i=find(ismember(esami,rinkinys));
     if isempty(i); error([lokaliz('Neradome parinkciu rinkinio') ': ' rinkinys ]); end;
@@ -89,13 +89,13 @@ for j=1:length(Parinktys);
         try
             skirti=0;
             if ismember([Laukas '_'], Laukai1);
-                try eval([ 'skirti=Parinktys(j).' Laukas '_;' ]); catch; end;
+                try skirti = Parinktys(j).([Laukas '_' ]); catch; end;
             elseif ismember(Laukas, {'Value' 'UserData'}); % suderinamumui su Darbeliais <= 2015.07.18
                 skirti=1;
             end;
             if skirti;
-                eval([ 'rksm=Parinktys(j).' Laukas ';' ]);
-                set(eval(['handles.' Parinktys(j).id ]), Laukas, rksm);
+                rksm = Parinktys(j).(Laukas);
+                set(handles.(Parinktys(j).id), Laukas, rksm);
             end;
         catch err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
             disp([ Parinktys(j).id ': ' Laukas ]);
@@ -168,9 +168,9 @@ senesne=0;
 function drb_parinktis_trinti(hObject, eventdata, handles, konfig_rinkm, darbas, varargin)
 %% Trinti
 try
-    load(konfig_rinkm);
-    eval([ 'saranka=Darbeliai.dialogai.' darbas '.saranka;' ]);
-    esami={saranka.vardas}; %#ok
+    load(konfig_rinkm, 'Darbeliai', '-mat');
+    saranka = Darbeliai.dialogai.(darbas).saranka;
+    esami={saranka.vardas};
     esami_N=length(esami);
     esami_nr=find(~ismember(esami,{'numatytas','paskutinis'}));
     esami=esami(esami_nr);
@@ -192,8 +192,8 @@ else
     pasirinkti=find(ismember(trintini_rinkiniai,esami));
 end;
 if isempty(pasirinkti); return; end;
-saranka=saranka(setdiff([1:esami_N], esami_nr(pasirinkti))); %#ok
-eval(['Darbeliai.dialogai.' darbas '.saranka=saranka ;']);
+saranka = saranka(setdiff([1:esami_N], esami_nr(pasirinkti))); %#ok
+Darbeliai.dialogai.(darbas).saranka=saranka ;
 
 % Įrašymas
 drb_parinktis_irasymas_tikrasis(konfig_rinkm, Darbeliai, darbas)
@@ -204,9 +204,9 @@ drb_meniu(hObject, eventdata, handles, 'visas', darbas);
 
 function drb_parinktis_irasyti(hObject, eventdata, handles, konfig_rinkm, darbas, vardas, komentaras, isimintini)
 %% Įrašyti
-try load(konfig_rinkm);
-    eval([ 'saranka=Darbeliai.dialogai.' darbas '.saranka;' ]);
-    esami={saranka.vardas}; %#ok
+try load(konfig_rinkm, 'Darbeliai', '-mat');
+    saranka = Darbeliai.dialogai.(darbas).saranka;
+    esami={saranka.vardas};
 catch %err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm, 0);
     saranka=struct; esami={};
 end;
@@ -242,32 +242,32 @@ for b=1:length(isimintini);
             
             if ismember({'value'}, isimintini_raktai);
                  Parinktys(j).Value_  = 1;
-                 Parinktys(j).Value    = get(eval(['handles.' isimintini_nariai{i}]), 'Value');
+                 Parinktys(j).Value    = get(handles.(isimintini_nariai{i}), 'Value');
             else Parinktys(j).Value_  = 0;
             end;
             if ismember({'userdata'}, isimintini_raktai);
                  Parinktys(j).UserData_  = 1;
-                 Parinktys(j).UserData = get(eval(['handles.' isimintini_nariai{i}]), 'UserData');
+                 Parinktys(j).UserData = get(handles.(isimintini_nariai{i}), 'UserData');
             else Parinktys(j).UserData_  = 0;
             end;
             if ismember({'string'}, isimintini_raktai);
                  Parinktys(j).String_  = 1;
-                 Parinktys(j).String   = get(eval(['handles.' isimintini_nariai{i}]), 'String');
+                 Parinktys(j).String   = get(handles.(isimintini_nariai{i}), 'String');
             else Parinktys(j).String_  = 0;
             end;
             if ismember({'tooltipstring'}, isimintini_raktai);
                  Parinktys(j).TooltipString_ = 1;
-                 Parinktys(j).TooltipString   = get(eval(['handles.' isimintini_nariai{i}]), 'TooltipString');
+                 Parinktys(j).TooltipString   = get(handles.(isimintini_nariai{i}), 'TooltipString');
             else Parinktys(j).TooltipString_ = 0;
             end;
             if ismember({'data'}, isimintini_raktai);
                  Parinktys(j).Data_  = 1;
-                 Parinktys(j).Data = get(eval(['handles.' isimintini_nariai{i}]), 'Data');
+                 Parinktys(j).Data = get(handles.(isimintini_nariai{i}), 'Data');
             else Parinktys(j).Data_  = 0;
             end;
             if ismember({'columnname'}, isimintini_raktai);
                  Parinktys(j).ColumnName_  = 1;
-                 Parinktys(j).ColumnName = get(eval(['handles.' isimintini_nariai{i}]), 'ColumnName');
+                 Parinktys(j).ColumnName = get(handles.(isimintini_nariai{i}), 'ColumnName');
             else Parinktys(j).ColumnName_  = 0;
             end;
             
@@ -301,7 +301,7 @@ saranka(p).data      = datestr(now,'yyyy-mm-dd HH:MM:SS') ;
 saranka(p).komentaras= [ komentaras ' ' ] ;
 saranka(p).parinktys = Parinktys ;
 saranka(p).versija   = vers ;
-eval(['Darbeliai.dialogai.' darbas '.saranka=saranka; ']);
+Darbeliai.dialogai.(darbas).saranka=saranka;
 
 % Įrašymas
 drb_parinktis_irasymas_tikrasis(konfig_rinkm, Darbeliai, darbas)
@@ -340,7 +340,7 @@ end
 try   save(konfig_rinkm,'Darbeliai');
 catch err; Pranesk_apie_klaida(err, darbas, konfig_rinkm, 0);
 end
-
+ 
 
 function [vardas, komentaras, pavyko]=parinkciu_rinkinio_uzvadinimas(pradinis_vardas, pradinis_komentaras, darbas, saranka1, saranka2, neklausti)
 %% Dialogas parinkčių rinkinio pavadinimui įvesti
@@ -425,9 +425,9 @@ catch %err; Pranesk_apie_klaida(err, mfilename, darbas, 0);
 end;
 
 try
-    load(konfig_rinkm,'-mat');
-    eval([ 'saranka=Darbeliai.dialogai.' darbas '.saranka;' ]);
-    esami={saranka.vardas}; %#ok
+    load(konfig_rinkm, 'Darbeliai', '-mat');
+    saranka = Darbeliai.dialogai.(darbas).saranka;
+    esami={saranka.vardas};
     if isempty(esami{1}); error(lokaliz('(empty)')); end;
 catch err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm, 0);
     try error(lokaliz('Nera ko eksportuoti.')); 
@@ -459,7 +459,7 @@ if isempty(eksp_rinkm);
     eksp_rinkm=fullfile(eksp_kel,eksp_rinkm);
 end;
 
-Darbeliai=struct; %#ok
+Darbeliai=struct
 
 if exist(eksp_rinkm, 'file') == 2;
     klsm=sprintf('%s\n%s', lokaliz('Rinkmena jau yra!'), lokaliz('Pabandyti papildyti rinkmena?'));
@@ -482,9 +482,9 @@ end;
 
 if papildyti;
     try
-        load(eksp_rinkm,'-mat');
-        try    eval([ 'saranka2=Darbeliai.dialogai.' darbas '.saranka;' ]);
-        catch; saranka2=struct('vardas',''); saranka2=saranka2([]);
+        load(eksp_rinkm, 'Darbeliai', '-mat');
+        try    saranka2 = Darbeliai.dialogai.(darbas).saranka;
+        catch; saranka2 = struct('vardas',''); saranka2=saranka2([]);
         end;
         esami2={saranka2.vardas};
         persidengia_i2v=find(ismember(esami2,vardas));
@@ -510,8 +510,8 @@ if papildyti;
             end;
         end;
         
-        if length(persidengia_i2v) == length(saranka2);
-            eval([ 'Darbeliai.dialogai.' darbas '.saranka=saranka;' ]);
+        if length(persidengia_i2v) == length(saranka2)
+            Darbeliai.dialogai.(darbas).saranka=saranka;
         else
             saranka2=saranka2(setdiff(1:length(saranka2),persidengia_i2v)); % ištrint persidengiančius
             saranka2_N=length(saranka2);
@@ -522,20 +522,20 @@ if papildyti;
                     saranka2(saranka2_N+i).(laukas)=saranka(i).(laukas);
                 end;
             end;
-            eval([ 'Darbeliai.dialogai.' darbas '.saranka=saranka2;' ]);
+            Darbeliai.dialogai.(darbas).saranka=saranka2;
         end;
     catch err; Pranesk_apie_klaida(err, mfilename, eksp_rinkm, 0);
         klsm=sprintf('%s.\n%s', lokaliz('Nepavyko papildyti'), lokaliz('Perrasyti rinkmena?'));
         mgtk={lokaliz('Yes'), lokaliz('No'), lokaliz('No')};
         ats=questdlg(klsm, lokaliz('Nepavyko papildyti'), mgtk{:});
         if strcmp(ats,lokaliz('Yes'));
-            eval([ 'Darbeliai.dialogai.' darbas '.saranka=saranka;' ]);
+            Darbeliai.dialogai.(darbas).saranka=saranka;
         else
             return;
         end;
     end;
 else
-    eval([ 'Darbeliai.dialogai.' darbas '.saranka=saranka;' ]);
+    Darbeliai.dialogai.(darbas).saranka=saranka;
 end;
             
 % Įrašyti
@@ -611,11 +611,11 @@ if isempty(imp_rinkm);
     if exist(imp_rinkm,'file') ~= 2; return; end;
 end;
 
-try load(imp_rinkm,'-mat');
-    try    eval([ 'saranka2=Darbeliai.dialogai.' darbas '.saranka;' ]);
+try load(imp_rinkm, 'Darbeliai', '-mat');
+    try    saranka2 = Darbeliai.dialogai.(darbas).saranka;
     catch; error(lokaliz('Nera ko importuoti.'));
     end;
-    esami2={saranka2.vardas}; %#ok
+    esami2={saranka2.vardas};
     pasirinkti=[];
     try pasirinkti=find(ismember(esami2,{g.rinkiniai})); catch; end;
     if isempty(pasirinkti);
@@ -634,9 +634,9 @@ catch err; Pranesk_apie_klaida(err, mfilename, imp_rinkm);
 end;
 
 try
-    load(konfig_rinkm);
-    eval([ 'saranka=Darbeliai.dialogai.' darbas '.saranka;' ]);
-    esami={saranka.vardas}; %#ok
+    load(konfig_rinkm, 'Darbeliai', '-mat');
+    saranka = Darbeliai.dialogai.(darbas).saranka;
+    esami={saranka.vardas};
     
     persidengia_i2v=find(ismember(esami2,esami));
     for persidengia_i2=persidengia_i2v;
@@ -663,19 +663,18 @@ try
         laukai=fieldnames(saranka2);
         for i=1:length(saranka2);
             for l=1:length(laukai); laukas=laukai{l};
-                saranka(saranka_N+i).(laukas)=saranka2(i).(laukas); %#ok
+                saranka(saranka_N+i).(laukas)=saranka2(i).(laukas);
             end;
         end;
     end;
 catch %err; Pranesk_apie_klaida(err, mfilename, konfig_rinkm, 0);
-    saranka=saranka2; %#ok
+    saranka=saranka2;
 end;
 
-eval(['Darbeliai.dialogai.' darbas '.saranka=saranka; ']);
+Darbeliai.dialogai.(darbas).saranka=saranka;
 
 % Įrašymas
 drb_parinktis_irasymas_tikrasis(konfig_rinkm, Darbeliai, darbas)
-
 
 switch darbas
     case {'pop_meta_drb'}
