@@ -95,7 +95,7 @@ Darbeliai_nuostatos_senos.url_atnaujinimui='';
 Darbeliai_nuostatos_senos.url_versijai='';
 
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'), 'Darbeliai', '-mat');
     Darbeliai_nuostatos_senos.lokale           = Darbeliai.nuostatos.lokale;
     Darbeliai_nuostatos_senos.tikrinti_versija = Darbeliai.nuostatos.tikrinti_versija;
     Darbeliai_nuostatos_senos.diegti_auto      = Darbeliai.nuostatos.diegti_auto;
@@ -133,7 +133,7 @@ locale_text(hObject, eventdata, handles);
 
 data_file=fullfile('..','lokaliz.mat');
 try
-    load(fullfile(function_dir,data_file));
+    load(fullfile(function_dir,data_file), 'LC_info', '-mat');
 catch err;
     LC_info=struct('LANG', {'--'}, 'COUNTRY', {''}, 'VARIANT', {''});
 end;
@@ -226,7 +226,7 @@ for i=1:length(v); try set(v(i),'Enable','off'); catch err; end; end;
 
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'), 'Darbeliai', '-mat');
 catch err;
 end;
 

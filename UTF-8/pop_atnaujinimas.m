@@ -82,7 +82,7 @@ function pop_atnaujinimas_OpeningFcn(hObject, eventdata, handles, varargin)
 set(handles.pushbutton1,'String',lokaliz('Update'));
 set(handles.pushbutton2,'String',lokaliz('Close'));
 
-Tekstas=[{' '}];
+Tekstas={' '};
 sena_versija='';
 nauja_versija='';
 apie_vers='';
@@ -115,7 +115,7 @@ end;
 
 
 try
-   load(fullfile(curdir_parrent,config_file));
+   load(fullfile(curdir_parrent,config_file), 'Darbeliai', '-mat');
    Darbeliai_nuostatos.url_atnaujinimui=Darbeliai.nuostatos.url_atnaujinimui;
    Darbeliai_nuostatos.url_versijai    =Darbeliai.nuostatos.url_versijai;
    Darbeliai_nuostatos.stabili_versija =Darbeliai.nuostatos.stabili_versija;

@@ -153,10 +153,10 @@ set(handles.checkbox_pabaigus_atverti,'Value',0);
 %Pabandyk įkelti senąjį kelią
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'), 'Darbeliai', '-mat');
     setappdata(handles.figure1, 'Darbeliai_config', Darbeliai);
     cd(Darbeliai.keliai.atverimui{1});
-catch err; 
+catch
 end;
 
 % Pabandyk nustatyti kelią pagal parametrus
@@ -583,7 +583,7 @@ disp(' ');
 % Pasirinktų aplankų įsiminimas
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'), 'Darbeliai', '-mat');  
     try
         lst=[{} KELIAS unique(Darbeliai.keliai.atverimui)];
         [~,idx,~]=unique(lst);
@@ -1931,7 +1931,7 @@ rinkiniai_orig={'numatytas'}; % Net jei tokio ir dar nėra, jis sukuriamas palei
 try    
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     k=Tikras_Kelias(fullfile(function_dir,'..'));
-    load(fullfile(k,'Darbeliai_config.mat'));
+    load(fullfile(k,'Darbeliai_config.mat'), 'Darbeliai', '-mat');
     eval(['rinkiniai_orig={Darbeliai.dialogai.' darbas '.saranka.vardas};' ]);
 catch %err; Pranesk_apie_klaida(err, 'Darbeliu_nuostatu_rinkiniai', darbelio_Nr, 0);
     %disp('darbas='); disp(darbas);

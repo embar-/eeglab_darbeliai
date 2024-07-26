@@ -149,7 +149,7 @@ drb_meniu(hObject, eventdata, handles, 'visas', mfilename);
 %Pabandyk įkelti senąjį kelią
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'), 'Darbeliai', '-mat');   
     cd(Darbeliai.keliai.atverimui{1});
 catch err; 
 end;
@@ -651,7 +651,7 @@ disp(' ');
 % Pasirinktų aplankų įsiminimas
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));  
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'), 'Darbeliai', '-mat');  
     try
         lst=[{} KELIAS unique(Darbeliai.keliai.atverimui)];
         [~,idx,~]=unique(lst);
