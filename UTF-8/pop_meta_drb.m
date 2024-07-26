@@ -637,19 +637,19 @@ Sukamos_rinkmn=Pasirinkti_failu_pavadinimai;
 for dbr_i=1:10; 
     dbr_id=num2str(dbr_i);
     if and(and(~isempty(Sukamas_kelias),~isempty(Sukamos_rinkmn)),...
-            get(eval(['handles.checkbox_drb' dbr_id]),'Value')) ;
+            get(handles.(['checkbox_drb' dbr_id]),'Value'))
         try
-            Darbo_tipo_nr=get(eval(['handles.popupmenu_drb' dbr_id]),'Value');
-            Darbo_tipo_id=get(eval(['handles.popupmenu_drb' dbr_id]),'TooltipString');
-            Darbo_apibudinimas=get(eval(['handles.popupmenu_drb' dbr_id]),'String');
+            Darbo_tipo_nr=get(handles.(['popupmenu_drb' dbr_id]),'Value');
+            Darbo_tipo_id=get(handles.(['popupmenu_drb' dbr_id]),'TooltipString');
+            Darbo_apibudinimas=get(handles.(['popupmenu_drb' dbr_id]),'String');
             Darbo_apibudinimas=Darbo_apibudinimas{Darbo_tipo_nr};
-            preset=get(eval(['handles.popupmenu_drb' dbr_id '_']),'TooltipString');
+            preset=get(handles.(['popupmenu_drb' dbr_id '_']),'TooltipString');
             Darbo_eigos_busena(handles, [lokaliz('Job') ': ' Darbo_apibudinimas], dbr_i, [], Pasirinktu_failu_N);
             disp([lokaliz('Job preset') ': ' preset ]); disp(' ');
             switch Darbo_tipo_id
                 case {'pop_pervadinimas'}
                     Kelias_sg=fullfile(KELIAS_SAUGOJIMUI,[num2str(DarboNr+1) ' - ' ]); % lokaliz('Rename')
-                    if exist(Kelias_sg) ~= 7; try mkdir(Kelias_sg); catch err ; Kelias_sg=KELIAS_SAUGOJIMUI; end; end;
+                    if exist(Kelias_sg, 'dir') ~= 7; try mkdir(Kelias_sg); catch; Kelias_sg=KELIAS_SAUGOJIMUI; end; end;
                 otherwise
                     Kelias_sg=KELIAS_SAUGOJIMUI;
             end;
@@ -662,7 +662,7 @@ for dbr_i=1:10;
                 case {'pop_pervadinimas'}
                     [lng,Sukamas_kelias,Sukamos_rinkmn]=...
                         pop_pervadinimas(dbr_param{:});
-                    try delete(lng); catch err; end;
+                    try delete(lng); catch; end;
                     DarboNr=DarboNr+1;
                 case {'pop_nuoseklus_apdorojimas'}
                     [lng,Sukamas_kelias,~,Sukamos_rinkmn,DarboNr]=...
@@ -1461,9 +1461,9 @@ popdrb={'pop_pervadinimas' ...
         'pop_Epochavimas_ir_atrinkimas' ...
         'pop_ERP_savybes' ...
         'pop_eeg_spektrine_galia' ...
-        'pop_rankinis'}; %#ok
-for i=id;
-    eval(['set(handles.popupmenu_drb' num2str(i) ', ''UserData'',popdrb); ']);
+        'pop_rankinis'};
+for i=id
+    set(handles.(['popupmenu_drb' num2str(i)]), 'UserData',popdrb);
 end;
 
 
@@ -1829,9 +1829,9 @@ end
 
 % --- Executes on button press in checkbox_drb*.
 function virtual_checkbox_drb_Callback(hObject, eventdata, handles, id)
-eval(['cbh=handles.checkbox_drb' num2str(id) ' ; ']);
-eval(['pm=handles.popupmenu_drb' num2str(id) ' ; ']);
-eval(['pm_=handles.popupmenu_drb' num2str(id) '_ ; ']);
+cbh = handles.(['checkbox_drb'  num2str(id)]);
+pm =  handles.(['popupmenu_drb' num2str(id)]);
+pm_ = handles.(['popupmenu_drb' num2str(id)]);
 aktyvus=and(get(cbh, 'Value'), strcmp(get(cbh, 'Enable'),'on'));
 set(pm,'Enable',fastif(aktyvus,'on','off'));
 
@@ -1852,8 +1852,8 @@ try if length(get(pm, 'UserData')) ~= length(get(pm, 'String'))...
             if length(pmUD) < pmV ;
                 d=pmV-length(pmUD);
                 for i=1:10;
-                    eval(['pm0=handles.popupmenu_drb' num2str(i) ' ; ']);
-                    pm0V=get(pm0, 'Value');
+                    pm0  = handles.(['popupmenu_drb' num2str(i)]);
+                    pm0V = get(pm0, 'Value');
                     if pm0V-d>2;
                         set(pm0, 'Value', pm0V-d);
                     end;
@@ -1880,9 +1880,9 @@ virtual_popupmenu_drb_Callback(hObject, eventdata, handles, id);
 
 % --- Executes on selection change in popupmenu_drb*.
 function virtual_popupmenu_drb_Callback(hObject, eventdata, handles, id)
-eval(['cbh=handles.checkbox_drb' num2str(id) ' ; ']);
-eval(['pm=handles.popupmenu_drb' num2str(id) ' ; ']);
-eval(['pm_=handles.popupmenu_drb' num2str(id) '_ ; ']);
+cbh = handles.(['checkbox_drb' num2str(id)]);
+pm  = handles.(['popupmenu_drb' num2str(id)]);
+pm_ = handles.(['popupmenu_drb' num2str(id) '_']);
 pm_Enable=get(pm, 'Enable');
 darbai=get(pm, 'UserData');
 darbas=darbai{get(pm, 'Value')};
@@ -1918,7 +1918,7 @@ eval(['popupmenu_drb' num2str(id) '__Callback(hObject, eventdata, handles);' ]);
 
 % --- Executes on selection change in popupmenu_drb*_.
 function virtual_popupmenu_drb__Callback(hObject, eventdata, handles, id)
-eval(['pm_=handles.popupmenu_drb' num2str(id) '_ ; ']);
+pm_ = handles.(['popupmenu_drb' num2str(id) '_']);
 str=get(pm_,'String');
 val=get(pm_,'Value');
 if length(str) < val; set(pm_,'Value',1); val= 1; end;
@@ -1932,7 +1932,7 @@ try
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     k=Tikras_Kelias(fullfile(function_dir,'..'));
     load(fullfile(k,'Darbeliai_config.mat'), 'Darbeliai', '-mat');
-    eval(['rinkiniai_orig={Darbeliai.dialogai.' darbas '.saranka.vardas};' ]);
+    rinkiniai_orig = {Darbeliai.dialogai.(darbas).saranka.vardas} ;
 catch %err; Pranesk_apie_klaida(err, 'Darbeliu_nuostatu_rinkiniai', darbelio_Nr, 0);
     %disp('darbas='); disp(darbas);
 end;
