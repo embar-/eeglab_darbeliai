@@ -75,27 +75,29 @@
 % Prisiderinama prie naudojamos koduotes: 
 % UTF-8 aplanko *.m rinkmenos konvertuojamos i sistemos koduote.
 %
+% (C) 2014 Mindaugas Baranauskas   
+%
+
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   
+%
 % Si programa yra laisva. Jus galite ja platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
-% Viesosios licencijos salygomis: 2 licencijos versija, arba (savo
+% Viesosios licencijos salygomis: 3 licencijos versija, arba (savo
 % nuoziura) bet kuria velesne versija.
 %
 % Si programa platinama su viltimi, kad ji bus naudinga, bet BE JOKIOS
-% GARANTIJOS; be jokios numanomos PERKAMUMO ar TINKAMUMO KONKRETIEMS
-% TIKSLAMS garantijos. Ziurekite GNU Bendraja Viesaja licencija noredami
-% suzinoti smulkmenas.
+% GARANTIJOS; taip pat nesuteikiama jokia numanoma garantija del TINKAMUMO
+% PARDUOTI ar PANAUDOTI TAM TIKRAM TIKSLU. Daugiau informacijos galite 
+% rasti pacioje GNU Bendrojoje Viesojoje licencijoje.
 %
-% Jus turejote kartu su sia programa gauti ir GNU Bendrosios Viesosios
-% licencijos kopija; jei ne - rasykite Free Software Foundation, Inc., 59
-% Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+% Jus kartu su sia programa turejote gauti ir GNU Bendrosios Viesosios
+% licencijos kopija; jei ne - zr. <https://www.gnu.org/licenses/>.
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%	
+%
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
-% the Free Software Foundation; either version 2 of the License, or
+% the Free Software Foundation; either version 3 of the License, or
 % (at your option) any later version.
 %
 % This program is distributed in the hope that it will be useful,
@@ -104,15 +106,8 @@
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% (C) 2014 Mindaugas Baranauskas   
-%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %%
 
 function vers = eegplugin_darbeliai(fig,try_strings,catch_strings)

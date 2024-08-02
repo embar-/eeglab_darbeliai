@@ -1,8 +1,6 @@
 % ERP_savybes()
-%%
-% 
 %
-% Lietuviškai
+%% Lietuviškai
 % 
 %     Naudojimas:
 %         >> [plotas,vidut_amplitud,x_pusei_ploto,y_pusei_ploto,min_x,min_y,max_x,max_y]=ERP_savybes(EEG) 
@@ -20,7 +18,7 @@
 %                          
 % 
 % 
-% English
+%% English
 % 
 %     Usage:
 %         >> [area,mean_amplitude,x_of_half_area,y_of_half_area,min_x,min_y,max_x,max_y]=ERP_savybes(EEG) 
@@ -38,28 +36,27 @@
 %%
 %
 % (C) 2014 Mindaugas Baranauskas
-%
+
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Ši programa yra laisva. Jūs galite ją platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
-% Viešosios licencijos sąlygomis: 2 licencijos versija, arba (savo
+% Viešosios licencijos sąlygomis: 3 licencijos versija, arba (savo
 % nuožiūra) bet kuria vėlesne versija.
 %
 % Ši programa platinama su viltimi, kad ji bus naudinga, bet BE JOKIOS
-% GARANTIJOS; be jokios numanomos PERKAMUMO ar TINKAMUMO KONKRETIEMS
-% TIKSLAMS garantijos. Žiūrėkite GNU Bendrąją Viešąją licenciją norėdami
-% sužinoti smulkmenas.
+% GARANTIJOS; taip pat nesuteikiama jokia numanoma garantija dėl TINKAMUMO
+% PARDUOTI ar PANAUDOTI TAM TIKRAM TIKSLU. Daugiau informacijos galite 
+% rasti pačioje GNU Bendrojoje Viešojoje licencijoje.
 %
-% Jūs turėjote kartu su šia programa gauti ir GNU Bendrosios Viešosios
-% licencijos kopija; jei ne - rašykite Free Software Foundation, Inc., 59
-% Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+% Jūs kartu su šia programa turėjote gauti ir GNU Bendrosios Viešosios
+% licencijos kopiją; jei ne - žr. <https://www.gnu.org/licenses/>.
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
-% the Free Software Foundation; either version 2 of the License, or
+% the Free Software Foundation; either version 3 of the License, or
 % (at your option) any later version.
 %
 % This program is distributed in the hope that it will be useful,
@@ -68,8 +65,7 @@
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %
 %%
 
