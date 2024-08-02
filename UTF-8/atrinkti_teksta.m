@@ -1,4 +1,22 @@
 function atrinktas_tekstas=atrinkti_teksta(teksto_eilutes,teksto_filtras)
+% atrinktas_tekstas=atrinkti_teksta(teksto_eilutes,teksto_filtras)
+%
+% Atrinkti tekstą (pvz., rinkmenų sąrašą) pagal reguliarios išraiškos filtrą(-us).
+% Jei norima vienu meu naudoti kelis filtrus, juos atskirkite kabliataškiu.
+%
+% Pvz.:
+% atrinkti_teksta({'labas.txt' 'gražus.cvs' 'rytas.edf'},'g*.*;l*.*')
+% ans = 
+%    'gražus.cvs'    'labas.txt'
+%
+% atrinkti_teksta({'labas.txt' 'gražus.cvs' 'rytas.edf'},'*as*')
+% ans = 
+%    'labas.txt'    'rytas.edf'
+%
+% (c) 2014, 2016 Mindaugas Baranauskas
+% (c) 2016 Vilniaus universitetas
+
+
 atrinktas_tekstas={};
 if ischar(teksto_eilutes);
    teksto_eilutes=cellstr(teksto_eilutes);
@@ -15,6 +33,7 @@ if ismember(';',teksto_filtras);
       atrinktas_tekstas=atrinktas_tekstas(sort(idx));
    end;
 else
+    teksto_filtras=strrep(teksto_filtras, '\', '\\' );
     teksto_filtras=strrep(teksto_filtras, '.', '\.' );
     teksto_filtras=strrep(teksto_filtras, '(', '\(' );
     teksto_filtras=strrep(teksto_filtras, ')', '\)' );
