@@ -231,11 +231,11 @@ Darbeliai_nuostatos.lokale={ '' ; '' ; '' ; } ;
 Darbeliai_nuostatos.tikrinti_versija=1;
 Darbeliai_nuostatos.diegti_auto=0;
 Darbeliai_konfig_vers='?';
-Darbeliai_nuostatos.stabili_versija=0;
+Darbeliai_nuostatos.stabili_versija=1;
 Darbeliai_nuostatos.savita_versija=0;
-Darbeliai_nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/master.zip';
-Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
-Darbeliai_nuostatos.meniu_ragu=1;
+Darbeliai_nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/stable.zip';
+Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
+Darbeliai_nuostatos.meniu_ragu=0;
 
 try
    load(fullfile(curdir,config_file));
@@ -450,9 +450,11 @@ uimenu( darbeliai_m, 'Label', lokaliz('Pervadinimas su info suvedimu'), ...
 uimenu( darbeliai_m, 'Label', lokaliz('Nuoseklus apdorojimas'), ...
         'Separator','off', 'userdata', on, 'Callback', ... 
         [param_prad 'pop_nuoseklus_apdorojimas' param_pab ] );
+if strcmp(char(java.util.Locale.getDefault()),'lt_LT');
 uimenu( darbeliai_m, 'Label', lokaliz('EEG + EKG'), ...
         'Separator','off', 'userdata', on, 'Callback', ... 
         [param_prad 'pop_QRS_i_EEG' param_pab ] );
+end;
 uimenu( darbeliai_m, 'Label', lokaliz('Epochavimas pg. stimulus ir atsakus'), ...
         'Separator','off', 'userdata', on, 'Callback', ...
         [param_prad 'pop_Epochavimas_ir_atrinkimas' param_pab ] );
