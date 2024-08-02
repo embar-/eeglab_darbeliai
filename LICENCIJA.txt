@@ -1,0 +1,258 @@
+GNU General Public License (Bendrosios Viešosios licencijos) versijos Nr. 3 lietuviškas vertimas
+
+This is an unofficial translation of the GNU General Public License into Lithuanian language. It was not published by the Free Software Foundation, and does not legally state the distribution terms for software that uses the GNU GPL—only the original English text of the GNU GPL does that. However, we hope that this translation will help Lithuanian language speakers understand the GNU GPL better.
+
+Tai yra neoficialus GNU General Public License vertimas į lietuvių kalbą. Free Software Foundation nėra jo skelbėja. Vertime nėra paskelbtos platinimo teisinės sąlygos kompiuterinėms programoms, kurioms taikoma GNU GPL. Tik angliškame GNU GPL tekste tokios sąlygos yra nustatytos. Tačiau tikimės, kad šis vertimas padės kalbantiems lietuvių kalba geriau suprasti GNU GPL.
+
+Į lietuvių k. išvertė advokatas Paulius Galubickas, 2021-07-22.
+
+GNU angliška GPLv3 pasiekiama <https://www.gnu.org/licenses/gpl-3.0.html>
+
+ 
+
+GNU GENERAL PUBLIC LICENSE
+
+Versija Nr. 3, 2007 m. birželio 29 d.
+
+Copyright © 2007 Free Software Foundation, Inc. <https://fsf.org/>
+
+Šios licencijos tekstą leidžiama kopijuoti ir platinti, tačiau jį keisti draudžiama.
+
+Preambulė
+
+GNU General Public License yra laisvę užtikrinanti, taip vadinama copyleft licencija, skirta kompiuterinėms programoms ir kitiems kūriniams.
+
+Daugelio kompiuterinių programų ir kitų praktinio pobūdžio kūrinių licencijomis siekiama apriboti jūsų laisvę dalintis ir keistis kūriniais. Tuo tarpu, GNU General Public License siekiama garantuoti laisvę dalintis ir keistis visomis programos versijomis bei užtikrinti, kad visiems jos naudotojams ji liks laisvąja kompiuterine programa. Mes, Free Software Foundation, naudojame GNU General Public License daugumai savo kompiuterinių programų. Ji taikoma ir kitiems kūriniams, kuriuos jų autoriai išleido naudodami šią licenciją. Jums taip pat leidžiama naudoti šią licenciją savo kompiuterinėms programoms.
+
+Kai kalbame apie laisvąsias kompiuterines programas, turime omeny ne jų kainą, o laisvę. Mūsų viešosiomis licencijomis siekiama užtikrinti jums laisvę platinti laisvųjų kompiuterinių programų kopijas (ir imti už jas mokestį, jei jūs to norėtumėte), taip pat užtikrinti, kad gautumėte išeities kodą ar galėtumėte jį gauti, jei to panorėtumėte, taip pat užtikrinti, kad galėtumėte keisti kompiuterinės programas ar panaudoti jų dalis naujose laisvosiose programose, bei kad žinotumėte, jog turite teisę visa tai daryti.
+
+Siekiant apsaugoti jūsų teises, mes turime užkirsti kelią kitiems asmenims neleisti jums šiomis teisėmis pasinaudoti ar reikalauti iš jūsų šių teisių atsisakyti. Todėl jūs įgyjate tam tikras prievoles, jei platinate kopijas kompiuterinės programos ar ją modifikuojate – tai yra jūs privalote gerbti kitų asmenų laisvę.
+
+Pavyzdžiui, jei jūs platinate tokios kompiuterinės programos kopijas, nesvarbu ar nemokamai, ar mokamai, jūs privalote jų gavėjams perduoti tas pačias teises ir laisves, kurias pats esate gavęs. Jūs privalote užtikrinti, kad jie taip pat gautų ar turėtų galimybę gauti išeities kodą. Be to, jūs privalote parodyti jiems šias sąlygas, kad jie žinotų savo teises.
+
+Programuotojai, naudojantys GNU General Public License (GPL) apsaugo savo teises dviem žingsniais: (1) patvirtina savo autorių teises į kompiuterinę programą ir (2) pasiūlo jums šią Licenciją, kuri leidžia ją kopijuoti, platinti ir/ar modifikuoti.
+
+Siekiant programuotojų ir autorių apsaugos, GPL aiškiai numato, kad laisvajai kompiuterinei programai nesuteikiama jokia garantija. Siekiant didesnio aiškumo programuotojams ir autoriams, GPL reikalauja, kad modifikuotos versijos būtų paženklintos kaip pakeistos, siekiant kad su jomis susijusios problemos nebūtų klaidingai priskiriamos ankstesnių versijų autoriams.
+
+Kai kuriuose įrenginiuose jų naudotojams neleidžiama instaliuoti ar paleisti veikti kompiuterinės programos modifikuotų versijų. Ir nors gamintojai taip gali padaryti, tačiau tai nesuderinama su tikslu užtikrinti naudotojų laisvę keisti kompiuterines programas. Toks sisteminis piktnaudžiavimas vyksta fiziniams asmenims skirtų produktų srityje, kur tai yra ypač nepriimtina. Todėl mūsų parengta GPL versija draudžia tokią praktiką tokiuose produktuose. Jei tokia praktika atsirastų ir kitose srityse, mes, siekiant apsaugoti naudotojų laisvę, esame pasirengę GPL ateities versijose šios nuostatos taikymą atitinkamai išplėsti ir tose srityse.
+
+Galiausiai, kiekvienai programai nuolatinę grėsmę kelia kompiuterinių programų patentai. Valstybės neturėtų leisti, kad patentai trukdytų vystyti ir naudotis kompiuterinėmis programomis bendro pobūdžio kompiuteriuose, o tuose kompiuteriuose, kuriuose taip daroma, mes norėtume neleisti, kad patentų taikymas laisvosioms programoms jas iš esmės padarytų uždaro pobūdžio (angl. proprietary). Siekiant užkirsti tam kelią, GPL draudžia patentų pagalba programas padaryti nelaisvomis.
+
+Išsamios kopijavimo, platinimo ir modifikavimo sąlygos pateikiamos žemiau.
+
+SĄLYGOS
+
+0. Apibrėžimai.
+
+„Ši licencija“ reiškia GNU General Public License versiją Nr. 3.
+
+„Autorių teisių įstatymai“ taip pat reiškia į autorių teises reglamentuojančius įstatymus panašius kitus įstatymus, kurie taikomi kitokio pobūdžio kūriniams, kaip pavyzdžiui, puslaidininkinių gaminių topografijoms.
+
+„Programa“ reiškia autorių teisių apsauga saugomą kūrinį, kuris licencijuojamas pagal šią licenciją. Kiekvienas licencijatas vadinamas „jūs“. Licenciatais ir licencijos gavėjais gali būti tiek fiziniai, tiek juridiniai asmenys.
+
+„Modifikuoti“ kūrinį reiškia kopijuoti iš kūrinio arba perdaryti jį ar jo dalį tokiu būdu, kuomet reikalingas autorių teisių turėtojo leidimas. Modifikavimas nereiškia identiškos kopijos padarymo.
+
+„Saugomas kūrinys“ reiškia nemodifikuotą programą arba iš tokios programos išvestinį kūrinį.
+
+„Dauginti“ kūrinį reiškia atlikti su juo bet kokius veiksmus, už kurių atlikimą be leidimo jūs taptumėte tiesiogiai arba susidairai atsakingu už taikomų autorių teisių įstatymų pažeidimą, išskyrus kūrinio paleidimą kompiuteryje ar asmeninės kopijos pasidarymą. Dauginimas apima kopijavimą, platinimą (modifikavus arba be modifikavimo), viešą paskelbimą, o kai kuriose šalyse taip pat ir kitus veiksmus.
+
+„Perduoti“ kūrinį reiškia bet kokį dauginimo veiksmą, kai kitiems sudaroma galimybė pasidaryti arba gauti kūrinio kopijas. Perdavimu nelaikoma, kai naudotojas interaktyviai komunikuoja su kūriniu per kompiuterinį tinklą, bet jam nebūna perduodama kūrinio kopija.
+
+Laikoma, kad interaktyvioje naudotojo sąsajoje yra paskelbtas „tinkamas teisinis pranešimas“, kai jame yra patogiai ir aiškiai matomai nurodoma (1) tinkamas pranešimas apie autorių teises ir (2) pranešama naudotojui, kad kūriniui netaikoma garantija (išskyrus, kai tokios garantijos yra suteikiamos atskirai), taip pat kad licencijatas gali perduoti kūrinį pagal šią licenciją ir nurodoma, kur naudotojas gali susipažinti su licencijos kopiją. Jei sąsajoje pateikiamas sąrašas komandų ar opcijų (meniu pagalba), tai šį kriterijų atitinka aiškūs sąrašo punktai.
+
+1. Išeities kodas.
+
+Kūrinio „išeities kodas“ yra kūrinio modifikavimui atlikti reikalinga jo išraiškos forma. „Objektinis kodas“ yra bet kokia kūrinio išraiškos forma, kuri nelaikoma išeities kodu.
+
+„Standartizuota sąsaja“ yra arba pripažintos standartizacijos institucijos paskelbtas oficialus standartas, arba tam tikrai programavimo kalbai skirtų sąsajų atveju tos kalbos programuotojų plačiai naudojama sąsaja.
+
+Paleidžiamo veikti kūrinio „sisteminės bibliotekos“ nelaikomos kūriniu kaip tokiu, bet apima visa tai, (a) kas paprastai yra įtraukiama į Pagrindinio komponento rinkinį, bet kas nelaikoma Pagrindinio komponento dalimi ir (b) kas reikalinga tik kūrinio naudojimui su tuo Pagrindiniu komponentu ar reikalinga įgyvendinti standartizuotą sąsają, kurios realizavimo išeities kodas yra viešai prieinamas. „Pagrindinis komponentas“ šiame kontekste gali reikšti specifinės operacinės sistemos esminį komponentą (branduolį, programų langų sistemą ir pan.), kuriomis pasinaudojant veikia kūrinys. Tai gali būti ir kompiliatorius, naudojamas kūrinio sukūrimui arba objektinio kodo interpretatorius, naudojamas kūrinio paleidimui.
+
+Su objektinio kodo formos kūriniu „susijęs kodas“ reiškia bet kokį išeities kodą, kuris reikalingas sugeneruoti, suinstaliuoti ir paleisti veikti paleistino kūrinio objektinį kodą bei modifikuoti kūrinį, įskaitant skriptus, skirtus kūrinio veikimo valdymui. Tačiau jis neapima kūrinio sisteminių bibliotekų ar bendros paskirties įrankių, ar viešai prieinamų laisvojo kodo programų, kurie yra nemodifikuoti ir tėra naudojami minėtiems veiksmams atlikti bei kurie nėra kūrinio dalimi. Pavyzdžiui, taip vadinamam susijusiam kodui priklauso sąsajų apibrėžties failai, susiję su kūrinio išeities kodu, taip pat išeities kodas bendrų bibliotekų bei dinamiškai susietų paprogramių, būtinų kūrinio veikimui dėl sudėtingo duomenų perdavimo ar dėl šių paprogramių ir kitų kūrinio dalių sąveikos.
+
+Nėra būtina, kad susijusiam kodui priklausytų tai, ką naudotojas gali susigeneruoti automatiškai iš kitų susijusio kodo dalių.
+
+Kūrinio susijusio kodo išeities kodas yra tas pats kūrinys.
+
+2. Pagrindiniai leidimai.
+
+Jei laikomasi licencijos sąlygų, tai visos pagal šią licenciją suteiktos teisės galioja visą programos autorių teisių galiojimo laikotarpį ir yra neatšaukiamos. Šia licencija užtikrinama Jums nevaržoma teisė paleisti veikti nemodifikuotą programą. Veikiančio saugomo kūrinio išvestis (angl. output) saugoma pagal šią licenciją tik tuo atveju, jei tokia išvestis, atsižvelgiant į jos turinį, yra laikytina saugomu kūriniu. Šia licencija pripažįstama Jūsų teisė į sąžiningą panaudojimą (angl. fair use) ar į kitas analogiškas išimtis, numatytas autorių teisių įstatymuose.
+
+Jūs turite teisę pasidaryti, paleisti veikti ir dauginti saugomus kūrinius, kurių jūs neperdavinėjate, be jokių apribojimų tiek, kiek jūsų licencija lieka galiojančia. Jūs galite saugomus kūrinius perduoti kitiems tik tuomet, kai jie modifikuoja kūrinį išimtinai jums arba kai jie suteikia jums įrangą, reikalingą šių kūrinių veikimui, su sąlyga, kad jūs laikotės šios licencijos sąlygų, susijusių su visos medžiagos, kurios turtinės autorių teisės jums nepriklauso, perdavimu. Tie, kurie jums padaro ir paleidžia veikti saugomus kūrinius privalo tai daryti išimtinai tik jums, veikdami jūsų vardu, pagal jūsų nurodymus ir būti jūsų kontroliuojami bei laikytis sąlygų, draudžiančių jiems daryti jūsų autorių teisių saugomos medžiagos kopijas ne su jumis susijusiuose santykiuose.
+
+Visais kitais atvejais perdavimas galimas tik laikantis žemiau nurodytų sąlygų. Sublicencijavimas neleidžiamas; pagal 10 straipsnį jis nereikalingas.
+
+3. Naudotojų teisių apsauga nuo įstatymų, draudžiančių apsauginių priemonių pašalinimą.
+
+Joks saugomas kūrinys negali būti laikomas efektyvių technologinių priemonių dalimi pagal bet kurią taikomą teisę, kuri įgyvendina įsipareigojimus pagal 1996 m. gruodžio 20 d. sudarytos PINO autorių teisių sutarties 11 straipsnį ar pagal kitus panašius teisės aktus, draudžiančius ar ribojančius tokių apsauginių priemonių apėjimą.
+
+Perduodami saugomą kūrini, jūs atsisakote teisės drausti kitiems apeiti technologines apsaugos priemones ta apimtimi, kuria jos apriboja pagal šią licenciją suteiktas teises, susijusias su saugomu kūriniu, bet to jūs atsisakote bet kokių ketinimų apriboti kūrinio veikimą ar modifikavimą, siekiant kūrinio naudotojams, remiantis savo ar trečiųjų šalių teisėmis, uždrausti technologinių apsauginių priemonių apėjimą (angl. circumvention).
+
+4. Nepakeistų kopijų perdavimas.
+
+Jūs turite teisę bet kokioje laikmenoje perduoti nepakeistas programos išeities kodo kopijas, kurias jūs pats esate gavęs, su sąlyga, kad ant kiekvienos kopijos aiškiai ir tinkamai paskelbsite pranešimą apie autorių teises; nepakeisite pranešimų apie tai, kad kodui taikoma ši licencija ir pagal jos 7 straipsnį papildomai įtrauktų apribojimų sąlygos; nepakeisite pranešimų apie garantijos nesuteikimą; ir visiems gavėjams kartu su programa pateiksite šios licencijos kopiją.
+
+Už kiekvieną perduodamą kopiją jūs galite imti mokestį arba jo neimti. Jūs taip pat galite pasiūlyti už užmokestį suteikti palaikymo ar garantinio aptarnavimo paslaugas.
+
+5. Modifikuoto išeities kodo versijų perdavimas.
+
+Jūs galite perduoti iš programos sukurtą išvestinį kūrinį arba jo sukūrimui iš programos reikalingas modifikacijas, perduodant tai išeities kodo formoje pagal 4 skyriaus sąlygas, jei laikysitės visų šių sąlygų:
+
+    a) Kūrinyje turi būti nurodytas aiškus pranešimas, kad jis buvo modifikuotas jūsų ir nurodyta atitinkama data.
+    b) Kūrinyje turi būti nurodytas aiškus pranešimas, kad jis yra išleistas pagal šią licenciją ir pagal jos 7 straipsnį įtrauktas papildomas sąlygas. Šiuo reikalavimu pakeičiamas 4 skyriaus draudimas keisti pranešimus.
+    c) Jūs privalote visiems, kurie gaus jo kopiją, visą kūrinį kaip visumą licencijuoti pagal šią licenciją. Ši licencija, įskaitant jos 7 straipsnyje nustatytos papildomos sąlygos, bus taikomas visam kūriniui ir visoms jo dalims, nepaisant jų sukomplektavimo būdo. Ši licencija nesuteikia teisės kūrinio licencijuoti kokiu nors kitokiu būdu, tačiau ji nepadaro negaliojančio tokio leidimo, jei esate jį gavęs atskirai.
+    d) Jei kūrinys turi interaktyvią vartotojo sąsają, joje turi būti parodyta Atitinkamas teisinis pranešimas. Tačiau, jei programa turi interaktyvią vartotojo sąsają, kurioje neparodomas Atitinkamas teisinis pranešimas, jūsų kūriniui to irgi nereikia padaryti.
+
+Saugomo kūrinio sukompiliavimas (angl. compilation) materialiose ar kitose platinimo laikmenose kartu su kitais atskirais ir savarankiškais kūriniais, kurie savo esme nėra saugomo kūrinio plėtiniai ir kurie nėra sujungti su saugomu kūriniu siekiant, kad būtų suformuota didesnė programa, bus vadinama „rinkiniu“ (angl. aggregate), su sąlyga, kad sujungimas ir to pasėkoje atsiradusios jam taikomos autorių teisės nebus naudojamos, siekiant apriboti sujungimo naudotojų prieigą ar teises daugiau, nei kad tai leidžia atskiri kūriniai. Saugomo kūrinio įtraukimas į rinkinį nesąlygoja šios licencijos taikymo kitoms rinkinio dalims.
+
+6. Perdavimas ne išeities kodo formose.
+
+Jūs galite perduoti saugomą kūrinį objektinio kodo formoje pagal 4-5 straipsnius, su sąlyga, kad perduosite mašininiu būdu skaitomą susijusį kodą pagal šios licencijos sąlygas vienu iš šių būdu:
+
+    a) Perduosite objektinį kodą materialiame produkte, arba į jį įdiegtame, įskaitant materialias platinimo laikmenas, kartu su susijusiu kodu, įrašytu į patvarią materialią laikmeną, įprastai naudojamą keičiantis kompiuterinėmis programomis.
+    b) Perduosite objektinį kodą materialiame produkte, arba į jį įdiegtame, įskaitant materialias platinimo laikmenas, kartu su rašytiniu pasiūlymu, galiojančiu mažiausiai tris metus ir tol, kol siūlysite atsargines dalis ar techninį palaikymą tam produkto modeliui, suteiksite tiems, kurie turi objektinį kodą, (1) kompiuterinės programos, kuri yra produkte ir kuriai taikoma ši licencija, susijusio kodo kopiją, kuri būtų įrašyta į patvarią materialią laikmeną, įprastai naudojamą keičiantis kompiuterinėmis programomis, už tokią kainą, kuri nėra didesnė nei protingos išlaidos fiziškai perduodant išeities kodą; arba (2) nemokamą prieigą prie susijusio kodo kopijos, esančios kompiuteriniame tinko serveryje.
+    c) Perduosite objektinio kodo konkrečias kopijas kartu su kopija rašytinio pasiūlymo suteikti susijusį kodą. Šis alternatyvus būdas leidžiamas tik atskirais atvejais ir nekomerciniais tikslais, kai patys esate gavęs objektinį kodą su tokiu pasiūlymu pagal 6 straipsnio b punktą.
+    d) Perduosite objektinį kodą pasiūlydami nemokamą arba mokamą prieigą prie jo iš konkrečios vietos ir be papildomo mokesčio, kartu pasiūlydami tokią pat prieigą prie susijusio kodo iš tos pačios vietos. Neprivaloma reikalauti, kad gavėjai nusikopijuotų susijusį kodą kartu su objektiniu kodu. Jei vieta, iš kurios kopijuojama, yra kompiuterinis tinklo serveris, susijęs kodas gali būti patalpintas kitame jūsų paties ar trečiosios šalies valdomame serveryje, kuriame užtikrinta kopijavimo galimybė, su sąlyga, kad šalia objektinio kodo pateikiate aiškią informaciją, kur galima rasti susijusį kodą. Nepaisant kokiame serveryje yra susijęs kodas, privalote užtikrinti, kad jis būtų prieinamas per visą laikotarpį, siekiant išpildyti šiuos reikalavimus.
+    e) Perduosite objektinį kodą, naudojant tiesioginio keitimosi būdą (angl. peer-to-peer), su sąlyga kad informuosite kitus dalyvius apie tai, iš kur visuomenei yra nemokamai siūlomas objektinis kodas ir susijęs kodas pagal 6 straipsnio d punktą.
+
+Objektinio kodo dalies, kurią galima atskirti, išeities kodas kaip sisteminė biblioteka nepriklauso susijusiam kodui ir jos nereikia įtraukti perduodant kūrinio objektinį kodą.
+
+„Naudotojo produktu“ laikomas (1) „vartotojo produktas“, reiškiantis materialų asmeninį turtą, paprastai naudojamą asmeniniais, šeimos ar namų ūkio tikslais; arba (2) bet kas, kas yra suprojektuotas ar parduotas tam, kad būtų įmontuotas į būstą. Sprendžiant, ar produktas laikytinas vartotojo produktu, abejotinais atvejais laikoma, kad tai yra vartotojo produktas. Konkretaus produkto, kurį gavo konkretus naudotojas, atveju „paprastai naudojamas“ reiškia tokios produkto rūšies įprastą ar dažniausią naudojimą, nepaisant to, koks yra konkretaus naudotojo statusas ar kokiu būdu konkretus naudotojas jį iš tiesų naudoja, planuoja naudoti ar kokiu būdu jis gali būti panaudotas. Vartotojo produktu laikomas produktas, nepriklausomai nuo to, ar toks produktas gali būti naudojamais komerciniais, pramoniniais ar nevartotojiškais tikslais, išskyrus kai toks panaudojimas tėra vienintelis tokio produkto panaudojimo būdas.
+
+Naudotojo produkto „instaliavimo informacija“ reiškia bet kokius metodus, procedūras, autorizavimo raktus ar kitą informaciją, reikalingą saugomo kūrinio susijusio kodo modifikuotos versijos suinstaliavimui ir paleidimui naudotojo produkte. Tokios informacijos turi pakakti, kad būtų užtikrintas nepertraukiamas objektinio kodo funkcionavimas ir jokiais atvejais vien tik dėl modifikavimo negali būti tam užkirstas kelias ar tam sutrukdyta.
+
+Jei pagal šį straipsnį perduodate kūrinio objektinį kodą, kuris yra naudotojo produkte, ar kuris yra kartu su juo, ar kuris yra specialiai skirtas jo naudojimui, ir kai toks perdavimas yra dalimi sandorio, kurio metu gavėjui visam laikui ar konkrečiam terminui perleidžiama valdymo ir naudojimo teisė į naudotojo produktą, nepaisant to kaip toks sandoris pavadinamas, tokiu atveju su pagal šį straipsnį perduodamu susijusiu kodu privalo būti perduodama instaliavimo informacija. Tačiau šis reikalavimas netaikomas, jei nei jūs pats, nei trečioji šalis neturite galimybės suinstaliuoti modifikuoto objektinio kodo naudotojo produkte (pavyzdžiui, kai kūrinys būna suinstaliuotas tik skaitymui skirtoje atmintyje (angl. ROM)).
+
+Reikalavimas pateikti instaliavimo informaciją neapima reikalavimo tęsti palaikymo paslaugų teikimą, suteikti garantiją ar atnaujinimus tiek kūriniui, kuris buvo gavėjo modifikuotas ar suinstaliuotas, tiek naudotojo produktui, kuriame jis buvo modifikuotas ar suinstaliuotas. Prieiga prie tinklo gali būti nesuteikta, jei dėl modifikavimo reikšmingai ir neigiamai sutrikdomas tinklo veikimas ar pažeidžiamos taisyklės ir informacijos perdavimo tinkle protokolai.
+
+Pagal šį straipsnį perduodamas susijęs kodas ir instaliavimo informacija privalo būti tokiame formate, kuris yra viešai aprašytas (taip pat kurio realizacija išeities kodo formoje yra viešai prieinama) ir jo išpakavimui, skaitymui ar kopijavimui turi nereikėti jokio specialaus slaptažodžio ar rakto.
+
+7. Papildomos sąlygos.
+
+„Papildomi leidimai“ reiškia šios licencijos papildomas sąlygas, kurių pagalba padaromos išimtys iš vienos arba daugiau šios licencijos sąlygų. Visai programai taikomi tokie papildomi leidimai laikytini šios licencijos sudėtine dalimi tiek, kiek jie yra galiojantys pagal taikytiną teisę. Jei papildomi leidimai taikomi tik programos daliai, tai ta dalis gali būti naudojama atskirai pagal tuos papildomus leidimus, tačiau visai programai bus taikoma ši licencija, neatsižvelgiant ir netaikant papildomų leidimų.
+
+Perduodami saugomo kūrinio kopiją, jūs turite teisę pašalinti bet kuriuos papildomus leidimus iš šios kopijos ar iš jos bet kurios dalies. (Papildomi leidimai gali būti parašyti taip, kad toks jų pačių pašalinimas yra privalomas tam tikrais atvejais, modifikuojant kūrinį). Jūs galite suteikti papildomų leidimų, taikomų medžiagai, kurią įdedate į saugomą kūrinį, jei turite ar galite suteikti jai atitinkamus autorių teisių leidimus.
+
+Neatsižvelgiant į kitas šios licencijos sąlygas, medžiagos, kurią įdedate į saugomą kūrinį, šios licencijos sąlygas galite, jei turite šios medžiagos turtinių autorių teisių turėtojų leidimą, papildyti tokiomis sąlygomis:
+
+    a) kitaip reglamentuoti garantijos netaikymą ar atsakomybės ribojimą, nei kad yra numatyta šios licencijos 15 ir 16 straipsniuose, ar
+    b) reikalauti išsaugoti specifinį pagrįstą teisinį pranešimą ar autorių indėlį toje medžiagoje arba tinkamame teisiniame pranešime, kuris parodomas jį turinčiuose kūriniuose, ar
+    c) drausti tokios medžiagos originalo iškraipymą arba reikalauti, kad tokios medžiagos modifikuotos versijos būtų paženklintos atitinkamu būdu, kaip besiskiriančios nuo originalios versijos, ar
+    d) riboti medžiagos licenciarų ar autorių pavadinimų ar vardų ir pavardžių naudojimą viešinimo tikslais, ar
+    e) nesuteikti teisės pagal prekių ženklų įstatymus naudoti tam tikrus prekių ženklus ar kitus ženklus, ar
+    f) reikalauti, kad bet kas, kuris perduoda medžiagą ar jos modifikuotą versiją gavėjui su sutartiniais įsipareigojimais, susijusiais su atsakomybe, apsaugotų medžiagos licenciarus ir autorius nuo bet kokios atsakomybės, kuri jiems tiesiogiai galėtų kilti dėl tokių sutartinių įsipareigojimų.
+
+Visos kitos draudžiamojo pobūdžio papildomos sąlygos laikytinos „papildomais ribojimais“ 10 straipsnio prasme. Jei programa, kurią gavote, ar bet kuri jos dalis turi pranešimą, kuriame nurodoma, kad jai taikoma ši licencija kartu su sąlyga, kuri laikytina papildomu ribojimu, tai jūs galite tokią sąlygą pašalinti. Jei licencijavimo dokumente nurodomas papildomas ribojimas, tačiau leidžiamas tolimesnis licencijavimas ar perdavimas pagal šią licenciją, tai jūs galite į saugomą kūrinį įdėti medžiagą, saugomą pagal licencijavimo dokumento sąlygas, jei papildomi ribojimai nebus taikomi tolimesniame licencijavime ir perdavime.
+
+Jei saugomam kūriniui pagal šį straipsnį pridėsite sąlygas, tai privalote atitinkamuose išeities kodo failuose pateikti pranešimą apie papildomas sąlygas, kurios taikomos šiems failams arba informaciją, kur galima būtų rasti taikomas sąlygas.
+
+Tiek leidžiamojo, tiek draudžiamojo pobūdžio papildomos sąlygos gali būti pateikiamos atskiros rašytinės licencijos formoje arba pateikiamos kaip išimtys. Abiem atvejais taikomi aukščiau minėti reikalavimai.
+
+8. Nutraukimas.
+
+Jūs negalite saugomo kūrinio dauginti ar modifikuoti kitaip, nei kad nurodyta šioje licencijoje. Bet koks  bandymas kitaip dauginti ar modifikuoti yra neteisėtas ir reiškia automatinį jūsų teisių pagal šią licenciją, įskaitant bet kokias pagal 11 straipsnio 3 dalį suteiktas patentų licencijas, pasibaigimą.
+
+Tuo atveju, jei nutrauksite visus šios licencijos pažeidimus, laikytina, kad jūsų turėtos licencijos galiojimas atitinkamo turtinių autorių teisių turėtojo yra atstatytas (a) laikinai, nebent turtinių autorių teisių turėtojas aiškiai pareikš apie galutinį jūsų licencijos nutraukimą, ir (b) neterminuotam laikotarpiui, jei turtinių autorių teisių turėtojas kokiu nors tinkamu būdu nepraneš jums apie pažeidimą per 60 dienų po pažeidimo nutraukimo.
+
+Be to, jūsų licencija bus laikoma atstatyta neterminuotam laikotarpiui, kai atitinkamas turtinių autorių teisių turėtojas kokiu nors tinkamu būdu praneša jums apie pažeidimą ir tai yra pirmas kartas, jei jūs gaunate pranešimą apie šios licencijos, taikomos bet kuriam kūriniui, pažeidimą iš turtinių autorių teisių turėtojo, ir jei jūs pašalinate pažeidimą per 30 dienų nuo pranešimo gavimo.
+
+Jūsų teisių nutraukimas pagal šį straipsnį nereiškia, kad tuo pačiu yra nutraukiamos licencijos tų šalių, kurios iš jūsų gavo kopijas ar teises pagal šią licenciją. Jei jūsų teisės buvo nutrauktos ir jų galiojimas nebuvo atstatytas, jūs neturite teisės gauti naujos licencijos tai pačiai medžiagai pagal 10 straipsnį.
+
+9. Kopijų turėjimui sutikimas nėra būtinas.
+
+Jums nereikia sutikti su šia licencija tam, kad galėtumėte gauti programos kopiją ar galėtumėte ją pasileisti veikti. Saugomo kūrinio pagalbiniam dauginimui, kuris įvyksta tik dėl tiesioginio keitimosi (angl. peer-to-peer), siekiant gauti kopiją, taip pat nereikia tokio sutikimo. Tačiau niekas kitas, o tik ši Licencija suteikia jums leidimą dauginti ar modifikuoti bet kurį saugomą kūrinį. Kitaip tokie veiksmai pažeistų autorių teises, jei jūs nesutiktumėte su šia licencija. Todėl modifikuodamas ar daugindamas saugomą kūrinį, jūs išreiškiate savo sutikimą su šios licencijos sąlygomis.
+
+10. Automatinis licencijos suteikimas paskesniems gavėjams.
+
+Kiekvieną kartą, kai perduodate saugomą kūrinį, jo gavėjas iš pradinio licenciaro automatiškai gauna licenciją paleisti veikti, modifikuoti ir dauginti šį kūrinį pagal šią licenciją. Jūs neprisiimate atsakomybės už trečiųjų asmenų atitikties licencijos sąlygoms užtikrinimą.
+
+„Organizacijos sandoris“ reiškia sandorį, kurio metu perduodama organizacijos kontrolė ar reikšminga jos turto dalis, arba vykdoma organizacijos reorganizacija, ar organizacijų susijungimas. Jei organizacijos sandoris sąlygoja saugomo kūrinio dauginimą, tai kiekviena sandoryje dalyvaujanti šalis gaudama kūrinio kopiją taip pat įgyja tokią pačią licenciją, kokią į kūrinį turėjo ankstesnioji suinteresuota šalis ar kokią ji galėjo suteikti pagal šio straipsnio aukščiau esančią dalį, taip pat ji įgyja teisę gauti iš ankstesnės suinteresuotos šalies su kūriniu susijusį išeities kodą, jei ši jį turi ar gali protingų pastangų dėka jį gauti.
+
+Jūs negalite nustatyti papildomų apribojimų šios Licencijos suteiktų ir patvirtintų teisių naudojimuisi. Pavyzdžiui, jūs negalite nustatyti licencijos kainos, autorinio atlyginimo ar kitokio mokesčio už naudojimąsi pagal šią Licenciją suteiktomis teisėmis, taip pat jūs negalite inicijuoti bylinėjimosi, įskaitant priešieškinio padavimą, kurio reikalavimai būtų susiję su patento pažeidimu dėl programos ar bet kurios jos dalies padarymo, naudojimo, pardavimo ar siūlymo parduoti.
+
+11. Patentai.
+
+„Bendraautorius“ yra autorių teisių turėtojas, suteikiantis leidimą pagal šią licenciją naudoti programą ar kūrinį, kurio pagrindu programa buvo sukurta. Tokiu būdu licencijuojamas kūrinys vadinamas „bendraautoriaus versija“, sukurta bendraautoriaus.
+
+Bendraautoriaus „esminiai patento apibrėžties punktai“ reiškia bendraautoriaus turimus ar kontroliuojamus visus patento apibrėžties punktus, ar jie būtų jau įsigyti, ar vėliau įgyti, ir kuriuos, darydamas, naudodamas ar parduodamas bendraautoriaus versiją, kas nors pažeistų kokiu nors pagal šią Licenciją leidžiamu būdu. Tačiau jie neapima apibrėžties punktų, kurie būtų pažeisti tik toliau modifikuojant bendraautoriaus versiją. Šio apibrėžimo tikslu sąvoka „kontrolė“ apima teisę, nepažeidžiant šios licencijos reikalavimų, suteikti patento sublicencijas.
+
+Kiekvienas bendraautorius suteikia jums neišimtinę, visame pasaulyje galiojančią, nemokamą esminius patento apibrėžties punktus apimančią licenciją daryti, naudoti, parduoti, siūlyti parduoti, importuoti ir paleisti veikti, modifikuoti ar dauginti savo bendraautoriaus versijos turinį.
+
+Tolimesnėse trijose šio straipsnio dalyse „patento licencija“ reiškia bet kokį išreikštą susitarimą ar įsipareigojimą netaikyti patento, pavyzdžiui, pareikštas leidimas naudoti patentą ar pareiškimas nesikreipti į teismą dėl patento pažeidimo. „Suteikti“ tokią patento licenciją šaliai reiškia tokio susitarimo sudarymą ar įsipareigojimą nenaudoti patento prieš šalį.
+
+Jei jūs perduodate saugomą kūrinį, sąmoningai remdamasis patento licencija, ir jei kūrinio susijusio išeities kodo nėra galimybės nemokamai nusikopijuoti pagal šią licenciją iš viešai pasiekiamo tinklo serverio ar kitais prieinamais būdais, tuomet jūs privalote arba (1) padaryti susijusį išeities kodą viešai prieinamu, arba (2) imtis priemonių, siekiant atsisakyti iš kūrinio patento licencijos gaunamos naudos, arba (3) imtis priemonių, suderinamų su šios Licencijos reikalavimais, išplečiant patento licencijos galiojimą paskesniems gavėjams. „Sąmoningai remdamasis“ reiškia, kad jūs suprantate, kad be patento licencijos jūsų perdavimas saugomo kūrinio šalyje ar gavėjo naudojimas saugomo kūrinio šalyje, pažeis toje šalyje žinomus vieną ar daugiau patentų, kurie atrodo jums kaip galiojantys.
+
+Jei dėl atskiro sandorio ar susitarimo, ar su tuo susijusių priežasčių, jūs perduodate arba perdavimo pagalba dauginate saugomą kūrinį ir suteikiate patento licenciją kai kurioms šalims, gaunančioms saugomą kūrinį, tuomet patento licencija automatiškai išplečiama visiems saugomo kūrinio ir juo besiremiančių kūrinių gavėjams.
+
+Patento licencija yra „diskriminacinė“, jei jos apsauga netaikoma vienai ar daugiau teisių, specialiai suteiktų pagal šią licenciją, draudžia jomis naudotis ar padaro jos galiojimą priklausomą nuo nesinaudojimo minėtomis teisėmis. Jūs negalite perduoti saugomo kūrinio, jei esate šalimi susitarimo su kompiuterinių programų platinimu besiverčiančia trečiąja šalimi ir pagal kurį jūs atliekate trečiajai šaliai mokėjimus, priklausančius nuo jūsų aktyvumo perduodant kūrinį ir pagal kurį trečioji šalis suteikia bet kuriai šaliai, gaunančiai iš jūsų saugomą kūrinį, diskriminacinę licenciją, (a) susijusią su jūsų perduodamomis saugomo kūrinio kopijomis (ar kopijomis padarytomis iš šių kopijų), ar (b) skirtą pagrinde specialiems ar susijusiems produktams arba kompiliacijoms, kuriuose yra saugomas kūrinys, išskyrus kai jūs sudarėte tokį susitarimą arba tokia patento licencija buvo suteikta iki 2007 m. kovo 28 d.
+
+Niekas, kas yra numatyta šioje Licencijoje, negali būti aiškinama taip, kad yra panaikinama ar ribojama bet kuri numanoma licencija ar kita gynybos nuo pažeidimų priemonė, jei jomis jūs galėtumėte pasinaudoti pagal taikytinus patentų įstatymus.
+
+12. Nėra kitų laisvių atsisakymo.
+
+Jei teismo nutartis, susitarimas ar kitkas nustato jums sąlygas, kurios prieštarauja šios licencijos sąlygoms, tai nesuteikia jums teisės nesilaikyti šios licencijos sąlygų. Tuo atveju, jei jūs negalite perduoti saugomo kūrinio taip, kad tuo pačiu metu nepažeistumėte savo įsipareigojimų pagal šią licenciją ir bet kurių kitų susijusių įsipareigojimų, tai jūs negalite perduoti saugomo kūrinio apskritai. Pavyzdžiui, jei jūs sutinkate su sąlygomis, pagal kurias privalote rinkti autorinį atlyginimą už perdavimą iš tų, kuriems perduodate programą, tai vienintelis būdas nepažeisti tiek tokių sąlygų, tiek šios licencijos yra apskirtai neužsiimti programos perdavimu.
+
+13. Naudojimas kartu su GNU Affero General Public License.
+
+Nepaisant kitų šios licencijos nuostatų, jums leidžiama į vieną jungtinį kūrinį sujungti arba kartu sudėti bet kurį saugomą kūrinį su kūriniu, licencijuojamu pagal GNU Affero General Public License versiją Nr. 3 ir perduoti iš to gautą kūrinį. Šios licencijos sąlygos bus toliau taikomos tai daliai, kuri laikytina saugomu kūriniu, tačiau specialios GNU Affero General Public License 13 straipsnyje nustatytos sąlygos, susijusios su sąveika per tinklą, bus taikomos jungtiniam kūriniui kaip tokiam.
+
+14. Šios Licencijos versijos peržiūra.
+
+Free Software Foundation kartas nuo karto gali paskelbti pakeistą ar naują GNU General Public License versiją. Tokios naujos versijos savo dvasia bus panašios į esamą versiją, tačiau jose, siekiant atsižvelgti į naujas problemas ar susirūpinimus, gali skirtis kai kurios detalės.
+
+Kiekviena versija turi savo atskirą numerį. Jei programoje nurodoma, kad jai taikoma konkreti GNU General Public License tam tikra numeruota versija „arba bet kuri vėlesnė versija“, tai jūs turite teisę pasirinkti arba laikytis konkrečios numeruotos licencijos, arba bet kurios vėlesnės versijos, kurią paskelbs Free Software Foundation. Jei programoje nėra nurodytas GNU General Public License versijos numeris, jūs galite pasirinkti bet kurią versiją, kurią kada nors paskelbė Free Software Foundation.
+
+Jei programoje nurodoma, kad įgaliotas asmuo turi teisę nuspręsti, kurią būsimą General Public License versiją bus galima naudoti, tai įgaliotinio viešas pranešimas apie konkrečios versijos nustatymą reikš, kad jums suteikiama nuolatinė teisė naudoti tą versiją programai.
+
+Vėlesnė versija gali suteikti jums papildomų arba skirtingų leidimų, tačiau papildomų įsipareigojimų bet kuriems autoriams ar autorių teisių turėtojams dėl to, kad jūs pasirinkote vadovautis vėlesne versija, nebus galima nustatyti.
+
+15. Garantijos netaikymas.
+
+TIEK, KIEK TAI LEIDŽIAMA PAGAL TAIKYTINĄ TEISĘ, PROGRAMAI NĖRA TAIKOMA JOKIA GARANTIJA. JEI KITAIP NENURODOMA RAŠTU, AUTORIŲ TEISIŲ TURĖTOJAI IR/AR KITOS ŠALYS SUTEIKIA PROGRAMĄ TOKIĄ „KOKIA JI YRA“ BE JOKIOS IŠREIKŠTINĖS AR NUMANOMOS GARANTIJOS, ĮSKAITANT, BET TUO NEAPSIRIBOJANT, NUMANOMOS GARANTIJOS DĖL TINKAMUMO PREKYBAI AR TINKAMUMO TAM TIKRAM TIKSLUI. VISA RIZIKA, SUSIJUSI SU PROGRAMOS KOKYBE AR JOS VEIKIMU, TENKA JUMS. JEI PAAIŠKĖTŲ, KAD PROGRAMA TURI DEFEKTŲ, JŪS PRISIIMATE IŠLAIDAS, SUSIJUSIAS SU VISOMIS REIKALINGOMIS PASLAUGOMIS, REMONTU AR TAISYMU.
+
+16. Atsakomybės ribojimas.
+
+JOKIU ATVEJU, IŠSKYRUS KAI TAI DRAUDŽIAMA PAGAL TAIKYTINĄ TEISĘ AR JEI DĖL TO SUSITARIAMA RAŠTU, JOKS AUTORIŲ TEISIŲ TURĖTOJAS AR BET KURIS KITAS ASMUO, KURIS MODIFIKUOJA IR/AR PERDUODA PROGRAMĄ AUKŠČIAU NURODYTOMIS SĄLYGOMIS, NEATSAKO UŽ NUOSTOLIUS, ĮSKAITANT BENDRUOSIUS, SPECIALIUOSIUS, ATSITIKTINIUS AR NETIESIOGINIUS NUOSTOLIUS, KYLANČIUS DĖL PROGRAMOS NAUDOJIMO AR NEGALĖJIMO JA NAUDOTIS, ĮSKAITANT, BET TUO NEAPSIRIBOJANT, DUOMENŲ PRARADIMĄ, AR NETEISINGŲ DUOMENŲ PATEIKIMĄ, AR TIEK JŪSŲ, TIEK TREČIŲJŲ ŠALIŲ PATIRTUS NUOSTOLIUS, AR PROGRAMOS NEGALĖJIMĄ VEIKTI SU KITOMIS PROGRAMOMIS. TAI GALIOJA NET IR TUO ATVEJU, KAI PROGRAMOS TURĖTOJAS AR KITA ŠALIS BUVO INFORMUOTI APIE TOKIŲ NUOSTOLIŲ ATSIRADIMO GALIMYBĘ.
+
+17. 15-16 straipsnių aiškinimas.
+
+Jei minėtas garantijos netaikymas ar atsakomybės ribojimas savo turiniu negali būti teisiškai pritaikytas konkrečioje teritorijoje, tai peržiūrintys teismai privalo taikyti vietinę teisę, kuri būtų artimiausia absoliučiam bet kokios civilinės atsakomybės, susijusios su Programa, netaikymui, išskyrus kai už mokestį kartu su programos kopija suteikiama garantija ar prisiimama atsakomybė.
+
+SĄLYGŲ PABAIGA
+
+ 
+
+Kaip pritaikyti šias sąlygas jūsų naujai programai.
+
+Jei sukuriate naują programą ir norite, kad ji maksimaliai būtų naudinga visuomenei, geriausias būdas tai pasiekti yra padaryti ją laisvąją kompiuterine programa, kurią visi galėtų toliau platinti ir keisti pagal šias sąlygas.
+
+Siekiant tai padaryti, įdėkite žemiau esantį pranešimą į programą. Saugiausia jį įdėti į kiekvieno išeities kodo failo pradžią, kad būtų efektyviausiai pranešta apie garantijos netaikymą. Be to, kiekviename faile reikėtų bent eilutės su autorių teisių apsaugos ženklu „copyright“ ir nuoroda, kur galima rasti visą pranešimo tekstą.
+
+    <viena eilutė, kurioje būtų nurodyta programos pavadinimas ir trumpai nurodoma jos paskirtis>
+    Copyright (C) <metai> <autoriaus vardas, pavardė>
+
+    Ši programa yra laisvoji kompiuterinė programa: jūs galite ją toliau platinti
+    ir/ar modifikuoti pagal GNU General Public License versiją Nr. 3 arba pagal
+    jūsų pasirinktą vėlesnę jos versiją, paskelbtą Free Software Foundation.
+
+    Ši programa yra platinama tikintis, kad ji bus naudinga, bet jai NESUTEIKIAMA
+    JOKIA GARANTIJA, taip pat nesuteikiama jokia numanoma garantija dėl TINKAMUMO
+    PARDUOTI ar PANAUDOTI TAM TIKRAM TIKSLU. Daugiau informacijos galite rasti
+    pačioje GNU General Public License.
+
+    Kartu su programa jums turėjo būti pateikta GNU General Public License kopija.
+    Jei jos negavote, tai žr. <https://www.gnu.org/licenses/>.
+
+Taip pat nurodykite kaip su jumis galima būtų susisiekti per el. paštą ar tradiciniu paštu.
+
+Jei programa veikia per terminalo sąsają, padarykite, kad paleidžiant ją joje būtų pateiktas trumpas pranešimas interaktyviu būdu:
+
+    <programa>  Copyright (C) <metai>  <autoriaus vardas, pavardė>
+    Šiai programai NETAIKOMA JOKIA GARANTIJA; paspauskite `show w' dėl daugiau informacijos.
+    Tai yra laisvoji kompiuterinė programa, prašome ją toliau platinti; paspauskite `show c' dėl daugiau informacijos.
+
+Tariamos `show w’ ir `show c’ komandos turėtų parodyti atitinkamas General Public License dalis. Žinoma, jūsų programoje tos komandos gali būti kitokios; GUI sąsajose galima naudoti vadinamąjį „about box“.
+
+Jums taip pat reikėtų gauti iš savo darbdavio, jei dirbate programuotoju, ar iš savo mokymosi įstaigos pareiškimą apie turtinių autorių teisių atsisakymą (angl. copyright disclaimer), jei tai yra būtina. Daugiau apie tai, taip pat apie tai kaip taikyti ir kaip laikytis GNU GPL sąlygų, žr. <https://www.gnu.org/licenses/>.
+
+GNU General Public License neleidžia jūsų programos įdėti į uždaro pobūdžio (angl. proprietary) programas. Jei jūsų programa yra pagalbinė biblioteka, gali būti, kad naudingiau būtų leisti ją sujungti su uždaro pobūdžio (angl. proprietary) programomis. Jei tai yra tai, ko jūs norite, tuomet vietoje šios licencijos naudokite GNU Lesser General Public License, bet pirmiausia perskaitykite <https://www.gnu.org/licenses/why-not-lgpl.html>.
