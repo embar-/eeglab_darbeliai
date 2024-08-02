@@ -1069,7 +1069,10 @@ if ~isempty(handles.EKG) && get(handles.checkbox_ekg,'Value') && length(handles.
 % EKG
     EKG_i_nuo=find(handles.EKG_laikai < langelio_ribos_x(1), 1, 'last');  if isempty(EKG_i_nuo); EKG_i_nuo=1; end;
     EKG_i_iki=find(handles.EKG_laikai > langelio_ribos_x(2), 1, 'first'); if isempty(EKG_i_iki); EKG_i_iki=length(handles.EKG_laikai); end;
-    set(handles.EKG_lin,'XData',handles.EKG_laikai(EKG_i_nuo:EKG_i_iki),'YData',handles.EKG_(EKG_i_nuo:EKG_i_iki));
+    EKG_atkarpa=handles.EKG_(EKG_i_nuo:EKG_i_iki);
+    EKG_atkarpa=mat2gray_octave(EKG_atkarpa) .* 150;
+    EKG_atkarpa=EKG_atkarpa + 450 - quantile(EKG_atkarpa,0.1);
+    set(handles.EKG_lin,'XData',handles.EKG_laikai(EKG_i_nuo:EKG_i_iki),'YData',EKG_atkarpa);
 % EKG taškai
 %     Laikai=getappdata(handles.axes_rri,'Laikai');
 %     EKG_tsk_nuo=find(Laikai < langelio_ribos_x(1), 1, 'last');  if isempty(EKG_tsk_nuo); EKG_tsk_nuo=1; end;
