@@ -332,7 +332,7 @@ anotacijos_OffCallback(hObject, eventdata, handles);
 set(handles.pushbutton_OK, 'String', lokaliz('OK'));
 set(handles.pushbutton_atnaujinti, 'String', lokaliz('Atnaujinti'));
 set(handles.pushbutton_atstatyti, 'String', lokaliz('Reset'));
-set(handles.checkbox_ekg,'String',lokaliz('Show EKG'));
+set(handles.checkbox_ekg,'String',lokaliz('Rodyti EKG'));
 set(handles.text4,'String',lokaliz('InfoAboutRdelete'));
 set(handles.checkbox_rri,'String',lokaliz('InfoAboutJoinLongRRI'));
 set(handles.text1,'String',{'' lokaliz('InfoAboutMarkingOutliers')});
