@@ -1,9 +1,9 @@
 function lokaliz_rengykle
 
 %
-% (C) 2014 Mindaugas Baranauskas
+% (C) 2014, 2023, 2024 Mindaugas Baranauskas
 %
-%
+
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Ši programa yra laisva. Jūs galite ją platinti ir/arba modifikuoti
@@ -45,22 +45,79 @@ for i=1:length(s);
     end;
 end;
 r=which(r);
-load(r,'-mat');
+if isempty(r)
+    function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
+    r=fullfile(function_dir,s{1});
+    LC_info=struct('LANG', {'--' 'en' 'lt'}, 'COUNTRY', {'' 'US' 'LT'}, 'VARIANT', {'' '' ''});
+    LC_TXT={ ...
+        'LT' 'Lithuanian' 'Lietuviškai'; ...
+        'EN' 'English'    'Angliškai'  ; ...
+        } ;
+else
+    load(r, 'LC_info','LC_TXT', '-mat');
+    copyfile(r,[r '~'],'f')
+end
+
 f=figure;
-set(f,'Name',r,'NumberTitle','off');
+set(f,'Name',r,'NumberTitle','off','Units', 'normalized');
+set(f,'Position',[0.05 0.1 0.6 0.8]);
 l= ismember(ones(1,size(LC_TXT,2)),1);
-t=uitable(f,'data',LC_TXT,'ColumnName', {LC_info.LANG }, 'Units', 'normalized', 'position', [0.02 0.15 0.96 0.8],'ColumnEditable',l,'tag','lentele', 'userdata',LC_info,...
+k=arrayfun(@(i) regexprep(sprintf('%s_%s', LC_info(i).LANG, LC_info(i).COUNTRY),'_$',''), 1:length(LC_info), 'UniformOutput', false); % {'--'}    {'en_US'}    {'lt_LT'}
+if isempty(k) || isempty(k{1})
+    k(1) = {'--'};
+end
+t=uitable(f,'data',LC_TXT,'ColumnName',k , 'Units', 'normalized', 'position', [0.02 0.15 0.96 0.8],'ColumnEditable',l,'tag','lentele', 'userdata',LC_info,...
     'CellEditCallback','LC_TXT=get(findobj(gcf,''tag'',''lentele''),''data''); LC_info=get(findobj(gcf,''tag'',''lentele''),''userdata''); save(get(gcf,''name''),''LC_info'', ''LC_TXT'') ; clear(''lokaliz'');');
 set(t,'units','pixels');
 d=get(t,'position'); p=(d(3)-70)/3;
 set(t,'ColumnWidth',{p p p});
 set(t,'units','normalized');
-e=uicontrol('style','edit', 'Units', 'normalized', 'position', [0.12 0.05 0.86 0.05], 'tag','filtras','callback', ...
-    ['LC_TXT=get(findobj(gcf,''tag'',''lentele''),''data'');  disp(''--''); '...
-    ' for i=1:3; disp(LC_TXT(ismember(LC_TXT(:,i), atrinkti_teksta(LC_TXT(:,i), [''*'' get(gcbo,''string'') ''*'' ])),:) ); end;' ...
-    ' disp(''--''); ']);
-p=uicontrol('style','pushbutton', 'String', '+', 'Units', 'normalized', 'position', [0.02 0.05 0.1 0.05], 'callback', ...
-    ['LC_TXT=get(findobj(gcf,''tag'',''lentele''),''data'');'...
-    'LC_TXT{1+size(LC_TXT,1),1}=get(findobj(gcf,''tag'',''filtras''),''string'');'...
-    'set(findobj(gcf,''tag'',''lentele''),''data'', LC_TXT);']);
+%cmd=['LC_TXT=get(findobj(gcf,''tag'',''lentele''),''data'');  ans={}; '...
+%    ' for i=1:3; ans=[ans; (LC_TXT(ismember(LC_TXT(:,i), atrinkti_teksta(LC_TXT(:,i), [''*'' get(gcbo,''string'') ''*'' ])),:) )]; end;' ...
+%    ' if ~isempty(ans); ans=unique(cell2table(ans,''VariableNames'',get(findobj(gcf,''tag'',''lentele''),''ColumnName'')),''rows'',''stable''); disp(ans); else  disp(''--''); end; '];
+uicontrol('style','edit', 'Units', 'normalized', 'position', [0.02 0.05 0.86 0.05], 'tag','filtras','callback', @atranka);
+uicontrol('style','pushbutton', 'String', '+', 'Units', 'normalized', 'position', [0.88 0.05 0.1 0.05], 'callback', @naujas);
+set(f,'ResizeFcn',@LangoDydisPasikeite)
 
+function atranka(h,~)
+f=ancestor(h,'figure','toplevel');
+h_lent=findobj(f,'tag','lentele');
+LC_TXT=get(h_lent,'data');  
+ids=[]; 
+for i=1:3
+    atr=atrinkti_teksta(LC_TXT(:,i), ['*' get(gcbo,'string') '*' ]);
+    if ~isempty(atr)
+        ids1=find(ismember(LC_TXT(:,i), atr));
+        ids=[ids; ids1]; %#ok
+    end
+end
+ids=unique(ids);
+if ~isempty(ids)
+    ats=LC_TXT(ids,:);
+    for i=1:numel(ats)
+        % kartais langelis būna tuščias ir skaitinis - tada jį reikia konvertuoti į raidinį
+        if isempty(ats{i}) && isnumeric(ats{i})
+            ats{i}=' '; 
+        end
+    end
+    ats=cell2table(ats,'VariableNames',get(h_lent,'ColumnName'),'RowNames',arrayfun(@num2str,ids,'UniformOutput',false)); 
+    disp(ats); 
+else
+    disp('--');
+end
+
+function naujas(h,varargin)
+f=ancestor(h,'figure','toplevel');
+h_lent=findobj(f,'tag','lentele');
+h_fltr=findobj(f,'tag','filtras');
+LC_TXT=get(h_lent,'data');
+LC_TXT(1+size(LC_TXT,1),[1,end])={get(h_fltr,'string')};
+set(h_lent,'data', LC_TXT);
+
+function LangoDydisPasikeite(h,~)
+f=ancestor(h,'figure','toplevel');
+t=findobj(f,'tag','lentele');
+set(t,'units','pixels');
+d=get(t,'position'); p=(d(3)-70)/3;
+set(t,'ColumnWidth',{p p p});
+set(t,'units','normalized');
