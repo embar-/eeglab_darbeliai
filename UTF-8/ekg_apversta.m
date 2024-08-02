@@ -112,5 +112,9 @@ plot(L1R/Hz, P1R, 'o', 'color',[  ar_apversta,1-ar_apversta, ar_apversta]);
 plot(L1T/Hz, P1T, '*', 'color',[  ar_apversta,1-ar_apversta, ar_apversta]);
 plot(L2R/Hz,-P2R, 'o', 'color',[1-ar_apversta, ar_apversta,1-ar_apversta]);
 plot(L2T/Hz,-P2T, '*', 'color',[1-ar_apversta, ar_apversta,1-ar_apversta]);
-title(fastif(ar_apversta,'Apversta','Neapversta'));
+if ar_apversta
+  title('Apversta');
+else
+  title('Neapversta');
+end
 
