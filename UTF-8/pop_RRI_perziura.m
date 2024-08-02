@@ -1997,6 +1997,111 @@ set(handles.figure1,'pointer','arrow');
 guidata(handles.figure1,handles);
 
 
+
+% --------------------------------------------------------------------
+function Importuoti_EDF_Callback(hObject, eventdata, handles, varargin)
+% hObject    handle to Importuoti_laikus (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+susaldyk(hObject, eventdata, handles);
+if nargin < 4;
+    [f,p]=uigetfile({'*.edf; *.bdf'; '*.edf'; '*.bdf'; '*.*' ;});
+    if or(isempty(f),f==0) ;
+        susildyk(hObject, eventdata, handles);
+        return ;
+    end;
+else
+    [p,f,g]=fileparts(varargin{1}); f=[ f g ];
+end;
+set(handles.figure1,'pointer','watch');
+SeniLaikai=get(handles.axes_rri,'UserData');
+Senas_EKG=handles.EKG;
+Senas_EKG_=handles.EKG_laikai;
+try Senas_EKG_HZ=handles.EKG_Hz;
+catch, Senas_EKG_HZ=[];
+end;
+try
+    katalogas_su_rinkmena=fullfile(p,f);
+    info = edfinfo(katalogas_su_rinkmena);
+        
+    Kanalu_N=info.NumSignals;    
+    if Kanalu_N > 1;
+        try Kanalai=info.SignalLabels; 
+        catch err;
+            Kanalai=arrayfun(@(i) sprintf('%d', i), [1:Kanalu_N], 'UniformOutput', false);
+        end;
+        KanaloNr=find(ismember(Kanalai,{'EKG' 'ECG'}),1);
+        if isempty(KanaloNr); KanaloNr=1; end;
+           KanaloNr=listdlg(...
+            'ListString',Kanalai,...
+            'SelectionMode','single',...
+            'InitialValue',KanaloNr(1),...
+            'PromptString',lokaliz('Please select channel'),...
+            'OKString',lokaliz('OK'),...
+            'CancelString',lokaliz('Cancel'));
+        if isempty(KanaloNr); error(lokaliz('Please select channel')); end;
+    elseif Kanalu_N == 1;
+        KanaloNr=1;
+    else
+        error('info.NumSignals=0');
+    end;
+
+    [EDFdata,annotations] = edfread(katalogas_su_rinkmena, 'SelectedSignals',info.SignalLabels(KanaloNr));
+    disp('   EKG nuskaityta.')
+
+    EKG=[double(cat(1,EDFdata.(1){:}))]';
+    EKG_Hz=info.NumSamples(KanaloNr)/seconds(info.DataRecordDuration);
+    if round(mean(EKG)) ~= 0
+        try EKG=fun_ECG_Filter(EKG_Hz,EKG); 
+            disp('   EKG nufiltruota.')
+        catch; 
+        end;
+    end
+
+    nuo=1;
+    iki=length(EKG);    
+    if ekg_apversta(EKG(1:min(10000,iki)),EKG_Hz,0); EKG=-EKG; end;
+    handles.EKG=EKG;
+    handles.EKG_laikai=[double([nuo:iki] - nuo ) / EKG_Hz ]'; % sekundėmis
+    handles.EKG_Hz=EKG_Hz;
+    handles.zmkl_lks=[]; % sekundėmis
+    handles.zmkl_pvd={};
+    %if isempty(ivyk_QRS);
+        try   Aptikti_EKG_QRS_Callback2(hObject, eventdata, handles);
+        catch err; Pranesk_apie_klaida(err, 'EKG QRS aptikimas', f, 0);
+        end;
+    %else
+        %Laikai=eeg_ivykiu_latenc(EEG, 'type', ivyk_QRS);
+        % %if size(Laikai,2) > 1; Laikai=[Laikai]'; end;
+        %set(handles.axes_rri,'UserData',Laikai);
+    %end;
+    dabartines_fig=findobj(handles.figure1);
+    delete(dabartines_fig(find(ismember(dabartines_fig,handles.pradines_fig)==0)));
+    set(handles.axes_rri,'Position',handles.axes_rri_padetis);
+
+    if isempty(info.Filename)
+        vardas=f;
+    else
+        vardas=char(info.Filename);
+    end
+    setappdata(handles.figure1,'vardas',vardas);
+    handles=pirmieji_grafikai(hObject, eventdata, handles);
+    %pushbutton_atstatyti_Callback(hObject, eventdata, handles);
+catch err;
+    Pranesk_apie_klaida(err,mfilename,f,1,1);
+    %w=warndlg(err.message);
+    %uiwait(w);
+    set(handles.axes_rri,'UserData',SeniLaikai);
+    handles.EKG=Senas_EKG;
+    handles.EKG_laikai=Senas_EKG_;
+    handles.EKG_Hz=Senas_EKG_HZ;
+    pushbutton_atstatyti_Callback(hObject, eventdata, handles);
+end;
+susildyk(hObject, eventdata, handles);
+set(handles.figure1,'pointer','arrow');
+guidata(handles.figure1,handles);
+
+
 % --------------------------------------------------------------------
 function Importuoti_LabChartMAT_Callback(hObject, eventdata, handles, varargin)
 % hObject    handle to Importuoti_BiopacACQ (see GCBO)
@@ -2503,8 +2608,8 @@ function Importuoti_Callback(hObject, eventdata, handles)
     '*.txt;*.TXT' '*.TXT - EKG'; ...
     '*.mat;*.MAT' '*.MAT - LabChart'; ...
     '*.acq;*.ACQ' '*.ACQ - Biopac'; ...
-    '*.set;*.SET' '*.SET - EEGLAB'; ...
     '*.edf;*.EDF' '*.EDF'; ...
+    '*.set;*.SET' '*.SET - EEGLAB'; ...
     '*.cnt;*.CNT' '*.CNT - ASA Lab'; ...
     '*'           '*';...
     }, 'Pasirinkite importuotiną rinkmeną');
@@ -2524,6 +2629,14 @@ switch i
         Importuoti_LabChartMAT_Callback(hObject, eventdata, handles, rinkmena)
     case 6
         Importuoti_BiopacACQ_Callback(hObject, eventdata, handles, rinkmena);
+    case 7
+        vers=version('-release');
+        if strcmp(vers(1:3),'202') && ~strcmp(vers,'2020a')
+            Importuoti_EDF_Callback(hObject, eventdata, handles, rinkmena);
+        else
+            warning('MATLAB 2020a and earlier does not have built-in "edfinfo" and "edfread" functions.')
+            Importuoti_EEGLab_Callback(hObject, eventdata, handles, rinkmena)
+        end
     otherwise
         Importuoti_EEGLab_Callback(hObject, eventdata, handles, rinkmena)
 end;
