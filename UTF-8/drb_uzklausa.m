@@ -82,7 +82,7 @@ l1=arrayfun(@(x) Tikras_Kelias(fullfile(regexprep(fileparts(c),[filesep '$'],'')
 % ankstesnių seansų kelių įkėlimas
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));   
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'), 'Darbeliai', '-mat');   
 catch %err; warning(err.message);
 end;
 

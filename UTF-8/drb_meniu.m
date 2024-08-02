@@ -223,8 +223,8 @@ handles.meniu_nuostatos_ikelti = uimenu(handles.meniu_nuostatos,'Label',lokaliz(
 uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Numatytas'),'Accelerator','R','Callback', {@nukreipimas_gui1, handles, 'drb_parinktys', 'ikelti',darbas,'numatytas'});
 try
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
-    eval([ 'saranka=Darbeliai.dialogai.' darbas '.saranka;' ]);
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'), 'Darbeliai', '-mat');
+    saranka = Darbeliai.dialogai.(darbas).saranka;
     par_pav={ saranka.vardas };
     if ismember('paskutinis',par_pav);
         uimenu(handles.meniu_nuostatos_ikelti,'Label',lokaliz('Paskiausias'),'Separator','off',...
@@ -556,7 +556,7 @@ else
 end;
 for i=1:length(ikeliami)
     EEGTMP=eeg_ikelk(kelias, ikeliami{i}, 'loadmode','info');
-    nario_duomenys=eval(['EEGTMP.' grupes_tipas]);
+    nario_duomenys = EEGTMP.(grupes_tipas);
     if isnumeric(nario_duomenys) && tipas_yra_raidinis
         nario_duomenys=num2str(nario_duomenys);
     end

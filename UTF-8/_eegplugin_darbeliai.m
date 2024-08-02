@@ -25,38 +25,41 @@
 % <a href="matlab:helpwin eksportuoti_ragu_programai">eksportuoti_ragu_programai</a> - eksportuojant į Ragu naudojama <a href="matlab:load RaguMontage62.mat">RaguMontage62.mat</a> kanalų schema;
 %
 %
-% Kitos naudingos funkcijos:
+% Kitos naudingos Darbelių funkcijos:
 % --
 % <a href="matlab:helpwin lokaliz">lokaliz</a> - programėlėse matomo teksto vertimas; saugomas <a href="matlab:load lokaliz.mat">lokaliz.mat</a>;
 % <a href="matlab:helpwin atnaujinimas">atnaujinimas</a> - EEGLAB papildinių (numatytuoju atveju - „Darbelių“) diegimas/atnaujinimas;
 % <a href="matlab:helpwin ragu_diegimas">ragu_diegimas</a> - EEGLAB skirto „Ragu“ papildinio parsiuntimas į įdiegimas;
 % <a href="matlab:helpwin EEG_spektr_galia">EEG_spektr_galia</a> - spektras, absoliučios ir santykinės galios dažnių srityse;
-% <a href="matlab:helpwin eeg_ivykiu_sarasas">eeg_ivykiu_sarasas</a> - ;
-% <a href="matlab:helpwin eeg_kanalu_sarasas">eeg_kanalu_sarasas</a> - ;
+% <a href="matlab:helpwin eeg_ivykiu_sarasas">eeg_ivykiu_sarasas</a> - vienos rinkmenos įvykiai arba rinkmenų sąrašo visi ir bendri įvykiai atskiruose sąrašuose;
+% <a href="matlab:helpwin eeg_kanalu_sarasas">eeg_kanalu_sarasas</a> - vienos rinkmenos kanalai arba rinkmenų sąrašo visi ir bendri kanalai atskiruose sąrašuose;
 % <a href="matlab:helpwin filter_filenames">filter_filenames</a> - rinkmenų paieška; įgalina dirbti poaplankiuose;
 % <a href="matlab:helpwin merge_cells">merge_cells</a> - lentelių, turinčių bendrų antraščių, apjungimui;
 % <a href="matlab:helpwin Pranesk_apie_klaida">Pranesk_apie_klaida</a> - išsamus įspėjimas po klaidos;
 % <a href="matlab:helpwin Tikras_Kelias">Tikras_Kelias</a> - jei nurodytas kelias neegzistuoja - grąžina veikiamąjį;
-% <a href="matlab:helpwin atrinkti_teksta">atrinkti_teksta</a> - ;
-% <a href="matlab:helpwin anotac_surinkti">anotac_surinkti</a> - ;
+% <a href="matlab:helpwin atrinkti_teksta">atrinkti_teksta</a> - tekstų arba rinkmenų sąrašo atranka pagal atrankos filtrą;
 % <a href="matlab:helpwin ERP_savybes">ERP_savybes</a> - atlieka dalį <a href="matlab:helpwin pop_ERP_savybes">pop_ERP_savybes</a> darbo;
 % <a href="matlab:helpwin labchartEKGevent2eeglab">labchartEKGevent2eeglab</a> - LabChart EKG įvykių eksportavimas;
+%
+%
+% Kitos naudingos trečiųjų šalių originalios arba modifikuotos funkcijos:
+% --
 % <a href="matlab:helpwin QRS_is_EEG">QRS_is_EEG</a> - QRS aptikimas, kai EKG yra tarp EEG kanalų;
 % <a href="matlab:helpwin QRS_detekt">QRS_detekt</a> - QRS aptikimas signale (matlab kintamajame);
-% <a href="matlab:helpwin QRS_detekt_DPI">QRS_detekt_DPI</a> - ;
-% <a href="matlab:helpwin QRS_detekt_fMRIb">QRS_detekt_fMRIb</a> - ;
-% <a href="matlab:helpwin QRS_detekt_mobd">QRS_detekt_mobd</a> - ;
-% <a href="matlab:helpwin QRS_detekt_Pan_Tompkin">QRS_detekt_Pan_Tompkin</a> - ;
-% <a href="matlab:helpwin convert_file_encoding">convert_file_encoding</a> - ;
+% <a href="matlab:helpwin QRS_detekt_DPI">QRS_detekt_DPI</a> - Threshold-Independent QRS Detection Using the Dynamic Plosion Index;
+% <a href="matlab:helpwin QRS_detekt_fMRIb">QRS_detekt_fMRIb</a> - Detect QRS peaks from ECG channel using combined adaptive thresholding;
+% <a href="matlab:helpwin QRS_detekt_mobd">QRS_detekt_mobd</a> - Finds QRS complexes using nonlinear MOBD transformation;
+% <a href="matlab:helpwin QRS_detekt_Pan_Tompkin">QRS_detekt_Pan_Tompkin</a> - Complete implementation of Pan-Tompkins algorithm;
+% <a href="matlab:helpwin convert_file_encoding">convert_file_encoding</a> - rašmenų koduotės keitimas;
 % <a href="matlab:helpwin scrollplot2">scrollplot2</a> - truputį modifikuota Yair M. Altman programa slinktukui;
 %
 %
-% Pasenusios funkcijos:
+% Pasenusios Darbelių funkcijos:
 % --
 % <a href="matlab:helpwin pop_erp_area">pop_erp_area</a> - ERP plotas, pusplotis, minimumas, maksimumas; naudokite <a href="matlab:helpwin pop_ERP_savybes">pop_ERP_savybes</a>; 
 % <a href="matlab:helpwin erp_area">erp_area</a> - atlieka dalį <a href="matlab:helpwin pop_erp_area">pop_erp_area</a> darbo; naudokite <a href="matlab:helpwin ERP_savybes">ERP_savybes</a>;
 % <a href="matlab:helpwin pop_naujas">pop_naujas</a> - šablonas naujoms grafinėms funkcijoms;
-% <a href="matlab:helpwin pop_atnaujinimas_">pop_atnaujinimas_</a> - supaprastesnis atnaujinimo dialogas nei <a href="matlab:helpwin pop_atnaujinimas">pop_atnaujinimas</a>;
+% <a href="matlab:helpwin pop_atnaujinimas_">pop_atnaujinimas_</a> - paprastesnis atnaujinimo dialogas nei <a href="matlab:helpwin pop_atnaujinimas">pop_atnaujinimas</a>;
 %
 %
 % Kita:

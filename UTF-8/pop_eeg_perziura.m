@@ -115,7 +115,7 @@ if isfield(g,'narsyti'); narsyti=g.narsyti; end;
 if narsyti
     function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
     try
-        load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+        load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'), 'Darbeliai', '-mat');
     catch
     end;
     a=axes('units','normalized','position',[0.08 0.05 0.72 0.9 ]);
@@ -360,7 +360,9 @@ atnaujink_rodomus_failus(hObject, eventdata, handles.edit2, handles.listbox2, ha
 
 function atnaujink_rodoma_kelia_ir_failus(hObject, eventdata, handles)
 atnaujink_rodoma_kelia_ir_failus1(hObject, eventdata, handles);
-atnaujink_rodoma_kelia_ir_failus2(hObject, eventdata, handles);
+if isfield(handles,'edit2')
+    atnaujink_rodoma_kelia_ir_failus2(hObject, eventdata, handles);
+end
 
 % Atnaujink rodoma kelia
 function atnaujink_rodoma_darbini_kelia(~, ~, h_edit, h_pushbutton_v)

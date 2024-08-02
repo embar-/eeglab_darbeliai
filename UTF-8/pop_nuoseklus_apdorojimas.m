@@ -141,7 +141,7 @@ Kelias_dabar=pwd;
 %Pabandyk įkelti senąjį kelią
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'), 'Darbeliai', '-mat');
     cd(Darbeliai.keliai.atverimui{1});
 catch err;
 end;
@@ -733,7 +733,7 @@ disp(' ');
 % Nuostatų įsiminimas, jei yra Darbeliai_config.mat
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 try
-    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'));
+    load(fullfile(Tikras_Kelias(fullfile(function_dir,'..')),'Darbeliai_config.mat'), 'Darbeliai', '-mat');
 
     % Pasirinktų aplankų įsiminimas
     try
