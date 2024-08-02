@@ -94,8 +94,8 @@ curdir_sep=find(ismember(curdir,filesep));
 curdir_parrent=curdir(1:curdir_sep(end));
 curdir=[curdir filesep];
 config_file='Darbeliai_config.mat';
-Darbeliai_nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/master.zip';
-Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/master/Darbeliai.versija';
+Darbeliai_nuostatos.url_atnaujinimui='https://github.com/embar-/eeglab_darbeliai/archive/stable.zip';
+Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eeglab_darbeliai/stable/Darbeliai.versija';
 Darbeliai_nuostatos.stabili_versija=0;
 
 % Unix - UTF-8
