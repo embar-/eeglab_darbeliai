@@ -12,7 +12,8 @@
 %
 % veiksena – [0|1] mygtukas taisytų laikų grąžinimui (numatyta 0 = ne)
 %
-% (C) 2014-2022 Mindaugas Baranauskas
+% (C) 2014-2024 Mindaugas Baranauskas
+% (c) 2022-2023 Kauno technologijos universitetas
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -177,15 +178,15 @@ end;
 %% Meniu
 
 % Duomenys
-handles.m_Duomenys = uimenu( 'Parent',handles.figure1,  'Accelerator','M','Callback',' ','Label','Duomenys','Tag','Duomenys');
+handles.m_Duomenys = uimenu( 'Parent',handles.figure1,  'Accelerator','M','Callback',' ','Label',lokaliz('Dataset'),'Tag','Duomenys');
 % naujas_langas
-h38 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','N', 'Callback','pop_RRI_perziura', 'Label','Naujas langas', 'Tag','naujas_langas');
+h38 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','N', 'Callback','pop_RRI_perziura', 'Label',lokaliz('Naujas langas'), 'Tag','naujas_langas');
 % Atstatyti
-h25 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','P', 'Callback',@(hObject,eventdata)pop_RRI_perziura('pushbutton_atstatyti_Callback',hObject,eventdata,guidata(hObject)), 'Label','Nuo pradžių', 'Tag','Atstatyti');
+h25 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','P', 'Callback',@(hObject,eventdata)pop_RRI_perziura('pushbutton_atstatyti_Callback',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('Reset'), 'Tag','Atstatyti');
 % Importuoti
-h14 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','I', 'Callback',' ', 'Separator','on', 'Label','Importuoti', 'Tag','Importuoti');
+h14 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','I', 'Callback',' ', 'Separator','on', 'Label',lokaliz('Importuoti'), 'Tag','Importuoti');
 % Importuoti_laikus
-h15 = uimenu( 'Parent',h14, 'Accelerator','L', 'Callback',@(hObject,eventdata)pop_RRI_perziura('Importuoti_laikus_Callback',hObject,eventdata,guidata(hObject)), 'Label','R laikus', 'Tag','Importuoti_laikus');
+h15 = uimenu( 'Parent',h14, 'Accelerator','L', 'Callback',@(hObject,eventdata)pop_RRI_perziura('Importuoti_laikus_Callback',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('R < TXT'), 'Tag','Importuoti_laikus');
 % Importuoti_RRI
 h16 = uimenu( 'Parent',h14, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Importuoti_RRI_Callback',hObject,eventdata,guidata(hObject)), 'Label','RRI', 'Tag','Importuoti_RRI');
 % EKG_is_TXT
@@ -197,40 +198,40 @@ h19 = uimenu( 'Parent',h14, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Imp
 % EEGLab
 h20 = uimenu( 'Parent',h14, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Importuoti_EEGLab_Callback',hObject,eventdata,guidata(hObject)), 'Label','EEG *.set, *.edf, *.cnt...', 'Tag','EEGLab');
 % Eksportuoti
-handles.m_Eksportuoti = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','E', 'Callback',' ', 'Label','Eksportuoti', 'Tag','Eksportuoti');
+handles.m_Eksportuoti = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','E', 'Callback',' ', 'Label',lokaliz('Eksportuoti'), 'Tag','Eksportuoti');
 % Eksportuoti_RRI
 h23 = uimenu( 'Parent',handles.m_Eksportuoti, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Eksportuoti_RRI_Callback',hObject,eventdata,guidata(hObject)), 'Label','RRI', 'Tag','Eksportuoti_RRI');
 % Eksportuoti_laikus
-h22 = uimenu( 'Parent',handles.m_Eksportuoti, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Eksportuoti_laikus_Callback',hObject,eventdata,guidata(hObject)), 'Label','R laikus į TXT', 'Tag','Eksportuoti_laikus');
+h22 = uimenu( 'Parent',handles.m_Eksportuoti, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Eksportuoti_laikus_Callback',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('R > TXT'), 'Tag','Eksportuoti_laikus');
 % Užverti neperduodant laikų
-h27 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','X', 'Callback',@(hObject,eventdata)pop_RRI_perziura('figure1_CloseRequestFcn',hObject,eventdata,guidata(hObject)), 'Separator','on', 'Label','Užverti', 'Tag','Uzverti');
+h27 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','X', 'Callback',@(hObject,eventdata)pop_RRI_perziura('figure1_CloseRequestFcn',hObject,eventdata,guidata(hObject)), 'Separator','on', 'Label',lokaliz('Close'), 'Tag','Uzverti');
 % Perduoti laikus ir užverti, jei atidaryta iš kitos programos
-h26 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','Q', 'Callback',@(hObject,eventdata)pop_RRI_perziura('pushbutton_OK_Callback',hObject,eventdata,guidata(hObject)), 'Separator','off', 'Visible','off', 'Label','Pateikti R laikus', 'Tag','Perduoti');
+h26 = uimenu( 'Parent',handles.m_Duomenys, 'Accelerator','Q', 'Callback',@(hObject,eventdata)pop_RRI_perziura('pushbutton_OK_Callback',hObject,eventdata,guidata(hObject)), 'Separator','off', 'Visible','off', 'Label',lokaliz('Pateikti R laikus'), 'Tag','Perduoti');
 
 
 % Taisa
-handles.m_Taisa = uimenu( 'Parent',handles.figure1,  'Callback',' ','Label','Taisa','Tag','Taisa');
+handles.m_Taisa = uimenu( 'Parent',handles.figure1,  'Callback',' ','Label',lokaliz('Taisa'),'Tag','Taisa');
 % istorija_atgal
-h42 = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','Z', 'Callback',@(hObject,eventdata)pop_RRI_perziura('istorija_atgal_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Label','Atšaukti veiksmą', 'Tag','istorija_atgal');
+h42 = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','Z', 'Callback',@(hObject,eventdata)pop_RRI_perziura('istorija_atgal_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('Undo'), 'Tag','istorija_atgal');
 % istorija_tolyn
-h43 = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','Y', 'Callback',@(hObject,eventdata)pop_RRI_perziura('istorija_tolyn_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Label','Grąžinti atšauktąjį', 'Tag','istorija_tolyn');
+h43 = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','Y', 'Callback',@(hObject,eventdata)pop_RRI_perziura('istorija_tolyn_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('Redo'), 'Tag','istorija_tolyn');
 % Naujas_dantelis
-h32 = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','R', 'Callback',@(hObject,eventdata)pop_RRI_perziura('naujas_dantelis',hObject,eventdata,guidata(hObject)), 'separator', 'on', 'Label','Pridėti tašką ranka', 'Tag','Naujas_dantelis');
+h32 = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','R', 'Callback',@(hObject,eventdata)pop_RRI_perziura('naujas_dantelis',hObject,eventdata,guidata(hObject)), 'separator', 'on', 'Label',lokaliz('Naujas dantelis ranka'), 'Tag','Naujas_dantelis');
 % Salinti
-h33 = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','D', 'Callback',@(hObject,eventdata)pop_RRI_perziura('salinti_pazymetuosius1',hObject,eventdata,guidata(hObject)), 'Label','Pašalinti pažymėtus taškus', 'Tag','Salinti');
-handles.m_Aptikti_EKG_QRS = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','K', 'Callback',@(hObject,eventdata)pop_RRI_perziura('Aptikti_EKG_QRS_Callback',hObject,eventdata,guidata(hObject)), 'Label','Aptikti EKG QRS', 'Separator','on', 'Tag','Aptikti_EKG_QRS','Enable','off');
+h33 = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','D', 'Callback',@(hObject,eventdata)pop_RRI_perziura('salinti_pazymetuosius1',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('Trinti dantelius'), 'Tag','Salinti');
+handles.m_Aptikti_EKG_QRS = uimenu( 'Parent',handles.m_Taisa, 'Accelerator','K', 'Callback',@(hObject,eventdata)pop_RRI_perziura('Aptikti_EKG_QRS_Callback',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('Aptikti EKG QRS'), 'Separator','on', 'Tag','Aptikti_EKG_QRS','Enable','off');
 
 
 % Rodymas
-handles.m_Rodymas = uimenu( 'Parent',handles.figure1,  'Callback',' ','Label','Rodymas','Tag','Rodymas');
+handles.m_Rodymas = uimenu( 'Parent',handles.figure1,  'Callback',' ','Label',lokaliz('Rodinys'),'Tag','Rodymas');
 % Atnaujinti
-h31 = uimenu( 'Parent',handles.m_Rodymas, 'Accelerator','A', 'Callback',@(hObject,eventdata)pop_RRI_perziura('pushbutton_atnaujinti_Callback',hObject,eventdata,guidata(hObject)), 'Label','Atnaujinti', 'Tag','Atnaujinti');
+h31 = uimenu( 'Parent',handles.m_Rodymas, 'Accelerator','A', 'Callback',@(hObject,eventdata)pop_RRI_perziura('pushbutton_atnaujinti_Callback',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('Atnaujinti'), 'Tag','Atnaujinti');
 % EKG rodymas
-handles.m_ekg_rodyti = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('checkbox_ekg_Callback',hObject,eventdata,guidata(hObject)), 'separator', 'on', 'checked','on', 'Label','Rodyti EKG', 'Tag','ekg_rodyti');
+handles.m_ekg_rodyti = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('checkbox_ekg_Callback',hObject,eventdata,guidata(hObject)), 'separator', 'on', 'checked','on', 'Label',lokaliz('Rodyti EKG'), 'Tag','ekg_rodyti');
 % Nejungti
-handles.m_Nejungti = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Nejungti_ClickedCallback',hObject,eventdata,guidata(hObject)), 'checked','on', 'Label','Nejungti ypač nutolusių taškų', 'Tag','Nejungti');
+handles.m_Nejungti = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Nejungti_ClickedCallback',hObject,eventdata,guidata(hObject)), 'checked','on', 'Label',lokaliz('Do not join long RRI'), 'Tag','Nejungti');
 % Uzribis
-handles.m_Uzribis = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('edit_ribos_Callback',hObject,eventdata,guidata(hObject)), 'separator', 'on', 'Label','Pažymėti įtartinus taškus', 'Tag','Uzribis');
+handles.m_Uzribis = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('edit_ribos_Callback',hObject,eventdata,guidata(hObject)), 'separator', 'on', 'Label',lokaliz('Mark outliers'), 'Tag','Uzribis');
 % toggle_brush
 %h49 = uimenu( 'Parent',handles.m_Rodymas, 'Callback',' ', 'OnCallback',@(hObject,eventdata)pop_RRI_perziura('axes_rri_ButtonDownFcn',hObject,eventdata,guidata(hObject)), 'OffCallback',@(hObject,eventdata)pop_RRI_perziura('toggle_brush_OffCallback',hObject,eventdata,guidata(hObject)), 'Label','Žymėjimo apvedant stačiakampiu veiksena', 'Tag','toggle_brush');
 % aktyvusis
@@ -240,24 +241,24 @@ handles.m_Uzribis = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eve
 % Artinti2
 h54 = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Artinti2_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Separator','on', 'Tag','Artinti2');
 % Artinti
-h55 = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Artinti_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Label','Artinti', 'Tag','Artinti');
+h55 = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Artinti_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('Zoom +'), 'Tag','Artinti');
 % Tolinti
-h56 = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Tolinti_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Label','Tolinti', 'Tag','Tolinti');
+h56 = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('Tolinti_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('Zoom -'), 'Tag','Tolinti');
 % optimalus
 h57 = uimenu( 'Parent',handles.m_Rodymas, 'Visible','off', 'Tag','optimalus');
 % optimalusy
-h58 = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('optimalus_rodymasy',hObject,eventdata,guidata(hObject)), 'Label','Optimalus aukštis', 'Tag','optimalusy');
+h58 = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('optimalus_rodymasy',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('Optimalus aukstis'), 'Tag','optimalusy');
 % optimalusx
-h59 = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('optimalus_rodymasx',hObject,eventdata,guidata(hObject)), 'Label','Optimalus plotis', 'Tag','optimalusx');
+h59 = uimenu( 'Parent',handles.m_Rodymas, 'Callback',@(hObject,eventdata)pop_RRI_perziura('optimalus_rodymasx',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('Optimalus plotis'), 'Tag','optimalusx');
 
 % Eiti
-handles.m_Eiti = uimenu( 'Parent',handles.figure1,  'Callback',' ','Label','Eiti','Tag','Eiti');
-% į ankste
-h60 = uimenu( 'Parent',handles.m_Eiti, 'Callback',@(hObject,eventdata)pop_RRI_perziura('eiti_i_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Label','Šokti į laiką...', 'Tag','eiti_i');
+handles.m_Eiti = uimenu( 'Parent',handles.figure1,  'Callback',' ','Label',lokaliz('Eiti'),'Tag','Eiti');
+% tiksliai
+h60 = uimenu( 'Parent',handles.m_Eiti, 'Callback',@(hObject,eventdata)pop_RRI_perziura('eiti_i_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('Eiti laikan...'), 'Tag','eiti_i');
 % prie ankstesnio pažymėto
-h61 = uimenu( 'Parent',handles.m_Eiti, 'Callback',@(hObject,eventdata)pop_RRI_perziura('eiti_pazym_atgal_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Separator','on', 'Label','Prie ankstesnio pažymėto', 'Tag','eiti_pazym_atgal');
+h61 = uimenu( 'Parent',handles.m_Eiti, 'Callback',@(hObject,eventdata)pop_RRI_perziura('eiti_pazym_atgal_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Separator','on', 'Label',lokaliz('Eiti prie ankstesnio pasirinkto'), 'Tag','eiti_pazym_atgal');
 % prie tolesnio pažymėto
-h62 = uimenu( 'Parent',handles.m_Eiti, 'Callback',@(hObject,eventdata)pop_RRI_perziura('eiti_pazym_tolyn_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Label','Prie tolesnio pažymėto', 'Tag','eiti_pazym_tolyn');
+h62 = uimenu( 'Parent',handles.m_Eiti, 'Callback',@(hObject,eventdata)pop_RRI_perziura('eiti_pazym_tolyn_ClickedCallback',hObject,eventdata,guidata(hObject)), 'Label',lokaliz('Eiti prie tolesnio pasirinkto'), 'Tag','eiti_pazym_tolyn');
 
 function_dir=regexprep(mfilename('fullpath'),[ mfilename '$'], '' );
 vers='Darbeliai';
@@ -326,6 +327,15 @@ set(handles.anotacijos, 'State','off');
 % Tuščia anotacija reikalinga dar prieš grafikus
 handles.anot=RRI_perziuros_anotacija('prideti',handles.figure1,handles.axes_rri); % sukurti
 anotacijos_OffCallback(hObject, eventdata, handles);
+
+%% Vertimai
+set(handles.pushbutton_OK, 'String', lokaliz('OK'));
+set(handles.pushbutton_atnaujinti, 'String', lokaliz('Atnaujinti'));
+set(handles.pushbutton_atstatyti, 'String', lokaliz('Reset'));
+set(handles.checkbox_ekg,'String',lokaliz('Show EKG'));
+set(handles.text4,'String',lokaliz('InfoAboutRdelete'));
+set(handles.checkbox_rri,'String',lokaliz('InfoAboutJoinLongRRI'));
+set(handles.text1,'String',{'' lokaliz('InfoAboutMarkingOutliers')});
 
 %% Grafikai
 handles=pirmieji_grafikai(hObject, eventdata, handles);
@@ -1962,7 +1972,7 @@ try
     set(handles.axes_rri,'Position',handles.axes_rri_padetis);
 
     if isempty(EEG.setname)
-        [~,vardas]=fileparts(rinkmena);
+        vardas=f;
     else
         vardas=EEG.setname;
     end
@@ -2897,7 +2907,7 @@ function eiti_i_ClickedCallback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 xvid=mean(get(handles.axes_rri,'XLim'));
-a=inputdlg('Šokti į laiką (sekundėmis):',mfilename,1,{num2str(xvid)});
+a=inputdlg(lokaliz('Eiti laikan (s):'),mfilename,1,{num2str(xvid)});
 if ~isempty(a);
     if ~isempty(a{1});
         t=str2num(a{1});
