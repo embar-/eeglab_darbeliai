@@ -1,6 +1,12 @@
 %
 % Pakeitimai:
 % ------------------------
+% v2024.08.08.1
+% ~ Perrašyti eeg_ikelk.m, naudoti ANTeepimport CNT importui
+% + Papildomai daryti ankstesnės dienos konfigūracijos kopiją.
+% ~ EKG / RRI peržiūros ir R laikų kaip įvykių įterpimo patobulinimai.
+% ~ Vengiama nesaugiai vykdyti „eval“ ir „load“.
+%
 % v2022.12.22.1
 % ~ EEG spektrinės galios skaičiavimams 50% lango persidengimas.
 % ~ Patikimesnis poaplankių turinio rodymas rinkmenų sąraše.

@@ -1,13 +1,15 @@
-Darbeliai v2022.12.22.1
+Darbeliai v2024.08.08.1
 
 LT:
-1. EEG galios skaičiavimams 50% lango persidengimas.
-2. Patikimesnis poaplankių turinio rodymas.
-3. Rinkmenų pasirinkimui pagal įrašo trukmę.
-4. SĮSP bandyti eksportuoti į 1 dokumentą, jei įmanoma.
+Perrašytas EEG įkėlimo apvalkalas, 
+ANTeepimport naudojamas CNT importui.
+Daryti ankstesnės dienos konfigūracijos kopiją.
+EKG / RRI peržiūros ir R laikų įterpimo patobulinimai.
+Vengiama nesaugiai vykdyti eval ir load.
 
 EN:
-1. EEG power calculation with 50% window overlap.
-2. More reliable listing of sub-directories.
-3. New Actions menu for selecting records by duration.
-4. ERP export to one document, if possible.
+EEG load wrapper re-written, 
+ANTeepimport usage for CNT import.
+Creating backup of previuos day config.
+EKG / RRI review and R peak insertion as events.
+Avoid unsafe use of "eval" and "load".
