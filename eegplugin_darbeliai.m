@@ -76,26 +76,31 @@
 % UTF-8 aplanko *.m rinkmenos konvertuojamos i sistemos koduote.
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   
+%
+% (C) 2014-2024 Mindaugas Baranauskas   
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%
 % Si programa yra laisva. Jus galite ja platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
-% Viesosios licencijos salygomis: 2 licencijos versija, arba (savo
+% Viesosios licencijos salygomis: 3 licencijos versija, arba (savo
 % nuoziura) bet kuria velesne versija.
 %
 % Si programa platinama su viltimi, kad ji bus naudinga, bet BE JOKIOS
-% GARANTIJOS; be jokios numanomos PERKAMUMO ar TINKAMUMO KONKRETIEMS
-% TIKSLAMS garantijos. Ziurekite GNU Bendraja Viesaja licencija noredami
-% suzinoti smulkmenas.
+% GARANTIJOS; taip pat nesuteikiama jokia numanoma garantija del TINKAMUMO
+% PARDUOTI ar PANAUDOTI TAM TIKRAM TIKSLU. Daugiau informacijos galite 
+% rasti pacioje GNU Bendrojoje Viesojoje licencijoje.
 %
-% Jus turejote kartu su sia programa gauti ir GNU Bendrosios Viesosios
-% licencijos kopija; jei ne - rasykite Free Software Foundation, Inc., 59
-% Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+% Jus kartu su sia programa turejote gauti ir GNU Bendrosios Viesosios
+% licencijos kopija; jei ne - zr. <https://www.gnu.org/licenses/>.
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%	
+%
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
-% the Free Software Foundation; either version 2 of the License, or
+% the Free Software Foundation; either version 3 of the License, or
 % (at your option) any later version.
 %
 % This program is distributed in the hope that it will be useful,
@@ -104,15 +109,8 @@
 % GNU General Public License for more details.
 %
 % You should have received a copy of the GNU General Public License
-% along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% (C) 2014 Mindaugas Baranauskas   
-%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %%
 
 function vers = eegplugin_darbeliai(fig,try_strings,catch_strings)
@@ -121,6 +119,12 @@ curdir = [fileparts(which(mfilename)) filesep];
 main_menu_name ='Darbeliai';
 vers = 'Darbeliai v?';
 config_file='Darbeliai_config.mat';
+if ~isempty(which('eeglab'))
+    % Atsargine konfiguracija EEGLAB/plugins kataloge su .bak" priesaga
+    backup_file = fullfile(fileparts(which('eeglab')),'plugins', 'Darbeliai_config.bak');
+else
+    backup_file = Tikras_kelias(fullfile(curdir, '..', 'Darbeliai_config.bak'));
+end
 kelias=pwd;
 
 try
@@ -194,12 +198,24 @@ if strcmp(curdir(end),filesep);
 end ;
 curdir_sep=find(ismember(curdir,filesep));
 curdir_parrent=curdir(1:curdir_sep(end));
-if exist(fullfile(curdir_parrent, config_file),'file') == 2;
-   try
-      movefile(fullfile(curdir_parrent, config_file), fullfile(curdir, config_file), 'f');
-   catch err;
-   end;
-end;
+% Konfiguracijos atstatymas is atsargines kopijos uz Darbeliu katalogo ribu - nes ji dingsta atnaujinant per EEGLAB
+if exist(fullfile(curdir_parrent, config_file),'file') == 2
+   % Grazinti laikinai iskelta konfiguracija i pagrindine vieta
+   try movefile(fullfile(curdir_parrent, config_file), fullfile(curdir, config_file), 'f');
+   catch
+   end
+elseif (exist(fullfile(curdir, config_file),'file') ~= 2) && (exist(backup_file,'file') == 2)
+    % Atkopijuoti atsargine konfiguracija
+    try copyfile(backup_file, fullfile(curdir, config_file), 'f')
+    catch
+    end
+end
+% Jei atsargines konfiguracijos kopijos nera - sukurti
+if (exist(fullfile(curdir, config_file),'file') == 2) && (exist(backup_file,'file') ~= 2)
+    try copyfile(fullfile(curdir, config_file), backup_file, 'f')
+    catch
+    end
+end
 curdir=[curdir filesep];
 
 
@@ -238,7 +254,7 @@ Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eegla
 Darbeliai_nuostatos.meniu_ragu=0;
 
 try
-   load(fullfile(curdir,config_file));
+   load(fullfile(curdir,config_file), 'Darbeliai', '-mat');
    Darbeliai_nuostatos.lokale=Darbeliai.nuostatos.lokale;
    Darbeliai_nuostatos.tikrinti_versija=Darbeliai.nuostatos.tikrinti_versija;
    Darbeliai_nuostatos.diegti_auto=Darbeliai.nuostatos.diegti_auto;
