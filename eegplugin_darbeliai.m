@@ -233,7 +233,7 @@ Darbeliai_nuostatos.url_versijai='https://raw.githubusercontent.com/embar-/eegla
 Darbeliai_nuostatos.meniu_ragu=1;
 
 try
-   load(fullfile(curdir,config_file));
+   load(fullfile(curdir,config_file), 'Darbeliai', '-mat');
    Darbeliai_nuostatos.lokale=Darbeliai.nuostatos.lokale;
    Darbeliai_nuostatos.tikrinti_versija=Darbeliai.nuostatos.tikrinti_versija;
    Darbeliai_nuostatos.diegti_auto=Darbeliai.nuostatos.diegti_auto;
