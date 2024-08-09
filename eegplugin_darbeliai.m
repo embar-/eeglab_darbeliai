@@ -75,10 +75,13 @@
 % Prisiderinama prie naudojamos koduotes: 
 % UTF-8 aplanko *.m rinkmenos konvertuojamos i sistemos koduote.
 %
-% (C) 2014 Mindaugas Baranauskas   
-%
-
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% (C) 2014-2024 Mindaugas Baranauskas   
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
 %
 % Si programa yra laisva. Jus galite ja platinti ir/arba modifikuoti
 % remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios
@@ -116,6 +119,12 @@ curdir = [fileparts(which(mfilename)) filesep];
 main_menu_name ='Darbeliai';
 vers = 'Darbeliai v?';
 config_file='Darbeliai_config.mat';
+if ~isempty(which('eeglab'))
+    % Atsargine konfiguracija EEGLAB/plugins kataloge su .bak" priesaga
+    backup_file = fullfile(fileparts(which('eeglab')),'plugins', 'Darbeliai_config.bak');
+else
+    backup_file = Tikras_kelias(fullfile(curdir, '..', 'Darbeliai_config.bak'));
+end
 kelias=pwd;
 
 try
@@ -189,12 +198,24 @@ if strcmp(curdir(end),filesep);
 end ;
 curdir_sep=find(ismember(curdir,filesep));
 curdir_parrent=curdir(1:curdir_sep(end));
-if exist(fullfile(curdir_parrent, config_file),'file') == 2;
-   try
-      movefile(fullfile(curdir_parrent, config_file), fullfile(curdir, config_file), 'f');
-   catch err;
-   end;
-end;
+% Konfiguracijos atstatymas is atsargines kopijos uz Darbeliu katalogo ribu - nes ji dingsta atnaujinant per EEGLAB
+if exist(fullfile(curdir_parrent, config_file),'file') == 2
+   % Grazinti laikinai iskelta konfiguracija i pagrindine vieta
+   try movefile(fullfile(curdir_parrent, config_file), fullfile(curdir, config_file), 'f');
+   catch
+   end
+elseif (exist(fullfile(curdir, config_file),'file') ~= 2) && (exist(backup_file,'file') == 2)
+    % Atkopijuoti atsargine konfiguracija
+    try copyfile(backup_file, fullfile(curdir, config_file), 'f')
+    catch
+    end
+end
+% Jei atsargines konfiguracijos kopijos nera - sukurti
+if (exist(fullfile(curdir, config_file),'file') == 2) && (exist(backup_file,'file') ~= 2)
+    try copyfile(fullfile(curdir, config_file), backup_file, 'f')
+    catch
+    end
+end
 curdir=[curdir filesep];
 
 

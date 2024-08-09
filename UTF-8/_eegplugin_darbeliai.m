@@ -119,6 +119,12 @@ curdir = [fileparts(which(mfilename)) filesep];
 main_menu_name ='Darbeliai';
 vers = 'Darbeliai v?';
 config_file='Darbeliai_config.mat';
+if ~isempty(which('eeglab'))
+    % Atsarginė konfigūracija EEGLAB/plugins kataloge su „.bak" priesaga
+    backup_file = fullfile(fileparts(which('eeglab')),'plugins', 'Darbeliai_config.bak');
+else
+    backup_file = Tikras_kelias(fullfile(curdir, '..', 'Darbeliai_config.bak'));
+end
 kelias=pwd;
 
 try
@@ -192,12 +198,24 @@ if strcmp(curdir(end),filesep);
 end ;
 curdir_sep=find(ismember(curdir,filesep));
 curdir_parrent=curdir(1:curdir_sep(end));
-if exist(fullfile(curdir_parrent, config_file),'file') == 2;
-   try
-      movefile(fullfile(curdir_parrent, config_file), fullfile(curdir, config_file), 'f');
-   catch err;
-   end;
-end;
+% Konfigūracijos atstatymas iš atsarginės kopijos už Darbelių katalogo ribų - nes ji dingsta atnaujinant per EEGLAB
+if exist(fullfile(curdir_parrent, config_file),'file') == 2
+   % Grąžinti laikinai iškeltą konfigūraciją į pagrindinę vietą
+   try movefile(fullfile(curdir_parrent, config_file), fullfile(curdir, config_file), 'f');
+   catch
+   end
+elseif (exist(fullfile(curdir, config_file),'file') ~= 2) && (exist(backup_file,'file') == 2)
+    % Atkopijuoti atsarginę konfigūraciją
+    try copyfile(backup_file, fullfile(curdir, config_file), 'f')
+    catch
+    end
+end
+% Jei atsarginės konfigūracijos kopijos nėra - sukurti
+if (exist(fullfile(curdir, config_file),'file') == 2) && (exist(backup_file,'file') ~= 2)
+    try copyfile(fullfile(curdir, config_file), backup_file, 'f')
+    catch
+    end
+end
 curdir=[curdir filesep];
 
 
