@@ -330,12 +330,14 @@ end
 % vienu keitimu senesnė konfigūracija
 if exist(konfig_rinkm, 'file') == 2
     % Atsarginė konfigūracija EEGLAB/plugins kataloge su „.bak" priesaga
-    konfig_rinkm_bak = fullfile(fileparts(which('eeglab')),'plugins', 'Darbeliai_config.bak'); 
-    d = dir(konfig_rinkm);
-    if ~strcmp(datestr(d.datenum, 'yyyy-mm-dd'), datestr(now, 'yyyy-mm-dd')) || ... % nesutampa su šiandiena
-       exist(konfig_rinkm_bak, 'file') ~= 2  % arba dar nebuvo papildomos atsarginės konfigūracijos
-        % Papildomai nukopijuoti ankstesnės dienos konfigūraciją į EEGLAB/plugins katalogą su „.bak" priesaga
-        try copyfile(konfig_rinkm, konfig_rinkm_bak, 'f'); catch; end
+    if ~isempty(which('eeglab'))
+        konfig_rinkm_bak = fullfile(fileparts(which('eeglab')),'plugins', 'Darbeliai_config.bak');
+        d = dir(konfig_rinkm);
+        if ~strcmp(datestr(d.datenum, 'yyyy-mm-dd'), datestr(now, 'yyyy-mm-dd')) || ... % nesutampa su šiandiena
+           exist(konfig_rinkm_bak, 'file') ~= 2  % arba dar nebuvo papildomos atsarginės konfigūracijos
+            % Papildomai nukopijuoti ankstesnės dienos konfigūraciją į EEGLAB/plugins katalogą su „.bak" priesaga
+            try copyfile(konfig_rinkm, konfig_rinkm_bak, 'f'); catch; end
+        end
     end
     % ir bet kuriuo atveju perkelti tame pačiame kataloge
     try   movefile(konfig_rinkm, [konfig_rinkm '~' ], 'f'); catch; end
