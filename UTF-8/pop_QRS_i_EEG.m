@@ -965,10 +965,13 @@ for i=1:Pasirinktu_failu_N;
                     kiti_kod    = Ivykiai0(rodykles_kt);
                     
                     Reikalingas_kanalas=get(handles.text_kanal,'TooltipString');
-                    EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1,1);
-                    if isempty(EKG_kanalas); % nors nenurodytas kanalas, vis tiek ieškoti 'EKG'
-                        EKG_kanalas=find(ismember({EEG.chanlocs.labels},'EKG')==1);
-                    end;
+                    EKG_kanalas = [];
+                    if ~isempty(EEG.chanlocs)
+                        EKG_kanalas=find(ismember({EEG.chanlocs.labels},Reikalingas_kanalas)==1,1);
+                        if isempty(EKG_kanalas) % nors nenurodytas kanalas, vis tiek ieškoti 'EKG'
+                            EKG_kanalas=find(ismember({EEG.chanlocs.labels},'EKG')==1);
+                        end
+                    end
                                         
                     % Atverti dialogą RRI redagavimui
                     if isempty(EKG_kanalas);
